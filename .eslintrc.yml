@@ -1,0 +1,263 @@
+# to Disallow Node.js modules, see http://eslint.org/docs/rules/no-restricted-modules
+# Bkacklist for functuon names - http://eslint.org/docs/rules/id-blacklist
+
+env:
+  es6: true
+  node: true
+extends: 'eslint:recommended'
+parserOptions:
+  sourceType: module
+
+#globals:
+#  var1: true
+
+#parserOptions:
+#  ecmaVersion: 7
+#  sourceType: module
+#  ecmaFeatures:
+#    globalReturn: false
+
+
+
+rules:
+  #### Recommends reasign
+  no-console: warn
+  comma-dangle:
+    - warn
+    - always-multiline
+  no-extra-parens:
+    - warn
+    - all
+  valid-jsdoc:
+    - warn
+    - requireReturnType: true
+      requireReturn: false
+      matchDescription: "^[A-Z][A-Za-z0-9\\s\\`\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\_\\-\\+\\=\\|\\\"\\'\\;\\:\\?\\/\\>\\<\\.\\,\\[\\]\\{\\}\\\\]+$"
+      prefer:
+        return: returns
+      preferType:
+        String: string
+        Object: object
+        Array: array
+        Boolean: boolean
+        Number: number
+
+  #### Best Practices
+  accessor-pairs: error
+  array-callback-return: error
+  block-scoped-var: error
+  complexity:
+    - warn
+    - 5
+  default-case: off
+  dot-location:
+    - warn
+    - property
+  dot-notation: warn
+  eqeqeq:
+    - error
+    - smart
+  no-alert: error
+  no-caller: error
+  no-case-declarations: error
+  no-div-regex: error
+  no-empty-pattern: error
+  no-eq-null: error
+  no-eval: error
+  no-extend-native: error
+  no-extra-bind: error
+  no-extra-label: error
+  no-fallthrough: error
+  no-floating-decimal: error
+  no-implicit-coercion: error
+  no-implicit-globals: error
+  no-implied-eval: error
+  no-invalid-this: error
+  no-iterator: error
+  no-labels: error
+  no-lone-blocks: error
+  no-loop-func: error
+  no-multi-str: error
+  no-native-reassign: error
+  no-new: warn
+  no-new-func: error
+  no-new-wrappers: error
+  no-octal: error
+  no-octal-escape: error
+  no-param-reassign:
+    - error
+    - props: false
+  no-proto: error
+  no-redeclare: error
+  no-return-assign: error
+  no-script-url: error
+  no-self-assign: error
+  no-self-compare: error
+  no-sequences: error
+  no-throw-literal: error
+  no-unmodified-loop-condition: error
+  no-unused-labels: error
+  no-useless-call: error
+  no-useless-concat: error
+  no-useless-escape: error
+  # Useful in production
+  no-warning-comments: off
+  no-with: error
+  radix: error
+  wrap-iife:
+    - error
+    - inside
+
+  #### vars
+  no-catch-shadow: error
+  no-delete-var: error
+  no-label-var: error
+  no-restricted-globals: error
+  no-shadow:
+    - error
+    - hoist: all
+  no-shadow-restricted-names: error
+  no-undef: error
+  no-undefined: error
+
+  #### Node.js and CommonJS
+  global-require: error
+  handle-callback-err: error
+  no-mixed-requires: error
+  no-new-require: error
+  no-path-concat: error
+  no-process-env: warn
+  no-process-exit: error
+
+  #### Stylistic Issues
+  array-bracket-spacing:
+    - warn
+    - always
+    - singleValue: true
+      objectsInArrays: false
+      arraysInArrays: false
+  block-spacing:
+    - warn
+    - always
+  brace-style:
+    - warn
+    - stroustrup
+  camelcase:
+    - warn
+    - properties: never
+  comma-spacing:
+    - warn
+    - before: false
+      after: true
+  comma-style:
+    - warn
+    - last
+  computed-property-spacing:
+    - warn
+    - never
+  consistent-this:
+    - warn
+    - that
+  eol-last: warn
+  func-names: off
+  func-style:
+    - warn
+    - expression
+  id-length:
+    - warn
+    - min: 2
+      max: 25
+      exceptions: ["i", "_"]
+  # Use CamelCase for variables and functions names
+  id-match:
+    - warn
+    - "^_?([A-Za-z]+)*$"
+    - properties: false
+  indent:
+    - warn
+    - 2
+    - SwitchCase: 1
+  jsx-quotes:
+    - warn
+    - prefer-double
+  key-spacing:
+    - warn
+    - beforeColon: false
+      afterColon: true
+  keyword-spacing: warn
+  linebreak-style:
+    - warn
+    - unix
+  max-depth:
+    - warn
+    - 4
+  max-nested-callbacks:
+    - warn
+    - 3
+  max-params:
+    - warn
+    - 5
+  max-statements:
+    - warn
+    - 10
+    - ignoreTopLevelFunctions: true
+  max-statements-per-line:
+    - warn
+    - max: 1
+  new-cap: warn
+  new-parens: warn
+  newline-after-var:
+    - warn
+    - always
+  newline-before-return: warn
+  newline-per-chained-call: warn
+  no-array-constructor: warn
+  no-bitwise: warn
+  no-continue: warn
+  no-inline-comments: off
+  no-lonely-if: warn
+
+
+
+  # !!! Not shure
+  consistent-return: error
+  curly:
+    - error
+    - multi-line
+  guard-for-in: off
+  no-else-return: warn
+  no-empty-function: warn
+  no-magic-numbers: warn
+  no-multi-spaces:
+    - warn
+    - exceptions:
+        Property: true
+        VariableDeclarator: true
+        ImportDeclaration: true
+  no-unused-expressions: error
+  no-void: error
+  vars-on-top: off
+  yoda: error
+  strict: off
+  init-declarations: off
+  no-undef-init: error
+  no-unused-vars:
+    - error
+    - vars: all
+      args: after-used
+  no-use-before-define: error
+  callback-return: error
+  no-sync: off
+  max-len:
+    - warn
+    - 160
+    - 4
+#  lines-around-comment:
+#    - warn
+#    - beforeBlockComment: true
+#      afterBlockComment: true
+#      allowBlockEnd: true
+#      allowObjectStart: true
+#      allowObjectEnd: true
+#      allowArrayStart: true
+#      allowArrayEnd: true

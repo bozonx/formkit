@@ -1,0 +1,5 @@
+--recursive
+--ui bdd
+--colors
+--compilers js:babel-register,coffee:coffee-script/register
+--require ./test/sourceMaps.js

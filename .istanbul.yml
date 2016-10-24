@@ -1,0 +1,6 @@
+instrumentation:
+  root: ./src
+  extensions:
+    - .js
+  #include-all-sources: true
+  es-modules: true
