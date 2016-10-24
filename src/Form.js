@@ -20,7 +20,7 @@ export default class Form {
     return this._formState.getValues();
   }
 
-  setInitialState(initialValues) {
+  setInitialValues(initialValues) {
     // TODO: add initial state
   }
 

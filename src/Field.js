@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import FieldState from './FormState';
+import FieldState from './FieldState';
 
 export default class Field {
   constructor(fieldName) {
@@ -8,6 +8,9 @@ export default class Field {
 
     this._fieldState = new FieldState(fieldName);
     this._updateState();
+
+    console.log(2222, this)
+
   }
 
   setValue(value) {
@@ -37,6 +40,10 @@ export default class Field {
 
   _updateState() {
     // TODO: проверить
-    _.extend(this, this._fieldState.state);
+    //_.assignIn(this, this._fieldState.state);
+    _.each(this._fieldState.state, (value, index) => {
+      console.log(4444, index)
+      this[index] = value;
+    })
   }
 }

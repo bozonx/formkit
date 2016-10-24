@@ -1,8 +1,6 @@
 import _ from 'lodash';
 
-import Field from './Field';
-
-export default class FieldsManager {
+export default class FieldState {
   constructor(name) {
     this.state = {
       name: name,
