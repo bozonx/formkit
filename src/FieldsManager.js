@@ -14,4 +14,11 @@ export default class FieldsManager {
       this.fields[fieldName] = new Field(fieldName);
     });
   }
+
+  setFieldsStateSilent(initialState) {
+    _.each(initialState, (value, fieldName) => {
+      this.fields[fieldName].setValueSilenly(value);
+    });
+  }
+
 }

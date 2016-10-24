@@ -12,5 +12,5 @@ describe 'Functional. Primitive array Type.', ->
 
   it 'set value', () ->
     assert.isNull(this.form.fields.name.value)
-    this.form.fields.name.value.setValue('newValue')
+    this.form.fields.name.setValue('newValue')
     assert.equal(this.form.fields.name.value, 'newValue')

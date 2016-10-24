@@ -20,8 +20,8 @@ export default class Form {
     return this._formState.getValues();
   }
 
-  setInitialValues(initialValues) {
-    // TODO: add initial state
+  setInitialValues(initialState) {
+    this._fieldsManager.setFieldsStateSilent(initialState);
   }
 
   onChange(cb) {

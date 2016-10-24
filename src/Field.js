@@ -8,12 +8,14 @@ export default class Field {
 
     this._fieldState = new FieldState(fieldName);
     this._updateState();
-
-    console.log(2222, this)
-
   }
 
   setValue(value) {
+    this._fieldState.setState({value});
+    this._updateState();
+  }
+
+  setValueSilenly(value) {
     this._fieldState.setState({value});
     this._updateState();
   }
@@ -39,10 +41,7 @@ export default class Field {
   }
 
   _updateState() {
-    // TODO: проверить
-    //_.assignIn(this, this._fieldState.state);
     _.each(this._fieldState.state, (value, index) => {
-      console.log(4444, index)
       this[index] = value;
     })
   }
