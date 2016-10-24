@@ -6,9 +6,12 @@ export default class FieldsManager {
   constructor(form) {
     this._form = form;
     this.fields = {};
+    this.fieldsList = null;
   }
 
   init(fieldsList) {
+    this.fieldsList = fieldsList;
+
     // TODO: Validate fieldsList - it must be string array
 
     _.each(fieldsList, (fieldName) => {

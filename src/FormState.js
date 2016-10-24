@@ -22,4 +22,10 @@ export default class FormState {
   setState(newState) {
     _.extend(this.state, newState);
   }
+
+  setInitialValues(fieldsList) {
+    _.each(fieldsList, (fieldName) => {
+      this.state.values[fieldName] = null;
+    });
+  }
 }

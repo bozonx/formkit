@@ -10,6 +10,7 @@ export default class Form {
 
     // TODO: может тоже раскрыть
     this.state = this._formState.state;
+
     this.fields = this._fieldsManager.fields;
   }
 
@@ -19,6 +20,7 @@ export default class Form {
 
   init(fieldsList) {
     this._fieldsManager.init(fieldsList);
+    this._formState.setInitialValues(fieldsList);
   }
 
   getValues() {
