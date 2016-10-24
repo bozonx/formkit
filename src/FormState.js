@@ -9,4 +9,8 @@ export default class FormState {
       focusedField: null,
     };
   }
+
+  getValues() {
+    return _.cloneDeep(this.state);
+  }
 }
