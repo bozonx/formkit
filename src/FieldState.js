@@ -5,6 +5,7 @@ export default class FieldState {
     this.state = {
       name: name,
       value: null,
+      initialValue: null,
       valid: null,
       dirty: null,
       touched: null,

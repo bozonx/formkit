@@ -14,6 +14,7 @@ export default class Field {
   setValue(newValue) {
     this.setValueSilenly(newValue);
     this._form.$updateValues(this.name, this.value);
+    this._fieldState.setState({touched: true});
   }
 
   setValueSilenly(newValue) {

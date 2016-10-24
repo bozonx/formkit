@@ -8,6 +8,7 @@ export default class FormState {
       touched: null,
       valid: null,
       focusedField: null,
+      submitting: null,
     };
   }
 
