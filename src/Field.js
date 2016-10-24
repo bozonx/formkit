@@ -1,6 +1,6 @@
 
-export default class State {
-  constructor(config) {
+export default class Field {
+  constructor() {
 
   }
 }
