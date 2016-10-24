@@ -3,7 +3,8 @@ import _ from 'lodash';
 import Field from './Field';
 
 export default class FieldsManager {
-  constructor() {
+  constructor(form) {
+    this._form = form;
     this.fields = {};
   }
 
@@ -11,7 +12,7 @@ export default class FieldsManager {
     // TODO: Validate fieldsList - it must be string array
 
     _.each(fieldsList, (fieldName) => {
-      this.fields[fieldName] = new Field(fieldName);
+      this.fields[fieldName] = new Field(this._form, fieldName);
     });
   }
 

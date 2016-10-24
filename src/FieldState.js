@@ -17,8 +17,11 @@ export default class FieldState {
     }
   }
 
+  setValue(newValue) {
+    this.state.value = newValue;
+  }
+
   setState(newState) {
-    // TODO: тут нужнен deep extend
     _.extend(this.state, newState);
   }
 

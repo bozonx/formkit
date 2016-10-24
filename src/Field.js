@@ -1,22 +1,23 @@
 import _ from 'lodash';
 
+//import events from './events';
 import FieldState from './FieldState';
 
 export default class Field {
-  constructor(fieldName) {
-    this.name = fieldName;
+  constructor(form, fieldName) {
+    this._form = form;
 
     this._fieldState = new FieldState(fieldName);
     this._updateState();
   }
 
-  setValue(value) {
-    this._fieldState.setState({value});
-    this._updateState();
+  setValue(newValue) {
+    this.setValueSilenly(newValue);
+    this._form.$updateValues(this.name, this.value);
   }
 
-  setValueSilenly(value) {
-    this._fieldState.setState({value});
+  setValueSilenly(newValue) {
+    this._fieldState.setValue(newValue);
     this._updateState();
   }
 
@@ -43,6 +44,14 @@ export default class Field {
   _updateState() {
     _.each(this._fieldState.state, (value, index) => {
       this[index] = value;
-    })
+    });
   }
+
+  // _riseUpdateEvent() {
+  //   events.emit('field.value__update', {
+  //     name: this.name,
+  //     newValue: this.value,
+  //     field: this,
+  //   });
+  // }
 }

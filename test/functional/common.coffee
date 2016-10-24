@@ -1,6 +1,6 @@
 formHelper = require('../../src/index').default
 
-describe 'Functional. Primitive array Type.', ->
+describe 'Functional. Common.', ->
   beforeEach () ->
     this.form = formHelper()
     this.form.init(['name'])
@@ -14,3 +14,8 @@ describe 'Functional. Primitive array Type.', ->
     assert.isNull(this.form.fields.name.value)
     this.form.fields.name.setValue('newValue')
     assert.equal(this.form.fields.name.value, 'newValue')
+
+  it 'getValues', () ->
+    assert.isNull(this.form.getValues().name)
+    this.form.fields.name.setValue('newValue')
+    assert.equal(this.form.getValues().name, 'newValue')
