@@ -6,22 +6,26 @@ export default class FieldsManager {
   constructor(form) {
     this._form = form;
     this.fields = {};
-    this.fieldsList = null;
   }
 
-  init(fieldsList) {
-    this.fieldsList = fieldsList;
+  // init(fieldsList) {
+  //   this.fieldsList = fieldsList;
+  //
+  //   // TODO: Validate fieldsList - it must be string array
+  //
+  //   _.each(fieldsList, (fieldName) => {
+  //     this.fields[fieldName] = new Field(this._form, fieldName);
+  //   });
+  // }
 
-    // TODO: Validate fieldsList - it must be string array
-
-    _.each(fieldsList, (fieldName) => {
-      this.fields[fieldName] = new Field(this._form, fieldName);
-    });
-  }
-
-  setFieldsStateSilent(initialState) {
+  setInitialValues(initialState) {
     _.each(initialState, (value, fieldName) => {
-      this.fields[fieldName].setValueSilenly(value);
+      // Create new field if it isn't exist
+      if (!this.fields[fieldName]) {
+        this.fields[fieldName] = new Field(this._form, fieldName);
+      }
+
+      this.fields[fieldName].setInitialValue(value);
     });
   }
 

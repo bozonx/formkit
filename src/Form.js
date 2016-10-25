@@ -14,23 +14,23 @@ export default class Form {
     this.fields = this._fieldsManager.fields;
   }
 
+  // TODO: переименовать
   $updateValues(fieldName, newValue) {
     this._formState.setValue(fieldName, newValue);
   }
 
-  init(fieldsList) {
-    this._fieldsManager.init(fieldsList);
-    this._formState.setInitialValues(fieldsList);
+  init(initialState) {
+    //this._formState.setInitialValues(initialState);
+    this._fieldsManager.setInitialValues(initialState);
   }
 
   getValues() {
     return this._formState.getValues();
   }
 
-  setInitialValues(initialState) {
-    this._fieldsManager.setFieldsStateSilent(initialState);
-  }
 
+
+  ////////////////////////////////////////
   onChange(cb) {
     // TODO: !!!
   }

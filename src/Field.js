@@ -13,8 +13,22 @@ export default class Field {
 
   setValue(newValue) {
     this.setValueSilenly(newValue);
-    this._form.$updateValues(this.name, this.value);
+    this._form.$updateValues(this._fieldState.name, this._fieldState.value);
     this._fieldState.setState({touched: true});
+  }
+
+  setInitialValue(newValue) {
+    this._fieldState.setInitialValue(newValue);
+
+    // TODO: может ли пользователь установить null?
+    if (_.isNull(this._fieldState.state.value)) {
+      this._fieldState.setValue(newValue);
+    }
+
+    this._updateState();
+
+    // TODO: наверное если не в первый раз, то можно поднимать событие
+    // TODO: наверное надо обнулить touched и сбросить dirty
   }
 
   setValueSilenly(newValue) {
@@ -43,6 +57,7 @@ export default class Field {
   }
 
   _updateState() {
+    // TODO: для value и initialValue использовать cloneDeep
     _.each(this._fieldState.state, (value, index) => {
       this[index] = value;
     });

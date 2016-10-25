@@ -5,6 +5,7 @@ export default class FieldState {
     this.state = {
       name: name,
       value: null,
+      // It uses only for compare value with initialValue. Don't use it for binding.
       initialValue: null,
       valid: null,
       dirty: null,
@@ -18,8 +19,14 @@ export default class FieldState {
     }
   }
 
+  // TODO: может использовать один метод?
+
   setValue(newValue) {
     this.state.value = newValue;
+  }
+
+  setInitialValue(newValue) {
+    this.state.initialValue = newValue;
   }
 
   setState(newState) {
