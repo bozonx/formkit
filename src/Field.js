@@ -7,25 +7,24 @@ export default class Field {
   constructor(form, fieldName) {
     this._form = form;
 
-    this._fieldState = new FieldState(fieldName);
-    this._updateState();
+    this._fieldState = new FieldState(this, fieldName);
   }
 
   setValue(newValue) {
     this.setValueSilently(newValue);
-    this._form.$valueChanged(this._fieldState.name, this._fieldState.value);
-    this._fieldState.setState({touched: true});
+    this._form.$valueChanged(this.name, this.value);
+    //this._fieldState.setState({touched: true});
   }
 
   setInitialValue(newValue) {
     this._fieldState.setInitialValue(newValue);
 
     // TODO: может ли пользователь установить null?
-    if (_.isNull(this._fieldState.state.value)) {
+    if (_.isNull(this.value)) {
       this._fieldState.setValue(newValue);
     }
 
-    this._updateState();
+    //this._updateState();
 
     // TODO: наверное если не в первый раз, то можно поднимать событие
     // TODO: наверное надо обнулить touched и сбросить dirty
@@ -33,7 +32,7 @@ export default class Field {
 
   setValueSilently(newValue) {
     this._fieldState.setValue(newValue);
-    this._updateState();
+    //this._updateState();
   }
 
   /**
@@ -41,8 +40,8 @@ export default class Field {
    */
   handleChange(event) {
     var value = event.target.value;
-    this._fieldState.setState({value});
-    this._updateState();
+    //this._fieldState.setState({value});
+    //this._updateState();
   }
 
   validate() {
@@ -56,12 +55,12 @@ export default class Field {
     // TODO: !!!
   }
 
-  _updateState() {
-    // TODO: для value и initialValue использовать cloneDeep
-    _.each(this._fieldState.state, (value, index) => {
-      this[index] = value;
-    });
-  }
+  // _updateState() {
+  //   // TODO: для value и initialValue использовать cloneDeep
+  //   _.each(this._fieldState.state, (value, index) => {
+  //     this[index] = value;
+  //   });
+  // }
 
   // _riseUpdateEvent() {
   //   events.emit('field.value__update', {
