@@ -1,8 +1,23 @@
 import _ from 'lodash';
 
+import { extendDeep } from './helpers';
+
 export default class FormState {
-  constructor() {
-    this.state = {
+  constructor(form) {
+    this._form = form;
+
+    // this.state = {
+    //   values: {},
+    //   initialValues: {},
+    //   dirty: null,
+    //   touched: null,
+    //   valid: null,
+    //   focusedField: null,
+    //   submitting: null,
+    // };
+
+    // set initial form state
+    this.setState({
       values: {},
       initialValues: {},
       dirty: null,
@@ -10,20 +25,22 @@ export default class FormState {
       valid: null,
       focusedField: null,
       submitting: null,
-    };
+    });
   }
 
   getValues() {
-    return _.cloneDeep(this.state.values);
+    return _.cloneDeep(this.values);
   }
 
   setFieldValue(fieldName, newValue) {
-    this.state.values[fieldName] = newValue;
+    this.setState({values: {[fieldName]: newValue}});
+    //this.values[fieldName] = newValue;
   }
 
   setValues(values) {
-    // TODO: нужно deep extend
-    _.extend(this.state.values, values);
+    // TODO: нужно ли удалять лишние поля, если полей стало меньше??? наверное нет
+    //_.extend(this.state.values, values);
+    this.setState({values: values});
   }
 
   // setInitialValues(initialValues) {
@@ -35,7 +52,7 @@ export default class FormState {
   // }
 
   setState(newState) {
-    _.extend(this.state, newState);
+    extendDeep(this._form, newState);
   }
 
 

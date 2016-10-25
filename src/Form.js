@@ -5,7 +5,7 @@ import FieldsManager from './FieldsManager';
 
 export default class Form {
   constructor() {
-    this._formState = new FormState();
+    this._formState = new FormState(this);
     this._fieldsManager = new FieldsManager(this);
 
     // TODO: может тоже раскрыть
