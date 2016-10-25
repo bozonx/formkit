@@ -8,11 +8,16 @@ export default class Form {
     this._formState = new FormState(this);
     this._fieldsManager = new FieldsManager(this);
 
+    this._onChangeCallback = null;
     this.fields = this._fieldsManager.fields;
   }
 
   $stateValueChanged(stateName, newValue) {
     this._formState.setStateValue(stateName, newValue);
+  }
+
+  $valueChangedByUser(fieldName, newValue) {
+    if (this._onChangeCallback) this._onChangeCallback(fieldName, newValue);
   }
 
   $valueChanged(fieldName, newValue) {
@@ -43,11 +48,11 @@ export default class Form {
     this._fieldsManager.setInitialValues(initialState);
   }
 
+  onChange(cb) {
+    this._onChangeCallback = cb;
+  }
 
   ////////////////////////////////////////
-  onChange(cb) {
-    // TODO: !!!
-  }
 
   /**
    * It must be placed to <form> element on onSubmit attribute.

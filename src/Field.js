@@ -1,12 +1,13 @@
 import _ from 'lodash';
 
-//import events from './events';
+import events from './events';
 import FieldState from './FieldState';
 
 export default class Field {
   constructor(form, fieldName) {
     this._form = form;
 
+    this._onChangeCallback = null;
     this._fieldState = new FieldState(this, fieldName);
   }
 
@@ -22,6 +23,9 @@ export default class Field {
       this._fieldState.setStateValue('touched', true);
       this._form.$stateValueChanged('touched', true);
     }
+
+    if (this._onChangeCallback) this._onChangeCallback(newValue);
+    this._form.$valueChangedByUser(this.name, this.value);
   }
 
   /**
@@ -53,10 +57,8 @@ export default class Field {
   /**
    * onChange handler - it must be placed to input onChange attribute
    */
-  handleChange(event) {
-    var value = event.target.value;
-    //this._fieldState.setState({value});
-    //this._updateState();
+  handleChange(newValue) {
+    this.setValue(newValue);
   }
 
   validate() {
@@ -67,7 +69,7 @@ export default class Field {
    * It rises on each field's value change
    */
   onChange(cb) {
-    // TODO: !!!
+    this._onChangeCallback = cb;
   }
 
   _updateDirty() {
@@ -76,11 +78,11 @@ export default class Field {
     this._form.$stateValueChanged('dirty', newValue);
   }
 
-  // _riseUpdateEvent() {
-  //   events.emit('field.value__update', {
-  //     name: this.name,
-  //     newValue: this.value,
-  //     field: this,
-  //   });
-  // }
+  _riseUpdateEvent() {
+    events.emit('field.value__update', {
+      name: this.name,
+      newValue: this.value,
+      field: this,
+    });
+  }
 }
