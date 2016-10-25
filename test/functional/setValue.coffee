@@ -5,18 +5,18 @@ describe 'Functional. Set value.', ->
     this.form = formHelper()
     this.form.init({name: null})
 
-  it 'set new value to field. initial = null', () ->
+  it 'set new value to field. initial = null', ->
     this.form.fields.name.setValue('newValue')
     assert.equal(this.form.fields.name.value, 'newValue')
     assert.equal(this.form.fields.name.initialValue, null)
 
-  it 'set new value to field. initial = initValue', () ->
+  it 'set new value to field. initial = initValue', ->
     this.form.init({name: 'initValue'})
     this.form.fields.name.setValue('newValue')
     assert.equal(this.form.fields.name.value, 'newValue')
     assert.equal(this.form.fields.name.initialValue, 'initValue')
 
-  it 'set new values to whore form', () ->
+  it 'set new values to whore form', ->
     this.form.setValues({name: 'newValue'})
     assert.deepEqual(this.form.state.values, {name: 'newValue'})
     #assert.deepEqual(this.form.state.initialValues, {name: null})
