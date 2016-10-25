@@ -13,5 +13,6 @@ describe 'Functional. Init.', ->
     assert.equal(this.form.fields.name.value, 'initValue')
     assert.equal(this.form.fields.name.initialValue, 'initValue')
 
+# TODO: get initialValues
 # TODO: проверить - что уже установленно значение и устанавливаем новое
 #       - тогда value не меняется, и сбрасывается dirty и touched

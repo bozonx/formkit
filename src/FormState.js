@@ -19,7 +19,7 @@ export default class FormState {
   }
 
   getValues() {
-    return _.cloneDeep(this.values);
+    return _.cloneDeep(this._form.values);
   }
 
   setFieldValue(fieldName, newValue) {

@@ -1,6 +1,6 @@
 formHelper = require('../../src/index').default
 
-describe 'Functional. Set value.', ->
+describe 'Functional. Get and set value.', ->
   beforeEach () ->
     this.form = formHelper()
     this.form.init({name: null})
@@ -23,7 +23,10 @@ describe 'Functional. Set value.', ->
     assert.equal(this.form.fields.name.value, 'newValue')
     assert.equal(this.form.fields.name.initialValue, null)
 
-#  it 'getValues', () ->
-#    assert.isNull(this.form.getValues().name)
-#    this.form.fields.name.setValue('newValue')
-#    assert.equal(this.form.getValues().name, 'newValue')
+  it 'getValues()', () ->
+    this.form.setValues({name: 'newValue'})
+    assert.deepEqual(this.form.getValues(), {name: 'newValue'})
+
+  it 'form\'s values', () ->
+    this.form.setValues({name: 'newValue'})
+    assert.equal(this.form.values.name, 'newValue')
