@@ -19,8 +19,8 @@ describe 'Functional. Set value.', ->
   it 'set new values to whore form', ->
     this.form.setValues({name: 'newValue'})
     assert.deepEqual(this.form.values, {name: 'newValue'})
-    #assert.deepEqual(this.form.initialValues, {name: null})
-#    assert.equal(this.form.fields.name.value, 'newValue')
+    assert.deepEqual(this.form.initialValues, {name: null})
+    assert.equal(this.form.fields.name.value, 'newValue')
     assert.equal(this.form.fields.name.initialValue, null)
 
 #  it 'getValues', () ->

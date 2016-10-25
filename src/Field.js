@@ -12,7 +12,7 @@ export default class Field {
   }
 
   setValue(newValue) {
-    this.setValueSilenly(newValue);
+    this.setValueSilently(newValue);
     this._form.$updateValues(this._fieldState.name, this._fieldState.value);
     this._fieldState.setState({touched: true});
   }
@@ -31,7 +31,7 @@ export default class Field {
     // TODO: наверное надо обнулить touched и сбросить dirty
   }
 
-  setValueSilenly(newValue) {
+  setValueSilently(newValue) {
     this._fieldState.setValue(newValue);
     this._updateState();
   }

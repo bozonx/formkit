@@ -6,16 +6,6 @@ export default class FormState {
   constructor(form) {
     this._form = form;
 
-    // this.state = {
-    //   values: {},
-    //   initialValues: {},
-    //   dirty: null,
-    //   touched: null,
-    //   valid: null,
-    //   focusedField: null,
-    //   submitting: null,
-    // };
-
     // set initial form state
     this.setState({
       values: {},
@@ -34,14 +24,17 @@ export default class FormState {
 
   setFieldValue(fieldName, newValue) {
     this.setState({values: {[fieldName]: newValue}});
-    //this.values[fieldName] = newValue;
   }
 
-  setValues(values) {
-    // TODO: нужно ли удалять лишние поля, если полей стало меньше??? наверное нет
-    //_.extend(this.state.values, values);
-    this.setState({values: values});
+  setFieldInitialValue(fieldName, newValue) {
+    this.setState({initialValues: {[fieldName]: newValue}});
   }
+
+  // setValues(values) {
+  //   // TODO: нужно ли удалять лишние поля, если полей стало меньше??? наверное нет
+  //   //_.extend(this.state.values, values);
+  //   this.setState({values: values});
+  // }
 
   // setInitialValues(initialValues) {
   //   // TODO: нужно deep extend
@@ -54,6 +47,5 @@ export default class FormState {
   setState(newState) {
     extendDeep(this._form, newState);
   }
-
 
 }

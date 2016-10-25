@@ -8,15 +8,18 @@ export default class FieldsManager {
     this.fields = {};
   }
 
-  // init(fieldsList) {
-  //   this.fieldsList = fieldsList;
-  //
-  //   // TODO: Validate fieldsList - it must be string array
-  //
-  //   _.each(fieldsList, (fieldName) => {
-  //     this.fields[fieldName] = new Field(this._form, fieldName);
-  //   });
-  // }
+  setValues(newValues) {
+    _.each(newValues, (value, fieldName) => {
+      // Create new field if it isn't exist
+      if (!this.fields[fieldName]) {
+        this.fields[fieldName] = new Field(this._form, fieldName);
+      }
+
+      // TODO: нужно втихую устанвливать значения или с подъемом событий?
+      this.fields[fieldName].setValueSilently(value);
+      this._form.$updateValues(fieldName, value);
+    });
+  }
 
   setInitialValues(initialState) {
     _.each(initialState, (value, fieldName) => {
@@ -26,6 +29,7 @@ export default class FieldsManager {
       }
 
       this.fields[fieldName].setInitialValue(value);
+      this._form.$updateInitialValue(fieldName, value);
     });
   }
 

@@ -19,6 +19,10 @@ export default class Form {
     this._formState.setFieldValue(fieldName, newValue);
   }
 
+  $updateInitialValue(fieldName, newInitialValue) {
+    this._formState.setFieldInitialValue(fieldName, newInitialValue);
+  }
+
   init(initialState) {
     //this._formState.setInitialValues(initialState);
     this._fieldsManager.setInitialValues(initialState);
@@ -29,7 +33,8 @@ export default class Form {
   }
 
   setValues(newValues) {
-    this._formState.setValues(newValues);
+    //this._formState.setValues(newValues);
+    this._fieldsManager.setValues(newValues);
   }
 
 
