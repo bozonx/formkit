@@ -13,7 +13,8 @@ export default class Field {
   setValue(newValue) {
     this.setValueSilently(newValue);
     this._form.$valueChanged(this.name, this.value);
-    //this._fieldState.setState({touched: true});
+    this._fieldState.setStateValue('touched', true);
+    this._fieldState.setStateValue('dirty', this.value !== this.initialValue);
   }
 
   setInitialValue(newValue) {

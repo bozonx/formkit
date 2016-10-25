@@ -19,14 +19,18 @@ describe 'Functional. Init.', ->
     assert.isTrue(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
 
-#  it 'change value from initted value', ->
-#    this.form.fields.name.setInitialValue('initValue')
-#    this.form.fields.name.setValue('newValue')
-#    assert.isTrue(this.form.fields.name.dirty)
-#    assert.isTrue(this.form.fields.name.touched)
+  it 'change value from initted value', ->
+    this.form.fields.name.setInitialValue('initValue')
+    this.form.fields.name.setValue('newValue')
+    assert.isTrue(this.form.fields.name.dirty)
+    assert.isTrue(this.form.fields.name.touched)
 
   it 'change and remove value', ->
+    this.form.fields.name.setInitialValue('initValue')
     this.form.fields.name.setValue('newValue')
+    this.form.fields.name.setValue('initValue')
+    assert.isFalse(this.form.fields.name.dirty)
+    assert.isTrue(this.form.fields.name.touched)
 
   it 'after global setting initial values', ->
 

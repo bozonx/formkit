@@ -50,7 +50,7 @@ export default class FieldState {
     this._updateFieldState({initialValue: newValue});
   }
 
-  setState(stateName, newValue) {
+  setStateValue(stateName, newValue) {
     this._updateFieldState({[stateName]: newValue});
   }
 
