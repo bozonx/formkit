@@ -58,7 +58,17 @@ export default class Form {
    */
   handleSubmit() {
     if (!this._onSubmitCallback) return;
-    this._onSubmitCallback(this.values);
+    this._formState.setStateValue('submitting', true);
+    var returnedValue = this._onSubmitCallback(this.values);
+    // if promise
+    if (returnedValue && returnedValue.then) {
+      return returnedValue.then(() => {
+        this._formState.setStateValue('submitting', false);
+      }, () => {
+        this._formState.setStateValue('submitting', false);
+      });
+    }
+    this._formState.setStateValue('submitting', false);
   }
 
   onSubmit(cb) {

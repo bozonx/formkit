@@ -14,7 +14,7 @@ export default class FormState {
       touched: false,
       valid: null,
       focusedField: null,
-      submitting: null,
+      submitting: false,
     });
   }
 
