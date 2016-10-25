@@ -17,7 +17,7 @@ export default class FieldsManager {
 
       // TODO: нужно втихую устанвливать значения или с подъемом событий?
       this.fields[fieldName].setValueSilently(value);
-      this._form.$updateValues(fieldName, value);
+      this._form.$valueChanged(fieldName, value);
     });
   }
 
@@ -29,7 +29,7 @@ export default class FieldsManager {
       }
 
       this.fields[fieldName].setInitialValue(value);
-      this._form.$updateInitialValue(fieldName, value);
+      this._form.$initialValueChanged(fieldName, value);
     });
   }
 

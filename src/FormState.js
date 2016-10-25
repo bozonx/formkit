@@ -7,7 +7,7 @@ export default class FormState {
     this._form = form;
 
     // set initial form state
-    this.setState({
+    this._updateFormState({
       values: {},
       initialValues: {},
       dirty: null,
@@ -23,17 +23,21 @@ export default class FormState {
   }
 
   setFieldValue(fieldName, newValue) {
-    this.setState({values: {[fieldName]: newValue}});
+    this._updateFormState({values: {[fieldName]: newValue}});
   }
 
   setFieldInitialValue(fieldName, newValue) {
-    this.setState({initialValues: {[fieldName]: newValue}});
+    this._updateFormState({initialValues: {[fieldName]: newValue}});
+  }
+
+  _updateFormState(newState) {
+    extendDeep(this._form, newState);
   }
 
   // setValues(values) {
   //   // TODO: нужно ли удалять лишние поля, если полей стало меньше??? наверное нет
   //   //_.extend(this.state.values, values);
-  //   this.setState({values: values});
+  //   this._updateFormState({values: values});
   // }
 
   // setInitialValues(initialValues) {
@@ -43,9 +47,4 @@ export default class FormState {
   //   //   this.state.values[fieldName] = null;
   //   // });
   // }
-
-  setState(newState) {
-    extendDeep(this._form, newState);
-  }
-
 }

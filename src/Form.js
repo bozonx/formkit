@@ -15,11 +15,11 @@ export default class Form {
   }
 
   // TODO: переименовать
-  $updateValues(fieldName, newValue) {
+  $valueChanged(fieldName, newValue) {
     this._formState.setFieldValue(fieldName, newValue);
   }
 
-  $updateInitialValue(fieldName, newInitialValue) {
+  $initialValueChanged(fieldName, newInitialValue) {
     this._formState.setFieldInitialValue(fieldName, newInitialValue);
   }
 
