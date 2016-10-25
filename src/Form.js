@@ -8,9 +8,6 @@ export default class Form {
     this._formState = new FormState(this);
     this._fieldsManager = new FieldsManager(this);
 
-    // TODO: может тоже раскрыть
-    this.state = this._formState.state;
-
     this.fields = this._fieldsManager.fields;
   }
 
