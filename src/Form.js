@@ -11,7 +11,10 @@ export default class Form {
     this.fields = this._fieldsManager.fields;
   }
 
-  // TODO: переименовать
+  $stateValueChanged(stateName, newValue) {
+    this._formState.setStateValue(stateName, newValue);
+  }
+
   $valueChanged(fieldName, newValue) {
     this._formState.setFieldValue(fieldName, newValue);
   }

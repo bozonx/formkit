@@ -13,7 +13,12 @@ export default class Field {
   setValue(newValue) {
     this.setValueSilently(newValue);
     this._form.$valueChanged(this.name, this.value);
-    if (!this.touched) this._fieldState.setStateValue('touched', true);
+
+    if (!this.touched) {
+      this._fieldState.setStateValue('touched', true);
+      this._form.$stateValueChanged('touched', newValue);
+    }
+
     this._updateDirty();
   }
 
@@ -55,7 +60,9 @@ export default class Field {
   }
 
   _updateDirty() {
-    this._fieldState.setStateValue('dirty', this.value !== this.initialValue);
+    var newValue = this.value !== this.initialValue;
+    this._fieldState.setStateValue('dirty', newValue);
+    this._form.$stateValueChanged('dirty', newValue);
   }
 
   // _riseUpdateEvent() {

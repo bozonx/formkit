@@ -39,5 +39,7 @@ describe 'Functional. Init.', ->
     assert.isTrue(this.form.fields.name.touched)
 
   it 'after global setting initial values', ->
+    # TODO: !!!
 
   it 'after global setting values', ->
+    # TODO: !!!

@@ -26,6 +26,10 @@ export default class FormState {
     return _.cloneDeep(this._form.initialValues);
   }
 
+  setStateValue(stateName, newValue) {
+    this._updateFormState({[stateName]: newValue});
+  }
+
   setFieldValue(fieldName, newValue) {
     this._updateFormState({values: {[fieldName]: newValue}});
   }
