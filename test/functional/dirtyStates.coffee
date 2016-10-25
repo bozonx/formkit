@@ -1,6 +1,6 @@
 formHelper = require('../../src/index').default
 
-describe 'Functional. Init.', ->
+describe 'Functional. Dirty and touched states.', ->
   beforeEach () ->
     this.form = formHelper()
     this.form.init({name: null})
