@@ -13,8 +13,8 @@ export default class Field {
   setValue(newValue) {
     this.setValueSilently(newValue);
     this._form.$valueChanged(this.name, this.value);
-    this._fieldState.setStateValue('touched', true);
-    this._fieldState.setStateValue('dirty', this.value !== this.initialValue);
+    if (!this.touched) this._fieldState.setStateValue('touched', true);
+    this._updateDirty();
   }
 
   setInitialValue(newValue) {
@@ -25,15 +25,13 @@ export default class Field {
       this._fieldState.setValue(newValue);
     }
 
-    //this._updateState();
+    this._updateDirty();
 
     // TODO: наверное если не в первый раз, то можно поднимать событие
-    // TODO: наверное надо обнулить touched и сбросить dirty
   }
 
   setValueSilently(newValue) {
     this._fieldState.setValue(newValue);
-    //this._updateState();
   }
 
   /**
@@ -56,12 +54,9 @@ export default class Field {
     // TODO: !!!
   }
 
-  // _updateState() {
-  //   // TODO: для value и initialValue использовать cloneDeep
-  //   _.each(this._fieldState.state, (value, index) => {
-  //     this[index] = value;
-  //   });
-  // }
+  _updateDirty() {
+    this._fieldState.setStateValue('dirty', this.value !== this.initialValue);
+  }
 
   // _riseUpdateEvent() {
   //   events.emit('field.value__update', {

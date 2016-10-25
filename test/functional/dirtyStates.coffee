@@ -20,9 +20,15 @@ describe 'Functional. Init.', ->
     assert.isTrue(this.form.fields.name.touched)
 
   it 'change value from initted value', ->
-    this.form.fields.name.setInitialValue('initValue')
     this.form.fields.name.setValue('newValue')
+    this.form.fields.name.setInitialValue('initValue')
     assert.isTrue(this.form.fields.name.dirty)
+    assert.isTrue(this.form.fields.name.touched)
+
+  it 'set the same initial value', ->
+    this.form.fields.name.setValue('newValue')
+    this.form.fields.name.setInitialValue('newValue')
+    assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
 
   it 'change and remove value', ->
