@@ -24,8 +24,7 @@ export default class Form {
   }
 
   init(initialState) {
-    //this._formState.setInitialValues(initialState);
-    this._fieldsManager.setInitialValues(initialState);
+    this.setInitialValues(initialState);
   }
 
   getValues() {
@@ -33,8 +32,11 @@ export default class Form {
   }
 
   setValues(newValues) {
-    //this._formState.setValues(newValues);
     this._fieldsManager.setValues(newValues);
+  }
+
+  setInitialValues(initialState) {
+    this._fieldsManager.setInitialValues(initialState);
   }
 
 
