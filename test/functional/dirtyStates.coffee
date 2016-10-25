@@ -39,7 +39,11 @@ describe 'Functional. Init.', ->
     assert.isTrue(this.form.fields.name.touched)
 
   it 'after global setting initial values', ->
-    # TODO: !!!
+    this.form.setInitialValues({name: 'newValue'})
+    assert.isFalse(this.form.fields.name.dirty)
+    assert.isFalse(this.form.fields.name.touched)
 
   it 'after global setting values', ->
-    # TODO: !!!
+    this.form.setValues({name: 'newValue'})
+    assert.isTrue(this.form.fields.name.dirty)
+    assert.isFalse(this.form.fields.name.touched)

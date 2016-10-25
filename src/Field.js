@@ -10,14 +10,27 @@ export default class Field {
     this._fieldState = new FieldState(this, fieldName);
   }
 
+  /**
+   * It uses for handle user input
+   * @param newValue
+   */
   setValue(newValue) {
     this.setValueSilently(newValue);
-    this._form.$valueChanged(this.name, this.value);
 
+    // only for user input
     if (!this.touched) {
       this._fieldState.setStateValue('touched', true);
       this._form.$stateValueChanged('touched', newValue);
     }
+  }
+
+  /**
+   * It uses for set outer values (not user's)
+   * @param newValue
+   */
+  setValueSilently(newValue) {
+    this._fieldState.setValue(newValue);
+    this._form.$valueChanged(this.name, this.value);
 
     this._updateDirty();
   }
@@ -35,9 +48,7 @@ export default class Field {
     // TODO: наверное если не в первый раз, то можно поднимать событие
   }
 
-  setValueSilently(newValue) {
-    this._fieldState.setValue(newValue);
-  }
+
 
   /**
    * onChange handler - it must be placed to input onChange attribute
