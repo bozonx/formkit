@@ -13,6 +13,15 @@ describe 'Functional. Init.', ->
     assert.equal(this.form.fields.name.value, 'initValue')
     assert.equal(this.form.fields.name.initialValue, 'initValue')
 
-# TODO: get initialValues
+  it 'getInitialValues()', () ->
+    this.form.setInitialValues({name: 'initValue'})
+    assert.deepEqual(this.form.getInitialValues(), {name: 'initValue'})
+    assert.equal(this.form.fields.name.value, 'initValue')
+
+  it 'form\'s initialValues', () ->
+    this.form.setInitialValues({name: 'initValue'})
+    assert.equal(this.form.initialValues.name, 'initValue')
+    assert.equal(this.form.fields.name.value, 'initValue')
+
 # TODO: проверить - что уже установленно значение и устанавливаем новое
 #       - тогда value не меняется, и сбрасывается dirty и touched

@@ -31,6 +31,10 @@ export default class Form {
     return this._formState.getValues();
   }
 
+  getInitialValues() {
+    return this._formState.getInitialValues();
+  }
+
   setValues(newValues) {
     this._fieldsManager.setValues(newValues);
   }
