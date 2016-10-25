@@ -1,6 +1,6 @@
 formHelper = require('../../src/index').default
 
-describe 'Functional. Common.', ->
+describe 'Functional. Init.', ->
   beforeEach () ->
     this.form = formHelper()
 
@@ -12,3 +12,6 @@ describe 'Functional. Common.', ->
     this.form.init({name: 'initValue'})
     assert.equal(this.form.fields.name.value, 'initValue')
     assert.equal(this.form.fields.name.initialValue, 'initValue')
+
+# TODO: проверить - что уже установленно значение и устанавливаем новое
+#       - тогда value не меняется, и сбрасывается dirty и touched

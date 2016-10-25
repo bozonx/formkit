@@ -4,7 +4,7 @@ export default class FormState {
   constructor() {
     this.state = {
       values: {},
-      //initialValues: {},
+      initialValues: {},
       dirty: null,
       touched: null,
       valid: null,
@@ -17,14 +17,14 @@ export default class FormState {
     return _.cloneDeep(this.state.values);
   }
 
-  setValue(fieldName, newValue) {
+  setFieldValue(fieldName, newValue) {
     this.state.values[fieldName] = newValue;
   }
 
-  // setValues(values) {
-  //   // TODO: нужно deep extend
-  //   _.extend(this.state.values, values);
-  // }
+  setValues(values) {
+    // TODO: нужно deep extend
+    _.extend(this.state.values, values);
+  }
 
   // setInitialValues(initialValues) {
   //   // TODO: нужно deep extend

@@ -16,7 +16,7 @@ export default class Form {
 
   // TODO: переименовать
   $updateValues(fieldName, newValue) {
-    this._formState.setValue(fieldName, newValue);
+    this._formState.setFieldValue(fieldName, newValue);
   }
 
   init(initialState) {
@@ -28,6 +28,9 @@ export default class Form {
     return this._formState.getValues();
   }
 
+  setValues(newValues) {
+    this._formState.setValues(newValues);
+  }
 
 
   ////////////////////////////////////////
