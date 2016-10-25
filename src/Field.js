@@ -20,7 +20,7 @@ export default class Field {
     // only for user input
     if (!this.touched) {
       this._fieldState.setStateValue('touched', true);
-      this._form.$stateValueChanged('touched', newValue);
+      this._form.$stateValueChanged('touched', true);
     }
   }
 

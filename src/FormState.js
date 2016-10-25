@@ -10,8 +10,8 @@ export default class FormState {
     this._updateFormState({
       values: {},
       initialValues: {},
-      dirty: null,
-      touched: null,
+      dirty: false,
+      touched: false,
       valid: null,
       focusedField: null,
       submitting: null,
