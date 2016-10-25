@@ -9,6 +9,7 @@ export default class Form {
     this._fieldsManager = new FieldsManager(this);
 
     this._onChangeCallback = null;
+    this._onSubmitCallback = null;
     this.fields = this._fieldsManager.fields;
   }
 
@@ -52,22 +53,19 @@ export default class Form {
     this._onChangeCallback = cb;
   }
 
-  ////////////////////////////////////////
-
   /**
    * It must be placed to <form> element on onSubmit attribute.
-   * @param cb
    */
-  handleSubmit(cb) {
-    // TODO: !!!
+  handleSubmit() {
+    if (!this._onSubmitCallback) return;
+    this._onSubmitCallback(this.values);
   }
 
   onSubmit(cb) {
-    // TODO: !!!
+    this._onSubmitCallback = cb;
   }
 
   reset() {
     // TODO: !!!
   }
-
 }
