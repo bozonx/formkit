@@ -15,7 +15,7 @@ export default class FieldState {
       dirty: false,
       touched: false,
       valid: true,
-      invalidMsg: '',
+      invalidMsg: null,
       validateRule: null,
       //disabled: null,
       //checked: null,

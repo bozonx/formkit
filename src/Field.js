@@ -37,6 +37,7 @@ export default class Field {
     this._form.$valueChanged(this.name, this.value);
 
     this._updateDirty();
+    this.validate();
   }
 
   setInitialValue(newValue) {
@@ -45,6 +46,7 @@ export default class Field {
     // TODO: может ли пользователь установить null?
     if (_.isNull(this.value)) {
       this._fieldState.setValue(newValue);
+      this.validate();
     }
 
     this._updateDirty();
@@ -68,7 +70,7 @@ export default class Field {
     var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
 
     this._fieldState.setStateValue('valid', isValid);
-    this._fieldState.setStateValue('invalidMsg', invalidMsg);
+    this._fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
     this._form.$validChanged(this.name, isValid, invalidMsg);
     return isValid;
   }
