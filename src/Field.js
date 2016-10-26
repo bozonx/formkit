@@ -8,7 +8,17 @@ export default class Field {
     this._form = form;
 
     this._onChangeCallback = null;
+    this._onSaveCallback = null;
+
+
     this._fieldState = new FieldState(this, fieldName);
+
+    // TODO: брать значение по умолчанию из конфига
+    // TODO: дать возможность задавать его
+    this._debounceTime = 1000;
+    this._runCbDebounced = _.debounce((cb, value) => {
+      cb(value);
+    }, this._debounceTime);
   }
 
   /**
@@ -24,8 +34,10 @@ export default class Field {
       this._form.$stateValueChanged('touched', true);
     }
 
-    if (this._onChangeCallback) this._onChangeCallback(newValue);
     this._form.$valueChangedByUser(this.name, this.value);
+
+    if (this._onChangeCallback) this._onChangeCallback(newValue);
+    if (this._onSaveCallback) this._onSaveCallback(newValue);
   }
 
   /**
@@ -80,6 +92,19 @@ export default class Field {
    */
   onChange(cb) {
     this._onChangeCallback = cb;
+  }
+
+  onSave(cb) {
+    this._onSaveCallback = cb;
+  }
+
+  _startSave(value, force) {
+    if (force) {
+      if (this._onSaveCallback) this._onSaveCallback(value);
+    }
+    else {
+      if (this._onSaveCallback) this._runCbDebounced(this._onSaveCallback, value);
+    }
   }
 
   _updateDirty() {
