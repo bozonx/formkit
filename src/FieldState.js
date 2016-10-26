@@ -18,6 +18,8 @@ export default class FieldState {
       invalidMsg: null,
       validateRule: null,
       saving: false,
+      // TODO: брать значение по умолчанию из конфига
+      debounceTime: 1000,
       //disabled: null,
       //checked: null,
       //placeholder: null,

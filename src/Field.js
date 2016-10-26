@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import events from './events';
+//import events from './events';
 import FieldState from './FieldState';
 
 export default class Field {
@@ -10,15 +10,10 @@ export default class Field {
     this._onChangeCallback = null;
     this._onSaveCallback = null;
 
-
     this._fieldState = new FieldState(this, fieldName);
-
-    // TODO: брать значение по умолчанию из конфига
-    // TODO: дать возможность задавать его
-    this._debounceTime = 1000;
-    this._runCbDebounced = _.debounce((cb, value) => {
+    this._debouncedCb = _.debounce((cb, value) => {
       cb(value);
-    }, this._debounceTime);
+    }, this.debounceTime);
   }
 
   /**
@@ -37,7 +32,6 @@ export default class Field {
     this._form.$valueChangedByUser(this.name, this.value);
 
     if (this._onChangeCallback) this._onChangeCallback(newValue);
-    if (this._onSaveCallback) this._onSaveCallback(newValue);
   }
 
   /**
@@ -67,14 +61,6 @@ export default class Field {
   }
 
 
-
-  /**
-   * onChange handler - it must be placed to input onChange attribute
-   */
-  handleChange(newValue) {
-    this.setValue(newValue);
-  }
-
   validate() {
     if (!this.validateRule) return;
     var ruleReturn = this.validateRule(this.value);
@@ -88,6 +74,22 @@ export default class Field {
   }
 
   /**
+   * onChange handler - it must be placed to input onChange attribute
+   */
+  handleChange(newValue) {
+    this.setValue(newValue);
+    this._startSave();
+  }
+
+  /**
+   * bind it to you component to onEnter event.
+   * It immediately starts save
+   */
+  handleEnter() {
+    this._startSave(true);
+  }
+
+  /**
    * It rises on each field's value change
    */
   onChange(cb) {
@@ -98,12 +100,17 @@ export default class Field {
     this._onSaveCallback = cb;
   }
 
-  _startSave(value, force) {
+  _startSave(force) {
+    // don't save invalid value
+    if (!this.valid) return;
+
     if (force) {
-      if (this._onSaveCallback) this._onSaveCallback(value);
+      if (this._onSaveCallback) this._onSaveCallback(this.value);
+      // cancelling
+      this._debouncedCb.cancel();
     }
     else {
-      if (this._onSaveCallback) this._runCbDebounced(this._onSaveCallback, value);
+      if (this._onSaveCallback) this._debouncedCb(this._onSaveCallback, this.value);
     }
   }
 
@@ -113,11 +120,11 @@ export default class Field {
     this._form.$stateValueChanged('dirty', newValue);
   }
 
-  _riseUpdateEvent() {
-    events.emit('field.value__update', {
-      name: this.name,
-      newValue: this.value,
-      field: this,
-    });
-  }
+  //_riseUpdateEvent() {
+  //  events.emit('field.value__update', {
+  //    name: this.name,
+  //    newValue: this.value,
+  //    field: this,
+  //  });
+  //}
 }
