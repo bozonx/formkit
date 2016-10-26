@@ -28,7 +28,7 @@ export default class FormState {
   }
 
   setStateValue(stateName, newValue) {
-    this._updateFormState({[stateName]: newValue});
+    this._form[stateName] = newValue;
   }
 
   setFieldValue(fieldName, newValue) {

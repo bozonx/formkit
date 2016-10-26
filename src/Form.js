@@ -30,7 +30,7 @@ export default class Form {
       newInvalidMessages[fieldName] = invalidMsg;
     }
 
-    this._formState.setStateValue('invalidMsg',newInvalidMessages);
+    this._formState.setStateValue('invalidMsg', newInvalidMessages);
 
     var isFormValid = _.isEmpty(newInvalidMessages);
     this._formState.setStateValue('valid', isFormValid);
