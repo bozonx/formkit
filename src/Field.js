@@ -8,6 +8,7 @@ export default class Field {
     this._form = form;
 
     this._onChangeCallback = null;
+    this._onAnyChangeCallback = null;
     this._onSaveCallback = null;
 
     this._fieldState = new FieldState(this, fieldName);
@@ -44,6 +45,7 @@ export default class Field {
 
     this._updateDirty();
     this.validate();
+    if (this._onAnyChangeCallback) this._onAnyChangeCallback(newValue);
   }
 
   setInitialValue(newValue) {
@@ -94,6 +96,10 @@ export default class Field {
    */
   onChange(cb) {
     this._onChangeCallback = cb;
+  }
+
+  onAnyChange(cb) {
+    this._onAnyChangeCallback = cb;
   }
 
   onSave(cb) {
