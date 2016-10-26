@@ -57,7 +57,7 @@ export default class Form {
   }
 
   setValues(newValues) {
-    this._fieldsManager.setValues(newValues);
+    this._fieldsManager.setValues(_.cloneDeep(newValues));
   }
 
   setInitialValues(initialState) {

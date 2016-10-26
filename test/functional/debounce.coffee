@@ -17,7 +17,7 @@ describe 'Functional. Validate.', ->
   it 'after change and pressing enter, value must save immediately and queue must be cancelled', ->
     this.form.fields.name.onSave(this.saveHandler)
     this.form.fields.name.handleChange('newValue')
-    this.form.fields.name.handleEnter()
+    this.form.fields.name.handlePressEnter()
 
     expect(this.saveHandler).to.have.been.calledOnce
     expect(this.saveHandler).to.have.been.calledWith('newValue')

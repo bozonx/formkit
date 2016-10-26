@@ -85,7 +85,7 @@ export default class Field {
    * bind it to you component to onEnter event.
    * It immediately starts save
    */
-  handleEnter() {
+  handlePressEnter() {
     this._startSave(true);
   }
 
