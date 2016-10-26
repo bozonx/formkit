@@ -62,7 +62,15 @@ export default class Field {
   }
 
   validate() {
-    // TODO: !!!
+    if (!this.validateRule) return;
+    var ruleReturn = this.validateRule(this.value);
+    var isValid = ruleReturn === true;
+    var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
+
+    this._fieldState.setStateValue('valid', isValid);
+    this._fieldState.setStateValue('invalidMsg', invalidMsg);
+    this._form.$validChanged(this.name, isValid, invalidMsg);
+    return isValid;
   }
 
   /**

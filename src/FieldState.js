@@ -6,41 +6,23 @@ export default class FieldState {
   constructor(field, name) {
     this._field = field;
 
-    // this.state = {
-    //   name: name,
-    //   value: null,
-    //   // It uses only for compare value with initialValue. Don't use it for binding.
-    //   initialValue: null,
-    //   valid: null,
-    //   dirty: null,
-    //   touched: null,
-    //   disabled: null,
-    //   checked: null,
-    //   errorMsg: null,
-    //   placeholder: null,
-    //   //focused: null,
-    //   //validateRule: null,
-    // }
-
     // set field's initial state
     this._updateFieldState({
       name: name,
       value: null,
       // It uses only for compare value with initialValue. Don't use it for binding.
       initialValue: null,
-      valid: null,
       dirty: false,
       touched: false,
-      disabled: null,
-      checked: null,
-      errorMsg: null,
-      placeholder: null,
+      valid: true,
+      invalidMsg: '',
+      validateRule: null,
+      //disabled: null,
+      //checked: null,
+      //placeholder: null,
       //focused: null,
-      //validateRule: null,
     });
   }
-
-  // TODO: может использовать один метод?
 
   setValue(newValue) {
     this._updateFieldState({value: newValue});

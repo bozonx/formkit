@@ -12,9 +12,10 @@ export default class FormState {
       initialValues: {},
       dirty: false,
       touched: false,
-      valid: null,
-      focusedField: null,
       submitting: false,
+      valid: true,
+      invalidMsg: {},
+      //focusedField: null,
     });
   }
 
@@ -42,17 +43,4 @@ export default class FormState {
     extendDeep(this._form, newState);
   }
 
-  // setValues(values) {
-  //   // TODO: нужно ли удалять лишние поля, если полей стало меньше??? наверное нет
-  //   //_.extend(this.state.values, values);
-  //   this._updateFormState({values: values});
-  // }
-
-  // setInitialValues(initialValues) {
-  //   // TODO: нужно deep extend
-  //   _.extend(this.state.initialValues, initialValues);
-  //   // _.each(fieldsList, (fieldName) => {
-  //   //   this.state.values[fieldName] = null;
-  //   // });
-  // }
 }

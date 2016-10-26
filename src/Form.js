@@ -21,6 +21,21 @@ export default class Form {
     if (this._onChangeCallback) this._onChangeCallback(fieldName, newValue);
   }
 
+  $validChanged(fieldName, isValid, invalidMsg) {
+    var newInvalidMessages = { ...this.invalidMsg };
+    if (isValid) {
+      delete newInvalidMessages[fieldName];
+    }
+    else {
+      newInvalidMessages[fieldName] = invalidMsg;
+    }
+
+    this._formState.setStateValue('invalidMsg',newInvalidMessages);
+
+    var isFormValid = _.isEmpty(newInvalidMessages);
+    this._formState.setStateValue('valid', isFormValid);
+  }
+
   $valueChanged(fieldName, newValue) {
     this._formState.setFieldValue(fieldName, newValue);
   }
