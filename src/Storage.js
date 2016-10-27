@@ -35,13 +35,15 @@ export default class Storage {
       invalidMsg: null,
       validateRule: null,
       saving: false,
-      // TODO: брать значение по умолчанию из конфига
       debounceTime: 1000,
       //disabled: null,
-      //checked: null,
       //placeholder: null,
       //focused: null,
     };
+  }
+
+  getWhoreStorageState() {
+    return _.cloneDeep(this.$store);
   }
 
   getFormState() {

@@ -51,6 +51,10 @@ export default class Form {
     this._formState.setStateValue('valid', isFormValid);
   }
 
+  $getWhoreStorageState() {
+    return this.$storage.getWhoreStorageState();
+  }
+
   getValues() {
     return this.$storage.getFieldsValues();
   }
