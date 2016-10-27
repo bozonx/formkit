@@ -3,7 +3,7 @@ import { extendDeep } from './helpers';
 
 export default class Storage {
   constructor() {
-    this.$store = {
+    this._store = {
       formState: {},
       // name: value or parent.name: value
       fieldsValue: {},
@@ -26,9 +26,6 @@ export default class Storage {
   generateNewFieldState(name) {
     return {
       name: name,
-      value: null,
-      // It uses only for compare value with initialValue. Don't use it for binding.
-      initialValue: null,
       dirty: false,
       touched: false,
       valid: true,
@@ -42,31 +39,31 @@ export default class Storage {
   }
 
   getWhoreStorageState() {
-    return _.cloneDeep(this.$store);
+    return _.cloneDeep(this._store);
   }
 
   getFormState() {
-    return _.cloneDeep(this.$store.formState);
+    return _.cloneDeep(this._store.formState);
   }
 
   getFieldValue(pathToField) {
-    return _.cloneDeep(_.get(this.$store.fieldsValue, pathToField));
+    return _.cloneDeep(_.get(this._store.fieldsValue, pathToField));
   }
 
   getFieldInitialValue(pathToField) {
-    return _.cloneDeep(_.get(this.$store.fieldsInitialValue, pathToField));
+    return _.cloneDeep(_.get(this._store.fieldsInitialValue, pathToField));
   }
 
   getFieldState(pathToField, stateName) {
-    return _.cloneDeep(_.get(this.$store.fieldsState, `${pathToField}.${stateName}`));
+    return _.cloneDeep(_.get(this._store.fieldsState, `${pathToField}.${stateName}`));
   }
 
   getFieldsValues() {
-    return _.cloneDeep(this.$store.fieldsValue);
+    return _.cloneDeep(this._store.fieldsValue);
   }
 
   getFieldsInitialValues() {
-    return _.cloneDeep(this.$store.fieldsInitialValue);
+    return _.cloneDeep(this._store.fieldsInitialValue);
   }
 
   /**
@@ -75,7 +72,7 @@ export default class Storage {
    * @param newValue
    */
   setFormState(stateName, newValue) {
-    _.set(this.$store, `formState.${stateName}`, newValue);
+    _.set(this._store, `formState.${stateName}`, newValue);
   }
 
   /**
@@ -84,7 +81,7 @@ export default class Storage {
    * @param newValue
    */
   setFieldValue(pathToField, newValue) {
-    _.set(this.$store, `fieldsValue.${pathToField}`, newValue);
+    _.set(this._store, `fieldsValue.${pathToField}`, newValue);
   }
 
   /**
@@ -93,7 +90,7 @@ export default class Storage {
    * @param newValue
    */
   setFieldInitialValue(pathToField, newValue) {
-    _.set(this.$store, `fieldsInitialValue.${pathToField}`, newValue);
+    _.set(this._store, `fieldsInitialValue.${pathToField}`, newValue);
   }
 
   /**
@@ -102,10 +99,10 @@ export default class Storage {
    * @param newState
    */
   setFieldState(pathToField, newState) {
-    //_.set(this.$store, `fieldsState.${pathToField}.${stateName}`, newValue);
-    if (_.isUndefined(this.$store.fieldsState[pathToField])) {
-      this.$store.fieldsState[pathToField] = {};
+    //_.set(this._store, `fieldsState.${pathToField}.${stateName}`, newValue);
+    if (_.isUndefined(this._store.fieldsState[pathToField])) {
+      this._store.fieldsState[pathToField] = {};
     }
-    extendDeep(this.$store.fieldsState[pathToField], newState);
+    extendDeep(this._store.fieldsState[pathToField], newState);
   }
 }

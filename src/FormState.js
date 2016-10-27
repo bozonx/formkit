@@ -5,7 +5,11 @@ export default class FormState {
     this._form = form;
 
     // set initial form state
-    this._updateFormState(this._form.$storage.generateNewFormState());
+    var newFormState = this._form.$storage.generateNewFormState();
+    this._updateFormState(newFormState);
+    this._form.$storage.setFormState(newFormState);
+
+    // TODO: инициализировать values and initialValues
   }
 
   setStateValue(path, newValue) {
