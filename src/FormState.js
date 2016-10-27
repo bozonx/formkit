@@ -7,40 +7,38 @@ export default class FormState {
     this._form = form;
 
     // set initial form state
-    this._updateFormState({
-      values: {},
-      initialValues: {},
-      dirty: false,
-      touched: false,
-      submitting: false,
-      valid: true,
-      invalidMsg: {},
-      //focusedField: null,
-    });
+    this._updateFormState(this._form.$storage.getFormState());
   }
 
   getValues() {
-    return _.cloneDeep(this._form.values);
+    //return _.cloneDeep(this._form.values);
+    return this._form.$storage.getFieldsValues();
   }
 
   getInitialValues() {
-    return _.cloneDeep(this._form.initialValues);
+    //return _.cloneDeep(this._form.initialValues);
+    return this._form.$storage.getFieldsInitialValues();
   }
 
-  setStateValue(stateName, newValue) {
-    this._form[stateName] = newValue;
+  setStateValue(path, newValue) {
+    //this._form[stateName] = newValue;
+    this._form.$storage.setFormState(path, newValue);
+    this._form[path] = newValue;
   }
 
-  setFieldValue(fieldName, newValue) {
-    this._updateFormState({values: {[fieldName]: newValue}});
+  setFieldValue(path, newValue) {
+    //this._updateFormState({values: {[fieldName]: newValue}});
+    this._form.$storage.setFieldValue(path, newValue);
+    this._updateFormState({values: this._form.$storage.getFieldsValues()});
   }
 
-  setFieldInitialValue(fieldName, newValue) {
-    this._updateFormState({initialValues: {[fieldName]: newValue}});
+  setFieldInitialValue(path, newValue) {
+    //this._updateFormState({initialValues: {[fieldName]: newValue}});
+    this._form.$storage.setFieldInitialValue(path, newValue);
+    this._updateFormState({initialValues: this._form.$storage.getFieldsInitialValues()});
   }
 
   _updateFormState(newState) {
     extendDeep(this._form, newState);
   }
-
 }
