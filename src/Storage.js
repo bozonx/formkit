@@ -35,7 +35,6 @@ export default class Storage {
       invalidMsg: null,
       validateRule: null,
       saving: false,
-      debounceTime: 1000,
       //disabled: null,
       //placeholder: null,
       //focused: null,

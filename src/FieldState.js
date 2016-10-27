@@ -15,6 +15,10 @@ export default class FieldState {
     return this._form.$storage.getFieldValue(this._pathToField);
   }
 
+  getInitialValue() {
+    return this._form.$storage.getFieldInitialValue(this._pathToField);
+  }
+
   getState(stateName) {
     return this._form.$storage.getFieldState(this._pathToField, stateName);
   }

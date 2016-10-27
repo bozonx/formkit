@@ -85,7 +85,7 @@ export default class Form {
   handleSubmit() {
     if (!this._onSubmitCallback) return;
     this._formState.setStateValue('submitting', true);
-    var returnedValue = this._onSubmitCallback(this.values);
+    var returnedValue = this._onSubmitCallback(this.$storage.getFieldsValues());
     // if promise
     if (returnedValue && returnedValue.then) {
       return returnedValue.then(() => {
