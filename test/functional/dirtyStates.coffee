@@ -19,14 +19,14 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isFalse(this.form.touched)
 
   it 'change value from null', ->
-    this.form.fields.name.setValue('newValue')
+    this.form.fields.name.handleChange('newValue')
     assert.isTrue(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
     assert.isTrue(this.form.dirty)
     assert.isTrue(this.form.touched)
 
   it 'change value from initted value', ->
-    this.form.fields.name.setValue('newValue')
+    this.form.fields.name.handleChange('newValue')
     this.form.fields.name.setInitialValue('initValue')
     assert.isTrue(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
@@ -34,7 +34,7 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isTrue(this.form.touched)
 
   it 'set the same initial value', ->
-    this.form.fields.name.setValue('newValue')
+    this.form.fields.name.handleChange('newValue')
     this.form.fields.name.setInitialValue('newValue')
     assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
@@ -43,8 +43,8 @@ describe 'Functional. Dirty and touched states.', ->
 
   it 'change and remove value', ->
     this.form.fields.name.setInitialValue('initValue')
-    this.form.fields.name.setValue('newValue')
-    this.form.fields.name.setValue('initValue')
+    this.form.fields.name.handleChange('newValue')
+    this.form.fields.name.handleChange('initValue')
     assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)

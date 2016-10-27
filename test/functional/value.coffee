@@ -6,13 +6,13 @@ describe 'Functional. Get and set value.', ->
     this.form.init({name: null})
 
   it 'set new value to field. initial = null', ->
-    this.form.fields.name.setValue('newValue')
+    this.form.fields.name.handleChange('newValue')
     assert.equal(this.form.fields.name.value, 'newValue')
     assert.equal(this.form.fields.name.initialValue, null)
 
   it 'set new value to field. initial = initValue', ->
     this.form.init({name: 'initValue'})
-    this.form.fields.name.setValue('newValue')
+    this.form.fields.name.handleChange('newValue')
     assert.equal(this.form.fields.name.value, 'newValue')
     assert.equal(this.form.fields.name.initialValue, 'initValue')
 

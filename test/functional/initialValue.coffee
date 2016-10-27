@@ -15,7 +15,7 @@ describe 'Functional. Init.', ->
 
   it 'init after set value', ->
     this.form.init({name: 'initValue'})
-    this.form.fields.name.setValue('newValue')
+    this.form.fields.name.handleChange('newValue')
     assert.equal(this.form.fields.name.value, 'newValue')
     assert.equal(this.form.fields.name.initialValue, 'initValue')
 

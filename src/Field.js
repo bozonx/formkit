@@ -18,28 +18,6 @@ export default class Field {
   }
 
   /**
-   * It uses for handle user input
-   * @param newValue
-   */
-  setValue(newValue) {
-    // TODO: убрать
-
-    this.updateValue(newValue);
-
-    // only for user input
-    if (!this.touched) {
-      this._fieldState.setStateValue('touched', true);
-      this._form.$$handleAnyFieldsStateChange('touched', true);
-    }
-
-    this._form.$$handleAnyFieldsValueChangeByUser(
-      this._fieldState.getState('name'), this._fieldState.getValue());
-
-    if (this._onChangeCallback) this._onChangeCallback(newValue);
-  }
-
-
-  /**
    * Silent update.
    * It uses for set outer(from machine) values (not user's).
    * It doesn't rise onChange callback.
@@ -98,7 +76,19 @@ export default class Field {
    * onChange handler - it must be placed to input onChange attribute
    */
   handleChange(newValue) {
-    this.setValue(newValue);
+    this.updateValue(newValue);
+
+    // only for user input
+    if (!this.touched) {
+      this._fieldState.setStateValue('touched', true);
+      this._form.$$handleAnyFieldsStateChange('touched', true);
+    }
+
+    this._form.$$handleAnyFieldsValueChangeByUser(
+      this._fieldState.getState('name'), this._fieldState.getValue());
+
+    if (this._onChangeCallback) this._onChangeCallback(newValue);
+
     this._startSave();
   }
 
