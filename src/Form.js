@@ -52,11 +52,11 @@ export default class Form {
   }
 
   getValues() {
-    return this._formState.getValues();
+    return this.$storage.getFieldsValues();
   }
 
   getInitialValues() {
-    return this._formState.getInitialValues();
+    return this.$storage.getFieldsInitialValues();
   }
 
   setValues(newValues) {

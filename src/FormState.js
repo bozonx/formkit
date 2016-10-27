@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { extendDeep } from './helpers';
 
 export default class FormState {
@@ -8,14 +6,6 @@ export default class FormState {
 
     // set initial form state
     this._updateFormState(this._form.$storage.getFormState());
-  }
-
-  getValues() {
-    return this._form.$storage.getFieldsValues();
-  }
-
-  getInitialValues() {
-    return this._form.$storage.getFieldsInitialValues();
   }
 
   setStateValue(path, newValue) {
@@ -36,6 +26,7 @@ export default class FormState {
   }
 
   _updateFormState(newState) {
+    // TODO: нужна поддержка простых массивов - удаленные элементы останутся
     extendDeep(this._form, newState);
   }
 }
