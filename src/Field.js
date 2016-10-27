@@ -51,24 +51,32 @@ export default class Field {
   updateValue(newValue) {
     this._fieldState.setValue(newValue);
 
+    this._updateDirty();
+    this.validate();
+
     this._form.$$handleAnyFieldsValueChange(
       this._fieldState.getState('name'), this._fieldState.getValue());
 
-    this._updateDirty();
-    this.validate();
     if (this._onAnyChangeCallback) this._onAnyChangeCallback(newValue);
   }
 
   setInitialValue(newValue) {
+    // TODO: пересмотреть
+
     this._fieldState.setInitialValue(newValue);
 
     // TODO: может ли пользователь установить null?
     if (_.isNull(this.value)) {
-      this._fieldState.setValue(newValue);
-      this.validate();
+      this.updateValue(newValue)
+      // this._fieldState.setValue(newValue);
+      // this.validate();
+    }
+    else {
+      this._updateDirty();
     }
 
-    this._updateDirty();
+
+
 
     // TODO: наверное если не в первый раз, то можно поднимать событие
   }

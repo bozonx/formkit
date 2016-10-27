@@ -4,35 +4,45 @@ describe 'Functional. onChange and handleChange.', ->
   beforeEach () ->
     this.form = formHelper()
     this.form.init({name: null})
-    this.formOnChangeHandler = sinon.spy();
-    this.formOnAnyChangeHandler = sinon.spy();
+
     this.fieldOnChangeHandler = sinon.spy();
     this.fieldOnAnyChangeHandler = sinon.spy();
-    this.form.onChange(this.formOnChangeHandler);
+    this.formOnChangeHandler = sinon.spy();
+    this.formOnAnyChangeHandler = sinon.spy();
+
     this.form.fields.name.onChange(this.fieldOnChangeHandler);
+    this.form.fields.name.onAnyChange(this.fieldOnAnyChangeHandler);
+    this.form.onChange(this.formOnChangeHandler);
+    this.form.onAnyChange(this.formOnAnyChangeHandler);
 
-  describe "fields's onChange", ->
-    it "call after userInput", ->
-      this.form.fields.name.handleChange('newValue')
-      expect(this.fieldOnChangeHandler).to.have.been.calledOnce
-      expect(this.fieldOnChangeHandler).to.have.been.calledWith('newValue')
+  it "call after userInput", ->
+    this.form.fields.name.handleChange('userValue')
+    expect(this.fieldOnChangeHandler).to.have.been.calledOnce
+    expect(this.fieldOnChangeHandler).to.have.been.calledWith('userValue')
+    expect(this.fieldOnAnyChangeHandler).to.have.been.calledOnce
+    expect(this.fieldOnAnyChangeHandler).to.have.been.calledWith('userValue')
 
-    it "don't call after machine update", ->
-      this.form.fields.name.updateValue('newValue')
-      expect(this.fieldOnChangeHandler).to.not.have.been.called
+    expect(this.formOnChangeHandler).to.have.been.calledOnce
+    expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'userValue'})
+    expect(this.formOnAnyChangeHandler).to.have.been.calledOnce
+    expect(this.formOnAnyChangeHandler).to.have.been.calledWith({name: 'userValue'})
 
-  describe "form's onChange", ->
-    it "call after handleChange", ->
-      this.form.fields.name.handleChange('newValue')
-      expect(this.formOnChangeHandler).to.have.been.calledOnce
-      expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'newValue'})
+  it "don't call after machine update", ->
+    this.form.fields.name.updateValue('machineValue')
+    expect(this.fieldOnChangeHandler).to.not.have.been.called
+    expect(this.fieldOnAnyChangeHandler).to.have.been.calledOnce
+    expect(this.fieldOnAnyChangeHandler).to.have.been.calledWith('machineValue')
 
-    it "don't call after machine update", ->
-      this.form.fields.name.updateValue('newValue')
-      expect(this.formOnChangeHandler).to.not.have.been.called
+    expect(this.formOnChangeHandler).to.not.have.been.called
+    expect(this.formOnAnyChangeHandler).to.have.been.calledOnce
+    expect(this.formOnAnyChangeHandler).to.have.been.calledWith({name: 'machineValue'})
 
   it "it doesn\'t rise events on set initial values", ->
     this.form.fields.name.setInitialValue('initialValue')
-    expect(this.formOnChangeHandler).to.not.have.been.called
+    expect(this.fieldOnChangeHandler).to.not.have.been.called
+    expect(this.fieldOnAnyChangeHandler).to.have.been.calledOnce
+    expect(this.fieldOnAnyChangeHandler).to.have.been.calledWith('initialValue')
 
-# TODO: события навешанные на изменения пользователя не должны отрабатывать при машинном изменении
+    expect(this.formOnChangeHandler).to.not.have.been.called
+    expect(this.formOnAnyChangeHandler).to.have.been.calledOnce
+    expect(this.formOnAnyChangeHandler).to.have.been.calledWith({name: 'initialValue'})
