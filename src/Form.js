@@ -25,7 +25,7 @@ export default class Form {
   }
 
   $$handleAnyFieldsValueChangeByUser(fieldName, newValue) {
-    if (this._onChangeCallback) this._onChangeCallback(fieldName, newValue);
+    if (this._onChangeCallback) this._onChangeCallback({[fieldName]: newValue});
   }
 
   $$handleAnyFieldsInitialValueChange(fieldName, newInitialValue) {
