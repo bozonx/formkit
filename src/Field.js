@@ -22,7 +22,9 @@ export default class Field {
    * @param newValue
    */
   setValue(newValue) {
-    this.setValueSilently(newValue);
+    // TODO: убрать
+
+    this.updateValue(newValue);
 
     // only for user input
     if (!this.touched) {
@@ -30,18 +32,27 @@ export default class Field {
       this._form.$$handleAnyFieldsStateChange('touched', true);
     }
 
-    this._form.$$handleAnyFieldsValueChangeByUser(this.name, this.value);
+    this._form.$$handleAnyFieldsValueChangeByUser(
+      this._fieldState.getState('name'), this._fieldState.getValue());
 
     if (this._onChangeCallback) this._onChangeCallback(newValue);
   }
 
+
   /**
-   * It uses for set outer values (not user's)
+   * Silent update.
+   * It uses for set outer(from machine) values (not user's).
+   * It doesn't rise onChange callback.
+   * It rises onAnyChange callback.
+   * It doesn't update "touched" state.
+   * It updates "dirty" and "valid" state.
    * @param newValue
    */
-  setValueSilently(newValue) {
+  updateValue(newValue) {
     this._fieldState.setValue(newValue);
-    this._form.$$handleAnyFieldsValueChange(this.name, this.value);
+
+    this._form.$$handleAnyFieldsValueChange(
+      this._fieldState.getState('name'), this._fieldState.getValue());
 
     this._updateDirty();
     this.validate();

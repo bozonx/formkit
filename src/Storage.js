@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { extendDeep } from './helpers';
 
 export default class Storage {
   constructor() {
@@ -47,6 +48,18 @@ export default class Storage {
     return _.cloneDeep(this.$store.formState);
   }
 
+  getFieldValue(pathToField) {
+    return _.cloneDeep(_.get(this.$store.fieldsValue, pathToField));
+  }
+
+  getFieldInitialValue(pathToField) {
+    return _.cloneDeep(_.get(this.$store.fieldsInitialValue, pathToField));
+  }
+
+  getFieldState(pathToField, stateName) {
+    return _.cloneDeep(_.get(this.$store.fieldsState, `${pathToField}.${stateName}`));
+  }
+
   getFieldsValues() {
     return _.cloneDeep(this.$store.fieldsValue);
   }
@@ -85,10 +98,13 @@ export default class Storage {
   /**
    * Set field's state - primitive value, not container or array
    * @param pathToField
-   * @param stateName
-   * @param newValue
+   * @param newState
    */
-  setFieldState(pathToField, stateName, newValue) {
-    _.set(this.$store, `fieldsState.${pathToField}.${stateName}`, newValue);
+  setFieldState(pathToField, newState) {
+    //_.set(this.$store, `fieldsState.${pathToField}.${stateName}`, newValue);
+    if (_.isUndefined(this.$store.fieldsState[pathToField])) {
+      this.$store.fieldsState[pathToField] = {};
+    }
+    extendDeep(this.$store.fieldsState[pathToField], newState);
   }
 }

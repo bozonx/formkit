@@ -6,7 +6,17 @@ export default class FieldState {
     this._field = field;
     this._pathToField = name;
 
-    this._updateFieldState(this._form.$storage.generateNewFieldState(name));
+    var newField = this._form.$storage.generateNewFieldState(name);
+    this._form.$storage.setFieldState(this._pathToField, newField);
+    this._updateFieldState(newField);
+  }
+
+  getValue() {
+    return this._form.$storage.getFieldValue(this._pathToField);
+  }
+
+  getState(stateName) {
+    return this._form.$storage.getFieldState(this._pathToField, stateName);
   }
 
   setValue(newValue) {
@@ -20,7 +30,7 @@ export default class FieldState {
   }
 
   setStateValue(stateName, newValue) {
-    this._form.$storage.setFieldState(this._pathToField, stateName, newValue);
+    this._form.$storage.setFieldState(this._pathToField, {[stateName]: newValue});
     this._field[stateName] = newValue;
   }
 

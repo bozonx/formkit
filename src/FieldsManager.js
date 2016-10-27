@@ -16,7 +16,7 @@ export default class FieldsManager {
       }
 
       // TODO: ??? нужно втихую устанвливать значения или с подъемом событий?
-      this.fields[fieldName].setValueSilently(value);
+      this.fields[fieldName].updateValue(value);
       this._form.$$handleAnyFieldsValueChange(fieldName, value);
     });
   }
