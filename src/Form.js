@@ -10,6 +10,7 @@ export default class Form {
     this._fieldsManager = new FieldsManager(this);
 
     this._onChangeCallback = null;
+    this._onAnyChangeCallback = null;
     this._onSubmitCallback = null;
     this.fields = this._fieldsManager.fields;
   }
@@ -39,6 +40,7 @@ export default class Form {
 
   $valueChanged(fieldName, newValue) {
     this._formState.setFieldValue(fieldName, newValue);
+    if (this._onAnyChangeCallback) this._onAnyChangeCallback({[fieldName]: newValue});
   }
 
   $initialValueChanged(fieldName, newInitialValue) {
@@ -67,6 +69,10 @@ export default class Form {
 
   onChange(cb) {
     this._onChangeCallback = cb;
+  }
+
+  onAnyChange(cb) {
+    this._onAnyChangeCallback = cb;
   }
 
   /**
