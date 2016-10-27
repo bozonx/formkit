@@ -5,7 +5,7 @@ export default class FormState {
     this._form = form;
 
     // set initial form state
-    this._updateFormState(this._form.$storage.getFormState());
+    this._updateFormState(this._form.$storage.generateNewFormState());
   }
 
   setStateValue(path, newValue) {

@@ -3,18 +3,22 @@ import _ from 'lodash';
 export default class Storage {
   constructor() {
     this.$store = {
-      formState: {
-        initialValues: {},
-        dirty: false,
-        touched: false,
-        submitting: false,
-        valid: true,
-        invalidMsg: '',
-      },
+      formState: {},
       // name: value or parent.name: value
       fieldsValue: {},
       fieldsInitialValue: {},
       fieldsState: {},
+    };
+  }
+
+  generateNewFormState() {
+    return {
+      initialValues: {},
+      dirty: false,
+      touched: false,
+      submitting: false,
+      valid: true,
+      invalidMsg: '',
     };
   }
 
