@@ -11,7 +11,7 @@ export default class Field {
     this._onAnyChangeCallback = null;
     this._onSaveCallback = null;
 
-    this._fieldState = new FieldState(this, fieldName);
+    this._fieldState = new FieldState(form, this, fieldName);
     this._debouncedCb = _.debounce((cb, value) => {
       cb(value);
     }, this.debounceTime);

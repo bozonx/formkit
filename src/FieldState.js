@@ -3,43 +3,31 @@ import _ from 'lodash';
 import { extendDeep } from './helpers';
 
 export default class FieldState {
-  constructor(field, name) {
+  constructor(form, field, name) {
+    this._form = form;
     this._field = field;
+    this._path = name;
 
-    // set field's initial state
-    this._updateFieldState({
-      name: name,
-      value: null,
-      // It uses only for compare value with initialValue. Don't use it for binding.
-      initialValue: null,
-      dirty: false,
-      touched: false,
-      valid: true,
-      invalidMsg: null,
-      validateRule: null,
-      saving: false,
-      // TODO: брать значение по умолчанию из конфига
-      debounceTime: 1000,
-      //disabled: null,
-      //checked: null,
-      //placeholder: null,
-      //focused: null,
-    });
+    this._updateFieldState(this._form.$storage.generateNewFieldState(name));
   }
 
   setValue(newValue) {
+    this._form.$storage.setFieldValue(this._path, newValue);
     this._updateFieldState({value: newValue});
   }
 
   setInitialValue(newValue) {
+    this._form.$storage.setFieldInitialValue(this._path, newValue);
     this._updateFieldState({initialValue: newValue});
   }
 
   setStateValue(stateName, newValue) {
-    this._updateFieldState({[stateName]: newValue});
+    this._form.$storage.setFieldState(this._path, stateName, newValue);
+    this._field[stateName] = newValue;
   }
 
   _updateFieldState(newState) {
+    // TODO: нужна поддержка простых массивов - удаленные элементы останутся
     extendDeep(this._field, newState);
   }
 }

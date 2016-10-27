@@ -18,7 +18,26 @@ export default class Storage {
     };
   }
 
-
+  generateNewFieldState(name) {
+    return {
+      name: name,
+      value: null,
+      // It uses only for compare value with initialValue. Don't use it for binding.
+      initialValue: null,
+      dirty: false,
+      touched: false,
+      valid: true,
+      invalidMsg: null,
+      validateRule: null,
+      saving: false,
+      // TODO: брать значение по умолчанию из конфига
+      debounceTime: 1000,
+      //disabled: null,
+      //checked: null,
+      //placeholder: null,
+      //focused: null,
+    };
+  }
 
   getFormState() {
     return _.cloneDeep(this.$storage.formState);
@@ -61,11 +80,12 @@ export default class Storage {
 
   /**
    * Set field's state - primitive value, not container or array
-   * @param path
+   * @param pathToField
+   * @param stateName
    * @param newValue
    */
-  setFieldState(path, newValue) {
-    _.set(this.$storage, `fieldsState.${path}`, newValue);
+  setFieldState(pathToField, stateName, newValue) {
+    _.set(this.$storage, `fieldsState.${pathToField}.${stateName}`, newValue);
   }
 }
 
