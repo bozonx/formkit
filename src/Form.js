@@ -15,15 +15,28 @@ export default class Form {
     this.fields = this._fieldsManager.fields;
   }
 
-  $stateValueChanged(stateName, newValue) {
-    this._formState.setStateValue(stateName, newValue);
+  init(initialState) {
+    this.setInitialValues(initialState);
   }
 
-  $valueChangedByUser(fieldName, newValue) {
+  $$handleAnyFieldsValueChange(fieldName, newValue) {
+    this._formState.setFieldValue(fieldName, newValue);
+    if (this._onAnyChangeCallback) this._onAnyChangeCallback({[fieldName]: newValue});
+  }
+
+  $$handleAnyFieldsValueChangeByUser(fieldName, newValue) {
     if (this._onChangeCallback) this._onChangeCallback(fieldName, newValue);
   }
 
-  $validChanged(fieldName, isValid, invalidMsg) {
+  $$handleAnyFieldsInitialValueChange(fieldName, newInitialValue) {
+    this._formState.setFieldInitialValue(fieldName, newInitialValue);
+  }
+
+  $$handleAnyFieldsStateChange(stateName, newValue) {
+    this._formState.setStateValue(stateName, newValue);
+  }
+
+  $$handleAnyFieldsValidStateChange(fieldName, isValid, invalidMsg) {
     var newInvalidMessages = { ...this.invalidMsg };
     if (isValid) {
       delete newInvalidMessages[fieldName];
@@ -36,19 +49,6 @@ export default class Form {
 
     var isFormValid = _.isEmpty(newInvalidMessages);
     this._formState.setStateValue('valid', isFormValid);
-  }
-
-  $valueChanged(fieldName, newValue) {
-    this._formState.setFieldValue(fieldName, newValue);
-    if (this._onAnyChangeCallback) this._onAnyChangeCallback({[fieldName]: newValue});
-  }
-
-  $initialValueChanged(fieldName, newInitialValue) {
-    this._formState.setFieldInitialValue(fieldName, newInitialValue);
-  }
-
-  init(initialState) {
-    this.setInitialValues(initialState);
   }
 
   getValues() {

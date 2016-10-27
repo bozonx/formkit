@@ -27,10 +27,10 @@ export default class Field {
     // only for user input
     if (!this.touched) {
       this._fieldState.setStateValue('touched', true);
-      this._form.$stateValueChanged('touched', true);
+      this._form.$$handleAnyFieldsStateChange('touched', true);
     }
 
-    this._form.$valueChangedByUser(this.name, this.value);
+    this._form.$$handleAnyFieldsValueChangeByUser(this.name, this.value);
 
     if (this._onChangeCallback) this._onChangeCallback(newValue);
   }
@@ -41,7 +41,7 @@ export default class Field {
    */
   setValueSilently(newValue) {
     this._fieldState.setValue(newValue);
-    this._form.$valueChanged(this.name, this.value);
+    this._form.$$handleAnyFieldsValueChange(this.name, this.value);
 
     this._updateDirty();
     this.validate();
@@ -71,7 +71,7 @@ export default class Field {
 
     this._fieldState.setStateValue('valid', isValid);
     this._fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
-    this._form.$validChanged(this.name, isValid, invalidMsg);
+    this._form.$$handleAnyFieldsValidStateChange(this.name, isValid, invalidMsg);
     return isValid;
   }
 
@@ -123,7 +123,7 @@ export default class Field {
   _updateDirty() {
     var newValue = this.value !== this.initialValue;
     this._fieldState.setStateValue('dirty', newValue);
-    this._form.$stateValueChanged('dirty', newValue);
+    this._form.$$handleAnyFieldsStateChange('dirty', newValue);
   }
 
   //_riseUpdateEvent() {
