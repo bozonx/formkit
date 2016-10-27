@@ -129,7 +129,18 @@ export default class Field {
   }
 
   _updateDirty() {
-    var newValue = this._fieldState.getValue() !== this._fieldState.getInitialValue();
+    var value = this._fieldState.getValue();
+    var initialValue = this._fieldState.getInitialValue();
+    var newValue;
+
+    if (value === '' && (initialValue === '' || _.isNil(initialValue))) {
+      // 0 compares as common value.
+      newValue = false;
+    }
+    else {
+      // just compare initial value and value
+      newValue = value !== initialValue;
+    }
 
     this._fieldState.setStateValue('dirty', newValue);
     this._form.$$handleAnyFieldsStateChange('dirty', newValue);

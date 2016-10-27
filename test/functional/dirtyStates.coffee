@@ -63,3 +63,8 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isFalse(this.form.fields.name.touched)
     assert.isTrue(this.form.dirty)
     assert.isFalse(this.form.touched)
+
+  it "dirty state must be true if value reverted to ''", ->
+    this.form.fields.name.handleChange('newValue')
+    this.form.fields.name.handleChange('')
+    assert.isFalse(this.form.fields.name.dirty)
