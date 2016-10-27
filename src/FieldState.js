@@ -9,8 +9,8 @@ export default class FieldState {
     // init state
     var newField = this._form.$storage.generateNewFieldState(name);
     this._form.$storage.setFieldState(this._pathToField, newField);
-    this._form.$storage.setFieldValue(this._pathToField, null);
-    this._form.$storage.setFieldInitialValue(this._pathToField, null);
+    this.setValue(null);
+    this.setInitialValue(null);
 
     this._updateFieldState(newField);
   }

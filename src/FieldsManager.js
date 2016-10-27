@@ -8,6 +8,10 @@ export default class FieldsManager {
     this.fields = {};
   }
 
+  /**
+   * it sets all the values silently
+   * @param newValues
+   */
   setValues(newValues) {
     _.each(newValues, (value, fieldName) => {
       // Create new field if it isn't exist
@@ -15,9 +19,7 @@ export default class FieldsManager {
         this.fields[fieldName] = new Field(this._form, fieldName);
       }
 
-      // TODO: ??? нужно втихую устанвливать значения или с подъемом событий?
       this.fields[fieldName].updateValue(value);
-      this._form.$$handleAnyFieldsValueChange(fieldName, value);
     });
   }
 

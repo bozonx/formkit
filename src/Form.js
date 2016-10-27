@@ -63,10 +63,21 @@ export default class Form {
     return this.$storage.getFieldsInitialValues();
   }
 
+  /**
+   * It set all the values to fields silently.
+   * It creates a field if it doesn't exist.
+   * @param newValues
+   */
   setValues(newValues) {
     this._fieldsManager.setValues(_.cloneDeep(newValues));
   }
 
+  /**
+   * It set initial values for all the fields.
+   * It creates a field if it doesn't exist.
+   * It set value if it doesn't assign.
+   * @param initialState
+   */
   setInitialValues(initialState) {
     this._fieldsManager.setInitialValues(initialState);
   }
