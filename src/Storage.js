@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 export default class Storage {
   constructor() {
-    this.$storage = {
+    this.$store = {
       formState: {
         initialValues: {},
         dirty: false,
@@ -40,42 +40,42 @@ export default class Storage {
   }
 
   getFormState() {
-    return _.cloneDeep(this.$storage.formState);
+    return _.cloneDeep(this.$store.formState);
   }
 
   getFieldsValues() {
-    return _.cloneDeep(this.$storage.fieldsValue);
+    return _.cloneDeep(this.$store.fieldsValue);
   }
 
   getFieldsInitialValues() {
-    return _.cloneDeep(this.$storage.fieldsInitialValue);
+    return _.cloneDeep(this.$store.fieldsInitialValue);
   }
 
   /**
    * Set form's state. Only primitive, not container or array
-   * @param path
+   * @param stateName
    * @param newValue
    */
-  setFormState(path, newValue) {
-    _.set(this.$storage, `formState.${path}`, newValue);
+  setFormState(stateName, newValue) {
+    _.set(this.$store, `formState.${stateName}`, newValue);
   }
 
   /**
    * Set field's value - primitive not container or array
-   * @param path
+   * @param pathToField
    * @param newValue
    */
-  setFieldValue(path, newValue) {
-    _.set(this.$storage, `fieldsValue.${path}`, newValue);
+  setFieldValue(pathToField, newValue) {
+    _.set(this.$store, `fieldsValue.${pathToField}`, newValue);
   }
 
   /**
    * Set field's value - primitive not container or array
-   * @param path
+   * @param pathToField
    * @param newValue
    */
-  setFieldInitialValue(path, newValue) {
-    _.set(this.$storage, `fieldsInitialValue.${path}`, newValue);
+  setFieldInitialValue(pathToField, newValue) {
+    _.set(this.$store, `fieldsInitialValue.${pathToField}`, newValue);
   }
 
   /**
@@ -85,8 +85,6 @@ export default class Storage {
    * @param newValue
    */
   setFieldState(pathToField, stateName, newValue) {
-    _.set(this.$storage, `fieldsState.${pathToField}.${stateName}`, newValue);
+    _.set(this.$store, `fieldsState.${pathToField}.${stateName}`, newValue);
   }
 }
-
-
