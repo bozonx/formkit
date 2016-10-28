@@ -23,7 +23,7 @@ export default class Field extends FieldBase {
     this.validate();
 
     this.$form.$$handleAnyFieldsValueChange(
-      this.$fieldState.getState('name'), this.$fieldState.getValue());
+      this.$fieldName, this.$fieldState.getValue());
 
     //if (this._onAnyChangeCallback) this._onAnyChangeCallback(newValue);
   }
@@ -59,7 +59,7 @@ export default class Field extends FieldBase {
 
     this.$fieldState.setStateValue('valid', isValid);
     this.$fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
-    this.$form.$$handleAnyFieldsValidStateChange(this.$fieldState.getState('name'), isValid, invalidMsg);
+    this.$form.$$handleAnyFieldsValidStateChange(this.$fieldName, isValid, invalidMsg);
     return isValid;
   }
 
@@ -76,7 +76,7 @@ export default class Field extends FieldBase {
     }
 
     this.$form.$$handleAnyFieldsValueChangeByUser(
-      this.$fieldState.getState('name'), this.$fieldState.getValue());
+      this.$fieldName, this.$fieldState.getValue());
 
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
