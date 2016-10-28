@@ -15,28 +15,44 @@ export default class FormBase {
     this.fields = this.$fieldsManager.fields;
   }
 
-  init(initialState) {
-    this.setInitialValues(initialState);
-  }
+  /**
+   * It calls from field on silent value change.
+   * It means - it calls on any value change.
+   * @param {string} fieldName
+   */
+  $$handleSilentValueChange(fieldName, oldValue) {
+    var values = this.$storage.getFieldsValues();
+    var eventData = {
+      fieldName,
+      oldValue,
+      value: values[fieldName],
+    };
 
-  $$handleAnyFieldsValueChange(fieldName) {
     // It hopes actual value is in storage at the moment
-    extendDeep(this, {values: this.$storage.getFieldsValues()});
+    extendDeep(this, {values: values});
+
+    events.emit('silentChange', eventData);
+    events.emit(`field.${fieldName}.silentChange`, eventData);
 
     // TODO: rise per field change event
     // TODO: rise form change event
   }
 
-  $$handleAnyFieldsValueChangeByUser(fieldName, newValue) {
+  /**
+   * It calls form field on value changed by user
+   * @param {string} fieldName
+   * @param {*} newValue
+   */
+  $$handleValueChangeByUser(fieldName, newValue) {
     // TODO: get value from storage!
     if (this.$onChangeCallback) this.$onChangeCallback({[fieldName]: newValue});
   }
 
-  $$handleAnyFieldsInitialValueChange(fieldName, newInitialValue) {
+  $$handleInitialValueChange(fieldName, newInitialValue) {
     this.$formState.setFieldInitialValue(fieldName, newInitialValue);
   }
 
-  $$handleAnyFieldsStateChange(stateName, newValue) {
+  $$handleFieldStateChange(stateName, newValue) {
     this.$formState.setStateValue(stateName, newValue);
   }
 

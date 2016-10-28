@@ -64,9 +64,4 @@ export default class Form extends FormBase{
   onSubmit(cb) {
     this._onSubmitCallback = cb;
   }
-
-  reset() {
-    // TODO: !!!
-  }
-
 }

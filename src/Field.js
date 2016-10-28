@@ -25,11 +25,14 @@ export default class Field extends FieldBase {
    * @param {*} newValue
    */
   updateValue(newValue) {
+    // TODO: нужно делать клон???
+    var oldValue = this.$fieldState.getValue();
+
     // set up value to this field instance and to storage
     this.$fieldState.setValue(newValue);
 
     // tell to form - a value is updated
-    this.$form.$$handleAnyFieldsValueChange(this.$pathToField);
+    this.$form.$$handleSilentValueChange(this.$pathToField, oldValue);
 
     // update dirty state
     this.$updateDirty();
@@ -50,7 +53,7 @@ export default class Field extends FieldBase {
     this.$fieldState.setInitialValue(newValue);
 
     // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
-    this.$form.$$handleAnyFieldsInitialValueChange(this.$pathToField, newValue);
+    this.$form.$$handleInitialValueChange(this.$pathToField, newValue);
 
     if (_.isNull(this.$fieldState.getValue()) && !this.$fieldState.getState('touched')) {
       this.updateValue(newValue)
@@ -75,11 +78,10 @@ export default class Field extends FieldBase {
     // update touched
     if (!this.$fieldState.getState('touched')) {
       this.$fieldState.setStateValue('touched', true);
-      this.$form.$$handleAnyFieldsStateChange('touched', true);
+      this.$form.$$handleFieldStateChange('touched', true);
     }
 
-    this.$form.$$handleAnyFieldsValueChangeByUser(
-      this.$pathToField, this.$fieldState.getValue());
+    this.$form.$$handleValueChangeByUser(this.$pathToField, this.$fieldState.getValue());
 
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 

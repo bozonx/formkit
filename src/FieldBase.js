@@ -48,7 +48,7 @@ export default class FieldBase {
     }
 
     this.$fieldState.setStateValue('dirty', newValue);
-    this.$form.$$handleAnyFieldsStateChange('dirty', newValue);
+    this.$form.$$handleFieldStateChange('dirty', newValue);
   }
 
 }
