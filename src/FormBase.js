@@ -4,7 +4,7 @@ import events from './events';
 import FormState from './FormState';
 import FieldsManager from './FieldsManager';
 
-export default class Form {
+export default class FormBase {
   constructor(storage) {
     this.$storage = storage;
     this.$formState = new FormState(this);

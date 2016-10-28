@@ -1,21 +1,10 @@
 import _ from 'lodash';
 
-import FieldState from './FieldState';
+import FieldBase from './FieldBase';
 
-export default class Field {
+export default class Field extends FieldBase {
   constructor(form, fieldName) {
-    this._form = form;
-
-    this._onChangeCallback = null;
-    //this._onAnyChangeCallback = null;
-    this._onSaveCallback = null;
-
-    this.debounceTime = 1000;
-
-    this._fieldState = new FieldState(form, this, fieldName);
-    this._debouncedCb = _.debounce((cb, value) => {
-      cb(value);
-    }, this.debounceTime);
+    super(form, fieldName);
   }
 
   /**
@@ -28,13 +17,13 @@ export default class Field {
    * @param newValue
    */
   updateValue(newValue) {
-    this._fieldState.setValue(newValue);
+    this.$fieldState.setValue(newValue);
 
     this._updateDirty();
     this.validate();
 
-    this._form.$$handleAnyFieldsValueChange(
-      this._fieldState.getState('name'), this._fieldState.getValue());
+    this.$form.$$handleAnyFieldsValueChange(
+      this.$fieldState.getState('name'), this.$fieldState.getValue());
 
     //if (this._onAnyChangeCallback) this._onAnyChangeCallback(newValue);
   }
@@ -42,12 +31,12 @@ export default class Field {
   setInitialValue(newValue) {
     // TODO: пересмотреть
 
-    this._fieldState.setInitialValue(newValue);
+    this.$fieldState.setInitialValue(newValue);
 
     // TODO: может ли пользователь установить null?
-    if (_.isNull(this._fieldState.getValue())) {
+    if (_.isNull(this.$fieldState.getValue())) {
       this.updateValue(newValue)
-      // this._fieldState.setValue(newValue);
+      // this.$fieldState.setValue(newValue);
       // this.validate();
     }
     else {
@@ -60,13 +49,13 @@ export default class Field {
 
   validate() {
     if (!this.validateRule) return;
-    var ruleReturn = this.validateRule(this._fieldState.getValue());
+    var ruleReturn = this.validateRule(this.$fieldState.getValue());
     var isValid = ruleReturn === true;
     var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
 
-    this._fieldState.setStateValue('valid', isValid);
-    this._fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
-    this._form.$$handleAnyFieldsValidStateChange(this._fieldState.getState('name'), isValid, invalidMsg);
+    this.$fieldState.setStateValue('valid', isValid);
+    this.$fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
+    this.$form.$$handleAnyFieldsValidStateChange(this.$fieldState.getState('name'), isValid, invalidMsg);
     return isValid;
   }
 
@@ -77,15 +66,15 @@ export default class Field {
     this.updateValue(newValue);
 
     // update touched
-    if (!this._fieldState.getState('touched')) {
-      this._fieldState.setStateValue('touched', true);
-      this._form.$$handleAnyFieldsStateChange('touched', true);
+    if (!this.$fieldState.getState('touched')) {
+      this.$fieldState.setStateValue('touched', true);
+      this.$form.$$handleAnyFieldsStateChange('touched', true);
     }
 
-    this._form.$$handleAnyFieldsValueChangeByUser(
-      this._fieldState.getState('name'), this._fieldState.getValue());
+    this.$form.$$handleAnyFieldsValueChangeByUser(
+      this.$fieldState.getState('name'), this.$fieldState.getValue());
 
-    if (this._onChangeCallback) this._onChangeCallback(newValue);
+    if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
     this._startSave();
   }
@@ -102,7 +91,7 @@ export default class Field {
    * It rises on each field's value change
    */
   onChange(cb) {
-    this._onChangeCallback = cb;
+    this.$onChangeCallback = cb;
   }
 
   // onAnyChange(cb) {
@@ -110,39 +99,7 @@ export default class Field {
   // }
 
   onSave(cb) {
-    this._onSaveCallback = cb;
-  }
-
-  _startSave(force) {
-    // don't save invalid value
-    if (!this._fieldState.getState('valid')) return;
-
-    if (force) {
-      if (this._onSaveCallback) this._onSaveCallback(this._fieldState.getValue());
-      // cancelling
-      this._debouncedCb.cancel();
-    }
-    else {
-      if (this._onSaveCallback) this._debouncedCb(this._onSaveCallback, this._fieldState.getValue());
-    }
-  }
-
-  _updateDirty() {
-    var value = this._fieldState.getValue();
-    var initialValue = this._fieldState.getInitialValue();
-    var newValue;
-
-    if (value === '' && (initialValue === '' || _.isNil(initialValue))) {
-      // 0 compares as common value.
-      newValue = false;
-    }
-    else {
-      // just compare initial value and value
-      newValue = value !== initialValue;
-    }
-
-    this._fieldState.setStateValue('dirty', newValue);
-    this._form.$$handleAnyFieldsStateChange('dirty', newValue);
+    this.$onSaveCallback = cb;
   }
 
 }
