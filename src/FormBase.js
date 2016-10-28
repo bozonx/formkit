@@ -18,34 +18,44 @@ export default class FormBase {
   /**
    * It calls from field on silent value change.
    * It means - it calls on any value change.
+   * It rises a "silentChange" event.
+   * It rises on any value change by user or by program.
    * @param {string} pathToField
+   * @param {*} oldValue
    */
   $$handleSilentValueChange(pathToField, oldValue) {
-    var values = this.$storage.getFieldsValues();
     var eventData = {
       fieldName: pathToField,
       oldValue,
-      value: values[pathToField],
+      value: this.$storage.getFieldValue(pathToField),
     };
 
     // It hopes actual value is in storage at the moment
-    extendDeep(this, {values: values});
+    extendDeep(this, {values: this.$storage.getFieldsValues()});
 
+    // Rise events
     events.emit('silentChange', eventData);
     events.emit(`field.${pathToField}.silentChange`, eventData);
-
-    // TODO: rise per field change event
-    // TODO: rise form change event
   }
 
   /**
    * It calls form field on value changed by user
    * @param {string} pathToField
-   * @param {*} newValue
+   * @param {*} oldValue
    */
-  $$handleValueChangeByUser(pathToField, newValue) {
-    // TODO: get value from storage!
-    if (this.$onChangeCallback) this.$onChangeCallback({[pathToField]: newValue});
+  $$handleValueChangeByUser(pathToField, oldValue) {
+    var value = this.$storage.getFieldValue(pathToField);
+    var eventData = {
+      fieldName: pathToField,
+      oldValue,
+      value: value,
+    };
+
+    if (this.$onChangeCallback) this.$onChangeCallback({[pathToField]: value});
+
+    // Rise events
+    events.emit('change', eventData);
+    events.emit(`field.${pathToField}.change`, eventData);
   }
 
   $$handleInitialValueChange(pathToField, newInitialValue) {
@@ -57,7 +67,7 @@ export default class FormBase {
   }
 
   $$handleAnyFieldsValidStateChange(pathToField, isValid, invalidMsg) {
-    var newInvalidMessages = { ...this.invalidMsg };
+    var newInvalidMessages = {...this.invalidMsg};
     if (isValid) {
       delete newInvalidMessages[pathToField];
     }
@@ -93,15 +103,5 @@ export default class FormBase {
   $riseChangeByUser() {
     // TODO: !!!
     events.emit('change', {});
-  }
-
-  /**
-   * It rises a "silentChange" event.
-   * It rises on any value change by user or by program.
-   * @private
-   */
-  $riseSilentChange() {
-    // TODO: !!!
-    events.emit('silentChange', {});
   }
 }

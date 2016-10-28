@@ -74,6 +74,9 @@ export default class Field extends FieldBase {
    * * Starts saving
    */
   handleChange(newValue) {
+    // TODO: нужно делать клон???
+    var oldValue = this.$fieldState.getValue();
+
     this.updateValue(newValue);
 
     // update touched
@@ -82,7 +85,7 @@ export default class Field extends FieldBase {
       this.$form.$$handleFieldStateChange('touched', true);
     }
 
-    this.$form.$$handleValueChangeByUser(this.$pathToField, this.$fieldState.getValue());
+    this.$form.$$handleValueChangeByUser(this.$pathToField, oldValue);
 
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
