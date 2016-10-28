@@ -12,7 +12,7 @@ export default class FieldsManager {
    * it sets all the values silently
    * @param newValues
    */
-  setValues(newValues) {
+  updateValues(newValues) {
     _.each(newValues, (value, fieldName) => {
       // Create new field if it isn't exist
       if (!this.fields[fieldName]) {

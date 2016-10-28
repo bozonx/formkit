@@ -26,7 +26,7 @@ export default class Form extends FormBase{
    * @param newValues
    */
   setValues(newValues) {
-    this.$fieldsManager.setValues(_.cloneDeep(newValues));
+    this.$fieldsManager.updateValues(_.cloneDeep(newValues));
   }
 
   /**

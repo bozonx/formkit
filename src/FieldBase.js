@@ -23,9 +23,10 @@ export default class FieldBase {
     if (!this.$fieldState.getState('valid')) return;
 
     if (force) {
-      if (this.$onSaveCallback) this.$onSaveCallback(this.$fieldState.getValue());
       // cancelling
       this._debouncedCb.cancel();
+      // save without debounce
+      if (this.$onSaveCallback) this.$onSaveCallback(this.$fieldState.getValue());
     }
     else {
       if (this.$onSaveCallback) this._debouncedCb(this.$onSaveCallback, this.$fieldState.getValue());

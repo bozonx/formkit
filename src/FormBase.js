@@ -65,6 +65,7 @@ export default class FormBase {
    * @private
    */
   $riseAnyChange() {
+    // TODO: !!!
     events.emit('anyChange', {});
   }
 
@@ -74,6 +75,7 @@ export default class FormBase {
    * @private
    */
   $riseChangeByUser() {
+    // TODO: !!!
     events.emit('change', {});
   }
 
@@ -83,11 +85,7 @@ export default class FormBase {
    * @private
    */
   $riseSilentChange() {
+    // TODO: !!!
     events.emit('silentChange', {});
   }
-
-  // _updateFormState(newState) {
-  //   // TODO: нужна поддержка простых массивов - удаленные элементы останутся
-  //   extendDeep(this, newState);
-  // }
 }

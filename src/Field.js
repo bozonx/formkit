@@ -57,18 +57,6 @@ export default class Field extends FieldBase {
     }
   }
 
-  validate() {
-    if (!this.validateRule) return;
-    var ruleReturn = this.validateRule(this.$fieldState.getValue());
-    var isValid = ruleReturn === true;
-    var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
-
-    this.$fieldState.setStateValue('valid', isValid);
-    this.$fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
-    this.$form.$$handleAnyFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
-    return isValid;
-  }
-
   /**
    * It's onChange handler. It must be placed to input onChange attribute.
    * It does:
@@ -97,21 +85,43 @@ export default class Field extends FieldBase {
 
   /**
    * bind it to you component to onEnter event.
-   * It immediately starts save
+   * It does:
+   * * cancel previous save in queue
+   * * immediately starts save
    */
   handlePressEnter() {
     this.$startSave(true);
   }
 
   /**
-   * It rises on each field's value change
+   * It rises on field's value change by user
    */
   onChange(cb) {
     this.$onChangeCallback = cb;
   }
 
+  /**
+   * It rises with debounce on start saving after update field value by user
+   * @param cb
+   */
   onSave(cb) {
     this.$onSaveCallback = cb;
+  }
+
+  /**
+   * It updates "valid" and "invalidMsg" states using field's validate rule.
+   * @returns {boolean|undefined}
+   */
+  validate() {
+    if (!this.validateRule) return;
+    var ruleReturn = this.validateRule(this.$fieldState.getValue());
+    var isValid = ruleReturn === true;
+    var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
+
+    this.$fieldState.setStateValue('valid', isValid);
+    this.$fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
+    this.$form.$$handleAnyFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
+    return isValid;
   }
 
 }
