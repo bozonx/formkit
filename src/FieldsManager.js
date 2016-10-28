@@ -15,6 +15,7 @@ export default class FieldsManager {
   updateValues(newValues) {
     _.each(newValues, (value, fieldName) => {
       // Create new field if it isn't exist
+      // TODO: !!!! возможно жто не нужно
       if (!this.fields[fieldName]) {
         this.fields[fieldName] = new Field(this._form, fieldName);
       }
@@ -31,7 +32,6 @@ export default class FieldsManager {
       }
 
       this.fields[fieldName].setInitialValue(value);
-      this._form.$$handleAnyFieldsInitialValueChange(fieldName, value);
     });
   }
 

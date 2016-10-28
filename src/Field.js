@@ -49,6 +49,9 @@ export default class Field extends FieldBase {
     // set up initial value to this field instance and to storage
     this.$fieldState.setInitialValue(newValue);
 
+    // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
+    this.$form.$$handleAnyFieldsInitialValueChange(this.$pathToField, newValue);
+
     if (_.isNull(this.$fieldState.getValue()) && !this.$fieldState.getState('touched')) {
       this.updateValue(newValue)
     }
