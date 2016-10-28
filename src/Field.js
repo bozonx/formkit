@@ -28,6 +28,10 @@ export default class Field extends FieldBase {
     //if (this._onAnyChangeCallback) this._onAnyChangeCallback(newValue);
   }
 
+  setDebounceTime(time) {
+    this.$debounceTime = time;
+  }
+
   setInitialValue(newValue) {
     // TODO: пересмотреть
 

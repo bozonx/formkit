@@ -12,12 +12,11 @@ export default class FieldBase {
     this.$onSaveCallback = null;
     //this._onAnyChangeCallback = null;
 
-    // TODO: приватное
-    this.debounceTime = 1000;
+    this.$debounceTime = 1000;
 
     this._debouncedCb = _.debounce((cb, value) => {
       cb(value);
-    }, this.debounceTime);
+    }, this.$debounceTime);
   }
 
   _startSave(force) {
