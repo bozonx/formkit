@@ -47,7 +47,7 @@ describe 'Functional. Events.', ->
       this.form.fields.name.on('silentChange', this.fieldHandler);
       this.form.on('silentChange', this.formHandler);
 
-    it "silentChange after handleChange", ->
+    it "after handleChange", ->
       this.form.fields.name.handleChange('newValue')
       expect(this.fieldHandler).to.have.been.calledOnce
       expect(this.fieldHandler).to.have.been.calledWith({
@@ -58,7 +58,7 @@ describe 'Functional. Events.', ->
         fieldName: 'name', oldValue: null, value: 'newValue'
       })
 
-    it "silentChange after updateValue", () ->
+    it "after updateValue", () ->
       this.form.fields.name.updateValue('newValue')
       expect(this.fieldHandler).to.have.been.calledOnce
       expect(this.fieldHandler).to.have.been.calledWith({
@@ -82,4 +82,14 @@ describe 'Functional. Events.', ->
       })
 
   describe 'anyChange.', ->
+    # TODO: недоделанно
+    beforeEach () ->
+      this.fieldHandler = sinon.spy();
+      this.formHandler = sinon.spy();
+      this.form.fields.name.on('anyChange', this.fieldHandler);
+      this.form.on('anyChange', this.formHandler);
 
+    it "after updateValue", () ->
+      this.form.fields.name.updateValue('newValue')
+      expect(this.fieldHandler).to.have.been.calledOnce
+      expect(this.formHandler).to.have.been.calledOnce

@@ -36,10 +36,15 @@ export default class FormBase {
     // Rise events
     events.emit('silentChange', eventData);
     events.emit(`field.${pathToField}.silentChange`, eventData);
+
+    // TODO: ну только отсюда должно подниматься событие
+    this._riseAnyChange(pathToField);
   }
 
   /**
    * It calls form field on value changed by user
+   * It rises a "change" event.
+   * It rises only if value changed by user.
    * @param {string} pathToField
    * @param {*} oldValue
    */
@@ -90,18 +95,10 @@ export default class FormBase {
    * It rises on any change of value, initialValue or any state.
    * @private
    */
-  $riseAnyChange() {
-    // TODO: !!!
-    events.emit('anyChange', {});
+  _riseAnyChange(pathToField) {
+    // TODO: add data
+    events.emit('anyChange');
+    events.emit(`field.${pathToField}.anyChange`);
   }
 
-  /**
-   * It rises a "change" event.
-   * It rises only if value changed by user.
-   * @private
-   */
-  $riseChangeByUser() {
-    // TODO: !!!
-    events.emit('change', {});
-  }
 }
