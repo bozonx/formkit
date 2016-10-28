@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import events from './events';
 import FieldBase from './FieldBase';
 
 export default class Field extends FieldBase {
@@ -96,6 +97,10 @@ export default class Field extends FieldBase {
    */
   handlePressEnter() {
     this.$startSave(true);
+  }
+
+  on(eventName, cb) {
+    events.addListener(`field.${this.$pathToField}.${eventName}`, cb);
   }
 
   /**

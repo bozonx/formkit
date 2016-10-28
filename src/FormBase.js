@@ -18,21 +18,21 @@ export default class FormBase {
   /**
    * It calls from field on silent value change.
    * It means - it calls on any value change.
-   * @param {string} fieldName
+   * @param {string} pathToField
    */
-  $$handleSilentValueChange(fieldName, oldValue) {
+  $$handleSilentValueChange(pathToField, oldValue) {
     var values = this.$storage.getFieldsValues();
     var eventData = {
-      fieldName,
+      fieldName: pathToField,
       oldValue,
-      value: values[fieldName],
+      value: values[pathToField],
     };
 
     // It hopes actual value is in storage at the moment
     extendDeep(this, {values: values});
 
     events.emit('silentChange', eventData);
-    events.emit(`field.${fieldName}.silentChange`, eventData);
+    events.emit(`field.${pathToField}.silentChange`, eventData);
 
     // TODO: rise per field change event
     // TODO: rise form change event
@@ -40,29 +40,29 @@ export default class FormBase {
 
   /**
    * It calls form field on value changed by user
-   * @param {string} fieldName
+   * @param {string} pathToField
    * @param {*} newValue
    */
-  $$handleValueChangeByUser(fieldName, newValue) {
+  $$handleValueChangeByUser(pathToField, newValue) {
     // TODO: get value from storage!
-    if (this.$onChangeCallback) this.$onChangeCallback({[fieldName]: newValue});
+    if (this.$onChangeCallback) this.$onChangeCallback({[pathToField]: newValue});
   }
 
-  $$handleInitialValueChange(fieldName, newInitialValue) {
-    this.$formState.setFieldInitialValue(fieldName, newInitialValue);
+  $$handleInitialValueChange(pathToField, newInitialValue) {
+    this.$formState.setFieldInitialValue(pathToField, newInitialValue);
   }
 
   $$handleFieldStateChange(stateName, newValue) {
     this.$formState.setStateValue(stateName, newValue);
   }
 
-  $$handleAnyFieldsValidStateChange(fieldName, isValid, invalidMsg) {
+  $$handleAnyFieldsValidStateChange(pathToField, isValid, invalidMsg) {
     var newInvalidMessages = { ...this.invalidMsg };
     if (isValid) {
-      delete newInvalidMessages[fieldName];
+      delete newInvalidMessages[pathToField];
     }
     else {
-      newInvalidMessages[fieldName] = invalidMsg;
+      newInvalidMessages[pathToField] = invalidMsg;
     }
 
     this.$formState.setStateValue('invalidMsg', newInvalidMessages);

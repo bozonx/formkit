@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import events from './events';
 import FormBase from './FormBase';
 
 export default class Form extends FormBase{
@@ -37,6 +38,10 @@ export default class Form extends FormBase{
    */
   setInitialValues(initialState) {
     this.$fieldsManager.setInitialValues(initialState);
+  }
+
+  on(eventName, cb) {
+    events.addListener(eventName, cb);
   }
 
   onChange(cb) {

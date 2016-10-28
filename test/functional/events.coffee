@@ -1,32 +1,49 @@
 formHelper = require('../../src/index').default
 
-describe 'Functional. onChange and handleChange.', ->
+describe 'Functional. Events.', ->
   beforeEach () ->
     this.form = formHelper()
     this.form.init({name: null})
 
-    this.fieldOnChangeHandler = sinon.spy();
-    this.formOnChangeHandler = sinon.spy();
+    this.fieldHandler = sinon.spy();
+    this.formHandler = sinon.spy();
 
-    this.form.fields.name.onChange(this.fieldOnChangeHandler);
-    this.form.onChange(this.formOnChangeHandler);
+    this.form.fields.name.on('silentChange', this.fieldHandler);
+    this.form.on('silentChange', this.formHandler);
 
-  it "call after userInput", ->
-    this.form.fields.name.handleChange('userValue')
-    expect(this.fieldOnChangeHandler).to.have.been.calledOnce
-    expect(this.fieldOnChangeHandler).to.have.been.calledWith('userValue')
+  describe 'silentChange.', ->
+    it "silentChange after handleChange", ->
+      this.form.fields.name.handleChange('newValue')
+      expect(this.fieldHandler).to.have.been.calledOnce
+      expect(this.fieldHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: null, value: 'newValue'
+      })
+      expect(this.formHandler).to.have.been.calledOnce
+      expect(this.formHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: null, value: 'newValue'
+      })
 
-    expect(this.formOnChangeHandler).to.have.been.calledOnce
-    expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'userValue'})
+    it "silentChange after updateValue", () ->
+      this.form.fields.name.updateValue('newValue')
+      expect(this.fieldHandler).to.have.been.calledOnce
+      expect(this.fieldHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: null, value: 'newValue'
+      })
+      expect(this.formHandler).to.have.been.calledOnce
+      expect(this.formHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: null, value: 'newValue'
+      })
 
-  it "don't call after machine update", ->
-    this.form.fields.name.updateValue('machineValue')
-    expect(this.fieldOnChangeHandler).to.not.have.been.called
+    it "test oldValue", () ->
+      this.form.fields.name.updateValue('initValue')
+      this.form.fields.name.updateValue('newValue')
+      expect(this.fieldHandler).to.have.been.calledTwice
+      expect(this.fieldHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: 'initValue', value: 'newValue'
+      })
+      expect(this.formHandler).to.have.been.calledTwice
+      expect(this.formHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: 'initValue', value: 'newValue'
+      })
 
-    expect(this.formOnChangeHandler).to.not.have.been.called
-
-  it "it doesn\'t rise events on set initial values", ->
-    this.form.fields.name.setInitialValue('initialValue')
-    expect(this.fieldOnChangeHandler).to.not.have.been.called
-
-    expect(this.formOnChangeHandler).to.not.have.been.called
+  describe 'anyChange.', ->
