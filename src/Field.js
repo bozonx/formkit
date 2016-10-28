@@ -37,26 +37,25 @@ export default class Field extends FieldBase {
     this.validate();
   }
 
-
-
+  /**
+   * It sets initial value.
+   * It does:
+   * * It set up new initial value to self instance and to storage
+   * * if value of field is null and field is untouched, it sets value (see updateValue() method)
+   * * if field isn't touched, it just update dirty state
+   * @param newValue
+   */
   setInitialValue(newValue) {
-    // TODO: пересмотреть
-
+    // set up initial value to this field instance and to storage
     this.$fieldState.setInitialValue(newValue);
 
-    // TODO: может ли пользователь установить null?
-    if (_.isNull(this.$fieldState.getValue())) {
+    if (_.isNull(this.$fieldState.getValue()) && !this.$fieldState.getState('touched')) {
       this.updateValue(newValue)
-      // this.$fieldState.setValue(newValue);
-      // this.validate();
     }
     else {
       this.$updateDirty();
     }
-
-    // TODO: наверное если не в первый раз, то можно поднимать событие
   }
-
 
   validate() {
     if (!this.validateRule) return;
@@ -110,10 +109,6 @@ export default class Field extends FieldBase {
   onChange(cb) {
     this.$onChangeCallback = cb;
   }
-
-  // onAnyChange(cb) {
-  //   this._onAnyChangeCallback = cb;
-  // }
 
   onSave(cb) {
     this.$onSaveCallback = cb;

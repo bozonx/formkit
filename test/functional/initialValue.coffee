@@ -39,3 +39,16 @@ describe 'Functional. Init.', ->
 
     assert.equal(this.form.$storage.getFieldValue('name'), 'initValue')
     assert.equal(this.form.$storage.getFieldInitialValue('name'), 'initValue')
+
+  it "don't set value if field is touched", ->
+    this.form.init({name: null})
+    this.form.fields.name.handleChange('newValue')
+    this.form.fields.name.handleChange(null)
+
+    this.form.fields.name.setInitialValue('initValue')
+
+    assert.equal(this.form.fields.name.value, null)
+    assert.equal(this.form.fields.name.initialValue, 'initValue')
+
+    assert.equal(this.form.$storage.getFieldValue('name'), null)
+    assert.equal(this.form.$storage.getFieldInitialValue('name'), 'initValue')

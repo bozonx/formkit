@@ -10,7 +10,6 @@ export default class FieldBase {
 
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
-    //this._onAnyChangeCallback = null;
 
     this.$debounceTime = 1000;
 
