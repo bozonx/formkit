@@ -7,36 +7,37 @@ export default class Field extends FieldBase {
     super(form, fieldName);
   }
 
+  setDebounceTime(time) {
+    this.$debounceTime = time;
+  }
+
   /**
-   * Silent update.
-   * It uses for set outer(from machine) values (not user's).
-   * It doesn't rise onChange callback.
-   * It rises anyChange event.
-   * It doesn't update "touched" state.
-   * It updates "dirty" and "valid" state.
-   * @param newValue
+   * Silent update. It uses for set outer(from machine) values (not user's).
+   *
+   * It does:
+   * * It set up new value to self instance and to storage
+   * * It updates "dirty" and "valid" states.
+   * * It rises anyChange event for field and whore form.
+   *
+   * It doesn't:
+   * * It doesn't rise onChange callback (for user's events).
+   * * It doesn't update "touched" state.
+   * @param {*} newValue
    */
   updateValue(newValue) {
     // set up value to this field instance and to storage
     this.$fieldState.setValue(newValue);
-    //this.$setValue(newValue);
 
-    // TODO: получается дважды обновляется хранилище, наверное нужно обновлять только из формы
-
-    // tell to form new value
+    // tell to form - a value is updated
     this.$form.$$handleAnyFieldsValueChange(this.$pathToField);
 
     // update dirty state
     this._updateDirty();
     // run validation
     this.validate();
-
-    // TODO: rise per field change event - maybe in form?
   }
 
-  setDebounceTime(time) {
-    this.$debounceTime = time;
-  }
+
 
   setInitialValue(newValue) {
     // TODO: пересмотреть

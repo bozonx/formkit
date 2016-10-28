@@ -22,6 +22,9 @@ export default class FormBase {
   $$handleAnyFieldsValueChange(fieldName) {
     // It hopes actual value is in storage at the moment
     extendDeep(this, {values: this.$storage.getFieldsValues()});
+
+    // TODO: rise per field change event
+    // TODO: rise form change event
   }
 
   $$handleAnyFieldsValueChangeByUser(fieldName, newValue) {
