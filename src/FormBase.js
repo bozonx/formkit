@@ -28,6 +28,7 @@ export default class FormBase {
   }
 
   $$handleAnyFieldsValueChangeByUser(fieldName, newValue) {
+    // TODO: get value from storage!
     if (this.$onChangeCallback) this.$onChangeCallback({[fieldName]: newValue});
   }
 

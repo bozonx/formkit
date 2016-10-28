@@ -19,7 +19,7 @@ export default class FieldBase {
     }, this.$debounceTime);
   }
 
-  _startSave(force) {
+  $startSave(force) {
     // don't save invalid value
     if (!this.$fieldState.getState('valid')) return;
 
@@ -33,7 +33,7 @@ export default class FieldBase {
     }
   }
 
-  _updateDirty() {
+  $updateDirty() {
     var value = this.$fieldState.getValue();
     var initialValue = this.$fieldState.getInitialValue();
     var newValue;

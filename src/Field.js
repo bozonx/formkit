@@ -32,7 +32,7 @@ export default class Field extends FieldBase {
     this.$form.$$handleAnyFieldsValueChange(this.$pathToField);
 
     // update dirty state
-    this._updateDirty();
+    this.$updateDirty();
     // run validation
     this.validate();
   }
@@ -51,7 +51,7 @@ export default class Field extends FieldBase {
       // this.validate();
     }
     else {
-      this._updateDirty();
+      this.$updateDirty();
     }
 
     // TODO: наверное если не в первый раз, то можно поднимать событие
@@ -71,7 +71,13 @@ export default class Field extends FieldBase {
   }
 
   /**
-   * onChange handler - it must be placed to input onChange attribute
+   * It's onChange handler. It must be placed to input onChange attribute.
+   * It does:
+   * * all of updateValue() method
+   * * update "touched" state
+   * * Rises "change" events for field and form
+   * * Runs onChange callback if it assigned.
+   * * Starts saving
    */
   handleChange(newValue) {
     this.updateValue(newValue);
@@ -87,7 +93,7 @@ export default class Field extends FieldBase {
 
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
-    this._startSave();
+    this.$startSave();
   }
 
   /**
@@ -95,7 +101,7 @@ export default class Field extends FieldBase {
    * It immediately starts save
    */
   handlePressEnter() {
-    this._startSave(true);
+    this.$startSave(true);
   }
 
   /**
