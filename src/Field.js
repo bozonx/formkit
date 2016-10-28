@@ -19,12 +19,12 @@ export default class Field extends FieldBase {
   updateValue(newValue) {
     // set up value to this field instance and to storage
     this.$fieldState.setValue(newValue);
+    //this.$setValue(newValue);
 
     // TODO: получается дважды обновляется хранилище, наверное нужно обновлять только из формы
 
     // tell to form new value
-    this.$form.$$handleAnyFieldsValueChange(
-      this.$pathToField, this.$fieldState.getValue());
+    this.$form.$$handleAnyFieldsValueChange(this.$pathToField);
 
     // update dirty state
     this._updateDirty();

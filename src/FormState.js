@@ -16,7 +16,7 @@ export default class FormState {
   }
 
   setFieldValue(path, newValue) {
-    this._form.$storage.setFieldValue(path, newValue);
+    //this._form.$storage.setFieldValue(path, newValue);
     // TODO: не очень оптимально брать все значения, хотя изменилось только одно
     this._updateFormState({values: this._form.$storage.getFieldsValues()});
   }

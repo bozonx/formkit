@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import { extendDeep } from './helpers';
 import events from './events';
 import FormState from './FormState';
 import FieldsManager from './FieldsManager';
@@ -18,8 +19,9 @@ export default class FormBase {
     this.setInitialValues(initialState);
   }
 
-  $$handleAnyFieldsValueChange(fieldName, newValue) {
-    this.$formState.setFieldValue(fieldName, newValue);
+  $$handleAnyFieldsValueChange(fieldName) {
+    // It hopes actual value is in storage at the moment
+    extendDeep(this, {values: this.$storage.getFieldsValues()});
   }
 
   $$handleAnyFieldsValueChangeByUser(fieldName, newValue) {
@@ -79,4 +81,9 @@ export default class FormBase {
   $riseSilentChange() {
     events.emit('silentChange', {});
   }
+
+  // _updateFormState(newState) {
+  //   // TODO: нужна поддержка простых массивов - удаленные элементы останутся
+  //   extendDeep(this, newState);
+  // }
 }
