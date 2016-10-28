@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import events from './events';
 import FormState from './FormState';
 import FieldsManager from './FieldsManager';
 
@@ -86,6 +87,7 @@ export default class Form {
     this._onChangeCallback = cb;
   }
 
+  // TODO: remove
   onAnyChange(cb) {
     this._onAnyChangeCallback = cb;
   }
@@ -114,5 +116,33 @@ export default class Form {
 
   reset() {
     // TODO: !!!
+  }
+
+
+  /**
+   * It rises a "stateChange" event.
+   * It rises on any change of value, initialValue or any state.
+   * @private
+   */
+  _riseAnyChange() {
+   events.emit('anyChange', {});
+  }
+
+  /**
+   * It rises a "change" event.
+   * It rises only if value changed by user.
+   * @private
+   */
+  _riseChangeByUser() {
+    events.emit('change', {});
+  }
+
+  /**
+   * It rises a "silentChange" event.
+   * It rises on any value change by user or by program.
+   * @private
+   */
+  _riseSilentChange() {
+    events.emit('silentChange', {});
   }
 }

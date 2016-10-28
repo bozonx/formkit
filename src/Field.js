@@ -1,6 +1,5 @@
 import _ from 'lodash';
 
-//import events from './events';
 import FieldState from './FieldState';
 
 export default class Field {
@@ -146,11 +145,4 @@ export default class Field {
     this._form.$$handleAnyFieldsStateChange('dirty', newValue);
   }
 
-  //_riseUpdateEvent() {
-  //  events.emit('field.value__update', {
-  //    name: this.name,
-  //    newValue: this.value,
-  //    field: this,
-  //  });
-  //}
 }
