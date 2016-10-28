@@ -5,8 +5,8 @@ import FieldState from './FieldState';
 export default class FieldBase {
   constructor(form, fieldName) {
     this.$form = form;
-    this.$fieldName = fieldName;
-    this.$fieldState = new FieldState(this.$form, this, this.$fieldName);
+    this.$pathToField = fieldName;
+    this.$fieldState = new FieldState(this.$form, this, this.$pathToField);
 
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;

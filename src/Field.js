@@ -17,15 +17,21 @@ export default class Field extends FieldBase {
    * @param newValue
    */
   updateValue(newValue) {
+    // set up value to this field instance and to storage
     this.$fieldState.setValue(newValue);
 
+    // TODO: получается дважды обновляется хранилище, наверное нужно обновлять только из формы
+
+    // tell to form new value
+    this.$form.$$handleAnyFieldsValueChange(
+      this.$pathToField, this.$fieldState.getValue());
+
+    // update dirty state
     this._updateDirty();
+    // run validation
     this.validate();
 
-    this.$form.$$handleAnyFieldsValueChange(
-      this.$fieldName, this.$fieldState.getValue());
-
-    //if (this._onAnyChangeCallback) this._onAnyChangeCallback(newValue);
+    // TODO: rise per field change event - maybe in form?
   }
 
   setDebounceTime(time) {
@@ -59,7 +65,7 @@ export default class Field extends FieldBase {
 
     this.$fieldState.setStateValue('valid', isValid);
     this.$fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
-    this.$form.$$handleAnyFieldsValidStateChange(this.$fieldName, isValid, invalidMsg);
+    this.$form.$$handleAnyFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
     return isValid;
   }
 
@@ -76,7 +82,7 @@ export default class Field extends FieldBase {
     }
 
     this.$form.$$handleAnyFieldsValueChangeByUser(
-      this.$fieldName, this.$fieldState.getValue());
+      this.$pathToField, this.$fieldState.getValue());
 
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
