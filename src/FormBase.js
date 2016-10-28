@@ -11,7 +11,6 @@ export default class Form {
     this.$fieldsManager = new FieldsManager(this);
 
     this.$onChangeCallback = null;
-    this._onAnyChangeCallback = null;
     this.fields = this.$fieldsManager.fields;
   }
 
@@ -21,7 +20,6 @@ export default class Form {
 
   $$handleAnyFieldsValueChange(fieldName, newValue) {
     this.$formState.setFieldValue(fieldName, newValue);
-    if (this._onAnyChangeCallback) this._onAnyChangeCallback({[fieldName]: newValue});
   }
 
   $$handleAnyFieldsValueChangeByUser(fieldName, newValue) {

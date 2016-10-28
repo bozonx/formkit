@@ -43,11 +43,6 @@ export default class Form extends FormBase{
     this.$onChangeCallback = cb;
   }
 
-  // TODO: remove
-  onAnyChange(cb) {
-    this._onAnyChangeCallback = cb;
-  }
-
   /**
    * It must be placed to <form> element on onSubmit attribute.
    */

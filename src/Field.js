@@ -7,7 +7,7 @@ export default class Field {
     this._form = form;
 
     this._onChangeCallback = null;
-    this._onAnyChangeCallback = null;
+    //this._onAnyChangeCallback = null;
     this._onSaveCallback = null;
 
     this.debounceTime = 1000;
@@ -22,7 +22,7 @@ export default class Field {
    * Silent update.
    * It uses for set outer(from machine) values (not user's).
    * It doesn't rise onChange callback.
-   * It rises onAnyChange callback.
+   * It rises anyChange event.
    * It doesn't update "touched" state.
    * It updates "dirty" and "valid" state.
    * @param newValue
@@ -36,7 +36,7 @@ export default class Field {
     this._form.$$handleAnyFieldsValueChange(
       this._fieldState.getState('name'), this._fieldState.getValue());
 
-    if (this._onAnyChangeCallback) this._onAnyChangeCallback(newValue);
+    //if (this._onAnyChangeCallback) this._onAnyChangeCallback(newValue);
   }
 
   setInitialValue(newValue) {
@@ -105,9 +105,9 @@ export default class Field {
     this._onChangeCallback = cb;
   }
 
-  onAnyChange(cb) {
-    this._onAnyChangeCallback = cb;
-  }
+  // onAnyChange(cb) {
+  //   this._onAnyChangeCallback = cb;
+  // }
 
   onSave(cb) {
     this._onSaveCallback = cb;
