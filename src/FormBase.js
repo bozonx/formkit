@@ -86,7 +86,7 @@ export default class FormBase {
     this.$formState.setStateValue('valid', isFormValid);
   }
 
-  $getWhoreStorageState() {
+  $getWholeStorageState() {
     return this.$storage.getWhoreStorageState();
   }
 
