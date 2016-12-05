@@ -3,8 +3,8 @@ import _ from 'lodash';
 import FormBase from './FormBase';
 
 export default class Form extends FormBase{
-  constructor(storage, events, log) {
-    super(storage, events, log);
+  constructor(storage, config, events, log) {
+    super(storage, config, events, log);
     this._onSubmitCallback = null;
   }
 

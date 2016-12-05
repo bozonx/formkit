@@ -5,9 +5,10 @@ import FormState from './FormState';
 import FieldsManager from './FieldsManager';
 
 export default class FormBase {
-  constructor(storage, events, log) {
+  constructor(storage, config, events, log) {
     this.$storage = storage;
     this.$events = events;
+    this.$config = config;
     this.$log = log;
     this.$formState = new FormState(this);
     this.$fieldsManager = new FieldsManager(this);

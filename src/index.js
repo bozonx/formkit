@@ -20,11 +20,9 @@ export default {
   newForm: function(config) {
     const newConfig = _.defaults(_.clone(config), globalConfig);
     const events = new EventEmitter();
-
-    // TODO: не хранить silent - использовать глобальную опцию
     const log = new Log({silent: newConfig.silent});
     const storage = new Storage();
 
-    return new Form(storage, events, log);
+    return new Form(storage, newConfig, events, log);
   },
 }
