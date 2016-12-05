@@ -6,19 +6,17 @@ export default class FieldBase {
   constructor(form, fieldName) {
     this.$form = form;
     this.$pathToField = fieldName;
+    this.$debounceTime = this.$form.$config.debounceTime;
     this.$fieldState = new FieldState(this.$form, this, this.$pathToField);
-
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
-
-    this.$debounceTime = this.$form.$config.debounceTime;
 
     this._debouncedCb = _.debounce((cb, value) => {
       cb(value);
     }, this.$debounceTime);
   }
 
-  $startSave(force) {
+  __startSave(force) {
     // don't save invalid value
     if (!this.$fieldState.getState('valid')) return;
 
@@ -38,7 +36,7 @@ export default class FieldBase {
     }
   }
 
-  $updateDirty() {
+  __updateDirty() {
     var value = this.$fieldState.getValue();
     var initialValue = this.$fieldState.getInitialValue();
     var newValue;

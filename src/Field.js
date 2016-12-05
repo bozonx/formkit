@@ -35,7 +35,7 @@ export default class Field extends FieldBase {
     this.$form.$$handleSilentValueChange(this.$pathToField, oldValue);
 
     // update dirty state
-    this.$updateDirty();
+    this.__updateDirty();
     // run validation
     this.validate();
   }
@@ -59,7 +59,7 @@ export default class Field extends FieldBase {
       this.updateValue(newValue)
     }
     else {
-      this.$updateDirty();
+      this.__updateDirty();
     }
   }
 
@@ -91,7 +91,7 @@ export default class Field extends FieldBase {
 
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
-    this.$startSave();
+    this.__startSave();
   }
 
   /**
@@ -101,7 +101,7 @@ export default class Field extends FieldBase {
    * * immediately starts save
    */
   handlePressEnter() {
-    this.$startSave(true);
+    this.__startSave(true);
   }
 
   on(eventName, cb) {
