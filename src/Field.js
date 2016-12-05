@@ -85,7 +85,7 @@ export default class Field extends FieldBase {
       this.$form.$$handleFieldStateChange('touched', true);
     }
 
-    this.$form.$$handleValueChangeByUser(this.$pathToField, oldValue);
+    this.$form.$$handleValueChangeByUser(this.$pathToField, oldValue, newValue);
 
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 

@@ -24,7 +24,7 @@ export default class FieldBase {
 
     const cb = (value) => {
       if (this.$onSaveCallback) this.$onSaveCallback(value);
-      this.$form.$handleFieldSave(this.$pathToField);
+      this.$form.$handleFieldSave(this.$pathToField, value);
     };
 
     if (force) {

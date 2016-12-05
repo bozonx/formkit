@@ -14,7 +14,7 @@ describe 'Functional. saving.', ->
     this.form.fields.name._debouncedCb.flush()
 
     expect(this.formSaveHandler).to.have.been.calledOnce
-    #expect(this.formSaveHandler).to.have.been.calledWith({name: 'newValue'})
+    expect(this.formSaveHandler).to.have.been.calledWith({name: 'newValue'})
     expect(this.saveHandler).to.have.been.calledOnce
     expect(this.saveHandler).to.have.been.calledWith('newValue')
 
@@ -38,3 +38,9 @@ describe 'Functional. saving.', ->
     this.form.fields.name._debouncedCb.flush()
 
     expect(this.saveHandler).to.not.have.been.called
+
+  it 'after change value must save debounced', ->
+    this.form.onSave(this.formSaveHandler)
+    this.form.fields.name.onSave(this.saveHandler)
+    this.form.fields.name.handleChange('newValue')
+    this.form.fields.name._debouncedCb.flush()

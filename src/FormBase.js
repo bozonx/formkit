@@ -14,15 +14,20 @@ export default class FormBase {
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
     this.fields = this.$fieldsManager.fields;
+
+    this._unsavedState = {};
   }
 
   /**
    * It calls form field on debounced save handler.
    * @param {string} pathToField
+   * @param {*} newValue
    */
-  $handleFieldSave(pathToField) {
-    // TODO: накапливать изменения с момента последнего сохранения и отдавать их
-    if (this.$onSaveCallback) this.$onSaveCallback();
+  $handleFieldSave(pathToField, newValue) {
+    if (!this.$onSaveCallback) return;
+    _.set(this._unsavedState, pathToField, newValue);
+    this.$onSaveCallback(this._unsavedState);
+    this._unsavedState = {};
   }
 
   /**
@@ -57,8 +62,9 @@ export default class FormBase {
    * It rises only if value changed by user.
    * @param {string} pathToField
    * @param {*} oldValue
+   * @param {*} newValue
    */
-  $$handleValueChangeByUser(pathToField, oldValue) {
+  $$handleValueChangeByUser(pathToField, oldValue, newValue) {
     var value = this.$storage.getFieldValue(pathToField);
     var eventData = {
       fieldName: pathToField,
@@ -71,6 +77,8 @@ export default class FormBase {
     // Rise events
     events.emit('change', eventData);
     events.emit(`field.${pathToField}.change`, eventData);
+
+    _.set(this._unsavedState, pathToField, newValue);
   }
 
   $$handleInitialValueChange(pathToField, newInitialValue) {
