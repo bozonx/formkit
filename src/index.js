@@ -7,7 +7,7 @@ import EventEmitter from 'eventemitter3';
 
 
 const globalConfig = {
-  debounceTime: 1300,
+  debounceTime: 1000,
   unchangedValueSaving: false,
   focusedFieldSaving: false,
   silent: false,

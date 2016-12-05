@@ -18,16 +18,18 @@ export default class FieldBase {
     // don't save invalid value
     if (!this.$fieldState.getState('valid')) return;
 
-    if (force) {
-      // cancelling
-      this._debouncedCb.cancel();
-      // save without debounce
-      if (this.__onSaveCallback) this.__onSaveCallback(this.$fieldState.getValue());
-    }
-    else {
-      this._debouncedCb(() => {
-        if (this.__onSaveCallback) this.__onSaveCallback(this.$fieldState.getValue())
-      });
+    if (this.__onSaveCallback) {
+      if (force) {
+        // cancelling
+        this._debouncedCb.cancel();
+        // save without debounce
+        this.__onSaveCallback(this.$fieldState.getValue());
+      }
+      else {
+        this._debouncedCb(() => {
+          this.__onSaveCallback(this.$fieldState.getValue())
+        });
+      }
     }
 
     this.$form.$handlers.handleFieldSave(force);
