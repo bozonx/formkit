@@ -38,7 +38,7 @@ export default class Storage {
     };
   }
 
-  getWhoreStorageState() {
+  getWholeStorageState() {
     return _.cloneDeep(this._store);
   }
 

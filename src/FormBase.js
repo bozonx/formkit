@@ -87,7 +87,7 @@ export default class FormBase {
   }
 
   $getWholeStorageState() {
-    return this.$storage.getWhoreStorageState();
+    return this.$storage.getWholeStorageState();
   }
 
   /**
