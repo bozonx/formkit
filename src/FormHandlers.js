@@ -7,7 +7,7 @@ export default class FormHandlers {
 
     this._form = form;
     this._unsavedState = {};
-    this._debouncedCb = _.debounce((cb) => cb(), this.$debounceTime);
+    this._debouncedCb = _.debounce((cb) => cb(), this._form.$config.debounceTime);
   }
 
   /**

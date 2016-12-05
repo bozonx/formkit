@@ -6,12 +6,12 @@ export default class FieldBase {
   constructor(form, fieldName) {
     this.$form = form;
     this.$pathToField = fieldName;
-    this.$debounceTime = this.$form.$config.debounceTime;
+    this.__debounceTime = this.$form.$config.debounceTime;
     this.$fieldState = new FieldState(this.$form, this, this.$pathToField);
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
 
-    this._debouncedCb = _.debounce((cb) => cb(), this.$debounceTime);
+    this._debouncedCb = _.debounce((cb) => cb(), this.__debounceTime);
   }
 
   __startSave(force) {

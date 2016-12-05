@@ -8,7 +8,7 @@ export default class Field extends FieldBase {
   }
 
   setDebounceTime(time) {
-    this.$debounceTime = time;
+    this.__debounceTime = time;
   }
 
   /**
