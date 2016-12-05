@@ -24,7 +24,7 @@ describe 'Functional. Get and set value.', ->
     assert.equal(this.form.$storage.getFieldValue('name'), 'newValue')
     assert.equal(this.form.$storage.getFieldInitialValue('name'), 'initValue')
 
-  it 'set new values to whore form', ->
+  it 'set new values to whole form', ->
     this.form.setValues({name: 'newValue'})
 
     assert.deepEqual(this.form.values, {name: 'newValue'})

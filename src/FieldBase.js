@@ -22,7 +22,7 @@ export default class FieldBase {
 
     const cb = (value) => {
       if (this.$onSaveCallback) this.$onSaveCallback(value);
-      this.$form.$handleFieldSave(this.$pathToField, value);
+      this.$form.$handlers.handleFieldSave(this.$pathToField, value);
     };
 
     if (force) {
@@ -51,7 +51,7 @@ export default class FieldBase {
     }
 
     this.$fieldState.setStateValue('dirty', newValue);
-    this.$form.$$handleFieldStateChange('dirty', newValue);
+    this.$form.$handlers.handleFieldStateChange('dirty', newValue);
   }
 
 }

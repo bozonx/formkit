@@ -49,15 +49,15 @@ describe 'Functional. saving.', ->
       this.form.init({ param1: null, param2: null, param3: null })
       this.formSaveHandler = sinon.spy();
 
-    it 'save partly', ->
-      this.form.onSave(this.formSaveHandler)
-      this.form.fields.param1.handleChange('newValue')
-      this.form.fields.param1._debouncedCb.flush()
-      this.form.fields.param3.handleChange('newValue')
-      this.form.fields.param3._debouncedCb.flush()
-
-      expect(this.formSaveHandler).to.have.been.calledOnce
-      expect(this.formSaveHandler).to.have.been.calledWith({
-        param1: 'newValue',
-        param2: 'newValue',
-      })
+#    it 'save partly', ->
+#      this.form.onSave(this.formSaveHandler)
+#      this.form.fields.param1.handleChange('newValue')
+#      this.form.fields.param1._debouncedCb.flush()
+#      this.form.fields.param3.handleChange('newValue')
+#      this.form.fields.param3._debouncedCb.flush()
+#
+#      expect(this.formSaveHandler).to.have.been.calledOnce
+#      expect(this.formSaveHandler).to.have.been.calledWith({
+#        param1: 'newValue',
+#        param2: 'newValue',
+#      })

@@ -17,7 +17,7 @@ export default class Field extends FieldBase {
    * It does:
    * * It set up new value to self instance and to storage
    * * It updates "dirty" and "valid" states.
-   * * It rises anyChange event for field and whore form.
+   * * It rises anyChange event for field and whole form.
    *
    * It doesn't:
    * * It doesn't rise onChange callback (for user's events).
@@ -32,7 +32,7 @@ export default class Field extends FieldBase {
     this.$fieldState.setValue(newValue);
 
     // tell to form - a value is updated
-    this.$form.$$handleSilentValueChange(this.$pathToField, oldValue);
+    this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldValue);
 
     // update dirty state
     this.__updateDirty();
@@ -53,7 +53,7 @@ export default class Field extends FieldBase {
     this.$fieldState.setInitialValue(newValue);
 
     // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
-    this.$form.$$handleInitialValueChange(this.$pathToField, newValue);
+    this.$form.$handlers.handleInitialValueChange(this.$pathToField, newValue);
 
     if (_.isNull(this.$fieldState.getValue()) && !this.$fieldState.getState('touched')) {
       this.updateValue(newValue)
@@ -84,10 +84,10 @@ export default class Field extends FieldBase {
     // update touched
     if (!this.$fieldState.getState('touched')) {
       this.$fieldState.setStateValue('touched', true);
-      this.$form.$$handleFieldStateChange('touched', true);
+      this.$form.$handlers.handleFieldStateChange('touched', true);
     }
 
-    this.$form.$$handleValueChangeByUser(this.$pathToField, oldValue, newValue);
+    this.$form.$handlers.handleValueChangeByUser(this.$pathToField, oldValue, newValue);
 
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
@@ -135,7 +135,7 @@ export default class Field extends FieldBase {
 
     this.$fieldState.setStateValue('valid', isValid);
     this.$fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
-    this.$form.$$handleAnyFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
+    this.$form.$handlers.handleAnyFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
     return isValid;
   }
 

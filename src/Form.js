@@ -44,11 +44,11 @@ export default class Form extends FormBase{
   }
 
   onChange(cb) {
-    this.$onChangeCallback = cb;
+    this.$handlers.$onChangeCallback = cb;
   }
 
   onSave(cb) {
-    this.$onSaveCallback = cb;
+    this.$handlers.$onSaveCallback = cb;
   }
 
   /**
