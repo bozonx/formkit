@@ -14,7 +14,7 @@ const globalConfig = {
 };
 
 export default {
-  configure: function (config) {
+  setDefaults: function (config) {
     _.extend(globalConfig, config);
   },
   newForm: function(config) {

@@ -73,8 +73,11 @@ export default class Field extends FieldBase {
    * * Starts saving
    */
   handleChange(newValue) {
-    // TODO: нужно делать клон???
+     // TODO: нужно делать клон???
     var oldValue = this.$fieldState.getValue();
+
+    // don't save unchanged value if it allows in config.
+    if (!this.$form.$config.unchangedValueSaving && oldValue === newValue) return;
 
     this.updateValue(newValue);
 
@@ -92,7 +95,7 @@ export default class Field extends FieldBase {
   }
 
   /**
-   * bind it to you component to onEnter event.
+   * bind it to your component to onEnter event.
    * It does:
    * * cancel previous save in queue
    * * immediately starts save
