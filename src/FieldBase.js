@@ -9,7 +9,7 @@ export default class FieldBase {
     this.__debounceTime = this.$form.$config.debounceTime;
     this.$fieldState = new FieldState(this.$form, this, this.$pathToField);
     this.$onChangeCallback = null;
-    this.$onSaveCallback = null;
+    this.__onSaveCallback = null;
 
     this._debouncedCb = _.debounce((cb) => cb(), this.__debounceTime);
   }
@@ -22,10 +22,12 @@ export default class FieldBase {
       // cancelling
       this._debouncedCb.cancel();
       // save without debounce
-      if (this.$onSaveCallback) this.$onSaveCallback(this.$fieldState.getValue());
+      if (this.__onSaveCallback) this.__onSaveCallback(this.$fieldState.getValue());
     }
     else {
-      this._debouncedCb(() => this.$onSaveCallback(this.$fieldState.getValue()));
+      this._debouncedCb(() => {
+        if (this.__onSaveCallback) this.__onSaveCallback(this.$fieldState.getValue())
+      });
     }
 
     this.$form.$handlers.handleFieldSave(force);

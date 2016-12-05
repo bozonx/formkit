@@ -120,7 +120,7 @@ export default class Field extends FieldBase {
    * @param cb
    */
   onSave(cb) {
-    this.$onSaveCallback = cb;
+    this.__onSaveCallback = cb;
   }
 
   /**
