@@ -1,13 +1,14 @@
 import _ from 'lodash';
 
 import { extendDeep } from './helpers';
-import events from './events';
 import FormState from './FormState';
 import FieldsManager from './FieldsManager';
 
 export default class FormBase {
-  constructor(storage) {
+  constructor(storage, events, log) {
     this.$storage = storage;
+    this.$events = events;
+    this.$log = log;
     this.$formState = new FormState(this);
     this.$fieldsManager = new FieldsManager(this);
 
@@ -49,8 +50,8 @@ export default class FormBase {
     extendDeep(this, {values: this.$storage.getFieldsValues()});
 
     // Rise events
-    events.emit('silentChange', eventData);
-    events.emit(`field.${pathToField}.silentChange`, eventData);
+    this.$events.emit('silentChange', eventData);
+    this.$events.emit(`field.${pathToField}.silentChange`, eventData);
 
     // TODO: ну только отсюда должно подниматься событие
     this._riseAnyChange(pathToField);
@@ -75,8 +76,8 @@ export default class FormBase {
     if (this.$onChangeCallback) this.$onChangeCallback({[pathToField]: value});
 
     // Rise events
-    events.emit('change', eventData);
-    events.emit(`field.${pathToField}.change`, eventData);
+    this.$events.emit('change', eventData);
+    this.$events.emit(`field.${pathToField}.change`, eventData);
 
     _.set(this._unsavedState, pathToField, newValue);
   }
@@ -115,8 +116,8 @@ export default class FormBase {
    */
   _riseAnyChange(pathToField) {
     // TODO: add data
-    events.emit('anyChange');
-    events.emit(`field.${pathToField}.anyChange`);
+    this.$events.emit('anyChange');
+    this.$events.emit(`field.${pathToField}.anyChange`);
   }
 
 }

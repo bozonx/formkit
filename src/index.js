@@ -4,6 +4,12 @@ import Config from './Config';
 import Log from './Log';
 import Form from './Form';
 import Storage from './Storage';
+import EventEmitter from 'eventemitter3';
+
+const configInstance = new Config({});
+const thisconfig = configInstance.get();
+
+
 
 const globalConfig = {
   debounceTime: 300,
@@ -17,11 +23,8 @@ export default {
   },
   newForm: function(config) {
     // const newConfig = _.defaults(_.clone(config), globalConfig);
+    const events = new EventEmitter();
 
-    const configInstance = new Config({});
-    const thisconfig = configInstance.get();
-    // TODO: не подключать так
-    const events = thisconfig.eventEmitter;
     // TODO: не хранить silent - использовать глобальную опцию
     const log = new Log({silent: thisconfig.silent});
     const storage = new Storage();

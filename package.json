@@ -37,7 +37,7 @@
     "coffee-coverage": "^1.0.1",
     "coffee-script": "^1.11.1",
     "eslint": "^2.13.1",
-    "eventemitter2": "^1.0.5",
+    "eventemitter3": "^2.0.2",
     "istanbul": "^0.4.5",
     "memdown": "^1.2.2",
     "mocha": "^2.5.3",
