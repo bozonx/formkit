@@ -11,7 +11,7 @@ export default class FieldBase {
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
 
-    this.$debounceTime = 1000;
+    this.$debounceTime = this.$form.$config.debounceTime;
 
     this._debouncedCb = _.debounce((cb, value) => {
       cb(value);
