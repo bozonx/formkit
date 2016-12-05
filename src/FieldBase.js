@@ -11,29 +11,24 @@ export default class FieldBase {
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
 
-    this._debouncedCb = _.debounce((cb, value) => {
-      cb(value);
-    }, this.$debounceTime);
+    this._debouncedCb = _.debounce((cb) => cb(), this.$debounceTime);
   }
 
   __startSave(force) {
     // don't save invalid value
     if (!this.$fieldState.getState('valid')) return;
 
-    const cb = (value) => {
-      if (this.$onSaveCallback) this.$onSaveCallback(value);
-      this.$form.$handlers.handleFieldSave(this.$pathToField, value);
-    };
-
     if (force) {
       // cancelling
       this._debouncedCb.cancel();
       // save without debounce
-      cb(this.$fieldState.getValue());
+      if (this.$onSaveCallback) this.$onSaveCallback(this.$fieldState.getValue());
     }
     else {
-      this._debouncedCb(cb, this.$fieldState.getValue());
+      this._debouncedCb(() => this.$onSaveCallback(this.$fieldState.getValue()));
     }
+
+    this.$form.$handlers.handleFieldSave(force);
   }
 
   __updateDirty() {

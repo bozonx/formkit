@@ -2,24 +2,35 @@ import _ from 'lodash';
 
 export default class FormHandlers {
   constructor(form) {
-    this._form = form;
-
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
 
+    this._form = form;
     this._unsavedState = {};
+    this._debouncedCb = _.debounce((cb) => cb(), this.$debounceTime);
   }
 
   /**
    * It calls form field on debounced save handler.
-   * @param {string} pathToField
-   * @param {*} newValue
+   * @param {boolean} force
    */
-  handleFieldSave(pathToField, newValue) {
+  handleFieldSave(force) {
     if (!this.$onSaveCallback) return;
-    _.set(this._unsavedState, pathToField, newValue);
-    this.$onSaveCallback(this._unsavedState);
-    this._unsavedState = {};
+
+    if (force) {
+      // cancelling
+      this._debouncedCb.cancel();
+      // save without debounce
+      this.$onSaveCallback(this._unsavedState);
+      this._unsavedState = {};
+    }
+    else {
+      this._debouncedCb(() => {
+        // save current state on the moment
+        this.$onSaveCallback(this._unsavedState);
+        this._unsavedState = {};
+      });
+    }
   }
 
   /**
