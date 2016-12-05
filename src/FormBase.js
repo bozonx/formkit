@@ -12,7 +12,17 @@ export default class FormBase {
     this.$fieldsManager = new FieldsManager(this);
 
     this.$onChangeCallback = null;
+    this.$onSaveCallback = null;
     this.fields = this.$fieldsManager.fields;
+  }
+
+  /**
+   * It calls form field on debounced save handler.
+   * @param {string} pathToField
+   */
+  $handleFieldSave(pathToField) {
+    // TODO: накапливать изменения с момента последнего сохранения и отдавать их
+    if (this.$onSaveCallback) this.$onSaveCallback();
   }
 
   /**

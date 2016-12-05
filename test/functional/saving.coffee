@@ -1,16 +1,20 @@
 formHelper = require('../../src/index').default
 
-describe 'Functional. Validate.', ->
+describe 'Functional. saving.', ->
   beforeEach () ->
     this.form = formHelper()
     this.form.init({ name: null })
     this.saveHandler = sinon.spy();
+    this.formSaveHandler = sinon.spy();
 
   it 'after change value must save debounced', ->
+    this.form.onSave(this.formSaveHandler)
     this.form.fields.name.onSave(this.saveHandler)
     this.form.fields.name.handleChange('newValue')
     this.form.fields.name._debouncedCb.flush()
 
+    expect(this.formSaveHandler).to.have.been.calledOnce
+    #expect(this.formSaveHandler).to.have.been.calledWith({name: 'newValue'})
     expect(this.saveHandler).to.have.been.calledOnce
     expect(this.saveHandler).to.have.been.calledWith('newValue')
 

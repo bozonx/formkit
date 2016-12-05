@@ -22,14 +22,19 @@ export default class FieldBase {
     // don't save invalid value
     if (!this.$fieldState.getState('valid')) return;
 
+    const cb = (value) => {
+      if (this.$onSaveCallback) this.$onSaveCallback(value);
+      this.$form.$handleFieldSave(this.$pathToField);
+    };
+
     if (force) {
       // cancelling
       this._debouncedCb.cancel();
       // save without debounce
-      if (this.$onSaveCallback) this.$onSaveCallback(this.$fieldState.getValue());
+      cb(this.$fieldState.getValue());
     }
     else {
-      if (this.$onSaveCallback) this._debouncedCb(this.$onSaveCallback, this.$fieldState.getValue());
+      this._debouncedCb(cb, this.$fieldState.getValue());
     }
   }
 

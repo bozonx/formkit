@@ -48,6 +48,10 @@ export default class Form extends FormBase{
     this.$onChangeCallback = cb;
   }
 
+  onSave(cb) {
+    this.$onSaveCallback = cb;
+  }
+
   /**
    * It must be placed to <form> element on onSubmit attribute.
    */
