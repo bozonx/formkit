@@ -2,7 +2,7 @@ formHelper = require('../../src/index').default
 
 describe 'Functional. Get and set value.', ->
   beforeEach () ->
-    this.form = formHelper()
+    this.form = formHelper.newForm()
     this.form.init({name: null})
 
   it 'set new value to field. initial = null', ->

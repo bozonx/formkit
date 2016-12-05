@@ -1,5 +1,15 @@
+import _ from 'lodash';
+
 import Main from './Main';
 
-export default function(config, schema) {
-  return new Main(config, schema);
+const globalConfig = {};
+
+export default {
+  configure: function (config) {
+    _.extend(globalConfig, config);
+  },
+  newForm: function(config, schema) {
+    const newConfig = _.defaults(_.clone(config), globalConfig);
+    return new Main(newConfig, schema);
+  },
 }

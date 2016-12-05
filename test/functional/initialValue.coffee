@@ -2,7 +2,7 @@ formHelper = require('../../src/index').default
 
 describe 'Functional. Init.', ->
   beforeEach () ->
-    this.form = formHelper()
+    this.form = formHelper.newForm()
 
   it 'init - null', ->
     this.form.init({name: null})

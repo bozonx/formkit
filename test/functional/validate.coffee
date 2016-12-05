@@ -2,7 +2,7 @@ formHelper = require('../../src/index').default
 
 describe 'Functional. Validate.', ->
   beforeEach () ->
-    this.form = formHelper()
+    this.form = formHelper.newForm()
     this.form.init({ name: null })
 
   it 'validateRule cb returns false', ->

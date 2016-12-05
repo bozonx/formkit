@@ -2,7 +2,7 @@ formHelper = require('../../src/index').default
 
 describe 'Functional. Dirty and touched states.', ->
   beforeEach () ->
-    this.form = formHelper()
+    this.form = formHelper.newForm()
     this.form.init({name: null})
 
   it 'initial state of dirty and touched', ->

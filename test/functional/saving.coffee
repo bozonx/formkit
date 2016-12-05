@@ -2,7 +2,7 @@ formHelper = require('../../src/index').default
 
 describe 'Functional. saving.', ->
   beforeEach () ->
-    this.form = formHelper()
+    this.form = formHelper.newForm()
     this.form.init({ name: null })
     this.saveHandler = sinon.spy();
     this.formSaveHandler = sinon.spy();
