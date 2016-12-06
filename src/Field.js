@@ -94,9 +94,14 @@ export default class Field extends FieldBase {
     this.__startSave();
   }
 
+  handleFocusIn() {
+    // TODO: do it!!!
+    console.log(222222222)
+  }
+
   handleBlur() {
-    // TODO: не сохранять если значение не изменилось
-    console.log(11111111111112222)
+    // TODO: не сохранять если значение не изменилось | не висит debounced callback
+    console.log(111111111111)
     this.__startSave(true);
   }
 
