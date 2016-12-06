@@ -11,7 +11,7 @@ describe 'Functional. saving.', ->
         this.form.onSave(this.formSaveHandler)
         this.form.fields.name.onSave(this.saveHandler)
         this.form.fields.name.handleChange('newValue')
-        this.form.fields.name._debouncedCb.flush()
+        this.form.fields.name.__debouncedCall.flush()
 
         expect(this.saveHandler).to.have.been.calledOnce
         expect(this.saveHandler).to.have.been.calledWith('newValue')
@@ -24,7 +24,7 @@ describe 'Functional. saving.', ->
         expect(this.saveHandler).to.have.been.calledOnce
         expect(this.saveHandler).to.have.been.calledWith('newValue')
 
-        this.form.fields.name._debouncedCb.flush()
+        this.form.fields.name.__debouncedCall.flush()
 
         expect(this.saveHandler).to.have.been.calledOnce
         expect(this.saveHandler).to.have.been.calledWith('newValue')
@@ -33,7 +33,7 @@ describe 'Functional. saving.', ->
         this.form.fields.name.validateRule = () -> false
         this.form.fields.name.onSave(this.saveHandler)
         this.form.fields.name.handleChange('newValue')
-        this.form.fields.name._debouncedCb.flush()
+        this.form.fields.name.__debouncedCall.flush()
 
         expect(this.saveHandler).to.not.have.been.called
 
@@ -41,7 +41,7 @@ describe 'Functional. saving.', ->
         this.form.onSave(this.formSaveHandler)
         this.form.fields.name.onSave(this.saveHandler)
         this.form.fields.name.handleChange('newValue')
-        this.form.fields.name._debouncedCb.flush()
+        this.form.fields.name.__debouncedCall.flush()
 
   describe 'whole form saving.', ->
     beforeEach () ->
@@ -52,9 +52,9 @@ describe 'Functional. saving.', ->
 #    it 'save partly', ->
 #      this.form.onSave(this.formSaveHandler)
 #      this.form.fields.param1.handleChange('newValue')
-#      this.form.fields.param1._debouncedCb.flush()
+#      this.form.fields.param1.__debouncedCall.flush()
 #      this.form.fields.param3.handleChange('newValue')
-#      this.form.fields.param3._debouncedCb.flush()
+#      this.form.fields.param3.__debouncedCall.flush()
 #
 #      expect(this.formSaveHandler).to.have.been.calledOnce
 #      expect(this.formSaveHandler).to.have.been.calledWith({

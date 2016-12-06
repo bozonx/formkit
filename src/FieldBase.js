@@ -1,17 +1,18 @@
 import _ from 'lodash';
 
 import FieldState from './FieldState';
+import DebouncedCall from './DebouncedCall';
 
 export default class FieldBase {
   constructor(form, fieldName) {
     this.$form = form;
     this.$pathToField = fieldName;
-    this.__debounceTime = this.$form.$config.debounceTime;
     this.$fieldState = new FieldState(this.$form, this, this.$pathToField);
     this.$onChangeCallback = null;
     this.__onSaveCallback = null;
+    this.__debouncedCall = new DebouncedCall(this.$form.$config.debounceTime);
 
-    this._debouncedCb = _.debounce((cb) => cb(), this.__debounceTime);
+    this._debouncedCb = undefined;
   }
 
   __startSave(force) {
@@ -19,17 +20,7 @@ export default class FieldBase {
     if (!this.$fieldState.getState('valid')) return;
 
     if (this.__onSaveCallback) {
-      if (force) {
-        // cancelling
-        this._debouncedCb.cancel();
-        // save without debounce
-        this.__onSaveCallback(this.$fieldState.getValue());
-      }
-      else {
-        this._debouncedCb(() => {
-          this.__onSaveCallback(this.$fieldState.getValue())
-        });
-      }
+      this.__debouncedCall.exec(this.__onSaveCallback, force, this.$fieldState.getValue());
     }
 
     this.$form.$handlers.handleFieldSave(force);

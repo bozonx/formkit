@@ -7,8 +7,8 @@ export default class Field extends FieldBase {
     super(form, fieldName);
   }
 
-  setDebounceTime(time) {
-    this.__debounceTime = time;
+  setDebounceTime(delay) {
+    this.__debouncedCall.setDelay(delay);
   }
 
   /**
@@ -100,8 +100,8 @@ export default class Field extends FieldBase {
   }
 
   handleBlur() {
-    // TODO: не сохранять если значение не изменилось | не висит debounced callback
-    console.log(111111111111)
+    console.log(111111, this._debouncedCb)
+    //if (this._debouncedCb)
     this.__startSave(true);
   }
 
