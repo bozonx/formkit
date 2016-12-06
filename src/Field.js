@@ -94,6 +94,12 @@ export default class Field extends FieldBase {
     this.__startSave();
   }
 
+  handleBlur() {
+    // TODO: не сохранять если значение не изменилось
+    console.log(11111111111112222)
+    this.__startSave(true);
+  }
+
   /**
    * bind it to your component to onEnter event.
    * It does:

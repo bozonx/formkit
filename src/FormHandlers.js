@@ -7,7 +7,6 @@ export default class FormHandlers {
 
     this._form = form;
     this._unsavedState = {};
-    console.log(11111, this._form.$config.debounceTime)
     this._debouncedCb = _.debounce((cb) => cb(), this._form.$config.debounceTime);
   }
 
@@ -17,6 +16,9 @@ export default class FormHandlers {
    */
   handleFieldSave(force) {
     if (!this.$onSaveCallback) return;
+
+    //console.log(11111, force)
+
 
     if (force) {
       // cancelling
