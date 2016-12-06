@@ -4,9 +4,10 @@ import FieldState from './FieldState';
 
 export default class FieldBase {
   constructor(delay) {
-    this.debouncedCb = _.debounce((cb) => cb(), this._delay);
     this._delay = delay;
     this._waiting = false;
+
+    this.debouncedCb = _.debounce((cb) => cb(), this._delay);
   }
 
   get waiting() {

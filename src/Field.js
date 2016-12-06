@@ -100,8 +100,6 @@ export default class Field extends FieldBase {
   }
 
   handleBlur() {
-    console.log(111111, this._debouncedCb)
-    //if (this._debouncedCb)
     this.__startSave(true);
   }
 

@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+import DebouncedCall from './DebouncedCall';
+
 export default class FormHandlers {
   constructor(form) {
     this.$onChangeCallback = null;
@@ -7,7 +9,8 @@ export default class FormHandlers {
 
     this._form = form;
     this._unsavedState = {};
-    this._debouncedCb = _.debounce((cb) => cb(), this._form.$config.debounceTime);
+
+    this.__debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
   }
 
   /**
@@ -17,23 +20,11 @@ export default class FormHandlers {
   handleFieldSave(force) {
     if (!this.$onSaveCallback) return;
 
-    //console.log(11111, force)
-
-
-    if (force) {
-      // cancelling
-      this._debouncedCb.cancel();
-      // save without debounce
+    this.__debouncedCall.exec(() => {
+      // save current state on the moment
       this.$onSaveCallback(this._unsavedState);
       this._unsavedState = {};
-    }
-    else {
-      this._debouncedCb(() => {
-        // save current state on the moment
-        this.$onSaveCallback(this._unsavedState);
-        this._unsavedState = {};
-      });
-    }
+    }, force);
   }
 
   /**
