@@ -7,6 +7,10 @@ export default class Field extends FieldBase {
     super(form, fieldName);
   }
 
+  setDisabled(value) {
+    this.$fieldState.setStateValue('disabled', value);
+  }
+
   setDebounceTime(delay) {
     this.__debouncedCall.setDelay(delay);
   }
@@ -73,6 +77,9 @@ export default class Field extends FieldBase {
    * * Starts saving
    */
   handleChange(newValue) {
+    // don't do anything if disabled
+    if (this.$fieldState.getState('disabled')) return;
+
      // TODO: нужно делать клон???
     var oldValue = this.$fieldState.getValue();
 
@@ -110,6 +117,7 @@ export default class Field extends FieldBase {
    * * immediately starts save
    */
   handlePressEnter() {
+    if (this.$fieldState.getState('disabled')) return;
     this.__startSave(true);
   }
 
