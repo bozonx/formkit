@@ -1,16 +1,15 @@
 import _ from 'lodash';
 
-import FieldState from './FieldState';
-
-export default class FieldBase {
+export default class DebouncedCall {
   constructor(delay) {
     this._delay = delay;
     // waiting to call debaunced function
     this._deleyed = false;
     // if promise returned from callback has pending state
     this._pending = false;
+    this._runAfterCbFulfill = undefined;
 
-    this.debouncedCb = _.debounce((cb) => cb(), this._delay);
+    this._debouncedCb = _.debounce((cb) => cb(), this._delay);
   }
 
   get deleyed() {
@@ -26,6 +25,11 @@ export default class FieldBase {
   }
 
   exec(cb, force, ...params) {
+    if (this._pending) {
+      this._runAfterCbFulfill = {cb, params: [...params]};
+      return;
+    }
+
     if (force) {
       this.cancel();
       // run without debounce
@@ -33,7 +37,7 @@ export default class FieldBase {
     }
     else {
       this._deleyed = true;
-      this.debouncedCb(() => {
+      this._debouncedCb(() => {
         this._runCallBack(cb, ...params);
         this._deleyed = false;
       });
@@ -41,12 +45,13 @@ export default class FieldBase {
   }
 
   cancel() {
-    if (this.debouncedCb) this.debouncedCb.cancel();
+    if (this._debouncedCb) this._debouncedCb.cancel();
     this._deleyed = false;
+    // TODO: а если уже сохранение в процессе???
   }
 
   flush() {
-    this.debouncedCb.flush();
+    this._debouncedCb.flush();
   }
 
   _runCallBack(cb, ...params) {
@@ -56,6 +61,10 @@ export default class FieldBase {
     this._pending = true;
     return promise.then((data) => {
       this._pending = false;
+      if (this._runAfterCbFulfill) {
+        this.exec(this._runAfterCbFulfill.cb, true, ...this._runAfterCbFulfill.params);
+        this._runAfterCbFulfill = undefined;
+      }
       return data;
     }).catch((err) => {
       this._pending = false;
