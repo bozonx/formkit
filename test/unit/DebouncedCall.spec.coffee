@@ -37,8 +37,10 @@ describe 'Unit. DebouncedCall.', ->
 
     # reject first promise
     this.promiseReject1('error');
-
-    expect(this.firstPromise).to.eventually.notify =>
-      # the second promise is starting immediately
-      assert.equal(this.value2, 'value2')
-      done()
+    Promise.all([
+      expect(this.firstPromise).to.eventually.rejected.and.equal('error'),
+      expect(this.firstPromise).to.eventually.notify =>
+        # the second promise is starting immediately
+        assert.equal(this.value2, 'value2')
+        done()
+    ]);
