@@ -5,13 +5,20 @@ import FieldState from './FieldState';
 export default class FieldBase {
   constructor(delay) {
     this._delay = delay;
+    // waiting to call debaunced function
     this._deleyed = false;
+    // if promise returned from callback has pending state
+    this._pending = false;
 
     this.debouncedCb = _.debounce((cb) => cb(), this._delay);
   }
 
   get deleyed() {
     return this._deleyed;
+  }
+
+  get pending() {
+    return this._pending;
   }
 
   setDelay(delay) {
@@ -22,12 +29,12 @@ export default class FieldBase {
     if (force) {
       this.cancel();
       // run without debounce
-      cb(...params);
+      this._runCallBack(cb, ...params);
     }
     else {
       this._deleyed = true;
       this.debouncedCb(() => {
-        cb(...params);
+        this._runCallBack(cb, ...params);
         this._deleyed = false;
       });
     }
@@ -42,4 +49,17 @@ export default class FieldBase {
     this.debouncedCb.flush();
   }
 
+  _runCallBack(cb, ...params) {
+    const promise = cb(...params);
+    if (!promise) return;
+
+    this._pending = true;
+    return promise.then((data) => {
+      this._pending = false;
+      return data;
+    }).catch((err) => {
+      this._pending = false;
+      return Promise.reject(err);
+    });
+  }
 }
