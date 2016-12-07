@@ -13,6 +13,10 @@ export default class FormHandlers {
     this.__debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
   }
 
+  isUnsaved(pathToField) {
+    return _.has(this._unsavedState, pathToField);
+  }
+
   /**
    * It calls form field on debounced save handler.
    * @param {boolean} force

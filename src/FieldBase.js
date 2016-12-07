@@ -18,6 +18,7 @@ export default class FieldBase {
   __startSave(force) {
     // don't save invalid value
     if (!this.$fieldState.getState('valid')) return;
+    if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
 
     if (this.__onSaveCallback) {
       this.__debouncedCall.exec(this.__onSaveCallback, force, this.$fieldState.getValue());

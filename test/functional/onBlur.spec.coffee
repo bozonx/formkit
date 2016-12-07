@@ -1,6 +1,6 @@
 formHelper = require('../../src/index').default
 
-describe 'Functional. onChange and handleChange.', ->
+describe 'Functional. onBlur.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
     this.form.init({name: null})
@@ -14,6 +14,7 @@ describe 'Functional. onChange and handleChange.', ->
   it "run handle blur if there is no one waiting callback", ->
     this.form.fields.name.handleChange('newValue')
     this.form.fields.name.__debouncedCall.flush()
+    this.form.$handlers.__debouncedCall.flush()
     assert.isFalse(this.form.fields.name.__debouncedCall.waiting)
     this.form.fields.name.handleBlur()
     assert.isFalse(this.form.fields.name.__debouncedCall.waiting)
@@ -26,7 +27,6 @@ describe 'Functional. onChange and handleChange.', ->
     assert.isTrue(this.form.fields.name.__debouncedCall.waiting)
     this.form.fields.name.handleBlur()
     assert.isFalse(this.form.fields.name.__debouncedCall.waiting)
-    this.form.fields.name.__debouncedCall.flush()
 
     expect(this.fieldOnSaveHandler).to.have.been.calledOnce
     expect(this.formOnSaveHandler).to.have.been.calledOnce
