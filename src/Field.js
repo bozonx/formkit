@@ -95,11 +95,11 @@ export default class Field extends FieldBase {
   }
 
   handleFocusIn() {
-    // TODO: do it!!!
-    console.log(222222222)
+    this.$fieldState.setStateValue('focused', true);
   }
 
   handleBlur() {
+    this.$fieldState.setStateValue('focused', false);
     this.__startSave(true);
   }
 
