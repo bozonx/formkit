@@ -5,13 +5,13 @@ import FieldState from './FieldState';
 export default class FieldBase {
   constructor(delay) {
     this._delay = delay;
-    this._waiting = false;
+    this._deleyed = false;
 
     this.debouncedCb = _.debounce((cb) => cb(), this._delay);
   }
 
-  get waiting() {
-    return this._waiting;
+  get deleyed() {
+    return this._deleyed;
   }
 
   setDelay(delay) {
@@ -25,17 +25,17 @@ export default class FieldBase {
       cb(...params);
     }
     else {
-      this._waiting = true;
+      this._deleyed = true;
       this.debouncedCb(() => {
         cb(...params);
-        this._waiting = false;
+        this._deleyed = false;
       });
     }
   }
 
   cancel() {
     if (this.debouncedCb) this.debouncedCb.cancel();
-    this._waiting = false;
+    this._deleyed = false;
   }
 
   flush() {
