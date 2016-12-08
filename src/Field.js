@@ -7,11 +7,69 @@ export default class Field extends FieldBase {
     super(form, fieldName);
   }
 
-  setDisabled(value) {
+  /////// writable
+  get dirty() {
+    return this.$fieldState.getState('dirty');
+  }
+  set dirty(value) {
+    this.$fieldState.setStateValue('dirty', value);
+  }
+
+  get touched() {
+    return this.$fieldState.getState('touched');
+  }
+  set touched(value) {
+    this.$fieldState.setStateValue('touched', value);
+  }
+
+  get disabled() {
+    return this.$fieldState.getState('disabled');
+  }
+  set disabled(value) {
     this.$fieldState.setStateValue('disabled', value);
   }
 
+  get validateRule() {
+    return this._validateRule;
+    //return this.$fieldState.getState('validateRule');
+  }
+  set validateRule(value) {
+    this._validateRule = value;
+    //this.$fieldState.setStateValue('validateRule', value);
+  }
+
+  /////// read only
+  get name() {
+    return this.$fieldState.getState('name');
+  }
+
+  get value() {
+    return this.$fieldState.getValue();
+  }
+
+  get initialValue() {
+    return this.$fieldState.getInitialValue();
+  }
+
+  get valid() {
+    return this.$fieldState.getState('valid');
+  }
+
+  get invalidMsg() {
+    return this.$fieldState.getState('invalidMsg');
+  }
+
+  get saving() {
+    return this.$fieldState.getState('saving');
+  }
+
+  get focused() {
+    return this.$fieldState.getState('focused');
+  }
+
+
   setDebounceTime(delay) {
+    // TODO: переделать на setter
     this.__debouncedCall.setDelay(delay);
   }
 

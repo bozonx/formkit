@@ -51,6 +51,6 @@ describe 'Functional. onChange and handleChange.', ->
 
   it "don't do anything if disabled", ->
     this.form.fields.name.handleChange('oldValue')
-    this.form.fields.name.setDisabled(true)
+    this.form.fields.name.disabled = true
     this.form.fields.name.handleChange('newValue')
     assert.equal(this.form.fields.name.value, 'oldValue')

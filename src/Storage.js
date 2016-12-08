@@ -30,7 +30,7 @@ export default class Storage {
       touched: false,
       valid: true,
       invalidMsg: null,
-      validateRule: null,
+      //validateRule: null,
       saving: false,
       disabled: false,
       focused: false,

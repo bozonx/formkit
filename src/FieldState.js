@@ -12,7 +12,7 @@ export default class FieldState {
     this.setValue(null);
     this.setInitialValue(null);
 
-    this._updateFieldState(newField);
+    //this._updateFieldState(newField);
   }
 
   getValue() {
@@ -29,21 +29,21 @@ export default class FieldState {
 
   setValue(newValue) {
     this._form.$storage.setFieldValue(this._pathToField, newValue);
-    this._updateFieldState({value: newValue});
+    //this._updateFieldState({value: newValue});
   }
 
   setInitialValue(newValue) {
     this._form.$storage.setFieldInitialValue(this._pathToField, newValue);
-    this._updateFieldState({initialValue: newValue});
+    //this._updateFieldState({initialValue: newValue});
   }
 
   setStateValue(stateName, newValue) {
     this._form.$storage.setFieldState(this._pathToField, {[stateName]: newValue});
-    this._field[stateName] = newValue;
+    //this._field[stateName] = newValue;
   }
 
-  _updateFieldState(newState) {
-    // TODO: нужна поддержка простых массивов - удаленные элементы останутся
-    extendDeep(this._field, newState);
-  }
+  // _updateFieldState(newState) {
+  //   // TODO: нужна поддержка простых массивов - удаленные элементы останутся
+  //   extendDeep(this._field, newState);
+  // }
 }
