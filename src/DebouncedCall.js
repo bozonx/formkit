@@ -20,7 +20,10 @@ export default class DebouncedCall {
     return this._pending;
   }
 
-  setDelay(delay) {
+  get delay() {
+    return this.delay;
+  }
+  set delay(delay) {
     this.delay = delay;
   }
 

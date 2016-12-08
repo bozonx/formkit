@@ -37,6 +37,13 @@ export default class Field extends FieldBase {
     this._validateRule = value;
     //this.$fieldState.setStateValue('validateRule', value);
   }
+  get debounceTime() {
+    return this.__debouncedCall.delay;
+  }
+  set debounceTime(delay) {
+    this.__debouncedCall.delay = delay;
+  }
+
 
   /////// read only
   get name() {
@@ -68,10 +75,6 @@ export default class Field extends FieldBase {
   }
 
 
-  setDebounceTime(delay) {
-    // TODO: переделать на setter
-    this.__debouncedCall.setDelay(delay);
-  }
 
   /**
    * Silent update. It uses for set outer(from machine) values (not user's).
