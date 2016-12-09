@@ -21,24 +21,12 @@ export default class FormBase {
     this.$storage.setFormState(newFormState);
   }
 
-  get initialValues() {
-    return this.$storage.getFieldsInitialValues();
-  }
-  get dirty() {
-    return this.$storage.getFormState('dirty');
-  }
-  get touched() {
-    return this.$storage.getFormState('touched');
-  }
-  get submitting() {
-    return this.$storage.getFormState('submitting');
-  }
-  get valid() {
-    return this.$storage.getFormState('valid');
-  }
-  get invalidMsgs() {
-    return this.$storage.getFormState('invalidMsgs');
-  }
+  get initialValues() {return this.$storage.getFieldsInitialValues()}
+  get dirty() {return this.$storage.getFormState('dirty')}
+  get touched() {return this.$storage.getFormState('touched')}
+  get submitting() {return this.$storage.getFormState('submitting')}
+  get valid() {return this.$storage.getFormState('valid')}
+  get invalidMsgs() {return this.$storage.getFormState('invalidMsgs')}
 
 
   getValues() {
