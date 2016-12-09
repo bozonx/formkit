@@ -9,6 +9,7 @@ export default class FieldBase {
     this.$pathToField = fieldName;
     this.$fieldState = new FieldState(this.$form, this, this.$pathToField);
     this.$onChangeCallback = null;
+    this.__storage = this.$form.$storage;
     this.__onSaveCallback = null;
     this.__debouncedCall = new DebouncedCall(this.$form.$config.debounceTime);
 
@@ -59,7 +60,7 @@ export default class FieldBase {
   }
 
   get value() {
-    return this.$form.$storage.getFieldValue(this.$pathToField);
+    return this.__storage.getFieldValue(this.$pathToField);
   }
 
   get initialValue() {
@@ -88,14 +89,14 @@ export default class FieldBase {
     if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
 
     if (this.__onSaveCallback) {
-      this.__debouncedCall.exec(this.__onSaveCallback, force, this.$form.$storage.getFieldValue(this.$pathToField));
+      this.__debouncedCall.exec(this.__onSaveCallback, force, this.__storage.getFieldValue(this.$pathToField));
     }
 
     this.$form.$handlers.handleFieldSave(force);
   }
 
   __updateDirty() {
-    var value = this.$form.$storage.getFieldValue(this.$pathToField);
+    var value = this.__storage.getFieldValue(this.$pathToField);
     var initialValue = this.$fieldState.getInitialValue();
     var newValue;
 

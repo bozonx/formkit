@@ -21,7 +21,7 @@ export default class Field extends FieldBase {
    * @param {*} newValue
    */
   updateValue(newValue) {
-    var oldValue = this.$form.$storage.getFieldValue(this.$pathToField);
+    var oldValue = this.__storage.getFieldValue(this.$pathToField);
 
     // set up value to this field instance and to storage
     this.$fieldState.setValue(newValue);
@@ -50,7 +50,7 @@ export default class Field extends FieldBase {
     // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
     this.$form.$handlers.handleInitialValueChange(this.$pathToField, newValue);
 
-    if (_.isNull(this.$form.$storage.getFieldValue(this.$pathToField)) && !this.$fieldState.getState('touched')) {
+    if (_.isNull(this.__storage.getFieldValue(this.$pathToField)) && !this.$fieldState.getState('touched')) {
       this.updateValue(newValue);
     }
     else {
@@ -71,7 +71,7 @@ export default class Field extends FieldBase {
     // don't do anything if disabled
     if (this.$fieldState.getState('disabled')) return;
 
-    var oldValue = this.$form.$storage.getFieldValue(this.$pathToField);
+    var oldValue = this.__storage.getFieldValue(this.$pathToField);
 
     // don't save unchanged value if it allows in config.
     if (!this.$form.$config.unchangedValueSaving && oldValue === newValue) return;
@@ -136,7 +136,7 @@ export default class Field extends FieldBase {
    */
   validate() {
     if (!this.validateRule) return;
-    var ruleReturn = this.validateRule(this.$form.$storage.getFieldValue(this.$pathToField));
+    var ruleReturn = this.validateRule(this.__storage.getFieldValue(this.$pathToField));
     var isValid = ruleReturn === true;
     var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
 
