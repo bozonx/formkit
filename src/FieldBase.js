@@ -59,7 +59,7 @@ export default class FieldBase {
   }
 
   get value() {
-    return this.$fieldState.getValue();
+    return this.$form.$storage.getFieldValue(this.$pathToField);
   }
 
   get initialValue() {
@@ -88,14 +88,14 @@ export default class FieldBase {
     if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
 
     if (this.__onSaveCallback) {
-      this.__debouncedCall.exec(this.__onSaveCallback, force, this.$fieldState.getValue());
+      this.__debouncedCall.exec(this.__onSaveCallback, force, this.$form.$storage.getFieldValue(this.$pathToField));
     }
 
     this.$form.$handlers.handleFieldSave(force);
   }
 
   __updateDirty() {
-    var value = this.$fieldState.getValue();
+    var value = this.$form.$storage.getFieldValue(this.$pathToField);
     var initialValue = this.$fieldState.getInitialValue();
     var newValue;
 
