@@ -7,33 +7,12 @@ export default class Field extends FieldBase {
     super(form, fieldName);
   }
 
-  // /**
-  //  * It sets initial value.
-  //  * It does:
-  //  * * It set up new initial value to self instance and to storage
-  //  * * if value of field is null and field is untouched, it sets value (see updateValue() method)
-  //  * * if field isn't touched, it just update dirty state
-  //  * @param newValue
-  //  */
-  // setInitialValue(newValue) {
-  //   // set up initial value to this field instance and to storage
-  //   this.__storage.setFieldInitialValue(this.$pathToField, newValue);
-  //
-  //   // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
-  //   this.$form.$handlers.handleInitialValueChange(this.$pathToField, newValue);
-  //
-  //   if (_.isNull(this.value) && !this.touched) {
-  //     this.updateValue(newValue);
-  //   }
-  //   else {
-  //     this.__updateDirty();
-  //   }
-  // }
-
   /**
    * It's onChange handler. It must be placed to input onChange attribute.
    * It does:
-   * * all of updateValue() method
+   * * don't do anything if disabled
+   * * don't save if value is unchanged
+   * * update userInput value
    * * update "touched" state
    * * Rises "change" events for field and form
    * * Runs onChange callback if it assigned.
@@ -111,9 +90,9 @@ export default class Field extends FieldBase {
    */
   validate() {
     if (!this.validateRule) return;
-    var ruleReturn = this.validateRule(this.value);
-    var isValid = ruleReturn === true;
-    var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
+    const ruleReturn = this.validateRule(this.value);
+    const isValid = ruleReturn === true;
+    const invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
 
     this.__storage.setFieldState(this.$pathToField, {valid: isValid});
     this.__storage.setFieldState(this.$pathToField, {invalidMsg: (isValid) ? null : invalidMsg});

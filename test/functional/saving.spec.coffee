@@ -37,7 +37,7 @@ describe 'Functional. saving.', ->
 #        this.form.fields.name.handleChange('newValue')
 #        this.form.fields.name.__debouncedCall.flush()
 #
-#        expect(this.saveHandler).to.not.have.been.called
+#        expect(this.saveHandler).to.have.not.been.called
 
       it 'after change value must save debounced', ->
         this.form.onSave(this.formSaveHandler)

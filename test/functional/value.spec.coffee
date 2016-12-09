@@ -49,4 +49,3 @@ describe 'Functional. Value.', ->
     assert.equal(this.form.$storage.getValue('name'), 'newOuterValue')
     assert.isUndefined(this.form.$storage.getUserInput('name'))
     assert.equal(this.form.$storage.getOuterValue('name'), 'newOuterValue')
-
