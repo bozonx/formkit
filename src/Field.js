@@ -24,7 +24,7 @@ export default class Field extends FieldBase {
     var oldValue = this.__storage.getFieldValue(this.$pathToField);
 
     // set up value to this field instance and to storage
-    this.$fieldState.setValue(newValue);
+    this.__storage.setFieldValue(this.$pathToField, newValue);
 
     // tell to form - a value is updated
     this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldValue);
@@ -45,7 +45,7 @@ export default class Field extends FieldBase {
    */
   setInitialValue(newValue) {
     // set up initial value to this field instance and to storage
-    this.$fieldState.setInitialValue(newValue);
+    this.__storage.setFieldInitialValue(this.$pathToField, newValue);
 
     // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
     this.$form.$handlers.handleInitialValueChange(this.$pathToField, newValue);
@@ -80,7 +80,7 @@ export default class Field extends FieldBase {
 
     // update touched
     if (!this.__storage.getFieldState(this.$pathToField, 'touched')) {
-      this.$fieldState.setStateValue('touched', true);
+      this.__storage.setFieldState(this.$pathToField, {touched: true});
       this.$form.$handlers.handleFieldStateChange('touched', true);
     }
 
@@ -92,11 +92,11 @@ export default class Field extends FieldBase {
   }
 
   handleFocusIn() {
-    this.$fieldState.setStateValue('focused', true);
+    this.__storage.setFieldState(this.$pathToField, {focused: true});
   }
 
   handleBlur() {
-    this.$fieldState.setStateValue('focused', false);
+    this.__storage.setFieldState(this.$pathToField, {focused: false});
     this.__startSave(true);
   }
 
@@ -140,8 +140,8 @@ export default class Field extends FieldBase {
     var isValid = ruleReturn === true;
     var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
 
-    this.$fieldState.setStateValue('valid', isValid);
-    this.$fieldState.setStateValue('invalidMsg', (isValid) ? null : invalidMsg);
+    this.__storage.setFieldState(this.$pathToField, {valid: isValid});
+    this.__storage.setFieldState(this.$pathToField, {invalidMsg: (isValid) ? null : invalidMsg});
     this.$form.$handlers.handleAnyFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
     return isValid;
   }

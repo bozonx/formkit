@@ -21,21 +21,21 @@ export default class FieldBase {
     return this.__storage.getFieldState(this.$pathToField, 'dirty');
   }
   set dirty(value) {
-    this.$fieldState.setStateValue('dirty', value);
+    this.__storage.setFieldState(this.$pathToField, {dirty: value});
   }
 
   get touched() {
     return this.__storage.getFieldState(this.$pathToField, 'touched');
   }
   set touched(value) {
-    this.$fieldState.setStateValue('touched', value);
+    this.__storage.setFieldState(this.$pathToField, {touched: value});
   }
 
   get disabled() {
     return this.__storage.getFieldState(this.$pathToField, 'disabled');
   }
   set disabled(value) {
-    this.$fieldState.setStateValue('disabled', value);
+    this.__storage.setFieldState(this.$pathToField, {disabled: value});
   }
 
   get validateRule() {
@@ -44,7 +44,7 @@ export default class FieldBase {
   }
   set validateRule(value) {
     this._validateRule = value;
-    //this.$fieldState.setStateValue('validateRule', value);
+    //this.__storage.setFieldState(this.$pathToField, 'validateRule', value);
   }
   get debounceTime() {
     return this.__debouncedCall.delay;
@@ -109,7 +109,7 @@ export default class FieldBase {
       newValue = value !== initialValue;
     }
 
-    this.$fieldState.setStateValue('dirty', newValue);
+    this.__storage.setFieldState(this.$pathToField, {dirty: newValue});
     this.$form.$handlers.handleFieldStateChange('dirty', newValue);
   }
 
