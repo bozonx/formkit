@@ -20,34 +20,28 @@ export default class FieldBase {
     this.__storage.setFieldInitialValue(this.$pathToField, null);
   }
 
-  /////// writable
-  get disabled() {return this.__storage.getFieldState(this.$pathToField, 'disabled')}
-  set disabled(value) {this.__storage.setFieldState(this.$pathToField, {disabled: value})}
-
-  get validateRule() {
-    return this._validateRule;
-    //return this.__storage.getFieldState(this.$pathToField, 'validateRule');
-  }
-  set validateRule(value) {
-    this._validateRule = value;
-    //this.__storage.setFieldState(this.$pathToField, 'validateRule', value);
-  }
-
-  get debounceTime() {return this.__debouncedCall.delay}
-  set debounceTime(delay) {this.__debouncedCall.delay = delay}
-
-
-  /////// read only
-  get dirty() {return this.__storage.getFieldState(this.$pathToField, 'dirty')}
-  get touched() {return this.__storage.getFieldState(this.$pathToField, 'touched')}
   get name() {return this.__storage.getFieldState(this.$pathToField, 'name')}
   get value() {return this.__storage.getFieldValue(this.$pathToField)}
   get initialValue() {return this.__storage.getFieldInitialValue(this.$pathToField)}
+  get dirty() {return this.__storage.getFieldState(this.$pathToField, 'dirty')}
+  get touched() {return this.__storage.getFieldState(this.$pathToField, 'touched')}
   get valid() {return this.__storage.getFieldState(this.$pathToField, 'valid')}
   get invalidMsg() {return this.__storage.getFieldState(this.$pathToField, 'invalidMsg')}
   get saving() {return this.__storage.getFieldState(this.$pathToField, 'saving')}
   get focused() {return this.__storage.getFieldState(this.$pathToField, 'focused')}
+  get disabled() {return this.__storage.getFieldState(this.$pathToField, 'disabled')}
+  get validateRule() {
+    return this._validateRule;
+    //return this.__storage.getFieldState(this.$pathToField, 'validateRule');
+  }
+  get debounceTime() {return this.__debouncedCall.delay}
 
+  set disabled(value) {this.__storage.setFieldState(this.$pathToField, {disabled: value})}
+  set validateRule(value) {
+    this._validateRule = value;
+    //this.__storage.setFieldState(this.$pathToField, 'validateRule', value);
+  }
+  set debounceTime(delay) {this.__debouncedCall.delay = delay}
 
   __startSave(force) {
     // don't save invalid value
