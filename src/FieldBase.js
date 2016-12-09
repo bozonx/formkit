@@ -64,7 +64,7 @@ export default class FieldBase {
   }
 
   get initialValue() {
-    return this.$fieldState.getInitialValue();
+    return this.__storage.getFieldInitialValue(this.$pathToField);
   }
 
   get valid() {
@@ -97,7 +97,7 @@ export default class FieldBase {
 
   __updateDirty() {
     var value = this.__storage.getFieldValue(this.$pathToField);
-    var initialValue = this.$fieldState.getInitialValue();
+    var initialValue = this.__storage.getFieldInitialValue(this.$pathToField);
     var newValue;
 
     if (value === '' && (initialValue === '' || _.isNil(initialValue))) {
