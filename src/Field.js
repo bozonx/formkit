@@ -50,7 +50,7 @@ export default class Field extends FieldBase {
     // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
     this.$form.$handlers.handleInitialValueChange(this.$pathToField, newValue);
 
-    if (_.isNull(this.__storage.getFieldValue(this.$pathToField)) && !this.$fieldState.getState('touched')) {
+    if (_.isNull(this.__storage.getFieldValue(this.$pathToField)) && !this.__storage.getFieldState(this.$pathToField, 'touched')) {
       this.updateValue(newValue);
     }
     else {
@@ -69,7 +69,7 @@ export default class Field extends FieldBase {
    */
   handleChange(newValue) {
     // don't do anything if disabled
-    if (this.$fieldState.getState('disabled')) return;
+    if (this.__storage.getFieldState(this.$pathToField, 'disabled')) return;
 
     var oldValue = this.__storage.getFieldValue(this.$pathToField);
 
@@ -79,7 +79,7 @@ export default class Field extends FieldBase {
     this.updateValue(newValue);
 
     // update touched
-    if (!this.$fieldState.getState('touched')) {
+    if (!this.__storage.getFieldState(this.$pathToField, 'touched')) {
       this.$fieldState.setStateValue('touched', true);
       this.$form.$handlers.handleFieldStateChange('touched', true);
     }
@@ -107,7 +107,7 @@ export default class Field extends FieldBase {
    * * immediately starts save
    */
   handlePressEnter() {
-    if (this.$fieldState.getState('disabled')) return;
+    if (this.__storage.getFieldState(this.$pathToField, 'disabled')) return;
     this.__startSave(true);
   }
 

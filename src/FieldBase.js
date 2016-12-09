@@ -18,21 +18,21 @@ export default class FieldBase {
 
   /////// writable
   get dirty() {
-    return this.$fieldState.getState('dirty');
+    return this.__storage.getFieldState(this.$pathToField, 'dirty');
   }
   set dirty(value) {
     this.$fieldState.setStateValue('dirty', value);
   }
 
   get touched() {
-    return this.$fieldState.getState('touched');
+    return this.__storage.getFieldState(this.$pathToField, 'touched');
   }
   set touched(value) {
     this.$fieldState.setStateValue('touched', value);
   }
 
   get disabled() {
-    return this.$fieldState.getState('disabled');
+    return this.__storage.getFieldState(this.$pathToField, 'disabled');
   }
   set disabled(value) {
     this.$fieldState.setStateValue('disabled', value);
@@ -40,7 +40,7 @@ export default class FieldBase {
 
   get validateRule() {
     return this._validateRule;
-    //return this.$fieldState.getState('validateRule');
+    //return this.__storage.getFieldState(this.$pathToField, 'validateRule');
   }
   set validateRule(value) {
     this._validateRule = value;
@@ -56,7 +56,7 @@ export default class FieldBase {
 
   /////// read only
   get name() {
-    return this.$fieldState.getState('name');
+    return this.__storage.getFieldState(this.$pathToField, 'name');
   }
 
   get value() {
@@ -68,24 +68,24 @@ export default class FieldBase {
   }
 
   get valid() {
-    return this.$fieldState.getState('valid');
+    return this.__storage.getFieldState(this.$pathToField, 'valid');
   }
 
   get invalidMsg() {
-    return this.$fieldState.getState('invalidMsg');
+    return this.__storage.getFieldState(this.$pathToField, 'invalidMsg');
   }
 
   get saving() {
-    return this.$fieldState.getState('saving');
+    return this.__storage.getFieldState(this.$pathToField, 'saving');
   }
 
   get focused() {
-    return this.$fieldState.getState('focused');
+    return this.__storage.getFieldState(this.$pathToField, 'focused');
   }
 
   __startSave(force) {
     // don't save invalid value
-    if (!this.$fieldState.getState('valid')) return;
+    if (!this.__storage.getFieldState(this.$pathToField, 'valid')) return;
     if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
 
     if (this.__onSaveCallback) {
