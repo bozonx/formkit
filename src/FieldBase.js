@@ -65,13 +65,18 @@ export default class FieldBase {
     // set to outer value layer
     this.outerValue = newValue;
 
+    // TODO: тестировать, если нет теста
+
+    // TODO: только если в конфиге разрешенно при focused
     // remove user input if field isn't on focus and set dirty to false
     if (!this.focused) {
       this.__storage.setUserInput(this.$pathToField, undefined);
-      this.__storage.setFieldState(this.$pathToField, {dirty: false});
+      //this.__storage.setFieldState(this.$pathToField, {dirty: false});
+      this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
     }
 
-    // TODO: где-то здесь нужно обновить dirty у всей формы
+    // TODO: тестировать что была перевалидация
+    // TODO: проверить тест что было поднято событие
 
     // re validate and rise events
     if (!_.isEqual(oldCombinedValue, this.value)) {
@@ -95,21 +100,19 @@ export default class FieldBase {
   }
 
   __updateDirty() {
-    let newValue;
+    let newDirtyValue;
 
-    // TODO: пересмотреть, особенно value
-
-    if (this.value === '' && (this.initialValue === '' || _.isNil(this.initialValue))) {
+    // TODO: зачем такая проверка????
+    if (this.userInput === '' && (this.outerValue === '' || _.isNil(this.outerValue))) {
       // 0 compares as common value.
-      newValue = false;
+      newDirtyValue = false;
     }
     else {
       // just compare initial value and value
-      newValue = this.value !== this.initialValue;
+      newDirtyValue = this.userInput !== this.outerValue;
     }
 
-    this.__storage.setFieldState(this.$pathToField, {dirty: newValue});
-    this.$form.$handlers.handleFieldStateChange('dirty', newValue);
+    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
   }
 
 }

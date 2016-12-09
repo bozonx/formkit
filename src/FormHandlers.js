@@ -84,6 +84,22 @@ export default class FormHandlers {
     this._form.$storage.setFormState(stateName, newValue);
   }
 
+  handleFieldDirtyChange(pathToField, newDirtyValue) {
+    this._form.$storage.setFieldState(pathToField, {dirty: newDirtyValue});
+
+    if (newDirtyValue) {
+      this._form.$storage.setFormState('dirty', true);
+    }
+    else {
+      // search for other dirty values in other fields
+      const hasAnyDirty = this._form.$storage.findRecursively('fieldsState', (field) => {
+        if (field.dirty) return true;
+      });
+
+      this._form.$storage.setFormState('dirty', !!hasAnyDirty);
+    }
+  }
+
 
   handleAnyFieldsValidStateChange(pathToField, isValid, invalidMsg) {
     // TODO: this.invalidMsg - брать из формы

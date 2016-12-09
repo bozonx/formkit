@@ -79,8 +79,27 @@ export default class Storage {
     if (_.isUndefined(this._store.fieldsState[pathToField])) {
       this._store.fieldsState[pathToField] = {};
     }
+    // TODO: может лучше использовать _.update
     extendDeep(this._store.fieldsState[pathToField], newState);
   }
+
+  findRecursively(root, cb) {
+    const recursive = (obj) => {
+      return _.find(obj, (item) => {
+        if (!_.isPlainObject(item)) return;
+        if (item.name) {
+          // it's field
+          return cb(item);
+        }
+        else {
+          return recursive(item);
+        }
+      });
+    };
+
+    return recursive(this._store[root]);
+  }
+
 
   _generateNewFormState() {
     return {
