@@ -21,7 +21,7 @@ export default class Field extends FieldBase {
    * @param {*} newValue
    */
   updateValue(newValue) {
-    var oldValue = this.__storage.getFieldValue(this.$pathToField);
+    var oldValue = this.value;
 
     // set up value to this field instance and to storage
     this.__storage.setFieldValue(this.$pathToField, newValue);
@@ -50,7 +50,7 @@ export default class Field extends FieldBase {
     // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
     this.$form.$handlers.handleInitialValueChange(this.$pathToField, newValue);
 
-    if (_.isNull(this.__storage.getFieldValue(this.$pathToField)) && !this.__storage.getFieldState(this.$pathToField, 'touched')) {
+    if (_.isNull(this.value) && !this.touched) {
       this.updateValue(newValue);
     }
     else {
@@ -69,9 +69,9 @@ export default class Field extends FieldBase {
    */
   handleChange(newValue) {
     // don't do anything if disabled
-    if (this.__storage.getFieldState(this.$pathToField, 'disabled')) return;
+    if (this.disabled) return;
 
-    var oldValue = this.__storage.getFieldValue(this.$pathToField);
+    var oldValue = this.value;
 
     // don't save unchanged value if it allows in config.
     if (!this.$form.$config.unchangedValueSaving && oldValue === newValue) return;
@@ -79,7 +79,7 @@ export default class Field extends FieldBase {
     this.updateValue(newValue);
 
     // update touched
-    if (!this.__storage.getFieldState(this.$pathToField, 'touched')) {
+    if (!this.touched) {
       this.__storage.setFieldState(this.$pathToField, {touched: true});
       this.$form.$handlers.handleFieldStateChange('touched', true);
     }
@@ -107,7 +107,7 @@ export default class Field extends FieldBase {
    * * immediately starts save
    */
   handlePressEnter() {
-    if (this.__storage.getFieldState(this.$pathToField, 'disabled')) return;
+    if (this.disabled) return;
     this.__startSave(true);
   }
 
@@ -136,7 +136,7 @@ export default class Field extends FieldBase {
    */
   validate() {
     if (!this.validateRule) return;
-    var ruleReturn = this.validateRule(this.__storage.getFieldValue(this.$pathToField));
+    var ruleReturn = this.validateRule(this.value);
     var isValid = ruleReturn === true;
     var invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
 

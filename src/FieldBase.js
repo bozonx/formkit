@@ -21,12 +21,6 @@ export default class FieldBase {
   }
 
   /////// writable
-  get dirty() {return this.__storage.getFieldState(this.$pathToField, 'dirty')}
-  set dirty(value) {this.__storage.setFieldState(this.$pathToField, {dirty: value})}
-
-  get touched() {return this.__storage.getFieldState(this.$pathToField, 'touched')}
-  set touched(value) {this.__storage.setFieldState(this.$pathToField, {touched: value})}
-
   get disabled() {return this.__storage.getFieldState(this.$pathToField, 'disabled')}
   set disabled(value) {this.__storage.setFieldState(this.$pathToField, {disabled: value})}
 
@@ -38,11 +32,14 @@ export default class FieldBase {
     this._validateRule = value;
     //this.__storage.setFieldState(this.$pathToField, 'validateRule', value);
   }
+
   get debounceTime() {return this.__debouncedCall.delay}
   set debounceTime(delay) {this.__debouncedCall.delay = delay}
 
 
   /////// read only
+  get dirty() {return this.__storage.getFieldState(this.$pathToField, 'dirty')}
+  get touched() {return this.__storage.getFieldState(this.$pathToField, 'touched')}
   get name() {return this.__storage.getFieldState(this.$pathToField, 'name')}
   get value() {return this.__storage.getFieldValue(this.$pathToField)}
   get initialValue() {return this.__storage.getFieldInitialValue(this.$pathToField)}
@@ -54,28 +51,26 @@ export default class FieldBase {
 
   __startSave(force) {
     // don't save invalid value
-    if (!this.__storage.getFieldState(this.$pathToField, 'valid')) return;
+    if (!this.valid) return;
     if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
 
     if (this.__onSaveCallback) {
-      this.__debouncedCall.exec(this.__onSaveCallback, force, this.__storage.getFieldValue(this.$pathToField));
+      this.__debouncedCall.exec(this.__onSaveCallback, force, this.value);
     }
 
     this.$form.$handlers.handleFieldSave(force);
   }
 
   __updateDirty() {
-    var value = this.__storage.getFieldValue(this.$pathToField);
-    var initialValue = this.__storage.getFieldInitialValue(this.$pathToField);
-    var newValue;
+    let newValue;
 
-    if (value === '' && (initialValue === '' || _.isNil(initialValue))) {
+    if (this.value === '' && (this.initialValue === '' || _.isNil(this.initialValue))) {
       // 0 compares as common value.
       newValue = false;
     }
     else {
       // just compare initial value and value
-      newValue = value !== initialValue;
+      newValue = this.value !== this.initialValue;
     }
 
     this.__storage.setFieldState(this.$pathToField, {dirty: newValue});
