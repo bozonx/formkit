@@ -5,13 +5,14 @@ export default class Storage {
   constructor() {
     this._store = {
       formState: {},
-      // name: value or parent.name: value
-      fieldsValue: {},
-      fieldsInitialValue: {},
       fieldsState: {},
-
       userInputs: {},
       outerValues: {},
+
+      // name: value or parent.name: value
+
+      // fieldsValue: {},
+      // fieldsInitialValue: {},
     };
   }
 
@@ -51,54 +52,40 @@ export default class Storage {
   }
   // combined values
   get values() {
-    // TODO: defaults deep
-    //return _.cloneDeep(this._store.outerValues);
+    return _.defaultsDeep(_.cloneDeep(this._store.userInputs), this._store.outerValues);
+  }
+
+  set outerValues(newValues) {
+    _.set(this._store.outerValues, newValues);
   }
 
   getUserInput(pathToField) {
     return _.cloneDeep(_.get(this._store.userInputs, pathToField));
   }
-  getOuterValues(pathToField) {
+  getOuterValue(pathToField) {
     return _.cloneDeep(_.get(this._store.outerValues, pathToField));
   }
   getValue(pathToField) {
-    // TODO: взять userInput или если нет, то outerValue
-    //return _.cloneDeep(_.get(this._store.outerValues, pathToField));
+    const value = _.get(this._store.userInputs, pathToField);
+    if (!_.isUndefined(value)) return _.cloneDeep(value);
+    // else returns outer value
+    return _.get(this._store.outerValues, pathToField);
   }
 
-
-
-
-
-
+  setUserInput(pathToField, newValue) {
+    _.set(this._store.userInputs, pathToField, newValue);
+  }
+  setOuterValue(pathToField, newValue) {
+    _.get(this._store.outerValues, pathToField, newValue);
+  }
 
   /////////////////////////////////
-  /////////////////////////////////
-  /////////////////////////////////
-  /////////////////////////////////
-
   getFormState(stateName) {
     return _.cloneDeep(_.get(this._store, `formState.${stateName}`));
   }
 
-  getFieldValue(pathToField) {
-    return _.cloneDeep(_.get(this._store.fieldsValue, pathToField));
-  }
-
-  getFieldInitialValue(pathToField) {
-    return _.cloneDeep(_.get(this._store.fieldsInitialValue, pathToField));
-  }
-
   getFieldState(pathToField, stateName) {
     return _.cloneDeep(_.get(this._store.fieldsState, `${pathToField}.${stateName}`));
-  }
-
-  getFieldsValues() {
-    return _.cloneDeep(this._store.fieldsValue);
-  }
-
-  getFieldsInitialValues() {
-    return _.cloneDeep(this._store.fieldsInitialValue);
   }
 
   /**
@@ -110,23 +97,6 @@ export default class Storage {
     _.set(this._store, `formState.${stateName}`, newValue);
   }
 
-  /**
-   * Set field's value - primitive not container or array
-   * @param pathToField
-   * @param newValue
-   */
-  setFieldValue(pathToField, newValue) {
-    _.set(this._store, `fieldsValue.${pathToField}`, newValue);
-  }
-
-  /**
-   * Set field's value - primitive not container or array
-   * @param pathToField
-   * @param newValue
-   */
-  setFieldInitialValue(pathToField, newValue) {
-    _.set(this._store, `fieldsInitialValue.${pathToField}`, newValue);
-  }
 
   /**
    * Set field's state - primitive value, not container or array
@@ -140,4 +110,46 @@ export default class Storage {
     }
     extendDeep(this._store.fieldsState[pathToField], newState);
   }
+
+
+  /////////////////////////////////
+  /////////////////////////////////
+  /////////////////////////////////
+
+
+
+  // getFieldValue(pathToField) {
+  //   return _.cloneDeep(_.get(this._store.fieldsValue, pathToField));
+  // }
+  //
+  // getFieldInitialValue(pathToField) {
+  //   return _.cloneDeep(_.get(this._store.fieldsInitialValue, pathToField));
+  // }
+  //
+  // getFieldsValues() {
+  //   return _.cloneDeep(this._store.fieldsValue);
+  // }
+  //
+  // getFieldsInitialValues() {
+  //   return _.cloneDeep(this._store.fieldsInitialValue);
+  // }
+
+  // /**
+  //  * Set field's value - primitive not container or array
+  //  * @param pathToField
+  //  * @param newValue
+  //  */
+  // setFieldValue(pathToField, newValue) {
+  //   _.set(this._store, `fieldsValue.${pathToField}`, newValue);
+  // }
+  //
+  // /**
+  //  * Set field's value - primitive not container or array
+  //  * @param pathToField
+  //  * @param newValue
+  //  */
+  // setFieldInitialValue(pathToField, newValue) {
+  //   _.set(this._store, `fieldsInitialValue.${pathToField}`, newValue);
+  // }
+
 }

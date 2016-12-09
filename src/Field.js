@@ -7,56 +7,28 @@ export default class Field extends FieldBase {
     super(form, fieldName);
   }
 
-  /**
-   * Silent update. It uses for set outer(from machine) values (not user's).
-   *
-   * It does:
-   * * It set up new value to self instance and to storage
-   * * It updates "dirty" and "valid" states.
-   * * It rises anyChange event for field and whole form.
-   *
-   * It doesn't:
-   * * It doesn't rise onChange callback (for user's events).
-   * * It doesn't update "touched" state.
-   * @param {*} newValue
-   */
-  updateValue(newValue) {
-    var oldValue = this.value;
-
-    // set up value to this field instance and to storage
-    this.__storage.setFieldValue(this.$pathToField, newValue);
-
-    // tell to form - a value is updated
-    this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldValue);
-
-    // update dirty state
-    this.__updateDirty();
-    // run validation
-    this.validate();
-  }
-
-  /**
-   * It sets initial value.
-   * It does:
-   * * It set up new initial value to self instance and to storage
-   * * if value of field is null and field is untouched, it sets value (see updateValue() method)
-   * * if field isn't touched, it just update dirty state
-   * @param newValue
-   */
-  setInitialValue(newValue) {
-    // set up initial value to this field instance and to storage
-    this.__storage.setFieldInitialValue(this.$pathToField, newValue);
-
-    // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
-    this.$form.$handlers.handleInitialValueChange(this.$pathToField, newValue);
-
-    if (_.isNull(this.value) && !this.touched) {
-      this.updateValue(newValue);
-    }
-    else {
-      this.__updateDirty();
-    }
-  }
+  // /**
+  //  * It sets initial value.
+  //  * It does:
+  //  * * It set up new initial value to self instance and to storage
+  //  * * if value of field is null and field is untouched, it sets value (see updateValue() method)
+  //  * * if field isn't touched, it just update dirty state
+  //  * @param newValue
+  //  */
+  // setInitialValue(newValue) {
+  //   // set up initial value to this field instance and to storage
+  //   this.__storage.setFieldInitialValue(this.$pathToField, newValue);
+  //
+  //   // TODO: дублируется установка, она устанавливается ещё в this.$fieldState.setInitialValue
+  //   this.$form.$handlers.handleInitialValueChange(this.$pathToField, newValue);
+  //
+  //   if (_.isNull(this.value) && !this.touched) {
+  //     this.updateValue(newValue);
+  //   }
+  //   else {
+  //     this.__updateDirty();
+  //   }
+  // }
 
   /**
    * It's onChange handler. It must be placed to input onChange attribute.
@@ -68,24 +40,27 @@ export default class Field extends FieldBase {
    * * Starts saving
    */
   handleChange(newValue) {
-    // don't do anything if disabled
+     // don't do anything if disabled
     if (this.disabled) return;
 
-    var oldValue = this.value;
+    const oldCombinedValue = _.cloneDeep(this.value);
 
+    // TODO: а изменения разрешать?
     // don't save unchanged value if it allows in config.
-    if (!this.$form.$config.unchangedValueSaving && oldValue === newValue) return;
+    if (!this.$form.$config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
 
-    this.updateValue(newValue);
+    this.__storage.setUserInput(this.$pathToField, newValue);
 
     // update touched
     if (!this.touched) {
       this.__storage.setFieldState(this.$pathToField, {touched: true});
+      // TODO: !!!!! нужно пересчитывать стейт всей формы
       this.$form.$handlers.handleFieldStateChange('touched', true);
     }
 
-    this.$form.$handlers.handleValueChangeByUser(this.$pathToField, oldValue, newValue);
+    this.$form.$handlers.handleValueChangeByUser(this.$pathToField, oldCombinedValue, newValue);
 
+    // run on change callback
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
     this.__startSave();
@@ -116,14 +91,14 @@ export default class Field extends FieldBase {
   }
 
   /**
-   * It rises on field's value change by user
+   * It rises on field's value changes by user
    */
   onChange(cb) {
     this.$onChangeCallback = cb;
   }
 
   /**
-   * It rises with debounce on start saving after update field value by user
+   * It rises with debounce on start saving after updating field value by user
    * @param cb
    */
   onSave(cb) {

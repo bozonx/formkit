@@ -32,28 +32,23 @@ export default class FormHandlers {
   }
 
   /**
-   * It calls from field on silent value change.
-   * It means - it calls on any value change.
-   * It rises a "silentChange" event.
-   * It rises on any value change by user or by program.
+   * It calls from field on silent value change (after outer value setting).
+   * It means - it calls onlu on value changes by machine.
+   * It rises a "silentChange" and "anyChange" events.
    * @param {string} pathToField
-   * @param {*} oldValue
+   * @param {*} oldCombinedValue
    */
-  handleSilentValueChange(pathToField, oldValue) {
+  handleSilentValueChange(pathToField, oldCombinedValue) {
     var eventData = {
       fieldName: pathToField,
-      oldValue,
-      value: this._form.$storage.getFieldValue(pathToField),
+      oldCombinedValue,
+      value: this._form.$storage.getValue(pathToField),
     };
-
-    // It hopes actual value is in storage at the moment
-    this._form.$updateValues(this._form.$storage.getFieldsValues());
 
     // Rise events
     this._form.$events.emit('silentChange', eventData);
     this._form.$events.emit(`field.${pathToField}.silentChange`, eventData);
 
-    // TODO: ну только отсюда должно подниматься событие
     this._riseAnyChange(pathToField);
   }
 
@@ -66,29 +61,29 @@ export default class FormHandlers {
    * @param {*} newValue
    */
   handleValueChangeByUser(pathToField, oldValue, newValue) {
-    var value = this._form.$storage.getFieldValue(pathToField);
     var eventData = {
       fieldName: pathToField,
       oldValue,
-      value: value,
+      value: newValue,
     };
 
-    if (this.$onChangeCallback) this.$onChangeCallback({[pathToField]: value});
+    // run form's on change callback
+    if (this.$onChangeCallback) this.$onChangeCallback({[pathToField]: newValue});
 
     // Rise events
     this._form.$events.emit('change', eventData);
     this._form.$events.emit(`field.${pathToField}.change`, eventData);
 
     _.set(this._unsavedState, pathToField, newValue);
-  }
 
-  handleInitialValueChange(pathToField, newInitialValue) {
-    this._form.$storage.setFieldInitialValue(pathToField, newInitialValue);
+    this._riseAnyChange(pathToField);
   }
 
   handleFieldStateChange(stateName, newValue) {
+    // TODO: вычислить стейт forms - если dirty то у формы dirty даже если одно поле dirty
     this._form.$storage.setFormState(stateName, newValue);
   }
+
 
   handleAnyFieldsValidStateChange(pathToField, isValid, invalidMsg) {
     // TODO: this.invalidMsg - брать из формы

@@ -8,8 +8,8 @@ export default class Form extends FormBase{
     this._onSubmitCallback = null;
   }
 
-  init(initialState) {
-    this.setInitialValues(initialState);
+  init(outerValues) {
+    this.__recreateFieldInstances(outerValues);
   }
 
   /**
@@ -18,7 +18,7 @@ export default class Form extends FormBase{
   handleSubmit() {
     if (!this._onSubmitCallback) return;
     this.$storage.setFormState('submitting', true);
-    var returnedValue = this._onSubmitCallback(this.$storage.getFieldsValues());
+    const returnedValue = this._onSubmitCallback(this.$storage.values);
     // if promise
     if (returnedValue && returnedValue.then) {
       return returnedValue.then(() => {
@@ -46,22 +46,4 @@ export default class Form extends FormBase{
     this._onSubmitCallback = cb;
   }
 
-  /**
-   * It set all the values to fields silently.
-   * It creates a field if it doesn't exist.
-   * @param newValues
-   */
-  setValues(newValues) {
-    this.$fieldsManager.updateValues(_.cloneDeep(newValues));
-  }
-
-  /**
-   * It set initial values for all the fields.
-   * It creates a field if it doesn't exist.
-   * It set value if it doesn't assign.
-   * @param initialState
-   */
-  setInitialValues(initialState) {
-    this.$fieldsManager.setInitialValues(initialState);
-  }
 }
