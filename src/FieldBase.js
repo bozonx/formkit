@@ -20,9 +20,13 @@ export default class FieldBase {
     this.__storage.setFieldInitialValue(this.$pathToField, null);
   }
 
-  get name() {return this.__storage.getFieldState(this.$pathToField, 'name')}
+  get userInput() {return this.__storage.getUserInput(this.$pathToField)}
+  get outerValue() {return this.__storage.getOuterValues(this.$pathToField)}
+
   get value() {return this.__storage.getFieldValue(this.$pathToField)}
   get initialValue() {return this.__storage.getFieldInitialValue(this.$pathToField)}
+
+  get name() {return this.__storage.getFieldState(this.$pathToField, 'name')}
   get dirty() {return this.__storage.getFieldState(this.$pathToField, 'dirty')}
   get touched() {return this.__storage.getFieldState(this.$pathToField, 'touched')}
   get valid() {return this.__storage.getFieldState(this.$pathToField, 'valid')}

@@ -9,12 +9,14 @@ export default class Storage {
       fieldsValue: {},
       fieldsInitialValue: {},
       fieldsState: {},
+
+      userInputs: {},
+      outerValues: {},
     };
   }
 
   generateNewFormState() {
     return {
-      initialValues: {},
       invalidMsgs: {},
       dirty: false,
       touched: false,
@@ -40,6 +42,40 @@ export default class Storage {
   getWholeStorageState() {
     return _.cloneDeep(this._store);
   }
+
+  get userInputs() {
+    return _.cloneDeep(this._store.userInputs);
+  }
+  get outerValues() {
+    return _.cloneDeep(this._store.outerValues);
+  }
+  // combined values
+  get values() {
+    // TODO: defaults deep
+    //return _.cloneDeep(this._store.outerValues);
+  }
+
+  getUserInput(pathToField) {
+    return _.cloneDeep(_.get(this._store.userInputs, pathToField));
+  }
+  getOuterValues(pathToField) {
+    return _.cloneDeep(_.get(this._store.outerValues, pathToField));
+  }
+  getValue(pathToField) {
+    // TODO: взять userInput или если нет, то outerValue
+    //return _.cloneDeep(_.get(this._store.outerValues, pathToField));
+  }
+
+
+
+
+
+
+
+  /////////////////////////////////
+  /////////////////////////////////
+  /////////////////////////////////
+  /////////////////////////////////
 
   getFormState(stateName) {
     return _.cloneDeep(_.get(this._store, `formState.${stateName}`));
