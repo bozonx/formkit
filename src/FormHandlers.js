@@ -79,8 +79,8 @@ export default class FormHandlers {
     this._riseAnyChange(pathToField);
   }
 
-  handleFieldStateChange(stateName, newValue) {
-    // TODO: вычислить стейт forms - если dirty то у формы dirty даже если одно поле dirty
+  handleFieldStateChange(pathToField, stateName, newValue) {
+    this._form.$storage.setFieldState(pathToField, {touched: true});
     this._form.$storage.setFormState(stateName, newValue);
   }
 

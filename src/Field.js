@@ -32,8 +32,7 @@ export default class Field extends FieldBase {
 
     // update touched
     if (!this.touched) {
-      this.__storage.setFieldState(this.$pathToField, {touched: true});
-      this.$form.$handlers.handleFieldStateChange('touched', true);
+      this.$form.$handlers.handleFieldStateChange(this.$pathToField, 'touched', true);
     }
 
     // TODO: пересмотреть
