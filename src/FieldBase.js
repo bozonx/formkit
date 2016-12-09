@@ -1,19 +1,23 @@
 import _ from 'lodash';
 
-import FieldState from './FieldState';
 import DebouncedCall from './DebouncedCall';
 
 export default class FieldBase {
   constructor(form, fieldName) {
     this.$form = form;
     this.$pathToField = fieldName;
-    this.$fieldState = new FieldState(this.$form, this, this.$pathToField);
     this.$onChangeCallback = null;
     this.__storage = this.$form.$storage;
     this.__onSaveCallback = null;
     this.__debouncedCall = new DebouncedCall(this.$form.$config.debounceTime);
 
     this._debouncedCb = undefined;
+
+    // init state
+    const newField = this.__storage.generateNewFieldState(fieldName);
+    this.__storage.setFieldState(this.$pathToField, newField);
+    this.__storage.setFieldValue(this.$pathToField, null);
+    this.__storage.setFieldInitialValue(this.$pathToField, null);
   }
 
   /////// writable

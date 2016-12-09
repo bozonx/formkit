@@ -19,6 +19,14 @@ export default class FormBase {
     this.values = {};
   }
 
+  getValues() {
+    return this.$storage.getFieldsValues();
+  }
+
+  getInitialValues() {
+    return this.$storage.getFieldsInitialValues();
+  }
+
   $getWholeStorageState() {
     return this.$storage.getWholeStorageState();
   }

@@ -12,14 +12,6 @@ export default class Form extends FormBase{
     this.setInitialValues(initialState);
   }
 
-  getValues() {
-    return this.$storage.getFieldsValues();
-  }
-
-  getInitialValues() {
-    return this.$storage.getFieldsInitialValues();
-  }
-
   /**
    * It must be placed to <form> element on onSubmit attribute.
    */
