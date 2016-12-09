@@ -83,14 +83,15 @@ export default class FormHandlers {
   }
 
   handleInitialValueChange(pathToField, newInitialValue) {
-    this._form.$formState.setFieldInitialValue(pathToField, newInitialValue);
+    this._form.$storage.setFieldInitialValue(pathToField, newInitialValue);
   }
 
   handleFieldStateChange(stateName, newValue) {
-    this._form.$formState.setStateValue(stateName, newValue);
+    this._form.$storage.setFormState(stateName, newValue);
   }
 
   handleAnyFieldsValidStateChange(pathToField, isValid, invalidMsg) {
+    // TODO: this.invalidMsg - брать из формы
     var newInvalidMessages = {...this.invalidMsg};
     if (isValid) {
       delete newInvalidMessages[pathToField];
@@ -99,10 +100,10 @@ export default class FormHandlers {
       newInvalidMessages[pathToField] = invalidMsg;
     }
 
-    this._form.$formState.setStateValue('invalidMsg', newInvalidMessages);
+    this._form.$storage.setFormState('invalidMsg', newInvalidMessages);
 
     var isFormValid = _.isEmpty(newInvalidMessages);
-    this._form.$formState.setStateValue('valid', isFormValid);
+    this._form.$storage.setFormState('valid', isFormValid);
   }
 
   /**

@@ -17,17 +17,17 @@ export default class Form extends FormBase{
    */
   handleSubmit() {
     if (!this._onSubmitCallback) return;
-    this.$formState.setStateValue('submitting', true);
+    this.$storage.setFormState('submitting', true);
     var returnedValue = this._onSubmitCallback(this.$storage.getFieldsValues());
     // if promise
     if (returnedValue && returnedValue.then) {
       return returnedValue.then(() => {
-        this.$formState.setStateValue('submitting', false);
+        this.$storage.setFormState('submitting', false);
       }, () => {
-        this.$formState.setStateValue('submitting', false);
+        this.$storage.setFormState('submitting', false);
       });
     }
-    this.$formState.setStateValue('submitting', false);
+    this.$storage.setFormState('submitting', false);
   }
 
   on(eventName, cb) {

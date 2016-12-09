@@ -15,11 +15,11 @@ export default class Storage {
   generateNewFormState() {
     return {
       initialValues: {},
+      invalidMsgs: {},
       dirty: false,
       touched: false,
       submitting: false,
       valid: true,
-      invalidMsg: '',
     };
   }
 
@@ -41,8 +41,8 @@ export default class Storage {
     return _.cloneDeep(this._store);
   }
 
-  getFormState() {
-    return _.cloneDeep(this._store.formState);
+  getFormState(stateName) {
+    return _.cloneDeep(_.get(this._store, `formState.${stateName}`));
   }
 
   getFieldValue(pathToField) {
