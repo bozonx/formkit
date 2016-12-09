@@ -11,12 +11,75 @@ export default class Storage {
     };
   }
 
+  // combined values
+  get values() {
+    return _.defaultsDeep(_.cloneDeep(this._store.userInputs), this._store.outerValues);
+  }
+
   initFormState() {
     this._store.formState = this._generateNewFormState();
   }
 
   initFieldState(pathToField, fieldName) {
     this.setFieldState(pathToField, this._generateNewFieldState(fieldName));
+  }
+
+  getWholeStorageState() {
+    return _.cloneDeep(this._store);
+  }
+
+  getUserInput(pathToField) {
+    return _.cloneDeep(_.get(this._store.userInputs, pathToField));
+  }
+
+  getOuterValue(pathToField) {
+    return _.cloneDeep(_.get(this._store.outerValues, pathToField));
+  }
+
+  getValue(pathToField) {
+    const value = _.get(this._store.userInputs, pathToField);
+    if (!_.isUndefined(value)) return _.cloneDeep(value);
+    // else returns outer value
+    return _.get(this._store.outerValues, pathToField);
+  }
+
+  getFormState(stateName) {
+    return _.cloneDeep(_.get(this._store.formState, stateName));
+  }
+
+  getFieldState(pathToField, stateName) {
+    return _.cloneDeep(_.get(this._store.fieldsState, `${pathToField}.${stateName}`));
+  }
+
+
+  setUserInput(pathToField, newValue) {
+    _.set(this._store.userInputs, pathToField, newValue);
+  }
+
+  setOuterValue(pathToField, newValue) {
+    _.set(this._store.outerValues, pathToField, newValue);
+  }
+
+  /**
+   * Set form's state. Only primitive, not container or array
+   * @param stateName
+   * @param newValue
+   */
+  setFormState(stateName, newValue) {
+    _.set(this._store.formState, stateName, newValue);
+  }
+
+
+  /**
+   * Set field's state.
+   * @param pathToField
+   * @param newState
+   */
+  setFieldState(pathToField, newState) {
+    if (_.isUndefined(this._store.fieldsState[pathToField])) {
+      this._store.fieldsState[pathToField] = {};
+    }
+    extendDeep(this._store.fieldsState[pathToField], newState);
   }
 
   _generateNewFormState() {
@@ -41,66 +104,6 @@ export default class Storage {
       disabled: false,
       focused: false,
     };
-  }
-
-  getWholeStorageState() {
-    return _.cloneDeep(this._store);
-  }
-
-  // combined values
-  get values() {
-    return _.defaultsDeep(_.cloneDeep(this._store.userInputs), this._store.outerValues);
-  }
-
-  getUserInput(pathToField) {
-    return _.cloneDeep(_.get(this._store.userInputs, pathToField));
-  }
-  getOuterValue(pathToField) {
-    return _.cloneDeep(_.get(this._store.outerValues, pathToField));
-  }
-  getValue(pathToField) {
-    const value = _.get(this._store.userInputs, pathToField);
-    if (!_.isUndefined(value)) return _.cloneDeep(value);
-    // else returns outer value
-    return _.get(this._store.outerValues, pathToField);
-  }
-
-  setUserInput(pathToField, newValue) {
-    _.set(this._store.userInputs, pathToField, newValue);
-  }
-  setOuterValue(pathToField, newValue) {
-    _.set(this._store.outerValues, pathToField, newValue);
-  }
-
-
-  getFormState(stateName) {
-    return _.cloneDeep(_.get(this._store.formState, stateName));
-  }
-  getFieldState(pathToField, stateName) {
-    return _.cloneDeep(_.get(this._store.fieldsState, `${pathToField}.${stateName}`));
-  }
-
-  /**
-   * Set form's state. Only primitive, not container or array
-   * @param stateName
-   * @param newValue
-   */
-  setFormState(stateName, newValue) {
-    _.set(this._store.formState, stateName, newValue);
-  }
-
-
-  /**
-   * Set field's state - primitive value, not container or array
-   * @param pathToField
-   * @param newState
-   */
-  setFieldState(pathToField, newState) {
-    //_.set(this._store, `fieldsState.${pathToField}.${stateName}`, newValue);
-    if (_.isUndefined(this._store.fieldsState[pathToField])) {
-      this._store.fieldsState[pathToField] = {};
-    }
-    extendDeep(this._store.fieldsState[pathToField], newState);
   }
 
 }

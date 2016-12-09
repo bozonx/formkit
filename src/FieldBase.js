@@ -15,11 +15,6 @@ export default class FieldBase {
 
     // init state
     this.__storage.initFieldState(this.$pathToField, fieldName);
-
-    // TODO: оно же и так будет null
-    //this.__storage.setOuterValue(this.$pathToField, null);
-    //this.__storage.setFieldValue(this.$pathToField, null);
-    //this.__storage.setFieldInitialValue(this.$pathToField, null);
   }
 
   get userInput() {return this.__storage.getUserInput(this.$pathToField)}
