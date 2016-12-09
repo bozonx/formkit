@@ -33,39 +33,40 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isFalse(this.form.dirty)
     assert.isTrue(this.form.touched)
 
-#  it 'set the same initial value', ->
-#    this.form.fields.name.handleChange('newValue')
-#    this.form.fields.name.setInitialValue('newValue')
+  it 'set the same outer value', ->
+    this.form.fields.name.handleChange('newValue')
+    this.form.fields.name.value = 'newValue'
+    assert.isFalse(this.form.fields.name.dirty)
+    assert.isTrue(this.form.fields.name.touched)
+    assert.isFalse(this.form.dirty)
+    assert.isTrue(this.form.touched)
+
+  it 'change and revert to fiest value', ->
+    this.form.fields.name.value = 'initValue'
+    this.form.fields.name.handleChange('newValue')
+    this.form.fields.name.handleChange('initValue')
+    assert.isFalse(this.form.fields.name.dirty)
+    assert.isTrue(this.form.fields.name.touched)
+    assert.isFalse(this.form.dirty)
+    assert.isTrue(this.form.touched)
+
+#  it 'after reinit form', ->
+#    this.form.fields.name.handleChange('oldValue')
+#    this.form.init({name: 'newValue'})
 #    assert.isFalse(this.form.fields.name.dirty)
 #    assert.isTrue(this.form.fields.name.touched)
 #    assert.isFalse(this.form.dirty)
 #    assert.isTrue(this.form.touched)
-#
-#  it 'change and remove value', ->
-#    this.form.fields.name.setInitialValue('initValue')
-#    this.form.fields.name.handleChange('newValue')
-#    this.form.fields.name.handleChange('initValue')
-#    assert.isFalse(this.form.fields.name.dirty)
-#    assert.isTrue(this.form.fields.name.touched)
-#    assert.isFalse(this.form.dirty)
-#    assert.isTrue(this.form.touched)
-#
-#  it 'after global setting initial values', ->
-#    # TODO : зачем???
-#    this.form.__recreateFieldInstances({name: 'newValue'})
-#    assert.isFalse(this.form.fields.name.dirty)
-#    assert.isFalse(this.form.fields.name.touched)
-#    assert.isFalse(this.form.dirty)
-#    #assert.isFalse(this.form.touched)
-#
-#  it 'after global setting values', ->
-#    this.form.setValues({name: 'newValue'})
-#    assert.isTrue(this.form.fields.name.dirty)
-#    assert.isFalse(this.form.fields.name.touched)
-#    assert.isTrue(this.form.dirty)
-#    #assert.isFalse(this.form.touched)
-#
-#  it "dirty state must be true if value reverted to ''", ->
-#    this.form.fields.name.handleChange('newValue')
-#    this.form.fields.name.handleChange('')
-#    assert.isFalse(this.form.fields.name.dirty)
+
+  it 'after global setting values', ->
+    this.form.fields.name.handleChange('newValue')
+    this.form.values = {name: 'newValue'}
+    assert.isFalse(this.form.fields.name.dirty)
+    assert.isTrue(this.form.fields.name.touched)
+    assert.isFalse(this.form.dirty)
+    assert.isTrue(this.form.touched)
+
+  it "dirty state must be true if value reverted to ''", ->
+    this.form.fields.name.handleChange('newValue')
+    this.form.fields.name.handleChange('')
+    assert.isFalse(this.form.fields.name.dirty)
