@@ -14,8 +14,7 @@ export default class FieldBase {
     this._debouncedCb = undefined;
 
     // init state
-    const newField = this.__storage.generateNewFieldState(fieldName);
-    this.__storage.setFieldState(this.$pathToField, newField);
+    this.__storage.initFieldState(this.$pathToField, fieldName);
 
     // TODO: оно же и так будет null
     //this.__storage.setOuterValue(this.$pathToField, null);

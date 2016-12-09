@@ -8,15 +8,18 @@ export default class Storage {
       fieldsState: {},
       userInputs: {},
       outerValues: {},
-
-      // name: value or parent.name: value
-
-      // fieldsValue: {},
-      // fieldsInitialValue: {},
     };
   }
 
-  generateNewFormState() {
+  initFormState() {
+    this._store.formState = this._generateNewFormState();
+  }
+
+  initFieldState(pathToField, fieldName) {
+    this.setFieldState(pathToField, this._generateNewFieldState(fieldName));
+  }
+
+  _generateNewFormState() {
     return {
       invalidMsgs: {},
       dirty: false,
@@ -26,7 +29,7 @@ export default class Storage {
     };
   }
 
-  generateNewFieldState(name) {
+  _generateNewFieldState(name) {
     return {
       name: name,
       dirty: false,
@@ -71,7 +74,7 @@ export default class Storage {
 
 
   getFormState(stateName) {
-    return _.cloneDeep(_.get(this._store, `formState.${stateName}`));
+    return _.cloneDeep(_.get(this._store.formState, stateName));
   }
   getFieldState(pathToField, stateName) {
     return _.cloneDeep(_.get(this._store.fieldsState, `${pathToField}.${stateName}`));
@@ -83,7 +86,7 @@ export default class Storage {
    * @param newValue
    */
   setFormState(stateName, newValue) {
-    _.set(this._store, `formState.${stateName}`, newValue);
+    _.set(this._store.formState, stateName, newValue);
   }
 
 
