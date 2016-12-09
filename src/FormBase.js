@@ -20,10 +20,12 @@ export default class FormBase {
   }
 
   getValues() {
+    // TOdO: refactor
     return this.$storage.getFieldsValues();
   }
 
   getInitialValues() {
+    // TOdO: refactor
     return this.$storage.getFieldsInitialValues();
   }
 

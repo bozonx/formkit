@@ -21,26 +21,14 @@ export default class FieldBase {
   }
 
   /////// writable
-  get dirty() {
-    return this.__storage.getFieldState(this.$pathToField, 'dirty');
-  }
-  set dirty(value) {
-    this.__storage.setFieldState(this.$pathToField, {dirty: value});
-  }
+  get dirty() {return this.__storage.getFieldState(this.$pathToField, 'dirty')}
+  set dirty(value) {this.__storage.setFieldState(this.$pathToField, {dirty: value})}
 
-  get touched() {
-    return this.__storage.getFieldState(this.$pathToField, 'touched');
-  }
-  set touched(value) {
-    this.__storage.setFieldState(this.$pathToField, {touched: value});
-  }
+  get touched() {return this.__storage.getFieldState(this.$pathToField, 'touched')}
+  set touched(value) {this.__storage.setFieldState(this.$pathToField, {touched: value})}
 
-  get disabled() {
-    return this.__storage.getFieldState(this.$pathToField, 'disabled');
-  }
-  set disabled(value) {
-    this.__storage.setFieldState(this.$pathToField, {disabled: value});
-  }
+  get disabled() {return this.__storage.getFieldState(this.$pathToField, 'disabled')}
+  set disabled(value) {this.__storage.setFieldState(this.$pathToField, {disabled: value})}
 
   get validateRule() {
     return this._validateRule;
@@ -50,42 +38,19 @@ export default class FieldBase {
     this._validateRule = value;
     //this.__storage.setFieldState(this.$pathToField, 'validateRule', value);
   }
-  get debounceTime() {
-    return this.__debouncedCall.delay;
-  }
-  set debounceTime(delay) {
-    this.__debouncedCall.delay = delay;
-  }
+  get debounceTime() {return this.__debouncedCall.delay}
+  set debounceTime(delay) {this.__debouncedCall.delay = delay}
 
 
   /////// read only
-  get name() {
-    return this.__storage.getFieldState(this.$pathToField, 'name');
-  }
+  get name() {return this.__storage.getFieldState(this.$pathToField, 'name')}
+  get value() {return this.__storage.getFieldValue(this.$pathToField)}
+  get initialValue() {return this.__storage.getFieldInitialValue(this.$pathToField)}
+  get valid() {return this.__storage.getFieldState(this.$pathToField, 'valid')}
+  get invalidMsg() {return this.__storage.getFieldState(this.$pathToField, 'invalidMsg')}
+  get saving() {return this.__storage.getFieldState(this.$pathToField, 'saving')}
+  get focused() {return this.__storage.getFieldState(this.$pathToField, 'focused')}
 
-  get value() {
-    return this.__storage.getFieldValue(this.$pathToField);
-  }
-
-  get initialValue() {
-    return this.__storage.getFieldInitialValue(this.$pathToField);
-  }
-
-  get valid() {
-    return this.__storage.getFieldState(this.$pathToField, 'valid');
-  }
-
-  get invalidMsg() {
-    return this.__storage.getFieldState(this.$pathToField, 'invalidMsg');
-  }
-
-  get saving() {
-    return this.__storage.getFieldState(this.$pathToField, 'saving');
-  }
-
-  get focused() {
-    return this.__storage.getFieldState(this.$pathToField, 'focused');
-  }
 
   __startSave(force) {
     // don't save invalid value
