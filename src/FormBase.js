@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import FormHandlers from './FormHandlers';
+import Field from './Field';
 
 
 export default class FormBase {
@@ -31,10 +32,24 @@ export default class FormBase {
     return this.$storage.getWholeStorageState();
   }
 
+  __reinitFields(outerValues) {
+    _.each(outerValues, (value, fieldName) => {
+      // Create new field if it doesn't exist
+      if (!this.fields[fieldName]) {
+        this.__fields[fieldName] = new Field(this, fieldName);
+      }
+
+      // set outer value
+      this.__fields[fieldName].outerValue = value;
+    });
+  }
+
   _hardUpdateValues(newValues) {
     _.each(newValues, (value, fieldName) => {
       if (this.fields[fieldName]) this.fields[fieldName].value = value;
     });
   }
+
+
 
 }

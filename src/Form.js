@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import FormBase from './FormBase';
-import Field from './Field';
+
 
 export default class Form extends FormBase{
   constructor(storage, config, events, log) {
@@ -10,11 +10,7 @@ export default class Form extends FormBase{
   }
 
   init(outerValues) {
-    _.each(outerValues, (value, fieldName) => {
-      // Create new field if it isn't exist
-      if (!this.fields[fieldName]) this.__fields[fieldName] = new Field(this, fieldName);
-      this.__fields[fieldName].outerValue = value;
-    });
+    this.__reinitFields(outerValues);
   }
 
   /**
