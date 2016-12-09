@@ -38,7 +38,7 @@ describe 'Functional. Value.', ->
     assert.isUndefined(this.form.$storage.getUserInput('name'))
     assert.equal(this.form.$storage.getOuterValue('name'), 'newOuterValue')
 
-  it 'set new values to whole form', ->
+  it 'set new values to whole form (machine update)', ->
     this.form.fields.name.handleChange('newValue')
     this.form.values = {name: 'newOuterValue'}
 

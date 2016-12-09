@@ -1,14 +1,10 @@
 import _ from 'lodash';
 
-import Field from './Field';
 import FormHandlers from './FormHandlers';
 
 
 export default class FormBase {
   constructor(storage, config, events, log) {
-    // TODO: use getter
-    this.fields = {};
-
     this.$storage = storage;
     this.$events = events;
     this.$config = config;
@@ -18,8 +14,11 @@ export default class FormBase {
     // set initial form state
     var newFormState = this.$storage.generateNewFormState();
     this.$storage.setFormState(newFormState);
+
+    this.__fields = {};
   }
 
+  get fields() {return this.__fields}
   get values() {return this.$storage.values}
   get dirty() {return this.$storage.getFormState('dirty')}
   get touched() {return this.$storage.getFormState('touched')}
@@ -31,15 +30,6 @@ export default class FormBase {
 
   $getWholeStorageState() {
     return this.$storage.getWholeStorageState();
-  }
-
-
-  __recreateFieldInstances(outerValues) {
-    _.each(outerValues, (value, fieldName) => {
-      // Create new field if it isn't exist
-      if (!this.fields[fieldName]) this.fields[fieldName] = new Field(this, fieldName);
-      this.fields[fieldName].outerValue = value;
-    });
   }
 
   _hardUpdateValues(newValues) {
