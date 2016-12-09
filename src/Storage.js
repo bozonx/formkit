@@ -32,7 +32,7 @@ export default class Storage {
       dirty: false,
       touched: false,
       valid: true,
-      invalidMsg: null,
+      invalidMsg: undefined,
       //validateRule: null,
       saving: false,
       disabled: false,
@@ -76,7 +76,7 @@ export default class Storage {
     _.set(this._store.userInputs, pathToField, newValue);
   }
   setOuterValue(pathToField, newValue) {
-    _.get(this._store.outerValues, pathToField, newValue);
+    _.set(this._store.outerValues, pathToField, newValue);
   }
 
   /////////////////////////////////

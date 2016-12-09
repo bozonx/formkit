@@ -24,7 +24,7 @@ export default class FieldBase {
   }
 
   get userInput() {return this.__storage.getUserInput(this.$pathToField)}
-  get outerValue() {this.__storage.getOuterValue(this.$pathToField)}
+  get outerValue() {return this.__storage.getOuterValue(this.$pathToField)}
   get value() {return this.__storage.getValue(this.$pathToField)}
 
   get name() {return this.__storage.getFieldState(this.$pathToField, 'name')}
