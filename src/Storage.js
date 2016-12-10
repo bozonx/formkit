@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { extendDeep } from './helpers';
+import { extendDeep, findInFieldRecursively } from './helpers';
 
 export default class Storage {
   constructor() {
@@ -84,20 +84,7 @@ export default class Storage {
   }
 
   findRecursively(root, cb) {
-    const recursive = (obj) => {
-      return _.find(obj, (item) => {
-        if (!_.isPlainObject(item)) return;
-        if (item.name) {
-          // it's field
-          return cb(item);
-        }
-        else {
-          return recursive(item);
-        }
-      });
-    };
-
-    return recursive(this._store[root]);
+    return findInFieldRecursively(this._store[root], cb);
   }
 
 

@@ -17,3 +17,20 @@ export function extendDeep(willExtend, newValues) {
 
   return willExtend;
 }
+
+export function findInFieldRecursively(rootObject, cb) {
+  const recursive = (obj) => {
+    return _.find(obj, (item) => {
+      if (!_.isPlainObject(item)) return;
+      if (item.name) {
+        // it's field
+        return cb(item);
+      }
+      else {
+        return recursive(item);
+      }
+    });
+  };
+
+  return recursive(rootObject);
+}

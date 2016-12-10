@@ -50,4 +50,10 @@ export default class FormBase {
     });
   }
 
+  _resetUserInput() {
+    _.each(this.fields, (value, fieldName) => {
+      if (this.fields[fieldName]) this.fields[fieldName].value = value;
+    });
+  }
+
 }

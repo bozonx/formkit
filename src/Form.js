@@ -14,6 +14,13 @@ export default class Form extends FormBase{
   }
 
   /**
+   * Roll back to outer value which sat previously.
+   */
+  resetUserInput() {
+    this._resetUserInput();
+  }
+
+  /**
    * It must be placed to <form> element on onSubmit attribute.
    */
   handleSubmit() {
