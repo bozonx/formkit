@@ -40,7 +40,7 @@ export default class FormBase {
       }
 
       // set outer value
-      this.__fields[fieldName].outerValue = value;
+      this.__fields[fieldName].$setOuterValue(value);
     });
   }
 

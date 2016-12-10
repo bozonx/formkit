@@ -19,8 +19,8 @@ export default class FieldBase {
 
   get userInput() {return this.__storage.getUserInput(this.$pathToField)}
   get outerValue() {return this.__storage.getOuterValue(this.$pathToField)}
+  // combined value
   get value() {return this.__storage.getValue(this.$pathToField)}
-
   get name() {return this.__storage.getFieldState(this.$pathToField, 'name')}
   get dirty() {return this.__storage.getFieldState(this.$pathToField, 'dirty')}
   get touched() {return this.__storage.getFieldState(this.$pathToField, 'touched')}
@@ -35,8 +35,8 @@ export default class FieldBase {
   }
   get debounceTime() {return this.__debouncedCall.delay}
 
+  // set outer value with clearing user input
   set value(newOuterValue) {this._hardlySetOuterValue(newOuterValue)}
-  set outerValue(newValue) {this.__storage.setOuterValue(this.$pathToField, newValue)}
   set disabled(value) {this.__storage.setFieldState(this.$pathToField, {disabled: value})}
   set validateRule(value) {
     this._validateRule = value;
@@ -44,7 +44,9 @@ export default class FieldBase {
   }
   set debounceTime(delay) {this.__debouncedCall.delay = delay}
 
-
+  $setOuterValue(newValue) {
+    this.__storage.setOuterValue(this.$pathToField, newValue);
+  }
 
   /**
    * Silent update. It uses for set outer(from machine) values (not user's).
@@ -63,7 +65,7 @@ export default class FieldBase {
     const oldCombinedValue = _.cloneDeep(this.value);
 
     // set to outer value layer
-    this.outerValue = newValue;
+    this.$setOuterValue(newValue);
 
     // remove user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
