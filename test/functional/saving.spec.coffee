@@ -16,32 +16,32 @@ describe 'Functional. saving.', ->
         expect(this.saveHandler).to.have.been.calledOnce
         expect(this.saveHandler).to.have.been.calledWith('newValue')
 
-      it 'after change and pressing enter, value must save immediately and queue must be cancelled', ->
-        this.form.fields.name.onSave(this.saveHandler)
-        this.form.fields.name.handleChange('newValue')
-        this.form.fields.name.handlePressEnter()
+    it 'after change and pressing enter, value must save immediately and queue must be cancelled', ->
+      this.form.fields.name.onSave(this.saveHandler)
+      this.form.fields.name.handleChange('newValue')
+      this.form.fields.name.handlePressEnter()
 
-        expect(this.saveHandler).to.have.been.calledOnce
-        expect(this.saveHandler).to.have.been.calledWith('newValue')
+      expect(this.saveHandler).to.have.been.calledOnce
+      expect(this.saveHandler).to.have.been.calledWith('newValue')
 
-        this.form.fields.name.__debouncedCall.flush()
+      this.form.fields.name.__debouncedCall.flush()
 
-        expect(this.saveHandler).to.have.been.calledOnce
-        expect(this.saveHandler).to.have.been.calledWith('newValue')
+      expect(this.saveHandler).to.have.been.calledOnce
+      expect(this.saveHandler).to.have.been.calledWith('newValue')
 
-      it "don't save invalid value", ->
-        this.form.fields.name.validateCb = () -> false
-        this.form.fields.name.onSave(this.saveHandler)
-        this.form.fields.name.handleChange('newValue')
-        this.form.fields.name.__debouncedCall.flush()
+    it "don't save invalid value", ->
+      this.form.fields.name.validateCb = () -> false
+      this.form.fields.name.onSave(this.saveHandler)
+      this.form.fields.name.handleChange('newValue')
+      this.form.fields.name.__debouncedCall.flush()
 
-        expect(this.saveHandler).to.have.not.been.called
+      expect(this.saveHandler).to.have.not.been.called
 
-      it 'after change value must save debounced', ->
-        this.form.onSave(this.formSaveHandler)
-        this.form.fields.name.onSave(this.saveHandler)
-        this.form.fields.name.handleChange('newValue')
-        this.form.fields.name.__debouncedCall.flush()
+    it 'after change value must save debounced', ->
+      this.form.onSave(this.formSaveHandler)
+      this.form.fields.name.onSave(this.saveHandler)
+      this.form.fields.name.handleChange('newValue')
+      this.form.fields.name.__debouncedCall.flush()
 
   describe 'whole form saving.', ->
     beforeEach () ->
