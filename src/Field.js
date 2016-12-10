@@ -87,8 +87,8 @@ export default class Field extends FieldBase {
    * @returns {boolean|undefined}
    */
   validate() {
-    if (!this.validateRule) return;
-    const ruleReturn = this.validateRule(this.value);
+    if (!this.validateCb) return;
+    const ruleReturn = this.validateCb(this.value);
     const isValid = ruleReturn === true;
     const invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
 

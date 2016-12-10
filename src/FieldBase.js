@@ -12,6 +12,7 @@ export default class FieldBase {
     this.__debouncedCall = new DebouncedCall(this.$form.$config.debounceTime);
 
     this._debouncedCb = undefined;
+    this._validateCb = undefined;
 
     // init state
     this.__storage.initFieldState(this.$pathToField, fieldName);
@@ -29,18 +30,16 @@ export default class FieldBase {
   get saving() {return this.__storage.getFieldState(this.$pathToField, 'saving')}
   get focused() {return this.__storage.getFieldState(this.$pathToField, 'focused')}
   get disabled() {return this.__storage.getFieldState(this.$pathToField, 'disabled')}
-  get validateRule() {
-    return this._validateRule;
-    //return this.__storage.getFieldState(this.$pathToField, 'validateRule');
+  get validateCb() {
+    return this._validateCb;
   }
   get debounceTime() {return this.__debouncedCall.delay}
 
   // set outer value with clearing user input
   set value(newOuterValue) {this._hardlySetOuterValue(newOuterValue)}
   set disabled(value) {this.__storage.setFieldState(this.$pathToField, {disabled: value})}
-  set validateRule(value) {
-    this._validateRule = value;
-    //this.__storage.setFieldState(this.$pathToField, 'validateRule', value);
+  set validateCb(value) {
+    this._validateCb = value;
   }
   set debounceTime(delay) {this.__debouncedCall.delay = delay}
 
