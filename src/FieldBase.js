@@ -65,11 +65,10 @@ export default class FieldBase {
     // set to outer value layer
     this.outerValue = newValue;
 
-    // TODO: тестировать, если нет теста
-
-    // TODO: только если в конфиге разрешенно при focused
-    // remove user input if field isn't on focus and set dirty to false
-    if (!this.focused) {
+    // TODO: тестировать focused, если нет теста
+    // remove user input if field isn't on focus and set dirty to false.
+    // of course if it allows in config.
+    if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
       this.__storage.setUserInput(this.$pathToField, undefined);
       //this.__storage.setFieldState(this.$pathToField, {dirty: false});
       this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
@@ -102,7 +101,6 @@ export default class FieldBase {
   __updateDirty() {
     let newDirtyValue;
 
-    // TODO: зачем такая проверка????
     if (this.userInput === '' && (this.outerValue === '' || _.isNil(this.outerValue))) {
       // 0 compares as common value.
       newDirtyValue = false;
