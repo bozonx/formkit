@@ -23,21 +23,21 @@ describe 'Functional. Validate.', ->
     assert.isFalse(this.form.valid)
     assert.deepEqual(this.form.invalidMsgList, [{name: 'errorMsg'}])
 
-#  it 'validateCb cb returns true', ->
-#    this.form.fields.name.validateCb = () -> true
-#    this.form.fields.name.handleChange('newValue')
-#
-#    assert.isTrue(this.form.fields.name.valid)
-#    assert.isNull(this.form.fields.name.invalidMsg)
-#    assert.isTrue(this.form.valid)
-#    #assert.deepEqual(this.form.invalidMsgList, {})
-#
-#  it 'validateCb cb returns error msg and after returns true', ->
-#    this.form.fields.name.validateCb = (value) -> !!value
-#    this.form.fields.name.handleChange(0)
-#    this.form.fields.name.handleChange(1)
-#
-#    assert.isTrue(this.form.fields.name.valid)
-#    assert.isNull(this.form.fields.name.invalidMsg)
-#    assert.isTrue(this.form.valid)
-#    #assert.deepEqual(this.form.invalidMsgList, {})
+  it 'validateCb cb returns true', ->
+    this.form.fields.name.validateCb = () -> true
+    this.form.fields.name.handleChange('newValue')
+
+    assert.isTrue(this.form.fields.name.valid)
+    assert.isUndefined(this.form.fields.name.invalidMsg)
+    assert.isTrue(this.form.valid)
+    assert.deepEqual(this.form.invalidMsgList, [])
+
+  it 'validateCb cb returns false and after returns true', ->
+    this.form.fields.name.validateCb = (value) -> !!value
+    this.form.fields.name.handleChange(0)
+    this.form.fields.name.handleChange(1)
+
+    assert.isTrue(this.form.fields.name.valid)
+#    assert.isUndefined(this.form.fields.name.invalidMsg)
+    assert.isTrue(this.form.valid)
+#    assert.deepEqual(this.form.invalidMsgList, [])
