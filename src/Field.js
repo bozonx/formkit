@@ -40,6 +40,7 @@ export default class Field extends FieldBase {
     // run on change callback
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
+    this.validate();
     this.__startSave();
   }
 
@@ -88,12 +89,16 @@ export default class Field extends FieldBase {
    */
   validate() {
     if (!this.validateCb) return;
-    const ruleReturn = this.validateCb(this.value);
-    const isValid = ruleReturn === true;
-    const invalidMsg = (_.isString(ruleReturn)) ? ruleReturn : '';
+    const cbReturn = this.validateCb(this.value);
+    const isValid = cbReturn === true;
+
+    let invalidMsg;
+    if (!isValid) {
+      invalidMsg = cbReturn || '';
+    }
 
     this.__storage.setFieldState(this.$pathToField, {valid: isValid});
-    this.__storage.setFieldState(this.$pathToField, {invalidMsg: (isValid) ? null : invalidMsg});
+    this.__storage.setFieldState(this.$pathToField, {invalidMsg});
     this.$form.$handlers.handleAnyFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
     return isValid;
   }
