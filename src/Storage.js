@@ -90,7 +90,7 @@ export default class Storage {
 
   _generateNewFormState() {
     return {
-      invalidMsgs: {},
+      invalidMsgList: [],
       dirty: false,
       touched: false,
       submitting: false,

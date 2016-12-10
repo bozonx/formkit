@@ -12,7 +12,7 @@ describe 'Functional. Validate.', ->
     assert.isFalse(this.form.fields.name.valid)
     assert.equal(this.form.fields.name.invalidMsg, '')
     assert.isFalse(this.form.valid)
-    assert.deepEqual(this.form.invalidMsgs, {name: ''})
+    assert.deepEqual(this.form.invalidMsgList, [{name: ''}])
 
 #  it 'validateCb cb returns message', ->
 #    this.form.fields.name.validateCb = () -> 'errorMsg'
@@ -21,7 +21,7 @@ describe 'Functional. Validate.', ->
 #    assert.isFalse(this.form.fields.name.valid)
 #    assert.equal(this.form.fields.name.invalidMsg, 'errorMsg')
 #    assert.isFalse(this.form.valid)
-#    #assert.deepEqual(this.form.invalidMsgs, {name: 'errorMsg'})
+#    #assert.deepEqual(this.form.invalidMsgList, {name: 'errorMsg'})
 #
 #  it 'validateCb cb returns true', ->
 #    this.form.fields.name.validateCb = () -> true
@@ -30,7 +30,7 @@ describe 'Functional. Validate.', ->
 #    assert.isTrue(this.form.fields.name.valid)
 #    assert.isNull(this.form.fields.name.invalidMsg)
 #    assert.isTrue(this.form.valid)
-#    #assert.deepEqual(this.form.invalidMsgs, {})
+#    #assert.deepEqual(this.form.invalidMsgList, {})
 #
 #  it 'validateCb cb returns error msg and after returns true', ->
 #    this.form.fields.name.validateCb = (value) -> !!value
@@ -40,4 +40,4 @@ describe 'Functional. Validate.', ->
 #    assert.isTrue(this.form.fields.name.valid)
 #    assert.isNull(this.form.fields.name.invalidMsg)
 #    assert.isTrue(this.form.valid)
-#    #assert.deepEqual(this.form.invalidMsgs, {})
+#    #assert.deepEqual(this.form.invalidMsgList, {})

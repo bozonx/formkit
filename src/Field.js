@@ -97,7 +97,7 @@ export default class Field extends FieldBase {
       invalidMsg = cbReturn || '';
     }
 
-    this.$form.$handlers.handleFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
+    this.$form.$handlers.handleFieldValidStateChange(this.$pathToField, isValid, invalidMsg);
 
     return cbReturn;
   }

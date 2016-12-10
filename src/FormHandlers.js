@@ -101,22 +101,22 @@ export default class FormHandlers {
   }
 
 
-  handleFieldsValidStateChange(pathToField, isValid, invalidMsg) {
+  handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
     this._form.$storage.setFieldState(pathToField, {valid: isValid});
     this._form.$storage.setFieldState(pathToField, {invalidMsg});
 
-    // TODO: this.invalidMsg - брать из формы
-    var newInvalidMessages = {...this.invalidMsg};
+    var newInvalidMessages = _.clone(this._form.invalidMsgList);
     if (isValid) {
-      delete newInvalidMessages[pathToField];
+      // TODO: !!!!
+      //delete newInvalidMessages[pathToField];
     }
     else {
-      newInvalidMessages[pathToField] = invalidMsg;
+      newInvalidMessages.push({[pathToField]: invalidMsg});
     }
 
-    this._form.$storage.setFormState('invalidMsg', newInvalidMessages);
+    const isFormValid = _.isEmpty(newInvalidMessages);
 
-    var isFormValid = _.isEmpty(newInvalidMessages);
+    this._form.$storage.setFormState('invalidMsgList', newInvalidMessages);
     this._form.$storage.setFormState('valid', isFormValid);
   }
 

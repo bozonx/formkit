@@ -25,7 +25,7 @@ export default class FormBase {
   get touched() {return this.$storage.getFormState('touched')}
   get submitting() {return this.$storage.getFormState('submitting')}
   get valid() {return this.$storage.getFormState('valid')}
-  get invalidMsgs() {return this.$storage.getFormState('invalidMsgs')}
+  get invalidMsgList() {return this.$storage.getFormState('invalidMsgList')}
 
   set values(newValues) {this._hardUpdateValues(newValues)}
 
