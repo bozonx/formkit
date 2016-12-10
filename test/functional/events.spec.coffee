@@ -1,95 +1,58 @@
-#formHelper = require('../../src/index').default
-#
-#describe 'Functional. Events.', ->
-#  beforeEach () ->
-#    this.form = formHelper.newForm()
-#    this.form.init({name: null})
-#
-#  describe 'change.', ->
-#    beforeEach () ->
-#      this.fieldHandler = sinon.spy();
-#      this.formHandler = sinon.spy();
-#      this.form.fields.name.on('change', this.fieldHandler);
-#      this.form.on('change', this.formHandler);
-#
-#    it "after handleChange", ->
-#      this.form.fields.name.handleChange('newValue')
-#      expect(this.fieldHandler).to.have.been.calledOnce
-#      expect(this.fieldHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: null, value: 'newValue'
-#      })
-#      expect(this.formHandler).to.have.been.calledOnce
-#      expect(this.formHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: null, value: 'newValue'
-#      })
-#
-#    it "after updateValue", () ->
-#      this.form.fields.name.value = 'newValue'
-#      expect(this.fieldHandler).to.not.have.been.called
-#      expect(this.formHandler).to.not.have.been.calledOnce
-#
-#    it "test oldValue", () ->
-#      this.form.fields.name.handleChange('initValue')
-#      this.form.fields.name.handleChange('newValue')
-#      expect(this.fieldHandler).to.have.been.calledTwice
-#      expect(this.fieldHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: 'initValue', value: 'newValue'
-#      })
-#      expect(this.formHandler).to.have.been.calledTwice
-#      expect(this.formHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: 'initValue', value: 'newValue'
-#      })
-#
-#  describe 'silentChange.', ->
-#    beforeEach () ->
-#      this.fieldHandler = sinon.spy();
-#      this.formHandler = sinon.spy();
-#      this.form.fields.name.on('silentChange', this.fieldHandler);
-#      this.form.on('silentChange', this.formHandler);
-#
-#    it "after handleChange", ->
-#      this.form.fields.name.handleChange('newValue')
-#      expect(this.fieldHandler).to.have.been.calledOnce
-#      expect(this.fieldHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: null, value: 'newValue'
-#      })
-#      expect(this.formHandler).to.have.been.calledOnce
-#      expect(this.formHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: null, value: 'newValue'
-#      })
-#
-#    it "after updateValue", () ->
-#      this.form.fields.name.value = 'newValue'
-#      expect(this.fieldHandler).to.have.been.calledOnce
-#      expect(this.fieldHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: null, value: 'newValue'
-#      })
-#      expect(this.formHandler).to.have.been.calledOnce
-#      expect(this.formHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: null, value: 'newValue'
-#      })
-#
-#    it "test oldValue", () ->
-#      this.form.fields.name.value = 'oldValue'
-#      this.form.fields.name.value = 'newValue'
-#      expect(this.fieldHandler).to.have.been.calledTwice
-#      expect(this.fieldHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: 'oldValue', value: 'newValue'
-#      })
-#      expect(this.formHandler).to.have.been.calledTwice
-#      expect(this.formHandler).to.have.been.calledWith({
-#        fieldName: 'name', oldValue: 'oldValue', value: 'newValue'
-#      })
-#
-#  describe 'anyChange.', ->
-#    # TODO: недоделанно
-#    beforeEach () ->
-#      this.fieldHandler = sinon.spy();
-#      this.formHandler = sinon.spy();
-#      this.form.fields.name.on('anyChange', this.fieldHandler);
-#      this.form.on('anyChange', this.formHandler);
-#
-#    it "after updateValue", () ->
-#      this.form.fields.name.value = 'newValue'
-#      expect(this.fieldHandler).to.have.been.calledOnce
-#      expect(this.formHandler).to.have.been.calledOnce
+formHelper = require('../../src/index').default
+
+describe 'Functional. Events.', ->
+  beforeEach () ->
+    this.form = formHelper.newForm()
+    this.form.init({name: null})
+
+  describe 'change.', ->
+    beforeEach () ->
+      this.silentFieldHandler = sinon.spy();
+      this.silentFormHandler = sinon.spy();
+      this.fieldHandler = sinon.spy();
+      this.formHandler = sinon.spy();
+      this.anyFieldHandler = sinon.spy();
+      this.anyFormHandler = sinon.spy();
+
+      this.form.fields.name.on('silentChange', this.silentFieldHandler);
+      this.form.on('silentChange', this.silentFormHandler);
+      this.form.fields.name.on('change', this.fieldHandler);
+      this.form.on('change', this.formHandler);
+      this.form.fields.name.on('anyChange', this.anyFieldHandler);
+      this.form.on('anyChange', this.anyFormHandler);
+
+    it "after user input", ->
+      this.form.fields.name.handleChange('newValue')
+      # user change
+      expect(this.fieldHandler).to.have.been.calledOnce
+      expect(this.fieldHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: null, value: 'newValue'
+      })
+      expect(this.formHandler).to.have.been.calledOnce
+      expect(this.formHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: null, value: 'newValue'
+      })
+      # silent
+      expect(this.silentFieldHandler).to.have.not.been.called
+      expect(this.silentFormHandler).to.have.not.been.called
+      # any change
+      expect(this.anyFieldHandler).to.have.been.calledOnce
+      expect(this.anyFormHandler).to.have.been.calledOnce
+
+    it "after outer update", () ->
+      this.form.fields.name.value = 'outerValue'
+      # user change
+      expect(this.fieldHandler).to.not.have.been.called
+      expect(this.formHandler).to.not.have.been.called
+      # silent
+      expect(this.silentFieldHandler).to.have.been.calledOnce
+      expect(this.silentFieldHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: null, value: 'outerValue'
+      })
+      expect(this.silentFormHandler).to.have.been.calledOnce
+      expect(this.silentFormHandler).to.have.been.calledWith({
+        fieldName: 'name', oldValue: null, value: 'outerValue'
+      })
+      # any change
+      expect(this.anyFieldHandler).to.have.been.calledOnce
+      expect(this.anyFormHandler).to.have.been.calledOnce

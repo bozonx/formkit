@@ -65,7 +65,6 @@ export default class FieldBase {
     // set to outer value layer
     this.outerValue = newValue;
 
-    // TODO: тестировать focused, если нет теста
     // remove user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
     if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
@@ -75,7 +74,6 @@ export default class FieldBase {
     }
 
     // TODO: тестировать что была перевалидация
-    // TODO: проверить тест что было поднято событие
 
     // re validate and rise events
     if (!_.isEqual(oldCombinedValue, this.value)) {

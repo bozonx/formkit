@@ -41,7 +41,7 @@ export default class FormHandlers {
   handleSilentValueChange(pathToField, oldCombinedValue) {
     var eventData = {
       fieldName: pathToField,
-      oldCombinedValue,
+      oldValue: oldCombinedValue,
       value: this._form.$storage.getValue(pathToField),
     };
 
@@ -123,7 +123,6 @@ export default class FormHandlers {
    * @private
    */
   _riseAnyChange(pathToField) {
-    // TODO: add data
     this._form.$events.emit('anyChange');
     this._form.$events.emit(`field.${pathToField}.anyChange`);
   }
