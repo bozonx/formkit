@@ -107,8 +107,12 @@ export default class FormHandlers {
 
     var newInvalidMessages = _.clone(this._form.invalidMsgList);
     if (isValid) {
-      // TODO: !!!! найти и удалить - тестировать
-      //delete newInvalidMessages[pathToField];
+      _.find(newInvalidMessages, (item, index) => {
+        if (!_.isUndefined(item[pathToField])) {
+          newInvalidMessages.splice(index, 1);
+          return item;
+        }
+      })
     }
     else {
       newInvalidMessages.push({[pathToField]: invalidMsg});
