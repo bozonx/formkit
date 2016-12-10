@@ -71,7 +71,6 @@ export default class FieldBase {
     // of course if it allows in config.
     if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
       this.__storage.setUserInput(this.$pathToField, undefined);
-      //this.__storage.setFieldState(this.$pathToField, {dirty: false});
       this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
     }
 

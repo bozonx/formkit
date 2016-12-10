@@ -21,7 +21,7 @@ export function extendDeep(willExtend, newValues) {
 export function findInFieldRecursively(rootObject, cb) {
   const recursive = (obj) => {
     return _.find(obj, (item) => {
-      if (!_.isPlainObject(item)) return;
+      if (!_.isPlainObject(item) && !item.name) return;
       if (item.name) {
         // it's field
         return cb(item);

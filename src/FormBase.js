@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import FormHandlers from './FormHandlers';
 import Field from './Field';
+import { findInFieldRecursively } from './helpers';
 
 
 export default class FormBase {
@@ -51,8 +52,8 @@ export default class FormBase {
   }
 
   _resetUserInput() {
-    _.each(this.fields, (value, fieldName) => {
-      if (this.fields[fieldName]) this.fields[fieldName].value = value;
+    findInFieldRecursively(this.fields, (field) => {
+      field.resetUserInput();
     });
   }
 

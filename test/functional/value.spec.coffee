@@ -26,7 +26,7 @@ describe 'Functional. Value.', ->
     assert.equal(this.form.$storage.getUserInput('name'), 'newValue')
     assert.equal(this.form.$storage.getOuterValue('name'), 'initValue')
 
-  it 'set new outer value', ->
+  it "set new outer value", ->
     this.form.fields.name.handleChange('newValue')
     this.form.fields.name.value = 'newOuterValue'
 
@@ -38,7 +38,7 @@ describe 'Functional. Value.', ->
     assert.isUndefined(this.form.$storage.getUserInput('name'))
     assert.equal(this.form.$storage.getOuterValue('name'), 'newOuterValue')
 
-  it 'set new values to whole form (machine update)', ->
+  it "set new values to whole form (machine update)", ->
     this.form.fields.name.handleChange('newValue')
     this.form.values = {name: 'newOuterValue'}
 
@@ -49,3 +49,13 @@ describe 'Functional. Value.', ->
     assert.equal(this.form.$storage.getValue('name'), 'newOuterValue')
     assert.isUndefined(this.form.$storage.getUserInput('name'))
     assert.equal(this.form.$storage.getOuterValue('name'), 'newOuterValue')
+
+  it "reset user input", ->
+    this.form.fields.name.value = 'outerValue'
+    this.form.fields.name.handleChange('newValue')
+    this.form.resetUserInput()
+
+    assert.equal(this.form.fields.name.value, 'outerValue')
+    assert.isUndefined(this.form.fields.name.userInput)
+    assert.isFalse(this.form.fields.name.dirty)
+
