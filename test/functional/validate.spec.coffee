@@ -14,15 +14,15 @@ describe 'Functional. Validate.', ->
     assert.isFalse(this.form.valid)
     assert.deepEqual(this.form.invalidMsgList, [{name: ''}])
 
-#  it 'validateCb cb returns message', ->
-#    this.form.fields.name.validateCb = () -> 'errorMsg'
-#    this.form.fields.name.handleChange('newValue')
-#
-#    assert.isFalse(this.form.fields.name.valid)
-#    assert.equal(this.form.fields.name.invalidMsg, 'errorMsg')
-#    assert.isFalse(this.form.valid)
-#    #assert.deepEqual(this.form.invalidMsgList, {name: 'errorMsg'})
-#
+  it 'validateCb cb returns message', ->
+    this.form.fields.name.validateCb = () -> 'errorMsg'
+    this.form.fields.name.handleChange('newValue')
+
+    assert.isFalse(this.form.fields.name.valid)
+    assert.equal(this.form.fields.name.invalidMsg, 'errorMsg')
+    assert.isFalse(this.form.valid)
+    assert.deepEqual(this.form.invalidMsgList, [{name: 'errorMsg'}])
+
 #  it 'validateCb cb returns true', ->
 #    this.form.fields.name.validateCb = () -> true
 #    this.form.fields.name.handleChange('newValue')
