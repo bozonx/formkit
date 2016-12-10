@@ -89,18 +89,17 @@ export default class Field extends FieldBase {
    */
   validate() {
     if (!this.validateCb) return;
+
     const cbReturn = this.validateCb(this.value);
     const isValid = cbReturn === true;
-
     let invalidMsg;
     if (!isValid) {
       invalidMsg = cbReturn || '';
     }
 
-    this.__storage.setFieldState(this.$pathToField, {valid: isValid});
-    this.__storage.setFieldState(this.$pathToField, {invalidMsg});
-    this.$form.$handlers.handleAnyFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
-    return isValid;
+    this.$form.$handlers.handleFieldsValidStateChange(this.$pathToField, isValid, invalidMsg);
+
+    return cbReturn;
   }
 
   resetUserInput() {

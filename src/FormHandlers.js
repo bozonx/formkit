@@ -101,7 +101,10 @@ export default class FormHandlers {
   }
 
 
-  handleAnyFieldsValidStateChange(pathToField, isValid, invalidMsg) {
+  handleFieldsValidStateChange(pathToField, isValid, invalidMsg) {
+    this._form.$storage.setFieldState(pathToField, {valid: isValid});
+    this._form.$storage.setFieldState(pathToField, {invalidMsg});
+
     // TODO: this.invalidMsg - брать из формы
     var newInvalidMessages = {...this.invalidMsg};
     if (isValid) {
