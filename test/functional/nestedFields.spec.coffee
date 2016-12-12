@@ -14,6 +14,8 @@ describe 'Functional. nestedFields.', ->
       this.form.fields.nested.name.handleChange('newValue')
       assert.equal(this.form.fields.nested.name.value, 'newValue')
       assert.isNull(this.form.fields.nested.name.outerValue)
+      assert.isTrue(this.form.fields.nested.name.dirty)
+      assert.isTrue(this.form.fields.nested.name.touched)
 
     it 'outer change', ->
       this.form.fields.nested.name.value = 'outerValue'
@@ -22,5 +24,4 @@ describe 'Functional. nestedFields.', ->
 
       # TODO: событие
       # TODO: валидация
-      # TODO: dirty
       # TODO: form

@@ -76,11 +76,13 @@ export default class Storage {
    * @param newState
    */
   setFieldState(pathToField, newState) {
-    if (_.isUndefined(this._store.fieldsState[pathToField])) {
-      this._store.fieldsState[pathToField] = {};
+    let field = _.get(this._store.fieldsState, pathToField);
+    if (_.isUndefined(field)) {
+      field = {};
+      _.set(this._store.fieldsState, pathToField, field);
     }
     // TODO: может лучше использовать _.update
-    extendDeep(this._store.fieldsState[pathToField], newState);
+    extendDeep(field, newState);
   }
 
   findRecursively(root, cb) {
