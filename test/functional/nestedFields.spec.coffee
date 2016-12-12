@@ -17,11 +17,20 @@ describe 'Functional. nestedFields.', ->
       assert.isTrue(this.form.fields.nested.name.dirty)
       assert.isTrue(this.form.fields.nested.name.touched)
 
+      assert.deepEqual(this.form.values, {nested: {name: 'newValue'}})
+      assert.isTrue(this.form.dirty)
+      assert.isTrue(this.form.touched)
+
     it 'outer change', ->
       this.form.fields.nested.name.value = 'outerValue'
       assert.equal(this.form.fields.nested.name.value, 'outerValue')
       assert.equal(this.form.fields.nested.name.outerValue, 'outerValue')
 
+      assert.deepEqual(this.form.values, {nested: {name: 'outerValue'}})
+
+    it 'validation', ->
+
+
       # TODO: событие
       # TODO: валидация
-      # TODO: form
+
