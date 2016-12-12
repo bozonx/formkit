@@ -29,13 +29,17 @@ export default class Form extends FormBase{
     const returnedValue = this._onSubmitCallback(this.$storage.values);
     // if promise
     if (returnedValue && returnedValue.then) {
-      return returnedValue.then(() => {
+      return returnedValue.then((data) => {
         this.$storage.setFormState('submitting', false);
-      }, () => {
+        return data;
+      }, (err) => {
         this.$storage.setFormState('submitting', false);
+        return Promise.reject(err);
       });
     }
-    this.$storage.setFormState('submitting', false);
+    else {
+      this.$storage.setFormState('submitting', false);
+    }
   }
 
   on(eventName, cb) {

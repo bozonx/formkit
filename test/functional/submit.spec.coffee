@@ -30,3 +30,7 @@ describe 'Functional. Submit.', ->
     expect(handleSubmitReturn).to.eventually.notify =>
       assert.equal(this.form.submitting, false)
       done()
+
+  # TODO: test error promise - не должен затереть ошибочный промис
+  # TODO: test - не сохранять если submiting = true - отложить
+  # TODO: test - не сохранять если данные не изменились
