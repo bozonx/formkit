@@ -7,8 +7,8 @@ describe 'Functional. nestedFields.', ->
 
     it 'common', ->
       this.form.init({ 'nested.name': null })
-#      assert.isNull(this.form.fields.nested.name.value)
-#      assert.isNull(this.form.fields.nested.name.outerValue)
+      assert.isNull(this.form.fields.nested.name.value)
+      assert.isNull(this.form.fields.nested.name.outerValue)
 
 #      this.form.fields.nested.name.handleChange('newValue')
 #      assert.isNull(this.form.fields.nested.name.value)

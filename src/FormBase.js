@@ -34,14 +34,16 @@ export default class FormBase {
   }
 
   __reinitFields(outerValues) {
-    _.each(outerValues, (value, fieldName) => {
+    _.each(outerValues, (value, pathToField) => {
       // Create new field if it doesn't exist
-      if (!this.fields[fieldName]) {
-        this.__fields[fieldName] = new Field(this, fieldName);
+      let field = _.get(this.fields, pathToField);
+      if (!field) {
+        field = new Field(this, pathToField);
+        _.set(this.fields, pathToField, field);
       }
 
       // set outer value
-      this.__fields[fieldName].$setOuterValue(value);
+      field.$setOuterValue(value);
     });
   }
 
