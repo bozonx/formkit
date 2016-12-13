@@ -100,8 +100,6 @@ export default class FieldBase {
       this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
     }
 
-    // TODO: тестировать что была перевалидация
-
     // re validate and rise events
     if (!_.isEqual(oldCombinedValue, this.value)) {
       this.validate();

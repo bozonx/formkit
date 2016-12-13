@@ -47,13 +47,15 @@ export default class FormBase {
         field = new Field(this, pathToField);
         _.set(this.fields, pathToField, field);
       }
+      else {
+        // reset dirty
 
-      // set outer value
-      field.$setOuterValue(value);
+      }
+
+      // set outer value with reset dirty and user input
+      field.value = value;
     });
   }
-
-
 
   _hardUpdateValues(newValues) {
     _.each(newValues, (value, fieldName) => {
