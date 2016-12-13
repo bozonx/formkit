@@ -24,6 +24,15 @@ export default class Form extends FormBase{
    * It must be placed to <form> element on onSubmit attribute.
    */
   handleSubmit() {
+    if (!this.$config.allowSubmitSubmittingForm) {
+      // do nothing if form is submitting at the moment
+      if (this.$storage.getFormState('submitting')) return;
+    }
+
+    if (!this.$config.allowSubmitUnchangedForm) {
+
+    }
+
     if (!this._onSubmitCallback) return;
     this.$storage.setFormState('submitting', true);
     const returnedValue = this._onSubmitCallback(this.$storage.values);

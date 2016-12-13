@@ -7,10 +7,12 @@ import EventEmitter from 'eventemitter3';
 
 
 const globalConfig = {
+  silent: false,
   debounceTime: 800,
   unchangedValueSaving: false,
   allowFocusedFieldUpdating: false,
-  silent: false,
+  allowSubmitSubmittingForm: false,
+  allowSubmitUnchangedForm: false,
 };
 
 export default {

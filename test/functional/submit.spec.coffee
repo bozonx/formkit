@@ -50,5 +50,29 @@ describe 'Functional. Submit.', ->
         done()
     ]);
 
-  # TODO: test - не сохранять если submiting = true - отложить
+  it "don't submit while form is submitting at the moment", (done) ->
+    this.resolver = null;
+    this.submitHandler = () =>
+      new Promise (resolve) =>
+        this.resolver = () => resolve()
+
+    this.form.onSubmit(this.submitHandler)
+
+    this.form.fields.name.handleChange('newValue')
+
+    handleSubmitReturn = this.form.handleSubmit()
+    assert.isTrue(this.form.submitting)
+
+    # run second time
+    this.form.fields.name.handleChange('newValue2')
+    this.form.onSubmit()
+    assert.isTrue(this.form.submitting)
+
+    this.resolver()
+
+    expect(handleSubmitReturn).to.eventually.notify =>
+      assert.isFalse(this.form.submitting)
+      done()
+
+
   # TODO: test - не сохранять если данные не изменились
