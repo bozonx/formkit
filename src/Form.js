@@ -77,4 +77,18 @@ export default class Form extends FormBase{
     this._onSubmitCallback = cb;
   }
 
+  /**
+   * Cancel debounce waiting for saving
+   */
+  cancelSaving() {
+    this.$handlers.$debouncedCall.cancel();
+  }
+
+  /**
+   * Saving immediately
+   */
+  flushSaving() {
+    this.$handlers.$debouncedCall.flush();
+  }
+
 }

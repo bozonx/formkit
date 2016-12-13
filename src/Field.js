@@ -106,4 +106,18 @@ export default class Field extends FieldBase {
     this.__storage.setUserInput(this.$pathToField, undefined);
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
   }
+
+  /**
+   * Cancel debounce waiting for saving
+   */
+  cancelSaving() {
+    this.__debouncedCall.cancel();
+  }
+
+  /**
+   * Saving immediately
+   */
+  flushSaving() {
+    this.__debouncedCall.flush();
+  }
 }

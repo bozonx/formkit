@@ -10,7 +10,7 @@ export default class FormHandlers {
     this._form = form;
     this._unsavedState = {};
 
-    this.__debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
+    this.$debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
   }
 
   isUnsaved(pathToField) {
@@ -24,7 +24,7 @@ export default class FormHandlers {
   handleFieldSave(force) {
     if (!this.$onSaveCallback) return;
 
-    this.__debouncedCall.exec(() => {
+    this.$debouncedCall.exec(() => {
       // save current state on the moment
       this.$onSaveCallback(this._unsavedState);
       this._unsavedState = {};
