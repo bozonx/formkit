@@ -33,16 +33,16 @@ export default class Form extends FormBase{
       if (!this.$storage.getFormState('dirty')) return;
     }
 
-    this.$storage.setFormState('submitting', true);
-    const values = _.clone(this.$storage.values)
-    const returnedValue = this._onSubmitCallback(values);
-
     const updateOuterValues = () => {
       if (this.$config.updateOuterValuesAfterSubmit) {
         this.$storage.updateOuterValues(values);
         this.$updateDirtyStates();
       }
     };
+
+    this.$storage.setFormState('submitting', true);
+    const values = _.clone(this.$storage.values);
+    const returnedValue = this._onSubmitCallback(values);
 
     // if promise
     if (returnedValue && returnedValue.then) {
@@ -56,10 +56,9 @@ export default class Form extends FormBase{
         return err;
       });
     }
-    else {
-      this.$storage.setFormState('submitting', false);
-      updateOuterValues();
-    }
+    // without promise
+    this.$storage.setFormState('submitting', false);
+    updateOuterValues();
   }
 
   on(eventName, cb) {

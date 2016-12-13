@@ -75,7 +75,6 @@ describe 'Functional. Submit.', ->
       done()
 
   it "don't do another submit if data isn't change", ->
-    # TODO: !!!!!
     this.submitHandler = sinon.spy();
     this.form.onSubmit(this.submitHandler)
 
