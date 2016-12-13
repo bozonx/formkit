@@ -90,7 +90,7 @@ export default class Field extends FieldBase {
   validate() {
     if (!this.validateCb) return;
 
-    const cbReturn = this.validateCb(this.value);
+    const cbReturn = this._validateCb({value: this.value});
     const isValid = cbReturn === true;
     let invalidMsg;
     if (!isValid) {
