@@ -34,7 +34,7 @@ export default class Form extends FormBase{
         return data;
       }, (err) => {
         this.$storage.setFormState('submitting', false);
-        return Promise.reject(err);
+        return err;
       });
     }
     else {

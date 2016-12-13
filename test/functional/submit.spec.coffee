@@ -31,6 +31,24 @@ describe 'Functional. Submit.', ->
       assert.equal(this.form.submitting, false)
       done()
 
-  # TODO: test error promise - не должен затереть ошибочный промис
+  it 'rejected promise', (done) ->
+    this.submitHandler = ->
+      new Promise (resolve, reject) =>
+        reject('error')
+
+    this.form.onSubmit(this.submitHandler)
+
+    this.form.fields.name.handleChange('newValue')
+
+    handleSubmitReturn = this.form.handleSubmit()
+    assert.isTrue(this.form.submitting)
+
+    Promise.all([
+      expect(handleSubmitReturn).to.eventually.rejected.and.equal('error'),
+      expect(handleSubmitReturn).to.eventually.rejected.and.notify =>
+        assert.isFalse(this.form.submitting)
+        done()
+    ]);
+
   # TODO: test - не сохранять если submiting = true - отложить
   # TODO: test - не сохранять если данные не изменились
