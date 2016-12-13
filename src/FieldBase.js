@@ -18,6 +18,7 @@ export default class FieldBase {
     this.__storage.initFieldState(this.$pathToField, fieldName);
   }
 
+  get form() {return this.$form}
   get userInput() {return this.__storage.getUserInput(this.$pathToField)}
   get outerValue() {return this.__storage.getOuterValue(this.$pathToField)}
   // combined value
