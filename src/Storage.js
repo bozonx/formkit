@@ -16,6 +16,10 @@ export default class Storage {
     return _.defaultsDeep(_.cloneDeep(this._store.userInputs), this._store.outerValues);
   }
 
+  updateOuterValues(newValues) {
+    extendDeep(this._store.outerValues, newValues);
+  }
+
   initFormState() {
     this._store.formState = this._generateNewFormState();
   }

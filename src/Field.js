@@ -33,7 +33,7 @@ export default class Field extends FieldBase {
     // update touched
     if (!this.touched) this.$form.$handlers.handleFieldStateChange(this.$pathToField, 'touched', true);
 
-    this.__updateDirty();
+    this.$updateDirty();
 
     this.$form.$handlers.handleValueChangeByUser(this.$pathToField, oldCombinedValue, newValue);
 

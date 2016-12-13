@@ -24,22 +24,32 @@ export default class Form extends FormBase{
    * It must be placed to <form> element on onSubmit attribute.
    */
   handleSubmit() {
+    if (!this._onSubmitCallback) return;
     if (!this.$config.allowSubmitSubmittingForm) {
       // do nothing if form is submitting at the moment
       if (this.$storage.getFormState('submitting')) return;
     }
-
     if (!this.$config.allowSubmitUnchangedForm) {
-
+      if (!this.$storage.getFormState('dirty')) return;
     }
 
-    if (!this._onSubmitCallback) return;
     this.$storage.setFormState('submitting', true);
-    const returnedValue = this._onSubmitCallback(this.$storage.values);
+    const values = _.clone(this.$storage.values)
+    const returnedValue = this._onSubmitCallback(values);
+
+    const updateOuterValues = () => {
+      if (this.$config.updateOuterValuesAfterSubmit) {
+        this.$storage.updateOuterValues(values);
+        this.$updateDirtyStates();
+      }
+    };
+
     // if promise
     if (returnedValue && returnedValue.then) {
       return returnedValue.then((data) => {
         this.$storage.setFormState('submitting', false);
+        updateOuterValues();
+
         return data;
       }, (err) => {
         this.$storage.setFormState('submitting', false);
@@ -48,6 +58,7 @@ export default class Form extends FormBase{
     }
     else {
       this.$storage.setFormState('submitting', false);
+      updateOuterValues();
     }
   }
 

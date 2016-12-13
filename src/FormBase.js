@@ -33,6 +33,12 @@ export default class FormBase {
     return this.$storage.getWholeStorageState();
   }
 
+  $updateDirtyStates() {
+    findInFieldRecursively(this.fields, (field) => {
+      field.$updateDirty();
+    });
+  }
+
   __reinitFields(outerValues) {
     _.each(outerValues, (value, pathToField) => {
       // Create new field if it doesn't exist
@@ -46,6 +52,8 @@ export default class FormBase {
       field.$setOuterValue(value);
     });
   }
+
+
 
   _hardUpdateValues(newValues) {
     _.each(newValues, (value, fieldName) => {

@@ -13,6 +13,7 @@ const globalConfig = {
   allowFocusedFieldUpdating: false,
   allowSubmitSubmittingForm: false,
   allowSubmitUnchangedForm: false,
+  updateOuterValuesAfterSubmit: true,
 };
 
 export default {

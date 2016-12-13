@@ -47,6 +47,33 @@ export default class FieldBase {
     this.__storage.setOuterValue(this.$pathToField, newValue);
   }
 
+  $updateDirty() {
+    let newDirtyValue;
+
+    if (this.userInput === '' && (this.outerValue === '' || _.isNil(this.outerValue))) {
+      // 0 compares as common value.
+      newDirtyValue = false;
+    }
+    else {
+      // just compare initial value and value
+      newDirtyValue = this.userInput !== this.outerValue;
+    }
+
+    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
+  }
+
+  __startSave(force) {
+    // don't save invalid value
+    if (!this.valid) return;
+    if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
+
+    if (this.__onSaveCallback) {
+      this.__debouncedCall.exec(this.__onSaveCallback, force, this.value);
+    }
+
+    this.$form.$handlers.handleFieldSave(force);
+  }
+
   /**
    * Silent update. It uses for set outer(from machine) values (not user's).
    *
@@ -81,34 +108,6 @@ export default class FieldBase {
       // rise silent change events
       this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldCombinedValue);
     }
-  }
-
-
-  __startSave(force) {
-    // don't save invalid value
-    if (!this.valid) return;
-    if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
-
-    if (this.__onSaveCallback) {
-      this.__debouncedCall.exec(this.__onSaveCallback, force, this.value);
-    }
-
-    this.$form.$handlers.handleFieldSave(force);
-  }
-
-  __updateDirty() {
-    let newDirtyValue;
-
-    if (this.userInput === '' && (this.outerValue === '' || _.isNil(this.outerValue))) {
-      // 0 compares as common value.
-      newDirtyValue = false;
-    }
-    else {
-      // just compare initial value and value
-      newDirtyValue = this.userInput !== this.outerValue;
-    }
-
-    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
   }
 
 }

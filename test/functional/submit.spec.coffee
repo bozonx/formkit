@@ -74,5 +74,17 @@ describe 'Functional. Submit.', ->
       assert.isFalse(this.form.submitting)
       done()
 
+  it "don't do another submit if data isn't change", ->
+    # TODO: !!!!!
+    this.submitHandler = sinon.spy();
+    this.form.onSubmit(this.submitHandler)
 
-  # TODO: test - не сохранять если данные не изменились
+    this.form.fields.name.handleChange('newValue')
+    this.form.handleSubmit()
+
+    this.form.fields.name.handleChange('newValue')
+    this.form.handleSubmit()
+
+    expect(this.submitHandler).to.have.been.calledOnce
+    expect(this.submitHandler).to.have.been.calledWith({name: 'newValue'})
+    assert.equal(this.form.submitting, false)
