@@ -9,8 +9,8 @@ export default class Form extends FormBase{
     this._onSubmitCallback = null;
   }
 
-  init(outerValues) {
-    this.__reinitFields(outerValues);
+  init(initialFields) {
+    this.__reinitFields(initialFields);
   }
 
   /**

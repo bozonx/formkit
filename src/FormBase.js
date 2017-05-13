@@ -39,22 +39,44 @@ export default class FormBase {
     });
   }
 
-  __reinitFields(outerValues) {
-    _.each(outerValues, (value, pathToField) => {
-      // Create new field if it doesn't exist
-      let field = _.get(this.fields, pathToField);
-      if (!field) {
-        field = new Field(this, pathToField);
-        _.set(this.fields, pathToField, field);
-      }
-      else {
-        // reset dirty
+  __reinitFields(initialFields) {
+    if (_.isArray(initialFields)) {
+      _.each(initialFields, (pathToField) => {
+        // Create new field if it doesn't exist
+        let field = _.get(this.fields, pathToField);
+        if (!field) {
+          field = new Field(this, pathToField);
+          _.set(this.fields, pathToField, field);
+        }
+        else {
+          // reset dirty
 
-      }
+        }
 
-      // set outer value with reset dirty and user input
-      field.value = value;
-    });
+        // set outer value with reset dirty and user input
+        field.value = null;
+      });
+    }
+    else if (_.isPlainObject(initialFields)) {
+      _.each(initialFields, (value, pathToField) => {
+        // Create new field if it doesn't exist
+        let field = _.get(this.fields, pathToField);
+        if (!field) {
+          field = new Field(this, pathToField);
+          _.set(this.fields, pathToField, field);
+        }
+        else {
+          // reset dirty
+
+        }
+
+        // set outer value with reset dirty and user input
+        field.value = value;
+      });
+    }
+    else {
+      throw new Error(`Bad type of fields param`);
+    }
   }
 
   _hardUpdateValues(newValues) {
