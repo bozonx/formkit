@@ -16,6 +16,8 @@ const globalConfig = {
   updateOuterValuesAfterSubmit: true,
 };
 
+const plugins = [];
+
 export default {
   setDefaults: function (config) {
     _.extend(globalConfig, config);
@@ -26,6 +28,13 @@ export default {
     const log = new Log({silent: newConfig.silent});
     const storage = new Storage();
 
-    return new Form(storage, newConfig, events, log);
+    const newForm = new Form(storage, newConfig, events, log);
+
+    _.each(plugins, (plugin) => plugin.afterNewFormCreated && plugin.afterNewFormCreated(newForm));
+
+    return newForm;
   },
+  use: function (plugin) {
+    plugins.push(plugin);
+  }
 }

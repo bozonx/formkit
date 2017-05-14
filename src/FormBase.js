@@ -27,7 +27,20 @@ export default class FormBase {
   get valid() {return this.$storage.getFormState('valid')}
   get invalidMsgList() {return this.$storage.getFormState('invalidMsgList')}
 
+  // TODO: remove
   set values(newValues) {this._hardUpdateValues(newValues)}
+
+  /**
+   * Soft update of values
+   * @param values
+   */
+  setValues(newValues) {
+    this._hardUpdateValues(newValues);
+  }
+
+  getConfig() {
+    return this.$config;
+  }
 
   $getWholeStorageState() {
     return this.$storage.getWholeStorageState();
