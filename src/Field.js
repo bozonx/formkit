@@ -34,13 +34,13 @@ export default class Field extends FieldBase {
     if (!this.touched) this.$form.$handlers.handleFieldStateChange(this.$pathToField, 'touched', true);
 
     this.$updateDirty();
+    this.validate();
 
     this.$form.$handlers.handleValueChangeByUser(this.$pathToField, oldCombinedValue, newValue);
 
     // run on change callback
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
-    this.validate();
     this.__startSave();
   }
 
