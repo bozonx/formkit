@@ -39,7 +39,7 @@ export default class FormHandlers {
    * @param {*} oldCombinedValue
    */
   handleSilentValueChange(pathToField, oldCombinedValue) {
-    var eventData = {
+    const eventData = {
       fieldName: pathToField,
       oldValue: oldCombinedValue,
       value: this._form.$storage.getValue(pathToField),
@@ -61,7 +61,7 @@ export default class FormHandlers {
    * @param {*} newValue
    */
   handleValueChangeByUser(pathToField, oldValue, newValue) {
-    var eventData = {
+    const eventData = {
       fieldName: pathToField,
       oldValue,
       value: newValue,

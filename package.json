@@ -1,16 +1,13 @@
 {
   "name": "form-helper",
-  "version": "0.4.0",
-  "description": "Helpers for form",
-  "repository": "git@bitbucket.org:ipkozyrin/form-helper.git",
+  "version": "0.4.1",
+  "description": "Smart form. Framework agnostic",
+  "repository": "git@github.com:ipkozyrin/form-helper.git",
   "license": "MIT",
   "engines": {
     "node": ">=5.11.1"
   },
-  "author": {
-    "name": "Ivan Kozyrin",
-    "email": "ipkozyrin@gmail.com"
-  },
+  "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
   "main": "src/index.js",
   "scripts": {
     "test": "mocha",
