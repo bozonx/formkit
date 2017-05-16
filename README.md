@@ -1,9 +1,7 @@
-# Form-helper
+# clever-form
 
 ## Install
 
-    npm install -g git://git@github.com:ipkozyrin/libs-manage.git
-    
     # Install esdoc for doc generation
     npm install -g esdoc
 

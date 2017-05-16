@@ -1,11 +1,11 @@
 {
-  "name": "form-helper",
-  "version": "0.4.2",
+  "name": "clever-form",
+  "version": "0.4.3",
   "description": "Smart framework agnostic form helper.",
-  "repository": "git@github.com:ipkozyrin/form-helper.git",
+  "repository": "git@github.com:ipkozyrin/clever-form.git",
   "license": "MIT",
   "engines": {
-    "node": ">=7.4.0"
+    "node": ">=5.0.0"
   },
   "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
   "main": "src/index.js",
