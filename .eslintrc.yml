@@ -6,8 +6,8 @@ env:
   node: true
 extends:
   - 'eslint:recommended'
-  - './.eslintrc-lint.yml'
-  - './.eslintrc-style.yml'
+  - './.eslintrc-lib-lint.yml'
+  - './.eslintrc-lib-style.yml'
 parser: babel-eslint
 
 parserOptions:
