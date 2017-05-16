@@ -15,7 +15,7 @@ describe 'Functional. onBlur.', ->
   it "don't update user input on outer value setting if field is on focus", ->
     this.form.fields.name.handleFocusIn()
     this.form.fields.name.handleChange('oldValue')
-    this.form.values = {name: 'newerValue'}
+    this.form.setValues({name: 'newerValue'})
 
     assert.equal(this.form.fields.name.value, 'oldValue')
     assert.isTrue(this.form.fields.name.dirty)

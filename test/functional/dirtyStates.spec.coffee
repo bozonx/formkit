@@ -60,7 +60,7 @@ describe 'Functional. Dirty and touched states.', ->
 
   it 'after global setting values', ->
     this.form.fields.name.handleChange('newValue')
-    this.form.values = {name: 'newValue'}
+    this.form.setValues({name: 'newValue'})
     assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)

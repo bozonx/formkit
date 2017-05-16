@@ -44,3 +44,4 @@ describe 'Unit. DebouncedCall.', ->
         assert.equal(this.value2, 'value2')
         done()
     ]);
+    return undefined

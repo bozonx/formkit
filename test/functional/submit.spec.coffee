@@ -49,6 +49,7 @@ describe 'Functional. Submit.', ->
         assert.isFalse(this.form.submitting)
         done()
     ]);
+    return undefined
 
   it "don't submit while form is submitting at the moment", (done) ->
     this.resolver = null;

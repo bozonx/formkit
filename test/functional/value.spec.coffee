@@ -40,7 +40,7 @@ describe 'Functional. Value.', ->
 
   it "set new values to whole form (machine update)", ->
     this.form.fields.name.handleChange('newValue')
-    this.form.values = {name: 'newOuterValue'}
+    this.form.setValues({name: 'newOuterValue'})
 
     assert.deepEqual(this.form.values, {name: 'newOuterValue'})
     assert.equal(this.form.fields.name.value, 'newOuterValue')
