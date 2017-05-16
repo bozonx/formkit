@@ -6,11 +6,10 @@ import { findInFieldRecursively } from './helpers';
 
 
 export default class FormBase {
-  constructor(storage, config, events, log) {
+  constructor(storage, config, events) {
     this.$storage = storage;
     this.$events = events;
     this.$config = config;
-    this.$log = log;
     this.$handlers = new FormHandlers(this);
 
     // set initial form state

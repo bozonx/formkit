@@ -4,8 +4,8 @@ import FormBase from './FormBase';
 
 
 export default class Form extends FormBase{
-  constructor(storage, config, events, log) {
-    super(storage, config, events, log);
+  constructor(storage, config, events) {
+    super(storage, config, events);
     this._onSubmitCallback = null;
   }
 
