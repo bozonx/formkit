@@ -8,21 +8,6 @@ rules:
   comma-dangle:
     - warn
     - always-multiline
-  valid-jsdoc:
-    - warn
-    - requireReturnType: true
-      requireReturn: false
-      matchDescription: "^[A-Z][A-Za-z0-9\\s\\`\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\_\\-\\+\\=\\|\\\"\\'\\;\\:\\?\\/\\>\\<\\.\\,\\[\\]\\{\\}\\\\]+$"
-      prefer:
-        return: returns
-      preferType:
-        String: string
-        Object: object
-        Array: array
-        Boolean: boolean
-        Number: number
-
-
 
   # Possible Errors
   no-await-in-loop: warn

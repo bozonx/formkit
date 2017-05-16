@@ -8,6 +8,7 @@ extends:
   - 'eslint:recommended'
   - './.eslintrc-lib-lint.yml'
   - './.eslintrc-lib-style.yml'
+  - './.eslintrc-lib-jsdoc.yml'
 parser: babel-eslint
 
 parserOptions:
