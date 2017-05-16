@@ -1,0 +1,154 @@
+rules:
+  #### Recommends reasign
+  no-console: warn
+  comma-dangle:
+    - warn
+    - always-multiline
+  no-extra-parens:
+    - warn
+    - all
+  valid-jsdoc:
+    - warn
+    - requireReturnType: true
+      requireReturn: false
+      matchDescription: "^[A-Z][A-Za-z0-9\\s\\`\\~\\!\\@\\#\\$\\%\\^\\&\\*\\(\\)\\_\\-\\+\\=\\|\\\"\\'\\;\\:\\?\\/\\>\\<\\.\\,\\[\\]\\{\\}\\\\]+$"
+      prefer:
+        return: returns
+      preferType:
+        String: string
+        Object: object
+        Array: array
+        Boolean: boolean
+        Number: number
+
+  #### Best Practices
+  accessor-pairs: error
+  array-callback-return: error
+  block-scoped-var: error
+  complexity:
+    - warn
+    - 5
+  default-case: off
+  dot-location:
+    - warn
+    - property
+  dot-notation: warn
+  eqeqeq:
+    - error
+    - smart
+  no-alert: error
+  no-caller: error
+  no-case-declarations: error
+  no-div-regex: error
+  no-empty-pattern: error
+  no-eq-null: error
+  no-eval: error
+  no-extend-native: error
+  no-extra-bind: error
+  no-extra-label: error
+  no-fallthrough: error
+  no-floating-decimal: error
+  no-implicit-coercion: error
+  no-implicit-globals: error
+  no-implied-eval: error
+  no-invalid-this: error
+  no-iterator: error
+  no-labels: error
+  no-lone-blocks: error
+  no-loop-func: error
+  no-multi-str: error
+  no-native-reassign: error
+  no-new: warn
+  no-new-func: error
+  no-new-wrappers: error
+  no-octal: error
+  no-octal-escape: error
+  no-param-reassign:
+    - error
+    - props: false
+  no-proto: error
+  no-redeclare: error
+  no-return-assign: error
+  no-script-url: error
+  no-self-assign: error
+  no-self-compare: error
+  no-sequences: error
+  no-throw-literal: error
+  no-unmodified-loop-condition: error
+  no-unused-labels: error
+  no-useless-call: error
+  no-useless-concat: error
+  no-useless-escape: error
+  # Useful in production
+  no-warning-comments: off
+  no-with: error
+  radix: error
+  wrap-iife:
+    - error
+    - inside
+
+  #### vars
+  no-catch-shadow: error
+  no-delete-var: error
+  no-label-var: error
+  no-restricted-globals: error
+  no-shadow:
+    - error
+    - hoist: all
+  no-shadow-restricted-names: error
+  no-undef: error
+  no-undefined: error
+
+  #### Node.js and CommonJS
+  global-require: error
+  handle-callback-err: error
+  no-mixed-requires: error
+  no-new-require: error
+  no-path-concat: error
+  no-process-env: warn
+  no-process-exit: error
+
+
+
+  # !!! Not shure
+  consistent-return: error
+  curly:
+    - error
+    - multi-line
+  guard-for-in: off
+  no-else-return: warn
+  no-empty-function: warn
+  no-magic-numbers: warn
+  no-multi-spaces:
+    - warn
+    - exceptions:
+        Property: true
+        VariableDeclarator: true
+        ImportDeclaration: true
+  no-unused-expressions: error
+  no-void: error
+  vars-on-top: off
+  yoda: error
+  strict: off
+  init-declarations: off
+  no-undef-init: error
+  no-unused-vars:
+    - error
+    - vars: all
+      args: after-used
+  no-use-before-define: error
+  callback-return: error
+  no-sync: off
+  max-len:
+    - warn
+    - 160
+    - 4
+#  lines-around-comment:
+#    - warn
+#    - beforeBlockComment: true
+#      afterBlockComment: true
+#      allowBlockEnd: true
+#      allowObjectStart: true
+#      allowObjectEnd: true
+#      allowArrayStart: true
+#      allowArrayEnd: true

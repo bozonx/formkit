@@ -28,6 +28,7 @@
     "lodash": "^4.17.4"
   },
   "devDependencies": {
+    "babel-eslint": "^7.2.3",
     "babel-plugin-source-map-support-for-6": "^0.0.5",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
