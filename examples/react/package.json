@@ -1,0 +1,22 @@
+{
+  "name": "formkit-example-react",
+  "version": "0.0.0",
+  "description": "Example app which shows a formkit in action.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=5.0.0"
+  },
+  "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
+  "scripts": {
+  },
+  "dependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+  }
+}
