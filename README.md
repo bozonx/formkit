@@ -1,11 +1,11 @@
-# clever-form
+# formkit
 
 Smart framework agnostic form helper.
 
 
 ## Install
 
-    npm install clever-form
+    npm install formkit
 
 
 ### Test running
