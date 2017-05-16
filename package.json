@@ -1,8 +1,8 @@
 {
-  "name": "clever-form",
+  "name": "formkit",
   "version": "0.4.3",
   "description": "Smart framework agnostic form helper.",
-  "repository": "git@github.com:ipkozyrin/clever-form.git",
+  "repository": "git@github.com:ipkozyrin/formkit.git",
   "license": "MIT",
   "engines": {
     "node": ">=5.0.0"
