@@ -1,6 +1,6 @@
 rules:
 
-  #### Recommends to reassign
+  #### Recommends to reassign for your project specific
   no-console: warn
   no-extra-parens:
     - warn
@@ -34,18 +34,14 @@ rules:
     - smart
   #guard-for-in: error   # google = error
   #no-caller: error   # google = error
-  #no-case-declarations: error   # google = error
-
-
-
-
-  no-div-regex: error
-  no-empty-pattern: error
-  no-eq-null: error
-  no-eval: error
-  no-extend-native: error
-  no-extra-bind: error
-  no-extra-label: error
+  no-div-regex: warn     # google = off
+  #no-else-return: off     # google = off
+  #no-empty-function: off     # google = off
+  no-eq-null: error     # google = off
+  no-eval: error     # google = off
+  #no-extend-native: error     # google = error
+  #no-extra-bind: error      # google = error
+  no-extra-label: error     # google = off
   no-fallthrough: error
   no-floating-decimal: error
   no-implicit-coercion: error
@@ -111,8 +107,6 @@ rules:
 
 
   # !!! Not shure
-  no-else-return: warn
-  no-empty-function: warn
   no-magic-numbers: warn
   no-multi-spaces:
     - warn
