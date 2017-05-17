@@ -13,30 +13,32 @@ rules:
   no-await-in-loop: warn
   no-compare-neg-zero: error
   no-cond-assign: warn    # google = off
-  #no-irregular-whitespace: warn   # google = warn
+  #no-irregular-whitespace: error   # google = error
   #no-prototype-builtins: off     # google = off
   #no-template-curly-in-string: off     # google = off
-  #no-unexpected-multiline: warn      # google = warn
+  #no-unexpected-multiline: error      # google = error
   no-unsafe-negation: warn      # google = off
 
   #### Best Practices
-  accessor-pairs: error
-  array-callback-return: error
-  block-scoped-var: error
-  complexity:
+  accessor-pairs: warn      # google = off
+  array-callback-return: warn    # google = off
+  #block-scoped-var: off     # google = off - unnecessary if no-var: error
+  #class-methods-use-this: off      # google = off
+  complexity:     # google = off
     - warn
     - 5
-  default-case: off
-  dot-location:
+  #consistent-return: off     # google = off
+  #default-case: off     # google = off
+  eqeqeq:     # google = off
     - warn
-    - property
-  dot-notation: warn
-  eqeqeq:
-    - error
     - smart
-  no-alert: error
-  no-caller: error
-  no-case-declarations: error
+  #guard-for-in: error   # google = error
+  #no-caller: error   # google = error
+  #no-case-declarations: error   # google = error
+
+
+
+
   no-div-regex: error
   no-empty-pattern: error
   no-eq-null: error
@@ -109,11 +111,6 @@ rules:
 
 
   # !!! Not shure
-  consistent-return: error
-  curly:
-    - error
-    - multi-line
-  guard-for-in: off
   no-else-return: warn
   no-empty-function: warn
   no-magic-numbers: warn
@@ -242,3 +239,9 @@ rules:
   no-continue: warn
   no-inline-comments: off
   no-lonely-if: warn
+
+
+
+
+######### Only for web
+  no-alert: error   # google = off

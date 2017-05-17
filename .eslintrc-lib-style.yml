@@ -1,4 +1,13 @@
 rules:
+  #### Best Practices
+  curly:           # google = off
+    - warn
+    - multi-line
+  dot-location:     # google = off
+    - warn
+    - property
+  dot-notation: warn     # google = off
+
   #### Stylistic Issues
   array-bracket-spacing:
     - warn
