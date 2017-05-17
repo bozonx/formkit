@@ -8,8 +8,8 @@ extends:
   - 'eslint:recommended'
   - 'google'
   - './.eslintrc-lib-lint.yml'
-  - './.eslintrc-lib-style.yml'
-  - './.eslintrc-lib-jsdoc.yml'
+  #- './.eslintrc-lib-style.yml'
+  #- './.eslintrc-lib-jsdoc.yml'
 parser: babel-eslint
 
 parserOptions:
