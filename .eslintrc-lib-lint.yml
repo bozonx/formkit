@@ -142,7 +142,8 @@ rules:
   #prefer-rest-params: error      # google = error
   #prefer-spread: error      # google = error
   #rest-spread-spacing: error      # google = error
-
+  symbol-description: warn      # default = off
+  #yield-star-spacing:      # google = [2, 'after']
 
   # !!! Not shure
   max-len:

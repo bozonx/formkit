@@ -14,9 +14,12 @@ rules:
   object-shorthand: warn      # default = off
   prefer-destructuring:      # default = off
     - warn
-    - array: true
     - object: true
+      array: true
   prefer-template: warn      # default = off
+  # TODO: !!!! sort-imports
+  #sort-imports
+  template-curly-spacing: error      # default = off
 
   #### Stylistic Issues
   array-bracket-spacing:
