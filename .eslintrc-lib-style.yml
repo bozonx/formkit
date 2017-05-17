@@ -8,6 +8,16 @@ rules:
     - property
   dot-notation: warn     # google = off
 
+  ######### ECMAScript 6
+  arrow-spacing: warn     # default = off
+  no-useless-constructor: warn      # default = off
+  object-shorthand: warn      # default = off
+  prefer-destructuring:      # default = off
+    - warn
+    - array: true
+    - object: true
+  prefer-template: warn      # default = off
+
   #### Stylistic Issues
   array-bracket-spacing:
     - warn
