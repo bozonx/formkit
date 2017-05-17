@@ -103,7 +103,7 @@ rules:
     - hoist: all
   no-shadow-restricted-names: error     # default = off
   no-undef-init: warn
-  no-undefined: warn     # default = off
+  #no-undefined: warn     # default = off
   no-unused-vars:     # google = [2, {args: 'none'}]
     - error
     - vars: all

@@ -3,10 +3,6 @@ import _ from 'lodash';
 import FieldBase from './FieldBase';
 
 export default class Field extends FieldBase {
-  constructor(form, fieldName) {
-    super(form, fieldName);
-  }
-
   /**
    * It's onChange handler. It must be placed to input onChange attribute.
    * It does:
@@ -17,6 +13,7 @@ export default class Field extends FieldBase {
    * * Rises "change" events for field and form
    * * Runs onChange callback if it assigned.
    * * Starts saving
+   * @param {*} newValue
    */
   handleChange(newValue) {
      // don't do anything if disabled
