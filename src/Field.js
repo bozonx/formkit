@@ -42,11 +42,11 @@ export default class Field extends FieldBase {
   }
 
   handleFocusIn() {
-    this.__storage.setFieldState(this.$pathToField, {focused: true});
+    this.__storage.setFieldState(this.$pathToField, { focused: true });
   }
 
   handleBlur() {
-    this.__storage.setFieldState(this.$pathToField, {focused: false});
+    this.__storage.setFieldState(this.$pathToField, { focused: false });
     this.__startSave(true);
   }
 
@@ -87,7 +87,7 @@ export default class Field extends FieldBase {
   validate() {
     if (!this.validateCb) return;
 
-    const cbReturn = this._validateCb({value: this.value});
+    const cbReturn = this._validateCb({ value: this.value });
     const isValid = cbReturn === true;
     let invalidMsg;
     if (!isValid) {

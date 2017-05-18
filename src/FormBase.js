@@ -18,19 +18,33 @@ export default class FormBase {
     this.__fields = {};
   }
 
-  get fields() {return this.__fields}
-  get values() {return this.$storage.values}
-  get dirty() {return this.$storage.getFormState('dirty')}
-  get touched() {return this.$storage.getFormState('touched')}
-  get submitting() {return this.$storage.getFormState('submitting')}
-  get valid() {return this.$storage.getFormState('valid')}
-  get invalidMsgList() {return this.$storage.getFormState('invalidMsgList')}
+  get fields() {
+    return this.__fields;
+  }
+  get values() {
+    return this.$storage.values;
+  }
+  get dirty() {
+    return this.$storage.getFormState('dirty');
+  }
+  get touched() {
+    return this.$storage.getFormState('touched');
+  }
+  get submitting() {
+    return this.$storage.getFormState('submitting');
+  }
+  get valid() {
+    return this.$storage.getFormState('valid');
+  }
+  get invalidMsgList() {
+    return this.$storage.getFormState('invalidMsgList');
+  }
 
-  //set values(newValues) {this._hardUpdateValues(newValues)}
+  // set values(newValues) {this._hardUpdateValues(newValues)}
 
   /**
    * Soft update of values
-   * @param values
+   * @param newValues
    */
   setValues(newValues) {
     this._hardUpdateValues(newValues);

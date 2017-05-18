@@ -53,6 +53,7 @@ export default class Form extends FormBase{
         return data;
       }, (err) => {
         this.$storage.setFormState('submitting', false);
+
         return err;
       });
     }

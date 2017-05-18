@@ -72,7 +72,7 @@ rules:
   # Use CamelCase for variables and functions names
   id-match:
     - warn
-    - "^(_|$)*([A-Za-z]+)*$"
+    - "^[_$]*([A-Za-z]+)*$"
     - properties: false
   indent:
     - warn

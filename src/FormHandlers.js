@@ -109,7 +109,8 @@ export default class FormHandlers {
     if (isValid) {
       _.find(newInvalidMessages, (item, index) => {
         if (!_.isUndefined(item[pathToField])) {
-          newInvalidMessages.splice(index, 1);
+          const deleteCount = 1;
+          newInvalidMessages.splice(index, deleteCount);
 
           return item;
         }
