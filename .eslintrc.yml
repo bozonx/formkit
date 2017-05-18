@@ -1,5 +1,5 @@
 extends:
-  - '../eslint-config-effency/eslintrc-web-lib.yml'
+  - 'eslint-config-effency/eslintrc-web-lib.yml'
 
 #globals:
 #  var1: true
