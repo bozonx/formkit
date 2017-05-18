@@ -20,16 +20,17 @@ export default class DebouncedCall {
     return this._pending;
   }
 
-  get delay() {
-    return this.delay;
-  }
-  set delay(delay) {
-    this.delay = delay;
-  }
+  // get delay() {
+  //   return this.delay;
+  // }
+  // set delay(delay) {
+  //   this.delay = delay;
+  // }
 
   exec(cb, force, ...params) {
     if (this._pending) {
-      this._runAfterCbFulfill = {cb, params: [...params]};
+      this._runAfterCbFulfill = { cb, params: [ ...params ] };
+
       return;
     }
 
@@ -62,15 +63,18 @@ export default class DebouncedCall {
     if (!promise) return;
 
     this._pending = true;
+
     return promise.then((data) => {
       this._pending = false;
       if (this._runAfterCbFulfill) {
         this.exec(this._runAfterCbFulfill.cb, true, ...this._runAfterCbFulfill.params);
         this._runAfterCbFulfill = undefined;
       }
+
       return data;
     }).catch((err) => {
       this._pending = false;
+
       return Promise.reject(err);
     });
   }

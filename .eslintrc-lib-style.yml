@@ -15,6 +15,7 @@ rules:
   dot-notation: warn     # google = off
 
   ######### ECMAScript 6
+  arrow-body-style: warn      # default = off
   arrow-spacing: warn     # default = off
   no-useless-constructor: warn      # default = off
   object-shorthand: warn      # default = off
@@ -54,9 +55,9 @@ rules:
   #func-call-spacing: warn      # google: error
   #func-name-matching: off     # google: isn't used
   #func-names: off     # google: isn't used
-  func-style:     # google: isn't used
-    - warn
-    - expression
+  #func-style:     # google: isn't used
+  #  - warn
+  #  - expression
   # bad function names
   id-blacklist:
     - warn
@@ -66,7 +67,7 @@ rules:
   id-length:
     - warn
     - min: 2
-      max: 25
+      max: 35
       exceptions: ["i", "_", "p"]
   # Use CamelCase for variables and functions names
   id-match:
@@ -94,7 +95,7 @@ rules:
   max-depth: warn     # google: isn't used
   max-len:      # see google defaults
     - warn
-    - code: 160
+    - 160
     - tabWidth: 2
     - ignoreUrls: true
   #max-lines: off     # google: isn't used
@@ -138,7 +139,7 @@ rules:
   object-curly-newline: warn     # google: isn't used
   object-curly-spacing:      # google: error
     - warn
-    - never
+    - always
     - arraysInObjects: true
       objectsInObjects: true
   #object-property-newline: off     # google: isn't used
@@ -164,15 +165,18 @@ rules:
   #sort-vars: off     # google: isn't used
   #space-before-blocks: warn     # google: error
   #space-before-function-paren: # google: [2, 'never'],
-  space-in-parens:     # google: isn't used
-    - warn
-    - never
-    - exceptions: ["{}", "[]"]
+  #space-in-parens:     # google: isn't used
+  #  - warn
+  #  - never
+  #  - exceptions: ["{}", "[]"]
   space-infix-ops: warn     # google: isn't used
   space-unary-ops:     # google: isn't used
     - warn
     - words: true
-      nonwords: true
+      nonwords: false
+      overrides:
+        '-': true
+        '+': true
   #spaced-comment: # google [2, 'always'],
   template-tag-spacing: warn
   #unicode-bom: off     # google: isn't used

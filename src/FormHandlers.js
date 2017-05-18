@@ -68,7 +68,7 @@ export default class FormHandlers {
     };
 
     // run form's on change callback
-    if (this.$onChangeCallback) this.$onChangeCallback({[pathToField]: newValue});
+    if (this.$onChangeCallback) this.$onChangeCallback({ [pathToField]: newValue });
 
     // Rise events
     this._form.$events.emit('change', eventData);
@@ -80,12 +80,12 @@ export default class FormHandlers {
   }
 
   handleFieldStateChange(pathToField, stateName, newValue) {
-    this._form.$storage.setFieldState(pathToField, {touched: true});
+    this._form.$storage.setFieldState(pathToField, { touched: true });
     this._form.$storage.setFormState(stateName, newValue);
   }
 
   handleFieldDirtyChange(pathToField, newDirtyValue) {
-    this._form.$storage.setFieldState(pathToField, {dirty: newDirtyValue});
+    this._form.$storage.setFieldState(pathToField, { dirty: newDirtyValue });
 
     if (newDirtyValue) {
       this._form.$storage.setFormState('dirty', true);
@@ -102,20 +102,21 @@ export default class FormHandlers {
 
 
   handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
-    this._form.$storage.setFieldState(pathToField, {valid: isValid});
-    this._form.$storage.setFieldState(pathToField, {invalidMsg});
+    this._form.$storage.setFieldState(pathToField, { valid: isValid });
+    this._form.$storage.setFieldState(pathToField, { invalidMsg });
 
-    var newInvalidMessages = _.clone(this._form.invalidMsgList);
+    const newInvalidMessages = _.clone(this._form.invalidMsgList);
     if (isValid) {
       _.find(newInvalidMessages, (item, index) => {
         if (!_.isUndefined(item[pathToField])) {
           newInvalidMessages.splice(index, 1);
+
           return item;
         }
-      })
+      });
     }
     else {
-      newInvalidMessages.push({[pathToField]: invalidMsg});
+      newInvalidMessages.push({ [pathToField]: invalidMsg });
     }
 
     const isFormValid = _.isEmpty(newInvalidMessages);

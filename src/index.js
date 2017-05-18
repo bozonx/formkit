@@ -18,10 +18,10 @@ const globalConfig = {
 const plugins = [];
 
 export default {
-  setDefaults: function (config) {
+  setDefaults: (config) => {
     _.extend(globalConfig, config);
   },
-  newForm: function(config) {
+  newForm: (config) => {
     const newConfig = _.defaults(_.clone(config), globalConfig);
     const events = new EventEmitter();
     const storage = new Storage();
@@ -32,7 +32,7 @@ export default {
 
     return newForm;
   },
-  use: function (plugin) {
+  use: (plugin) => {
     plugins.push(plugin);
-  }
-}
+  },
+};

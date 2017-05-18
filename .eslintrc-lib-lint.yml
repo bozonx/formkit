@@ -109,7 +109,6 @@ rules:
   no-new-require: error     # default = off
 
   ######### ECMAScript 6
-  arrow-body-style: warn      # default = off
   #arrow-parens:      # google [2, 'always']
   #constructor-super: error     # google = error
   #generator-star-spacing: # google = [2, 'after']

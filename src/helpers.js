@@ -8,7 +8,7 @@ export function extendDeep(willExtend, newValues) {
         willExtend[name] = {};
       }
       // run recursively
-      extendDeep(willExtend[name], value)
+      extendDeep(willExtend[name], value);
     }
     else {
       willExtend[name] = value;
@@ -19,18 +19,16 @@ export function extendDeep(willExtend, newValues) {
 }
 
 export function findInFieldRecursively(rootObject, cb) {
-  const recursive = (obj) => {
-    return _.find(obj, (item) => {
-      if (!_.isPlainObject(item) && !item.name) return;
-      if (item.name) {
-        // it's field
-        return cb(item);
-      }
-      else {
-        return recursive(item);
-      }
-    });
-  };
+  const recursive = (obj) => _.find(obj, (item) => {
+    if (!_.isPlainObject(item) && !item.name) return;
+    if (item.name) {
+      // it's field
+      return cb(item);
+    }
+    else {
+      return recursive(item);
+    }
+  });
 
   return recursive(rootObject);
 }

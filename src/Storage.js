@@ -107,7 +107,7 @@ export default class Storage {
 
   _generateNewFieldState(name) {
     return {
-      name: name,
+      name,
       dirty: false,
       touched: false,
       valid: true,
