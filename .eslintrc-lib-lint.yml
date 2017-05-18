@@ -8,6 +8,7 @@ rules:
   #no-restricted-modules: error       # list of restricted modules such ad os, fs etc.
   #no-restricted-imports              # list of restricted modules such ad os, fs etc.
 
+
   ######### Possible Errors
   no-await-in-loop: warn
   no-compare-neg-zero: error

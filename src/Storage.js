@@ -44,6 +44,7 @@ export default class Storage {
     const value = _.get(this._store.userInputs, pathToField);
     if (!_.isUndefined(value)) return _.cloneDeep(value);
     // else returns outer value
+
     return _.get(this._store.outerValues, pathToField);
   }
 
