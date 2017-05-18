@@ -1,4 +1,9 @@
 rules:
+  require-jsdoc:
+    - warn
+    - require:
+        FunctionDeclaration: false
+        MethodDefinition: true
   valid-jsdoc:
     - warn
     - requireReturnType: true

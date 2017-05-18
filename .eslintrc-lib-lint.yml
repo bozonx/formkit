@@ -1,14 +1,4 @@
 rules:
-
-  # Recommends to reassign for your project specific
-  require-jsdoc: off
-  no-console: warn
-  no-warning-comments: off        # Useful in production - comments like TO DO etc
-  #no-restricted-properties: error      # it's for deprecated props
-  #no-restricted-modules: error       # list of restricted modules such ad os, fs etc.
-  #no-restricted-imports              # list of restricted modules such ad os, fs etc.
-
-
   ######### Possible Errors
   no-await-in-loop: warn
   no-compare-neg-zero: error
@@ -139,28 +129,3 @@ rules:
   #rest-spread-spacing: error      # google = error
   symbol-description: warn      # default = off
   #yield-star-spacing:      # google = [2, 'after']
-
-  # !!! Not shure
-  max-len:
-    - warn
-    - 160
-    - 4
-#  lines-around-comment:
-#    - warn
-#    - beforeBlockComment: true
-#      afterBlockComment: true
-#      allowBlockEnd: true
-#      allowObjectStart: true
-#      allowObjectEnd: true
-#      allowArrayStart: true
-#      allowArrayEnd: true
-
-
-######### Only for web
-  no-alert: error   # google = off
-
-######### Only for nodejs
-  no-process-exit: error     # default = off
-  no-path-concat: error     # default = off
-  no-process-env: warn     # default = off
-  #no-sync: off     # default = off
