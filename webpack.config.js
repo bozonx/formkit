@@ -19,16 +19,6 @@ module.exports = {
         test: /\.jsx?$/,
         use: 'babel-loader',
         exclude: /node_modules/,
-        // include: [
-        //   // TODO: упростить - см resolve
-        //   path.resolve(__dirname, './src'),
-        //   // for libs
-        //   path.resolve(__dirname, '../common'),
-        //   path.resolve(__dirname, '../../shared-lib/app'),
-        //   path.resolve(__dirname, '../../shared-lib/web'),
-        //   path.resolve(__dirname, '../../mold'),
-        //   path.resolve(__dirname, '../../mold-devpanel'),
-        // ],
       },
     ],
   },
@@ -39,5 +29,5 @@ module.exports = {
     }),
   ],
   devtool: 'cheap-eval-source-map',
-  cache: false
+  cache: false,
 };
