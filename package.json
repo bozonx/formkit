@@ -8,7 +8,7 @@
     "node": ">=5.0.0"
   },
   "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
-  "main": "src/index.js",
+  "main": "dist/formkit-node.js",
   "scripts": {
     "test": "mocha",
     "build": "yarn test && yarn run build-web && yarn run build-node",

@@ -2,6 +2,7 @@ doc
 examples
 test
 .idea
+src
 
 # root files
 .editorconfig
