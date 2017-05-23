@@ -13,3 +13,4 @@ esdoc.json
 webpack.common.config.js
 webpack.node.config.js
 webpack.web.config.js
+webpack.web-min.config.js

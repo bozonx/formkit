@@ -1,6 +1,6 @@
 {
   "name": "formkit",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "Smart framework agnostic form helper.",
   "repository": "git@github.com:bozonx/formkit.git",
   "license": "MIT",
@@ -8,7 +8,7 @@
     "node": ">=5.0.0"
   },
   "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
-  "main": "dist/formkit-node.js",
+  "main": "dist/formkit.js",
   "scripts": {
     "test": "mocha",
     "build": "yarn test && yarn run build-node && yarn run build-web && yarn run build-web-min",
