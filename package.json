@@ -11,6 +11,7 @@
   "main": "src/index.js",
   "scripts": {
     "test": "mocha",
+    "build": "NODE_ENV=production node_modules/.bin/webpack -p --progress --config ./webpack.config.js",
     "cov": "./node_modules/.bin/istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
     "cov-html": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test && sensible-browser ./coverage/lcov-report/index.html",
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "babel-eslint": "^7.2.3",
     "babel-plugin-source-map-support-for-6": "^0.0.5",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
     "chai": "^3.5.0",
     "chai-as-promised": "^6.0.0",
     "coffee-coverage": "^2.0.1",
@@ -44,6 +46,7 @@
     "mock-require": "^2.0.2",
     "sinon": "^2.2.0",
     "sinon-chai": "^2.10.0",
-    "source-map-support": "^0.4.15"
+    "source-map-support": "^0.4.15",
+    "webpack": "^2.6.0"
   }
 }
