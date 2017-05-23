@@ -1,6 +1,6 @@
 {
   "name": "formkit",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Smart framework agnostic form helper.",
   "repository": "git@github.com:bozonx/formkit.git",
   "license": "MIT",
