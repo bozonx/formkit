@@ -1,4 +1,4 @@
-formHelper = require('../../src/index').default
+formHelper = require('../../src/index')
 
 describe 'Functional. onChange and handleChange.', ->
   beforeEach () ->

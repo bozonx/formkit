@@ -17,7 +17,7 @@ const globalConfig = {
 
 const plugins = [];
 
-export default {
+module.exports = {
   setDefaults: (config) => {
     _.extend(globalConfig, config);
   },

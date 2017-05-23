@@ -18732,10 +18732,6 @@ exports.default = FormHandlers;
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
 var _lodash = __webpack_require__(0);
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -18766,7 +18762,7 @@ var globalConfig = {
 
 var plugins = [];
 
-exports.default = {
+module.exports = {
   setDefaults: function setDefaults(config) {
     _lodash2.default.extend(globalConfig, config);
   },
