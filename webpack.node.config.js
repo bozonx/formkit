@@ -5,13 +5,10 @@ const commonConf = require('./webpack.common.config');
 
 module.exports = merge(commonConf, {
   output: {
-    filename: 'formkit-node.js',
-    libraryTarget: 'commonjs',
+    filename: 'formkit.js',
+    libraryTarget: 'commonjs2',
   },
   plugins: [
-    new webpack.LoaderOptionsPlugin({
-      // options: { context: __dirname },
-      minimize: false,
-    }),
+    new webpack.LoaderOptionsPlugin({ minimize: false }),
   ],
 });
