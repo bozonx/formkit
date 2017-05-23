@@ -6,7 +6,7 @@ const commonConf = require('./webpack.common.config');
 module.exports = merge(commonConf, {
   output: {
     filename: 'formkit.js',
-    libraryTarget: 'commonjs2',
+    libraryTarget: 'umd',
   },
   plugins: [
     new webpack.LoaderOptionsPlugin({ minimize: false }),
