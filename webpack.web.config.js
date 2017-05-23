@@ -6,13 +6,22 @@ module.exports = {
   entry: './src/index',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'formkit-node.js',
+    filename: 'formkit-web.js',
     library: 'FormKit',
-    libraryTarget: 'commonjs',
     // libraryTarget: 'var',
-    // libraryTarget: 'window',
+    libraryTarget: 'window',
     sourceMapFilename: '[file].map',
   },
+  // devtool: 'cheap-eval-source-map',
+  devtool: 'source-map',
+  cache: false,
+  plugins: [
+    new webpack.LoaderOptionsPlugin({
+      // options: { context: __dirname },
+      minimize: true,
+    }),
+  ],
+
   module: {
     rules: [
       {
@@ -22,12 +31,4 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new webpack.LoaderOptionsPlugin({
-      options: { context: __dirname },
-      minimize: true,
-    }),
-  ],
-  devtool: 'cheap-eval-source-map',
-  cache: false,
 };

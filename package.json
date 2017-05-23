@@ -12,8 +12,8 @@
   "scripts": {
     "test": "mocha",
     "build": "yarn test && yarn run build-web && yarn run build-node",
-    "build-web": "NODE_ENV=production node_modules/.bin/webpack -p --progress --config ./webpack.config.js",
-    "build-node": "NODE_ENV=production node_modules/.bin/webpack --progress --config ./webpack.config.js",
+    "build-web": "NODE_ENV=production node_modules/.bin/webpack -p --progress --config ./webpack.web.config.js",
+    "build-node": "NODE_ENV=production node_modules/.bin/webpack --progress --config ./webpack.node.config.js",
     "cov": "./node_modules/.bin/istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
     "cov-html": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test && sensible-browser ./coverage/lcov-report/index.html",
     "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",

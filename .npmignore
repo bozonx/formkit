@@ -1,2 +1,13 @@
 doc
+examples
+test
 .idea
+
+# root files
+.editorconfig
+.eslintrc.yml
+.istanbul.yml
+.travis.yml
+esdoc.json
+webpack.node.config.js
+webpack.web.config.js
