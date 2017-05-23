@@ -10,5 +10,6 @@ test
 .istanbul.yml
 .travis.yml
 esdoc.json
+webpack.common.config.js
 webpack.node.config.js
 webpack.web.config.js

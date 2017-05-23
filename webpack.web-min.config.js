@@ -3,15 +3,18 @@ const merge = require('webpack-merge');
 
 const commonConf = require('./webpack.common.config');
 
+
 module.exports = merge(commonConf, {
   output: {
-    filename: 'formkit-node.js',
-    libraryTarget: 'commonjs',
+    filename: 'formkit-web.min.js',
+    // libraryTarget: 'var',
+    libraryTarget: 'window',
   },
+  devtool: 'source-map',
   plugins: [
     new webpack.LoaderOptionsPlugin({
       // options: { context: __dirname },
-      minimize: false,
+      minimize: true,
     }),
   ],
 });
