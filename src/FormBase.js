@@ -13,7 +13,7 @@ export default class FormBase {
     this.$handlers = new FormHandlers(this);
 
     // set initial form state
-    this.$storage.initFormState();
+    this.$storage.init();
 
     this.__fields = {};
   }

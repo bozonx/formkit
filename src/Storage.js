@@ -2,9 +2,9 @@ import _ from 'lodash';
 import { extendDeep, findInFieldRecursively } from './helpers';
 
 export default class Storage {
-  constructor() {
+  init() {
     this._store = {
-      formState: {},
+      formState: this._generateNewFormState(),
       fieldsState: {},
       userInputs: {},
       outerValues: {},
@@ -13,15 +13,12 @@ export default class Storage {
 
   // combined values
   get values() {
+    // TODO: переделать на ф-ю getValues
     return _.defaultsDeep(_.cloneDeep(this._store.userInputs), this._store.outerValues);
   }
 
   updateOuterValues(newValues) {
     extendDeep(this._store.outerValues, newValues);
-  }
-
-  initFormState() {
-    this._store.formState = this._generateNewFormState();
   }
 
   initFieldState(pathToField, fieldName) {
