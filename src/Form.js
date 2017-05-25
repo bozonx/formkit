@@ -22,9 +22,11 @@ export default class Form extends FormBase{
 
   /**
    * It must be placed to <form> element on onSubmit attribute.
+   * @return {Promise}
    */
   handleSubmit() {
-    if (!this._onSubmitCallback) return;
+    // TODO: добавить возможность просто запускать handleSubmit без указания _onSubmitCallback
+
     if (!this.$config.allowSubmitSubmittingForm) {
       // do nothing if form is submitting at the moment
       if (this.$storage.getFormState('submitting')) return;
@@ -33,33 +35,12 @@ export default class Form extends FormBase{
       if (!this.$storage.getFormState('dirty')) return;
     }
 
-    const updateOuterValues = () => {
-      if (this.$config.updateOuterValuesAfterSubmit) {
-        this.$storage.updateOuterValues(values);
-        this.$updateDirtyStates();
-      }
-    };
-
     this.$storage.setFormState('submitting', true);
     const values = _.clone(this.$storage.values);
-    const returnedValue = this._onSubmitCallback(values);
 
-    // if promise
-    if (returnedValue && returnedValue.then) {
-      return returnedValue.then((data) => {
-        this.$storage.setFormState('submitting', false);
-        updateOuterValues();
+    // TODO: validate
 
-        return data;
-      }, (err) => {
-        this.$storage.setFormState('submitting', false);
-
-        return err;
-      });
-    }
-    // without promise
-    this.$storage.setFormState('submitting', false);
-    updateOuterValues();
+    return this._handleSubmitCallback(values);
   }
 
   on(eventName, cb) {
@@ -90,6 +71,39 @@ export default class Form extends FormBase{
    */
   flushSaving() {
     this.$handlers.$debouncedCall.flush();
+  }
+
+  _handleSubmitCallback(values) {
+    const updateOuterValues = () => {
+      if (this.$config.updateOuterValuesAfterSubmit) {
+        this.$storage.updateOuterValues(values);
+        this.$updateDirtyStates();
+      }
+    };
+
+    if (this._onSubmitCallback) {
+      const returnedValue = this._onSubmitCallback(values);
+
+      // if promise
+      if (returnedValue && returnedValue.then) {
+        return returnedValue.then((data) => {
+          this.$storage.setFormState('submitting', false);
+          updateOuterValues();
+
+          return data;
+        }, (err) => {
+          this.$storage.setFormState('submitting', false);
+
+          return err;
+        });
+      }
+    }
+
+    // without _onSubmitCallback or with _onSubmitCallback and it doesn't return a promise
+    this.$storage.setFormState('submitting', false);
+    updateOuterValues();
+
+    return Promise.resolve();
   }
 
 }
