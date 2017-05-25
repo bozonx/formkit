@@ -63,17 +63,25 @@ export default class FieldBase {
   }
 
   // set outer value with clearing user input
+  // TODO: переделать на ф-ю
   set value(newOuterValue) {
     this._hardlySetOuterValue(newOuterValue);
   }
+  // TODO: переделать на ф-ю
   set disabled(value) {
     this.__storage.setFieldState(this.$pathToField, { disabled: value });
   }
-  set validateCb(value) {
-    this._validateCb = value;
-  }
+  // TODO: переделать на ф-ю
+  // set validateCb(value) {
+  //   this._validateCb = value;
+  // }
+  // TODO: переделать на ф-ю
   set debounceTime(delay) {
     this.__debouncedCall.delay = delay;
+  }
+
+  setValidateCb(value) {
+    this._validateCb = value;
   }
 
   $setOuterValue(newValue) {

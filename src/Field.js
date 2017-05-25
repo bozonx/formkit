@@ -82,21 +82,31 @@ export default class Field extends FieldBase {
 
   /**
    * It updates "valid" and "invalidMsg" states using field's validate rule.
+   * It runs a validate callback which must retrun:
+   * * valid: empty string or true or undefined
+   * * not valid: not empty string or false
    * @returns {boolean|undefined}
    */
   validate() {
-    if (!this.validateCb) return;
+    console.log(3333333333333, this._validateCb)
+
+
+    if (!this._validateCb) return;
+
 
     const cbReturn = this._validateCb({ value: this.value });
-    const isValid = cbReturn === true;
+    const isValid = (_.isString(cbReturn) && !cbReturn) || cbReturn === true || _.isUndefined(cbReturn);
     let invalidMsg;
     if (!isValid) {
       invalidMsg = cbReturn || '';
     }
 
+    console.log(22222222222222, this.$pathToField, cbReturn, isValid, invalidMsg)
+
+
     this.$form.$handlers.handleFieldValidStateChange(this.$pathToField, isValid, invalidMsg);
 
-    return cbReturn;
+    return isValid;
   }
 
   resetUserInput() {

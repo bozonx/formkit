@@ -6,7 +6,7 @@ describe 'Functional. Validate.', ->
     this.form.init({ name: null })
 
   it 'validateCb returns false', ->
-    this.form.fields.name.validateCb = () -> false
+    this.form.fields.name.setValidateCb(() -> false)
     this.form.fields.name.handleChange('newValue')
 
     assert.isFalse(this.form.fields.name.valid)
@@ -15,7 +15,7 @@ describe 'Functional. Validate.', ->
     assert.deepEqual(this.form.invalidMsgList, [{name: ''}])
 
   it 'validateCb cb returns message', ->
-    this.form.fields.name.validateCb = () -> 'errorMsg'
+    this.form.fields.name.setValidateCb(() -> 'errorMsg')
     this.form.fields.name.handleChange('newValue')
 
     assert.isFalse(this.form.fields.name.valid)
@@ -24,7 +24,7 @@ describe 'Functional. Validate.', ->
     assert.deepEqual(this.form.invalidMsgList, [{name: 'errorMsg'}])
 
   it 'validateCb cb returns false and after returns true', ->
-    this.form.fields.name.validateCb = (value) -> !!value
+    this.form.fields.name.setValidateCb((value) -> !!value)
     this.form.fields.name.handleChange(0)
     this.form.fields.name.handleChange(1)
 
