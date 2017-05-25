@@ -15,13 +15,15 @@ export default class Storage {
     };
   }
 
-  // combined values
-  get values() {
-    // TODO: переделать на ф-ю getValues
+  /**
+   * Get all the values of form's fields.
+   */
+  getValues() {
     return _.defaultsDeep(_.cloneDeep(this._store.userInputs), this._store.outerValues);
   }
 
   updateOuterValues(newValues) {
+    // TODO: ??? what's this?
     extendDeep(this._store.outerValues, newValues);
   }
 

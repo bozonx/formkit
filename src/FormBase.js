@@ -19,7 +19,7 @@ export default class FormBase {
     return this.__fields;
   }
   get values() {
-    return this.$storage.values;
+    return this.$storage.getValues();
   }
   get dirty() {
     return this.$storage.getFormState('dirty');

@@ -36,7 +36,7 @@ export default class Form extends FormBase{
     }
 
     this.$storage.setFormState('submitting', true);
-    const values = _.clone(this.$storage.values);
+    const values = _.clone(this.$storage.getValues());
 
     // TODO: validate
 
