@@ -2,22 +2,27 @@ import _ from 'lodash';
 
 import FormBase from './FormBase';
 
+// TODO: объединить с FormBase
 
-export default class Form extends FormBase{
+export default class Form extends FormBase {
   constructor(storage, config, events) {
     super(storage, config, events);
     this._onSubmitCallback = null;
   }
 
+  /**
+   * It calls from outer app's code to init form.
+   * @param initialFields
+   */
   init(initialFields) {
     this.__reinitFields(initialFields);
   }
 
   /**
-   * Roll back to outer value which sat previously.
+   * Roll back to previously saved values.
    */
   resetUserInput() {
-    this._resetUserInput();
+    this.__resetUserInput();
   }
 
   /**
@@ -26,6 +31,7 @@ export default class Form extends FormBase{
    */
   handleSubmit() {
     // TODO: добавить возможность просто запускать handleSubmit без указания _onSubmitCallback
+    // TODO: должно поддерживать cancelSaving() and flushSaving()
 
     if (!this.$config.allowSubmitSubmittingForm) {
       // do nothing if form is submitting at the moment
@@ -44,6 +50,7 @@ export default class Form extends FormBase{
   }
 
   on(eventName, cb) {
+    // TODO: зачем, если есть отдельные методы???
     this.$events.addListener(eventName, cb);
   }
 
@@ -77,7 +84,7 @@ export default class Form extends FormBase{
     const updateOuterValues = () => {
       if (this.$config.updateOuterValuesAfterSubmit) {
         this.$storage.updateOuterValues(values);
-        this.$updateDirtyStates();
+        this.__updateAllDirtyStates();
       }
     };
 

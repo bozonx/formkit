@@ -37,31 +37,32 @@ export default class FormBase {
     return this.$storage.getFormState('invalidMsgList');
   }
 
-  // set values(newValues) {this._hardUpdateValues(newValues)}
-
   /**
    * Soft update of values
    * @param newValues
    */
   setValues(newValues) {
+    // TODO: ???? WTF is _hardUpdateValues
     this._hardUpdateValues(newValues);
   }
 
-  getConfig() {
-    return this.$config;
-  }
+  // getConfig() {
+  //   return this.$config;
+  // }
 
   $getWholeStorageState() {
     return this.$storage.getWholeStorageState();
   }
 
-  $updateDirtyStates() {
+  __updateAllDirtyStates() {
     findInFieldRecursively(this.fields, (field) => {
       field.$updateDirty();
     });
   }
 
   __reinitFields(initialFields) {
+    // TODO: review!!!!!
+    // TODO: вынести в helpers
     if (_.isArray(initialFields)) {
       _.each(initialFields, (pathToField) => {
         // Create new field if it doesn't exist
@@ -102,12 +103,14 @@ export default class FormBase {
   }
 
   _hardUpdateValues(newValues) {
+    // TODO: ???? WTF is _hardUpdateValues
     _.each(newValues, (value, fieldName) => {
       if (this.fields[fieldName]) this.fields[fieldName].value = value;
     });
   }
 
-  _resetUserInput() {
+  __resetUserInput() {
+    // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg
     findInFieldRecursively(this.fields, (field) => {
       field.resetUserInput();
     });
