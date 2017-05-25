@@ -12,9 +12,6 @@ export default class FormBase {
     this.$config = config;
     this.$handlers = new FormHandlers(this);
 
-    // set initial form state
-    this.$storage.init();
-
     this.__fields = {};
   }
 

@@ -2,6 +2,10 @@ import _ from 'lodash';
 import { extendDeep, findInFieldRecursively } from './helpers';
 
 export default class Storage {
+  constructor() {
+    this.init();
+  }
+
   init() {
     this._store = {
       formState: this._generateNewFormState(),
