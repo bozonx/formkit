@@ -3,7 +3,7 @@ formHelper = require('../../src/index')
 describe 'Functional. onChange and handleChange.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
-    this.form.init({name: null})
+    this.form.init(['name'])
 
     this.fieldOnChangeHandler = sinon.spy();
     this.formOnChangeHandler = sinon.spy();

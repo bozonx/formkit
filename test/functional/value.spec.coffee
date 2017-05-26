@@ -3,7 +3,7 @@ formHelper = require('../../src/index')
 describe 'Functional. Value.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
-    this.form.init({name: null})
+    this.form.init(['name'])
 
   it "set new value to field. outerValue == undefined and value has new value", ->
     this.form.fields.name.handleChange('newValue')
@@ -16,7 +16,7 @@ describe 'Functional. Value.', ->
     assert.isNull(this.form.$storage.getOuterValue('name'))
 
   it "set new value to field. Initial isn't change but value has new value", ->
-    this.form.init({name: 'initValue'})
+    this.form.init({name: {default: 'initValue'}})
     this.form.fields.name.handleChange('newValue')
 
     assert.equal(this.form.fields.name.value, 'newValue')

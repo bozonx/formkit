@@ -3,7 +3,7 @@ formHelper = require('../../src/index')
 describe 'Functional. onBlur.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
-    this.form.init({name: null})
+    this.form.init(['name'])
 
   it "update focus state", ->
     assert.isFalse(this.form.fields.name.focused)

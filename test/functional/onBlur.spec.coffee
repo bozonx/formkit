@@ -3,7 +3,7 @@ formHelper = require('../../src/index')
 describe 'Functional. onBlur.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
-    this.form.init({name: null})
+    this.form.init(['name'])
 
     this.fieldOnSaveHandler = sinon.spy();
     this.formOnSaveHandler = sinon.spy();

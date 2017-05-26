@@ -3,7 +3,7 @@ formHelper = require('../../src/index')
 describe 'Functional. Dirty and touched states.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
-    this.form.init({name: null})
+    this.form.init(['name'])
 
   it 'initial state of dirty and touched must be false', ->
     assert.isFalse(this.form.fields.name.dirty)

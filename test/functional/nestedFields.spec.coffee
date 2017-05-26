@@ -4,7 +4,7 @@ describe 'Functional. nestedFields.', ->
   describe 'field saving.', ->
     beforeEach () ->
       this.form = formHelper.newForm()
-      this.form.init({ 'nested.name': null })
+      this.form.init(['nested.name'])
 
     it 'initial values', ->
       assert.isNull(this.form.fields.nested.name.value)

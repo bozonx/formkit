@@ -3,7 +3,7 @@ formHelper = require('../../src/index')
 describe 'Functional. Validate.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
-    this.form.init({ name: null })
+    this.form.init(['name'])
 
   it 'validateCb returns false', ->
     this.form.fields.name.setValidateCb(() -> false)

@@ -4,7 +4,7 @@ describe 'Functional. saving.', ->
   describe 'field saving.', ->
     beforeEach () ->
       this.form = formHelper.newForm()
-      this.form.init({ name: null })
+      this.form.init(['name'])
       this.saveHandler = sinon.spy();
 
     it 'after change value must save debounced', ->
@@ -46,7 +46,7 @@ describe 'Functional. saving.', ->
   describe 'whole form saving.', ->
     beforeEach () ->
       this.form = formHelper.newForm()
-      this.form.init({ param1: null, param2: null, param3: null })
+      this.form.init(['param1', 'param2', 'param3'])
       this.formSaveHandler = sinon.spy();
 
     it 'save partly', ->

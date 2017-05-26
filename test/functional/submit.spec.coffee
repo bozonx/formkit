@@ -3,7 +3,7 @@ formHelper = require('../../src/index')
 describe 'Functional. Submit.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
-    this.form.init({name: null})
+    this.form.init(['name'])
 
   it 'simple submit', ->
     this.submitHandler = sinon.spy();

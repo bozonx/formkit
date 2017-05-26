@@ -3,7 +3,7 @@ formHelper = require('../../src/index')
 describe 'Functional. Events.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
-    this.form.init({name: null})
+    this.form.init(['name'])
 
   describe 'change.', ->
     beforeEach () ->
