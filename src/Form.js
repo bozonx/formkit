@@ -45,8 +45,26 @@ export default class Form {
    * @param initialFields
    */
   init(initialFields) {
-    this.__reinitFields(initialFields);
+    this._reinitFields(initialFields);
   }
+
+  on(eventName, cb) {
+    // TODO: зачем, если есть отдельные методы???
+    this.$events.addListener(eventName, cb);
+  }
+
+  onChange(cb) {
+    this.$handlers.$onChangeCallback = cb;
+  }
+
+  onSave(cb) {
+    this.$handlers.$onSaveCallback = cb;
+  }
+
+  onSubmit(cb) {
+    this._onSubmitCallback = cb;
+  }
+
 
   /**
    * It must be placed to <form> element on onSubmit attribute.
@@ -71,24 +89,6 @@ export default class Form {
 
     return this._handleSubmitCallback(values);
   }
-
-  on(eventName, cb) {
-    // TODO: зачем, если есть отдельные методы???
-    this.$events.addListener(eventName, cb);
-  }
-
-  onChange(cb) {
-    this.$handlers.$onChangeCallback = cb;
-  }
-
-  onSave(cb) {
-    this.$handlers.$onSaveCallback = cb;
-  }
-
-  onSubmit(cb) {
-    this._onSubmitCallback = cb;
-  }
-
 
   /**
    * Roll back to previously saved values.
@@ -132,15 +132,16 @@ export default class Form {
   }
 
 
-  __updateAllDirtyStates() {
+  _updateAllDirtyStates() {
     findInFieldRecursively(this.fields, (field) => {
       field.$updateDirty();
     });
   }
 
-  __reinitFields(initialFields) {
+  _reinitFields(initialFields) {
     // TODO: review!!!!!
     // TODO: вынести в helpers
+
     if (_.isArray(initialFields)) {
       _.each(initialFields, (pathToField) => {
         // Create new field if it doesn't exist
@@ -188,10 +189,13 @@ export default class Form {
   }
 
   _handleSubmitCallback(values) {
+    // TODO: make simpler
+    // TODO: review - especially updateOuterValues
+
     const updateOuterValues = () => {
       if (this.$config.updateOuterValuesAfterSubmit) {
         this.$storage.updateOuterValues(values);
-        this.__updateAllDirtyStates();
+        this._updateAllDirtyStates();
       }
     };
 
