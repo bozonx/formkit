@@ -96,9 +96,11 @@ export default class Field extends FieldBase {
    * @returns {boolean|undefined}
    */
   validate() {
+    // TODO: review
     if (!this._validateCb) return;
 
     const cbReturn = this._validateCb({ value: this.value });
+    // TODO: test it
     const isValid = (_.isString(cbReturn) && !cbReturn) || cbReturn === true || _.isUndefined(cbReturn);
     let invalidMsg;
     if (!isValid) {

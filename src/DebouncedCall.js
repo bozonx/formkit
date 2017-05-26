@@ -3,8 +3,8 @@ import _ from 'lodash';
 export default class DebouncedCall {
   constructor(delay) {
     this._delay = delay;
-    // waiting to call debaunced function
-    this._deleyed = false;
+    // waiting for a calling of debounced function
+    this._delayed = false;
     // if promise returned from callback has pending state
     this._pending = false;
     this._runAfterCbFulfill = undefined;
@@ -13,18 +13,11 @@ export default class DebouncedCall {
   }
 
   getDelayed() {
-    return this._deleyed;
+    return this._delayed;
   }
   getPending() {
     return this._pending;
   }
-
-  // get delay() {
-  //   return this.delay;
-  // }
-  // set delay(delay) {
-  //   this.delay = delay;
-  // }
 
   exec(cb, force, ...params) {
     if (this._pending) {
@@ -39,17 +32,17 @@ export default class DebouncedCall {
       this._runCallBack(cb, ...params);
     }
     else {
-      this._deleyed = true;
+      this._delayed = true;
       this._debouncedCb(() => {
         this._runCallBack(cb, ...params);
-        this._deleyed = false;
+        this._delayed = false;
       });
     }
   }
 
   cancel() {
     if (this._debouncedCb) this._debouncedCb.cancel();
-    this._deleyed = false;
+    this._delayed = false;
     // TODO: а если уже сохранение в процессе???
   }
 
