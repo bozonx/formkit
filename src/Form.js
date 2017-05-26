@@ -42,7 +42,7 @@ export default class Form {
   /**
    * It calls from outer app's code to init form.
    * @param {array|object} initialFields
-   *   * if array: you can pass just a fileds name like: ['id', 'title', 'body']
+   *   * if array: you can pass just fields name like: ['id', 'title', 'body']
    *   * if object: you can pass a fields config like: {name: {default: 'no name', validate: () => {}, ...}}
    */
   init(initialFields) {
@@ -55,26 +55,6 @@ export default class Form {
     else {
       throw new Error(`Bad type of fields param`);
     }
-  }
-
-  _initField(pathToField, { initial, default: defaultValue, disabled, validate }) {
-    // Create new field if it doesn't exist
-    let field = _.get(this.fields, pathToField);
-    if (!field) {
-      field = new Field(this, pathToField);
-      // TODO: set defaultValue, disabled, validate
-      _.set(this.fields, pathToField, field);
-    }
-    else {
-      // TODO: reset dirty and other states and update defaultValue, disabled, validate
-
-    }
-
-    // TODO: test initial, default, disabled, validate
-
-    // set outer value with reset dirty and user input
-    // TODO: set only initial
-    field.setValue(initial || null);
   }
 
   /**
@@ -170,6 +150,26 @@ export default class Form {
     return this.$storage.getWholeStorageState();
   }
 
+
+  _initField(pathToField, { initial, default: defaultValue, disabled, validate }) {
+    // Create new field if it doesn't exist
+    let field = _.get(this.fields, pathToField);
+    if (!field) {
+      field = new Field(this, pathToField);
+      // TODO: set defaultValue, disabled, validate
+      _.set(this.fields, pathToField, field);
+    }
+    else {
+      // TODO: reset dirty and other states and update defaultValue, disabled, validate
+
+    }
+
+    // TODO: test initial, default, disabled, validate
+
+    // set outer value with reset dirty and user input
+    // TODO: set only initial
+    field.setValue(initial || null);
+  }
 
   _updateAllDirtyStates() {
     findInFieldRecursively(this.fields, (field) => {
