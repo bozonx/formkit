@@ -1,24 +1,16 @@
 import _ from 'lodash';
+import EventEmitter from 'eventemitter3';
 
 import Form from './Form';
 import Storage from './Storage';
-import EventEmitter from 'eventemitter3';
+import configDefaults from './configDefaults';
 
-
-const globalConfig = {
-  silent: false,
-  debounceTime: 800,
-  unchangedValueSaving: false,
-  allowFocusedFieldUpdating: false,
-  allowSubmitSubmittingForm: false,
-  allowSubmitUnchangedForm: false,
-  updateOuterValuesAfterSubmit: true,
-};
-
+const globalConfig = configDefaults;
 const plugins = [];
 
+
 module.exports = {
-  setDefaults: (config) => {
+  setDefaultConfig: (config) => {
     _.extend(globalConfig, config);
   },
   newForm: (config) => {
@@ -28,6 +20,7 @@ module.exports = {
 
     const newForm = new Form(storage, newConfig, events);
 
+    // init plugins which has a "afterNewFormCreated" method
     _.each(plugins, (plugin) => plugin.afterNewFormCreated && plugin.afterNewFormCreated(newForm));
 
     return newForm;

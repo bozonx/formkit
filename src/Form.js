@@ -12,6 +12,7 @@ export default class Form {
     this.$storage = storage;
     this.$events = events;
     this.$config = config;
+    // TODO: review - isn't good
     this.$handlers = new FormHandlers(this);
 
     this.__fields = {};
@@ -198,6 +199,7 @@ export default class Form {
         this._updateAllDirtyStates();
       }
     };
+
 
     if (this._onSubmitCallback) {
       const returnedValue = this._onSubmitCallback(values);
