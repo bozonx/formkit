@@ -15,7 +15,7 @@ It just initialize those fields, you can configure them later.
       id: null,
       name: {
         initial: 'first value',   // value which will be inserted to field fixed value.
-        default: 'no name',
+        defaultValue: 'no name',
         disabled: true,
         validate: () => {},
       },

@@ -151,20 +151,22 @@ export default class Form {
   }
 
 
-  _initField(pathToField, { initial, default: defaultValue, disabled, validate }) {
+  _initField(pathToField, { initial, defaultValue, disabled, validate }) {
     // Create new field if it doesn't exist
     let field = _.get(this.fields, pathToField);
     if (!field) {
+      // new field
       field = new Field(this, pathToField);
       // TODO: set defaultValue, disabled, validate
       _.set(this.fields, pathToField, field);
     }
     else {
+      // update existing
       // TODO: reset dirty and other states and update defaultValue, disabled, validate
 
     }
 
-    // TODO: test initial, default, disabled, validate
+    // TODO: test - initial, default, disabled, validate
 
     // set outer value with reset dirty and user input
     // TODO: set only initial
