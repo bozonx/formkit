@@ -4,6 +4,7 @@ import DebouncedCall from './DebouncedCall';
 
 export default class FieldBase {
   constructor(form, fieldName) {
+    // TODO: protected props rename to __prop
     this.$form = form;
     this.$pathToField = fieldName;
     this.$onChangeCallback = null;
@@ -15,15 +16,18 @@ export default class FieldBase {
     this._validateCb = undefined;
 
     // init state
+    // TODO: !!!! this.$pathToField и fieldName = одно и то же
     this.__storage.initFieldState(this.$pathToField, fieldName);
   }
 
   get form() {
     return this.$form;
   }
+  // TODO: ?? может тоже переименовать в inputValue
   get userInput() {
     return this.__storage.getUserInput(this.$pathToField);
   }
+  // TODO: переименовать в fixedValue / savedValue / prevStateValue
   get outerValue() {
     return this.__storage.getOuterValue(this.$pathToField);
   }
@@ -64,24 +68,20 @@ export default class FieldBase {
 
   // set outer value with clearing user input
   setValue(newOuterValue) {
+    // TODO: может переименовать в setFixedValue?
+    // TODO: !!!! WTF??!!
     this._hardlySetOuterValue(newOuterValue);
   }
-  // TODO: переделать на ф-ю
-  set disabled(value) {
+  setDisabled(value) {
     this.__storage.setFieldState(this.$pathToField, { disabled: value });
   }
-  // TODO: переделать на ф-ю
-  // set validateCb(value) {
-  //   this._validateCb = value;
-  // }
-  // TODO: переделать на ф-ю
-  set debounceTime(delay) {
-    this.__debouncedCall.delay = delay;
-  }
-
   setValidateCb(value) {
     this._validateCb = value;
   }
+  setDebounceTime(delay) {
+    this.__debouncedCall.delay = delay;
+  }
+
 
   $setOuterValue(newValue) {
     this.__storage.setOuterValue(this.$pathToField, newValue);
