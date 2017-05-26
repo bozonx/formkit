@@ -5,8 +5,6 @@ import Field from './Field';
 import { findInFieldRecursively } from './helpers';
 
 
-// TODO: объединить с FormBase
-
 export default class Form {
   constructor(storage, config, events) {
     this.$storage = storage;
@@ -46,15 +44,64 @@ export default class Form {
    * @param initialFields
    */
   init(initialFields) {
-    this._reinitFields(initialFields);
+    // TODO: review!!!!!
+    // TODO: вынести в helpers
+
+    if (_.isArray(initialFields)) {
+      _.each(initialFields, (pathToField) => {
+        // Create new field if it doesn't exist
+        let field = _.get(this.fields, pathToField);
+        if (!field) {
+          field = new Field(this, pathToField);
+          _.set(this.fields, pathToField, field);
+        }
+        else {
+          // reset dirty
+
+        }
+
+        // set outer value with reset dirty and user input
+        field.value = null;
+      });
+    }
+    else if (_.isPlainObject(initialFields)) {
+      _.each(initialFields, (value, pathToField) => {
+        // Create new field if it doesn't exist
+        let field = _.get(this.fields, pathToField);
+        if (!field) {
+          field = new Field(this, pathToField);
+          _.set(this.fields, pathToField, field);
+        }
+        else {
+          // reset dirty
+
+        }
+
+        // set outer value with reset dirty and user input
+        field.value = value;
+      });
+    }
+    else {
+      throw new Error(`Bad type of fields param`);
+    }
   }
 
+  /**
+   * Add one or more handlers on form's event: 'change', 'silentChange' and 'anyChange'
+   * @param eventName
+   * @param cb
+   */
   on(eventName, cb) {
-    // TODO: зачем, если есть отдельные методы???
+    // TODO: почему не поддерживаются остальные методы - onSubmit etc?
     this.$events.addListener(eventName, cb);
   }
 
+  /**
+   * Add only one handler of 'change' event. It usefull for use as handler of component.
+   * @param cb
+   */
   onChange(cb) {
+    // TODO: почуму один а не несколько обработчиков???
     this.$handlers.$onChangeCallback = cb;
   }
 
@@ -68,7 +115,7 @@ export default class Form {
 
 
   /**
-   * It must be placed to <form> element on onSubmit attribute.
+   * It can be placed ad a handler of <form> element on onSubmit attribute.
    * @return {Promise}
    */
   handleSubmit() {
@@ -95,7 +142,7 @@ export default class Form {
    * Roll back to previously saved values.
    */
   resetUserInput() {
-    // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg
+    // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg у формы и полей
     findInFieldRecursively(this.fields, (field) => {
       field.resetUserInput();
     });
@@ -137,49 +184,6 @@ export default class Form {
     findInFieldRecursively(this.fields, (field) => {
       field.$updateDirty();
     });
-  }
-
-  _reinitFields(initialFields) {
-    // TODO: review!!!!!
-    // TODO: вынести в helpers
-
-    if (_.isArray(initialFields)) {
-      _.each(initialFields, (pathToField) => {
-        // Create new field if it doesn't exist
-        let field = _.get(this.fields, pathToField);
-        if (!field) {
-          field = new Field(this, pathToField);
-          _.set(this.fields, pathToField, field);
-        }
-        else {
-          // reset dirty
-
-        }
-
-        // set outer value with reset dirty and user input
-        field.value = null;
-      });
-    }
-    else if (_.isPlainObject(initialFields)) {
-      _.each(initialFields, (value, pathToField) => {
-        // Create new field if it doesn't exist
-        let field = _.get(this.fields, pathToField);
-        if (!field) {
-          field = new Field(this, pathToField);
-          _.set(this.fields, pathToField, field);
-        }
-        else {
-          // reset dirty
-
-        }
-
-        // set outer value with reset dirty and user input
-        field.value = value;
-      });
-    }
-    else {
-      throw new Error(`Bad type of fields param`);
-    }
   }
 
   _hardUpdateValues(newValues) {

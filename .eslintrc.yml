@@ -6,7 +6,8 @@ extends:
 
 rules:
   no-console: warn
-  no-warning-comments: off        # Useful in production - comments like TO DO etc
+  no-debugger: warn
+  #no-warning-comments: warn        # worn comments like TODOes etc
   require-jsdoc: off
   valid-jsdoc: off
   #no-restricted-properties: error      # it's for deprecated props

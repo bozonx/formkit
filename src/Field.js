@@ -2,6 +2,7 @@ import _ from 'lodash';
 
 import FieldBase from './FieldBase';
 
+
 export default class Field extends FieldBase {
   /**
    * It's onChange handler. It must be placed to input onChange attribute.

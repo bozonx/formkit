@@ -1,3 +1,5 @@
+/* eslint func-style: off */
+
 import _ from 'lodash';
 
 export function extendDeep(willExtend, newValues) {
