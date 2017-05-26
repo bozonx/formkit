@@ -22,7 +22,7 @@ describe 'Functional. nestedFields.', ->
       assert.isTrue(this.form.touched)
 
     it 'outer change', ->
-      this.form.fields.nested.name.value = 'outerValue'
+      this.form.fields.nested.name.setValue('outerValue')
       assert.equal(this.form.fields.nested.name.value, 'outerValue')
       assert.equal(this.form.fields.nested.name.outerValue, 'outerValue')
 

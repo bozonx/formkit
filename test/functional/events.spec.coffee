@@ -40,7 +40,7 @@ describe 'Functional. Events.', ->
       expect(this.anyFormHandler).to.have.been.calledOnce
 
     it "after outer update", () ->
-      this.form.fields.name.value = 'outerValue'
+      this.form.fields.name.setValue('outerValue')
       # user change
       expect(this.fieldHandler).to.not.have.been.called
       expect(this.formHandler).to.not.have.been.called

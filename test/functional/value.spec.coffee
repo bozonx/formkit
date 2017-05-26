@@ -28,7 +28,7 @@ describe 'Functional. Value.', ->
 
   it "set new outer value", ->
     this.form.fields.name.handleChange('newValue')
-    this.form.fields.name.value = 'newOuterValue'
+    this.form.fields.name.setValue('newOuterValue')
 
     assert.deepEqual(this.form.values, {name: 'newOuterValue'})
     assert.equal(this.form.fields.name.value, 'newOuterValue')
@@ -51,7 +51,7 @@ describe 'Functional. Value.', ->
     assert.equal(this.form.$storage.getOuterValue('name'), 'newOuterValue')
 
   it "reset user input", ->
-    this.form.fields.name.value = 'outerValue'
+    this.form.fields.name.setValue('outerValue')
     this.form.fields.name.handleChange('newValue')
     this.form.resetUserInput()
 

@@ -12,7 +12,7 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isFalse(this.form.touched)
 
   it 'initial state of dirty and touched must be false after setting outer value', ->
-    this.form.fields.name.value = 'outerValue'
+    this.form.fields.name.setValue('outerValue')
     assert.isFalse(this.form.fields.name.dirty)
     assert.isFalse(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)
@@ -27,7 +27,7 @@ describe 'Functional. Dirty and touched states.', ->
 
   it 'set outerValue after user input', ->
     this.form.fields.name.handleChange('newValue')
-    this.form.fields.name.value = 'outerValue'
+    this.form.fields.name.setValue('outerValue')
     assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)
@@ -35,14 +35,14 @@ describe 'Functional. Dirty and touched states.', ->
 
   it 'set the same outer value', ->
     this.form.fields.name.handleChange('newValue')
-    this.form.fields.name.value = 'newValue'
+    this.form.fields.name.setValue('newValue')
     assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)
     assert.isTrue(this.form.touched)
 
   it 'change and revert to fiest value', ->
-    this.form.fields.name.value = 'initValue'
+    this.form.fields.name.setValue('initValue')
     this.form.fields.name.handleChange('newValue')
     this.form.fields.name.handleChange('initValue')
     assert.isFalse(this.form.fields.name.dirty)

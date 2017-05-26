@@ -46,46 +46,34 @@ export default class Form {
    *   * if object: you can pass a fields config like: {name: {default: 'no name', validate: () => {}, ...}}
    */
   init(initialFields) {
-    // TODO: review!!!!!
-    // TODO: вынести в helpers
-
     if (_.isArray(initialFields)) {
-      _.each(initialFields, (pathToField) => {
-        // Create new field if it doesn't exist
-        let field = _.get(this.fields, pathToField);
-        if (!field) {
-          field = new Field(this, pathToField);
-          _.set(this.fields, pathToField, field);
-        }
-        else {
-          // reset dirty
-
-        }
-
-        // set outer value with reset dirty and user input
-        field.value = null;
-      });
+      // TODO: test it
+      _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
     }
     else if (_.isPlainObject(initialFields)) {
-      _.each(initialFields, (value, pathToField) => {
-        // Create new field if it doesn't exist
-        let field = _.get(this.fields, pathToField);
-        if (!field) {
-          field = new Field(this, pathToField);
-          _.set(this.fields, pathToField, field);
-        }
-        else {
-          // reset dirty
-
-        }
-
-        // set outer value with reset dirty and user input
-        field.value = value;
-      });
+      // TODO: test it
+      _.each(initialFields, (params, pathToField) => this._initField(pathToField, params || {}));
     }
     else {
       throw new Error(`Bad type of fields param`);
     }
+  }
+
+  _initField(pathToField, { default: defaultValue, disabled, validate }) {
+    // Create new field if it doesn't exist
+    let field = _.get(this.fields, pathToField);
+    if (!field) {
+      field = new Field(this, pathToField);
+      // TODO: set defaultValue, disabled, validate
+      _.set(this.fields, pathToField, field);
+    }
+    else {
+      // TODO: reset dirty and other states and update defaultValue, disabled, validate
+
+    }
+
+    // set outer value with reset dirty and user input
+    field.setValue(null);
   }
 
   /**
@@ -191,7 +179,7 @@ export default class Form {
   _hardUpdateValues(newValues) {
     // TODO: ???? WTF is _hardUpdateValues
     _.each(newValues, (value, fieldName) => {
-      if (this.fields[fieldName]) this.fields[fieldName].value = value;
+      if (this.fields[fieldName]) this.fields[fieldName].setValue(value);
     });
   }
 

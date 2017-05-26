@@ -20,13 +20,13 @@ describe 'Functional. onChange and handleChange.', ->
     expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'userValue'})
 
   it "don't call after machine update", ->
-    this.form.fields.name.value = 'machineValue'
+    this.form.fields.name.setValue('machineValue')
     expect(this.fieldOnChangeHandler).to.not.have.been.called
 
     expect(this.formOnChangeHandler).to.not.have.been.called
 
   it "it doesn't rise events on set initial values", ->
-    this.form.fields.name.value = 'initialValue'
+    this.form.fields.name.setValue('initialValue')
     expect(this.fieldOnChangeHandler).to.not.have.been.called
 
     expect(this.formOnChangeHandler).to.not.have.been.called

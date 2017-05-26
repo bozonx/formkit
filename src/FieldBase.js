@@ -63,8 +63,7 @@ export default class FieldBase {
   }
 
   // set outer value with clearing user input
-  // TODO: переделать на ф-ю
-  set value(newOuterValue) {
+  setValue(newOuterValue) {
     this._hardlySetOuterValue(newOuterValue);
   }
   // TODO: переделать на ф-ю
