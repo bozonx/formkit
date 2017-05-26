@@ -16,7 +16,7 @@ describe 'Functional. Value.', ->
     assert.isNull(this.form.$storage.getOuterValue('name'))
 
   it "set new value to field. Initial isn't change but value has new value", ->
-    this.form.init({name: {default: 'initValue'}})
+    this.form.init({name: {initial: 'initValue'}})
     this.form.fields.name.handleChange('newValue')
 
     assert.equal(this.form.fields.name.value, 'newValue')

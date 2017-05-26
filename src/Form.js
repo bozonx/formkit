@@ -47,11 +47,9 @@ export default class Form {
    */
   init(initialFields) {
     if (_.isArray(initialFields)) {
-      // TODO: test it
       _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
     }
     else if (_.isPlainObject(initialFields)) {
-      // TODO: test it
       _.each(initialFields, (params, pathToField) => this._initField(pathToField, params || {}));
     }
     else {
@@ -59,7 +57,7 @@ export default class Form {
     }
   }
 
-  _initField(pathToField, { default: defaultValue, disabled, validate }) {
+  _initField(pathToField, { initial, default: defaultValue, disabled, validate }) {
     // Create new field if it doesn't exist
     let field = _.get(this.fields, pathToField);
     if (!field) {
@@ -72,8 +70,11 @@ export default class Form {
 
     }
 
+    // TODO: test initial, default, disabled, validate
+
     // set outer value with reset dirty and user input
-    field.setValue(null);
+    // TODO: set only initial
+    field.setValue(initial || null);
   }
 
   /**
