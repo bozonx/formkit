@@ -8,11 +8,13 @@ export default class FormHandlers {
     this.$onSaveCallback = null;
 
     this._form = form;
+    // TODO: почему здесь хранятся unsaved - наверное надо в Storage?
     this._unsavedState = {};
 
     this.$debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
   }
 
+  // TODO: наверное надо в field перенести???
   isUnsaved(pathToField) {
     return _.has(this._unsavedState, pathToField);
   }

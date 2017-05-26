@@ -83,11 +83,15 @@ export default class FieldBase {
   }
 
 
+  // TODO: WTF??? наверное это setFixedValueSilent ???
   $setOuterValue(newValue) {
     this.__storage.setOuterValue(this.$pathToField, newValue);
   }
 
-  $updateDirty() {
+  /**
+   * Recalculate dirty state.
+   */
+  $recalcDirty() {
     let newDirtyValue;
 
     if (this.userInput === '' && (this.outerValue === '' || _.isNil(this.outerValue))) {
@@ -102,15 +106,30 @@ export default class FieldBase {
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
   }
 
+  /**
+   * Start saving field and form in they have a save handlers.
+   * It will reset saving in progress before start saving.
+   * @param {boolean} force
+   *   * if true it will save immediately.
+   *   * if false it will save with dobounce delay
+   * @private
+   */
   __startSave(force) {
     // don't save invalid value
     if (!this.valid) return;
+    // TODO: ??? for what???
+    // don't save already saved value
     if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
 
+    // rise a field's save callback
     if (this.__onSaveCallback) {
+      // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
+      // TODO: должно подняться собитие save этого поля
       this.__debouncedCall.exec(this.__onSaveCallback, force, this.value);
     }
-
+    // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
+    // TODO: должно подняться собитие save формы
+    // rise form's save callback
     this.$form.$handlers.handleFieldSave(force);
   }
 
@@ -128,6 +147,9 @@ export default class FieldBase {
    * @param {*} newValue
    */
   _hardlySetOuterValue(newValue) {
+    // TODO: !!!! rename
+    // TODO: !!!! review
+
     const oldCombinedValue = _.cloneDeep(this.value);
 
     // set to outer value layer

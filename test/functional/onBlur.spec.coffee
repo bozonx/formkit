@@ -15,18 +15,18 @@ describe 'Functional. onBlur.', ->
     this.form.fields.name.handleChange('newValue')
     this.form.fields.name.__debouncedCall.flush()
     this.form.$handlers.$debouncedCall.flush()
-    assert.isFalse(this.form.fields.name.__debouncedCall.deleyed)
+    assert.isFalse(this.form.fields.name.__debouncedCall.getDelayed())
     this.form.fields.name.handleBlur()
-    assert.isFalse(this.form.fields.name.__debouncedCall.deleyed)
+    assert.isFalse(this.form.fields.name.__debouncedCall.getDelayed())
 
     expect(this.fieldOnSaveHandler).to.have.been.calledOnce
     expect(this.formOnSaveHandler).to.have.been.calledOnce
 
   it "run handle blur if saving in progress", ->
     this.form.fields.name.handleChange('newValue')
-    assert.isTrue(this.form.fields.name.__debouncedCall.deleyed)
+    assert.isTrue(this.form.fields.name.__debouncedCall.getDelayed())
     this.form.fields.name.handleBlur()
-    assert.isFalse(this.form.fields.name.__debouncedCall.deleyed)
+    assert.isFalse(this.form.fields.name.__debouncedCall.getDelayed())
 
     expect(this.fieldOnSaveHandler).to.have.been.calledOnce
     expect(this.formOnSaveHandler).to.have.been.calledOnce

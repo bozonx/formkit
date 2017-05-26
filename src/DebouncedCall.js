@@ -12,11 +12,10 @@ export default class DebouncedCall {
     this._debouncedCb = _.debounce((cb) => cb(), this._delay);
   }
 
-  get deleyed() {
+  getDelayed() {
     return this._deleyed;
   }
-
-  get pending() {
+  getPending() {
     return this._pending;
   }
 

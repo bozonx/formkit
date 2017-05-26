@@ -5,15 +5,17 @@ import FieldBase from './FieldBase';
 
 export default class Field extends FieldBase {
   /**
-   * It's onChange handler. It must be placed to input onChange attribute.
+   * It's an onChange handler. It must be placed to input onChange attribute.
+   * It sets a new user's value and start saving.
    * It does:
-   * * don't do anything if disabled
-   * * don't save if value is unchanged
+   * * don't do anything if field is disabled
+   * * don't save if value isn't changed
    * * update userInput value
-   * * update "touched" state
-   * * Rises "change" events for field and form
-   * * Runs onChange callback if it assigned.
-   * * Starts saving
+   * * update "touched" and "dirty" states
+   * * validate
+   * * Rise a "change" events for field and form
+   * * Run an onChange callback if it assigned.
+   * * Start saving
    * @param {*} newValue
    */
   handleChange(newValue) {
@@ -22,30 +24,34 @@ export default class Field extends FieldBase {
 
     const oldCombinedValue = _.cloneDeep(this.value);
 
-    // TODO: а изменения разрешать?
     // don't save unchanged value if it allows in config.
     if (!this.$form.$config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
 
     this.__storage.setUserInput(this.$pathToField, newValue);
-
-    // update touched
+    // set touched to true
     if (!this.touched) this.$form.$handlers.handleFieldStateChange(this.$pathToField, 'touched', true);
-
-    this.$updateDirty();
+    this.$recalcDirty();
     this.validate();
 
+    // rise change by user handler
     this.$form.$handlers.handleValueChangeByUser(this.$pathToField, oldCombinedValue, newValue);
 
-    // run on change callback
+    // rise field's change callback
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
     this.__startSave();
   }
 
+  /**
+   * Set field's "focused" prop to true.
+   */
   handleFocusIn() {
     this.__storage.setFieldState(this.$pathToField, { focused: true });
   }
 
+  /**
+   * Set field's "focused" prop to false.
+   */
   handleBlur() {
     this.__storage.setFieldState(this.$pathToField, { focused: false });
     this.__startSave(true);
@@ -62,19 +68,20 @@ export default class Field extends FieldBase {
     this.__startSave(true);
   }
 
+  // TODO: лучше сделать отдельные методы - onChange, etc
   on(eventName, cb) {
     this.$form.$events.addListener(`field.${this.$pathToField}.${eventName}`, cb);
   }
 
   /**
-   * It rises on field's value changes by user
+   * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
     this.$onChangeCallback = cb;
   }
 
   /**
-   * It rises with debounce on start saving after updating field value by user
+   * It rises with debounce delay on start saving.
    * @param cb
    */
   onSave(cb) {
@@ -89,11 +96,7 @@ export default class Field extends FieldBase {
    * @returns {boolean|undefined}
    */
   validate() {
-    console.log(3333333333333, this._validateCb)
-
-
     if (!this._validateCb) return;
-
 
     const cbReturn = this._validateCb({ value: this.value });
     const isValid = (_.isString(cbReturn) && !cbReturn) || cbReturn === true || _.isUndefined(cbReturn);
@@ -101,9 +104,6 @@ export default class Field extends FieldBase {
     if (!isValid) {
       invalidMsg = cbReturn || '';
     }
-
-    console.log(22222222222222, this.$pathToField, cbReturn, isValid, invalidMsg)
-
 
     this.$form.$handlers.handleFieldValidStateChange(this.$pathToField, isValid, invalidMsg);
 
@@ -113,6 +113,7 @@ export default class Field extends FieldBase {
   resetUserInput() {
     this.__storage.setUserInput(this.$pathToField, undefined);
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
+    // TODO: надо пересчитать validate
   }
 
   /**

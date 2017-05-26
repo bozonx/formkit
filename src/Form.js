@@ -175,7 +175,7 @@ export default class Form {
 
   _updateAllDirtyStates() {
     findInFieldRecursively(this.fields, (field) => {
-      field.$updateDirty();
+      field.$recalcDirty();
     });
   }
 
