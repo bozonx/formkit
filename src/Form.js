@@ -41,7 +41,9 @@ export default class Form {
 
   /**
    * It calls from outer app's code to init form.
-   * @param initialFields
+   * @param {array|object} initialFields
+   *   * if array: you can pass just a fileds name like: ['id', 'title', 'body']
+   *   * if object: you can pass a fields config like: {name: {default: 'no name', validate: () => {}, ...}}
    */
   init(initialFields) {
     // TODO: review!!!!!
