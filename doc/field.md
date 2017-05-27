@@ -50,7 +50,7 @@ after that will be used saved value or default value if there isn't a saved valu
 ### User input
 
 To set a value by user input, run this on onChange input's event `field.handleChange(newValue)`.
-It will rise a "change" event.
+It will set a "value" field and rise a "change" event.
 
 
 ### Programmatic setting a value

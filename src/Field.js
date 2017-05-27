@@ -29,8 +29,8 @@ export default class Field {
     return this.__storage.getUserInput(this.$pathToField);
   }
   // TODO: переименовать в fixedValue / savedValue / prevStateValue
-  get outerValue() {
-    return this.__storage.getOuterValue(this.$pathToField);
+  get savedValue() {
+    return this.__storage.getSavedValue(this.$pathToField);
   }
   // combined value
   get value() {
@@ -68,10 +68,10 @@ export default class Field {
   }
 
   // set outer value with clearing user input
-  setValue(newOuterValue) {
+  setValue(newSavedValue) {
     // TODO: может переименовать в setFixedValue?
     // TODO: !!!! WTF??!!
-    this._hardlySetOuterValue(newOuterValue);
+    this._hardlySetSavedValue(newSavedValue);
   }
   setDisabled(value) {
     this.__storage.setFieldState(this.$pathToField, { disabled: value });
@@ -85,8 +85,8 @@ export default class Field {
 
 
   // TODO: WTF??? наверное это setFixedValueSilent ???
-  $setOuterValue(newValue) {
-    this.__storage.setOuterValue(this.$pathToField, newValue);
+  $setSavedValue(newValue) {
+    this.__storage.setSavedValue(this.$pathToField, newValue);
   }
 
   /**
@@ -95,13 +95,13 @@ export default class Field {
   $recalcDirty() {
     let newDirtyValue;
 
-    if (this.userInput === '' && (this.outerValue === '' || _.isNil(this.outerValue))) {
+    if (this.userInput === '' && (this.savedValue === '' || _.isNil(this.savedValue))) {
       // 0 compares as common value.
       newDirtyValue = false;
     }
     else {
       // just compare initial value and value
-      newDirtyValue = this.userInput !== this.outerValue;
+      newDirtyValue = this.userInput !== this.savedValue;
     }
 
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
@@ -147,14 +147,14 @@ export default class Field {
    * * It doesn't update "touched" state.
    * @param {*} newValue
    */
-  _hardlySetOuterValue(newValue) {
+  _hardlySetSavedValue(newValue) {
     // TODO: !!!! rename
     // TODO: !!!! review
 
     const oldCombinedValue = _.cloneDeep(this.value);
 
     // set to outer value layer
-    this.$setOuterValue(newValue);
+    this.$setSavedValue(newValue);
 
     // remove user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.

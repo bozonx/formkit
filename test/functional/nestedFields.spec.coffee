@@ -8,12 +8,12 @@ describe 'Functional. nestedFields.', ->
 
     it 'initial values', ->
       assert.isNull(this.form.fields.nested.name.value)
-      assert.isNull(this.form.fields.nested.name.outerValue)
+      assert.isNull(this.form.fields.nested.name.savedValue)
 
     it 'user input', ->
       this.form.fields.nested.name.handleChange('newValue')
       assert.equal(this.form.fields.nested.name.value, 'newValue')
-      assert.isNull(this.form.fields.nested.name.outerValue)
+      assert.isNull(this.form.fields.nested.name.savedValue)
       assert.isTrue(this.form.fields.nested.name.dirty)
       assert.isTrue(this.form.fields.nested.name.touched)
 
@@ -22,11 +22,11 @@ describe 'Functional. nestedFields.', ->
       assert.isTrue(this.form.touched)
 
     it 'outer change', ->
-      this.form.fields.nested.name.setValue('outerValue')
-      assert.equal(this.form.fields.nested.name.value, 'outerValue')
-      assert.equal(this.form.fields.nested.name.outerValue, 'outerValue')
+      this.form.fields.nested.name.setValue('savedValue')
+      assert.equal(this.form.fields.nested.name.value, 'savedValue')
+      assert.equal(this.form.fields.nested.name.savedValue, 'savedValue')
 
-      assert.deepEqual(this.form.values, {nested: {name: 'outerValue'}})
+      assert.deepEqual(this.form.values, {nested: {name: 'savedValue'}})
 
     it 'validation', ->
       this.form.fields.nested.name.setValidateCb(() -> 'errorMsg')

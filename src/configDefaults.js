@@ -5,5 +5,5 @@ module.exports = {
   allowFocusedFieldUpdating: false,
   allowSubmitSubmittingForm: false,
   allowSubmitUnchangedForm: false,
-  updateOuterValuesAfterSubmit: true,
+  updateSavedValuesAfterSubmit: true,
 };

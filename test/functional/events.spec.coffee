@@ -40,18 +40,18 @@ describe 'Functional. Events.', ->
       expect(this.anyFormHandler).to.have.been.calledOnce
 
     it "after outer update", () ->
-      this.form.fields.name.setValue('outerValue')
+      this.form.fields.name.setValue('savedValue')
       # user change
       expect(this.fieldHandler).to.not.have.been.called
       expect(this.formHandler).to.not.have.been.called
       # silent
       expect(this.silentFieldHandler).to.have.been.calledOnce
       expect(this.silentFieldHandler).to.have.been.calledWith({
-        fieldName: 'name', oldValue: null, value: 'outerValue'
+        fieldName: 'name', oldValue: null, value: 'savedValue'
       })
       expect(this.silentFormHandler).to.have.been.calledOnce
       expect(this.silentFormHandler).to.have.been.calledWith({
-        fieldName: 'name', oldValue: null, value: 'outerValue'
+        fieldName: 'name', oldValue: null, value: 'savedValue'
       })
       # any change
       expect(this.anyFieldHandler).to.have.been.calledOnce

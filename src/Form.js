@@ -189,11 +189,11 @@ export default class Form {
 
   _handleSubmitCallback(values) {
     // TODO: make simpler
-    // TODO: review - especially updateOuterValues
+    // TODO: review - especially updateSavedValues
 
-    const updateOuterValues = () => {
-      if (this.$config.updateOuterValuesAfterSubmit) {
-        this.$storage.updateOuterValues(values);
+    const updateSavedValues = () => {
+      if (this.$config.updateSavedValuesAfterSubmit) {
+        this.$storage.updateSavedValues(values);
         this._updateAllDirtyStates();
       }
     };
@@ -206,7 +206,7 @@ export default class Form {
       if (returnedValue && returnedValue.then) {
         return returnedValue.then((data) => {
           this.$storage.setFormState('submitting', false);
-          updateOuterValues();
+          updateSavedValues();
 
           return data;
         }, (err) => {
@@ -219,7 +219,7 @@ export default class Form {
 
     // without _onSubmitCallback or with _onSubmitCallback and it doesn't return a promise
     this.$storage.setFormState('submitting', false);
-    updateOuterValues();
+    updateSavedValues();
 
     return Promise.resolve();
   }
