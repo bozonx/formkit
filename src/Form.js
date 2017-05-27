@@ -112,10 +112,11 @@ export default class Form {
   /**
    * Roll back to previously saved values.
    */
-  resetUserInput() {
+  clearUserInput() {
+    // TODO: сбросить на saved или defautl значение
     // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg у формы и полей
     findInFieldRecursively(this.fields, (field) => {
-      field.resetUserInput();
+      field.clearUserInput();
     });
   }
 

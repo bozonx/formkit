@@ -112,7 +112,7 @@ export default class Field extends FieldBase {
     return isValid;
   }
 
-  resetUserInput() {
+  clearUserInput() {
     this.__storage.setUserInput(this.$pathToField, undefined);
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
     // TODO: надо пересчитать validate

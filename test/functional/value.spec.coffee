@@ -53,7 +53,7 @@ describe 'Functional. Value.', ->
   it "reset user input", ->
     this.form.fields.name.setValue('outerValue')
     this.form.fields.name.handleChange('newValue')
-    this.form.resetUserInput()
+    this.form.clearUserInput()
 
     assert.equal(this.form.fields.name.value, 'outerValue')
     assert.isUndefined(this.form.fields.name.userInput)

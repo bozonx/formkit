@@ -118,6 +118,7 @@ export default class Storage {
       saving: false,
       disabled: false,
       focused: false,
+      defaultValue: undefined,
     };
   }
 
