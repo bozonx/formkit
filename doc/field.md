@@ -44,7 +44,7 @@ and you can get like that: `field.value`.
 
 It is last saved state. It uses to set data received from server to field.
 You can set in by: `field.setSavedValue()`.
-You can reset current field value to saved value: `field.clearUserInput()`
+You can reset current field value to saved value: `field.clear()`
 after that will be used saved value or default value if there isn't a saved value.
 
 ### User input

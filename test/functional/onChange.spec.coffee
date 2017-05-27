@@ -11,7 +11,7 @@ describe 'Functional. onChange and handleChange.', ->
     this.form.fields.name.onChange(this.fieldOnChangeHandler);
     this.form.onChange(this.formOnChangeHandler);
 
-  it "call after userInput", ->
+  it "call after setValue", ->
     this.form.fields.name.handleChange('userValue')
     expect(this.fieldOnChangeHandler).to.have.been.calledOnce
     expect(this.fieldOnChangeHandler).to.have.been.calledWith('userValue')

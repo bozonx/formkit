@@ -112,12 +112,8 @@ export default class Form {
   /**
    * Roll back to previously saved values.
    */
-  clearUserInput() {
-    // TODO: сбросить на saved или defautl значение
-    // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg у формы и полей
-    findInFieldRecursively(this.fields, (field) => {
-      field.clearUserInput();
-    });
+  clear() {
+    findInFieldRecursively(this.fields, (field) => field.clear());
   }
 
   /**
@@ -135,12 +131,22 @@ export default class Form {
   }
 
   /**
-   * Soft update of values
+   * Set form's values without rise a "change event"
    * @param newValues
    */
   setValues(newValues) {
     // TODO: ???? WTF is _hardUpdateValues
     this._hardUpdateValues(newValues);
+  }
+
+  /**
+   * Set saved values and update values.
+   * @param newValues
+   */
+  setSavedValues(newValues) {
+    _.each(newValues, (value, fieldName) => {
+      if (this.fields[fieldName]) this.fields[fieldName].setSavedValue(value);
+    });
   }
 
   // getConfig() {
@@ -171,6 +177,7 @@ export default class Form {
 
     // set outer value with reset dirty and user input
     // TODO: set only initial
+    // TODO: не должно быть null
     field.setValue(initial || null);
   }
 

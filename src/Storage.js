@@ -10,7 +10,7 @@ export default class Storage {
     this._store = {
       formState: this._generateNewFormState(),
       fieldsState: {},
-      userInputs: {},
+      values: {},
       savedValues: {},
     };
   }
@@ -19,7 +19,11 @@ export default class Storage {
    * Get all the values of form's fields.
    */
   getValues() {
-    return _.defaultsDeep(_.cloneDeep(this._store.userInputs), this._store.savedValues);
+    return {
+      // TODO: add default values
+      ...this._store.savedValues,
+      ...this._store.values,
+    };
   }
 
   updateSavedValues(newValues) {
@@ -35,20 +39,23 @@ export default class Storage {
     return _.cloneDeep(this._store);
   }
 
-  getUserInput(pathToField) {
-    return _.cloneDeep(_.get(this._store.userInputs, pathToField));
-  }
-
   getSavedValue(pathToField) {
     return _.cloneDeep(_.get(this._store.savedValues, pathToField));
   }
 
+  /**
+   * get current value
+   * @param pathToField
+   * @return {*}
+   */
   getValue(pathToField) {
-    const value = _.get(this._store.userInputs, pathToField);
-    if (!_.isUndefined(value)) return _.cloneDeep(value);
-    // else returns outer value
+    return _.cloneDeep(_.get(this._store.values, pathToField));
 
-    return _.get(this._store.savedValues, pathToField);
+    // const value = _.get(this._store.values, pathToField);
+    // if (!_.isUndefined(value)) return _.cloneDeep(value);
+    // // else returns outer value
+    //
+    // return _.get(this._store.savedValues, pathToField);
   }
 
   getFormState(stateName) {
@@ -60,8 +67,8 @@ export default class Storage {
   }
 
 
-  setUserInput(pathToField, newValue) {
-    _.set(this._store.userInputs, pathToField, newValue);
+  setValue(pathToField, newValue) {
+    _.set(this._store.values, pathToField, newValue);
   }
 
   setSavedValue(pathToField, newValue) {

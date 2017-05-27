@@ -24,10 +24,6 @@ export default class Field {
   get form() {
     return this.$form;
   }
-  // TODO: ?? remove
-  get userInput() {
-    return this.__storage.getUserInput(this.$pathToField);
-  }
   get savedValue() {
     return this.__storage.getSavedValue(this.$pathToField);
   }
@@ -67,13 +63,31 @@ export default class Field {
   }
 
   // set outer value with clearing user input
-  setValue(newSavedValue) {
+  setValue(newValue) {
     // TODO: для программной установки (silent)
     // TODO: !!!! WTF??!!
-    this._hardlySetSavedValue(newSavedValue);
+    this._hardlySetSavedValue(newValue);
   }
-  setSavedValue() {
-    // TODO: !!!
+  setSavedValue(newSavedValue) {
+    const oldValue = _.cloneDeep(this.value);
+
+    // set to outer value layer
+    this.__storage.setSavedValue(this.$pathToField, newSavedValue);
+
+    // update user input if field isn't on focus and set dirty to false.
+    // of course if it allows in config.
+    if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
+      this.__storage.setValue(this.$pathToField, newSavedValue);
+      this.$recalcDirty();
+      // this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
+    }
+
+    // re validate and rise events
+    if (!_.isEqual(oldValue, newSavedValue)) {
+      this.validate();
+      // rise silent change events
+      this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldValue);
+    }
   }
 
   $setDefaultValue() {
@@ -155,6 +169,9 @@ export default class Field {
    * @param {*} newValue
    */
   _hardlySetSavedValue(newValue) {
+
+
+
     // TODO: !!!! rename
     // TODO: !!!! review
 
@@ -166,7 +183,7 @@ export default class Field {
     // remove user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
     if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
-      this.__storage.setUserInput(this.$pathToField, undefined);
+      this.__storage.setValue(this.$pathToField, undefined);
       this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
     }
 
@@ -185,7 +202,7 @@ export default class Field {
    * It does:
    * * don't do anything if field is disabled
    * * don't save if value isn't changed
-   * * update userInput value
+   * * update value
    * * update "touched" and "dirty" states
    * * validate
    * * Rise a "change" events for field and form
@@ -202,7 +219,8 @@ export default class Field {
     // don't save unchanged value if it allows in config.
     if (!this.$form.$config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
 
-    this.__storage.setUserInput(this.$pathToField, newValue);
+    // set value to storage
+    this.__storage.setValue(this.$pathToField, newValue);
     // set touched to true
     if (!this.touched) this.$form.$handlers.handleFieldStateChange(this.$pathToField, 'touched', true);
     this.$recalcDirty();
@@ -287,8 +305,14 @@ export default class Field {
     return isValid;
   }
 
-  clearUserInput() {
-    this.__storage.setUserInput(this.$pathToField, undefined);
+  /**
+   * Clear value(user input) and set saved value to input.
+   */
+  clear() {
+    // TODO: сбросить на saved или defautl значение
+    // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg у формы и полей
+    // TODO: установить savedValue
+    this.__storage.setValue(this.$pathToField, this.__storage.getSavedValue(this.$pathToField));
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
     // TODO: надо пересчитать validate
   }
