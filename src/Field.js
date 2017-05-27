@@ -5,7 +5,7 @@ import DebouncedCall from './DebouncedCall';
 
 export default class Field {
   constructor(form, fieldName) {
-    // TODO: protected props rename to __prop
+    // TODO: protected props rename to _prop
     this.$form = form;
     this.$pathToField = fieldName;
     this.$onChangeCallback = null;
@@ -24,11 +24,10 @@ export default class Field {
   get form() {
     return this.$form;
   }
-  // TODO: ?? может тоже переименовать в inputValue
+  // TODO: ?? remove
   get userInput() {
     return this.__storage.getUserInput(this.$pathToField);
   }
-  // TODO: переименовать в fixedValue / savedValue / prevStateValue
   get savedValue() {
     return this.__storage.getSavedValue(this.$pathToField);
   }
@@ -69,10 +68,18 @@ export default class Field {
 
   // set outer value with clearing user input
   setValue(newSavedValue) {
-    // TODO: может переименовать в setFixedValue?
+    // TODO: для программной установки (silent)
     // TODO: !!!! WTF??!!
     this._hardlySetSavedValue(newSavedValue);
   }
+  setSavedValue() {
+    // TODO: !!!
+  }
+
+  $setDefaultValue() {
+    // TODO: !!!
+  }
+
   setDisabled(value) {
     this.__storage.setFieldState(this.$pathToField, { disabled: value });
   }
@@ -95,13 +102,13 @@ export default class Field {
   $recalcDirty() {
     let newDirtyValue;
 
-    if (this.userInput === '' && (this.savedValue === '' || _.isNil(this.savedValue))) {
+    if (this.value === '' && (this.savedValue === '' || _.isNil(this.savedValue))) {
       // 0 compares as common value.
       newDirtyValue = false;
     }
     else {
       // just compare initial value and value
-      newDirtyValue = this.userInput !== this.savedValue;
+      newDirtyValue = this.value !== this.savedValue;
     }
 
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
