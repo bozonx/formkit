@@ -9,20 +9,20 @@ describe 'Functional. Value.', ->
     this.form.fields.name.handleChange('newValue')
 
     assert.equal(this.form.fields.name.value, 'newValue')
-    assert.isNull(this.form.fields.name.savedValue)
+    assert.isUndefined(this.form.fields.name.savedValue)
 
     assert.equal(this.form.$storage.getValue('name'), 'newValue')
-    assert.isNull(this.form.$storage.getSavedValue('name'))
+    assert.isUndefined(this.form.$storage.getSavedValue('name'))
 
-  it "set new value to field. Initial isn't change but value has new value", ->
+  it "set initial value", ->
+    this.form = formHelper.newForm()
     this.form.init({name: {initial: 'initValue'}})
-    this.form.fields.name.handleChange('newValue')
 
-    assert.equal(this.form.fields.name.value, 'newValue')
-    assert.equal(this.form.fields.name.savedValue, 'initValue')
+    assert.equal(this.form.fields.name.value, 'initValue')
+    assert.isUndefined(this.form.fields.name.savedValue)
 
-    assert.equal(this.form.$storage.getValue('name'), 'newValue')
-    assert.equal(this.form.$storage.getSavedValue('name'), 'initValue')
+    assert.equal(this.form.$storage.getValue('name'), 'initValue')
+    assert.isUndefined(this.form.$storage.getSavedValue('name'))
 
   it "set new saved value", ->
     this.form.fields.name.handleChange('newValue')

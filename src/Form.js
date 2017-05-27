@@ -158,12 +158,18 @@ export default class Form {
   }
 
 
-  _initField(pathToField, { initial, defaultValue, disabled, validate }) {
+  /**
+   * Initialize a field.
+   * @param pathToField
+   * @param {object} params - { initial, defaultValue, disabled, validate }
+   * @private
+   */
+  _initField(pathToField, params) {
     // Create new field if it doesn't exist
     let field = _.get(this.fields, pathToField);
     if (!field) {
       // new field
-      field = new Field(this, pathToField);
+      field = new Field(this, pathToField, params);
       // TODO: set defaultValue, disabled, validate
       _.set(this.fields, pathToField, field);
     }
@@ -171,6 +177,7 @@ export default class Form {
       // update existing
       // TODO: reset dirty and other states and update defaultValue, disabled, validate
 
+      console.log(444444444)
     }
 
     // TODO: test - initial, default, disabled, validate
@@ -178,7 +185,7 @@ export default class Form {
     // set outer value with reset dirty and user input
     // TODO: set only initial
     // TODO: не должно быть null
-    field.setValue(initial || null);
+    //field.setValue(initial || null);
   }
 
   _updateAllDirtyStates() {

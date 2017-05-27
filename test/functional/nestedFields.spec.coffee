@@ -8,13 +8,12 @@ describe 'Functional. nestedFields.', ->
 
     it 'initial values', ->
       assert.isUndefined(this.form.fields.nested.name.value)
-      # TODO: не должно быть null
-      assert.isNull(this.form.fields.nested.name.savedValue)
+      assert.isUndefined(this.form.fields.nested.name.savedValue)
 
     it 'user input', ->
       this.form.fields.nested.name.handleChange('newValue')
       assert.equal(this.form.fields.nested.name.value, 'newValue')
-      assert.isNull(this.form.fields.nested.name.savedValue)
+      assert.isUndefined(this.form.fields.nested.name.savedValue)
       assert.isTrue(this.form.fields.nested.name.dirty)
       assert.isTrue(this.form.fields.nested.name.touched)
 

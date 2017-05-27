@@ -4,7 +4,7 @@ import DebouncedCall from './DebouncedCall';
 
 
 export default class Field {
-  constructor(form, fieldName) {
+  constructor(form, fieldName, params) {
     // TODO: protected props rename to _prop
     this.$form = form;
     this.$pathToField = fieldName;
@@ -13,12 +13,24 @@ export default class Field {
     this.__onSaveCallback = null;
     this.__debouncedCall = new DebouncedCall(this.$form.$config.debounceTime);
 
+    this._init(fieldName, params);
+  }
+
+  _init(fieldName, params) {
     this._debouncedCb = undefined;
     this._validateCb = undefined;
 
     // init state
     // TODO: !!!! this.$pathToField и fieldName = одно и то же
     this.__storage.initFieldState(this.$pathToField, fieldName);
+
+    // set initial value
+    if (params.initial) {
+      this.setValue(params.initial);
+    }
+
+    // set default value
+    // TODO: !!!
   }
 
   get form() {
@@ -27,7 +39,11 @@ export default class Field {
   get savedValue() {
     return this.__storage.getSavedValue(this.$pathToField);
   }
-  // combined value
+
+  /**
+   * Current value
+   * @return {*}
+   */
   get value() {
     return this.__storage.getValue(this.$pathToField);
   }
@@ -62,36 +78,58 @@ export default class Field {
     return this.__debouncedCall.delay;
   }
 
-  // set outer value with clearing user input
+  /**
+   * Set value silently(don't rise a change event).
+   * It does:
+   * * It set a new value to self instance and to storage
+   * * It updates "dirty" and "valid" states.
+   * * It rises anyChange event for field and whole form.
+   *
+   * It doesn't:
+   * * It doesn't rise onChange callback (for user's events).
+   * * ??? It doesn't update "touched" state.
+   * @param newValue
+   */
   setValue(newValue) {
-    // TODO: для программной установки (silent)
-    // TODO: !!!! WTF??!!
-    this._hardlySetSavedValue(newValue);
-  }
-  setSavedValue(newSavedValue) {
     const oldValue = _.cloneDeep(this.value);
 
     // set to outer value layer
-    this.__storage.setSavedValue(this.$pathToField, newSavedValue);
+    this.__storage.setValue(this.$pathToField, newValue);
+    //this.$recalcDirty();
+    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
 
-    // update user input if field isn't on focus and set dirty to false.
-    // of course if it allows in config.
-    if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
-      this.__storage.setValue(this.$pathToField, newSavedValue);
-      this.$recalcDirty();
-      // this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
-    }
+    // TODO: нужно ли устанавливать touched???
+    // TODO: нужно запускать сохранение???
 
     // re validate and rise events
-    if (!_.isEqual(oldValue, newSavedValue)) {
+    if (!_.isEqual(oldValue, this.value)) {
       this.validate();
       // rise silent change events
       this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldValue);
     }
   }
 
-  $setDefaultValue() {
-    // TODO: !!!
+
+  setSavedValue(newSavedValue) {
+    const oldValue = _.cloneDeep(this.value);
+
+    // set saved value
+    this.__storage.setSavedValue(this.$pathToField, newSavedValue);
+
+    // update user input if field isn't on focus and set dirty to false.
+    // of course if it allows in config.
+    if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
+      this.__storage.setValue(this.$pathToField, newSavedValue);
+      //this.$recalcDirty();
+      this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
+
+      // re validate and rise events
+      if (!_.isEqual(oldValue, newSavedValue)) {
+        this.validate();
+        // rise silent change events
+        this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldValue);
+      }
+    }
   }
 
   setDisabled(value) {
@@ -104,11 +142,6 @@ export default class Field {
     this.__debouncedCall.delay = delay;
   }
 
-
-  // TODO: WTF??? наверное это setFixedValueSilent ???
-  $setSavedValue(newValue) {
-    this.__storage.setSavedValue(this.$pathToField, newValue);
-  }
 
   /**
    * Recalculate dirty state.
@@ -154,47 +187,6 @@ export default class Field {
     // rise form's save callback
     this.$form.$handlers.handleFieldSave(force);
   }
-
-  /**
-   * Silent update. It uses for set outer(from machine) values (not user's).
-   *
-   * It does:
-   * * It set up new value to self instance and to storage
-   * * It updates "dirty" and "valid" states.
-   * * It rises anyChange event for field and whole form.
-   *
-   * It doesn't:
-   * * It doesn't rise onChange callback (for user's events).
-   * * It doesn't update "touched" state.
-   * @param {*} newValue
-   */
-  _hardlySetSavedValue(newValue) {
-
-
-
-    // TODO: !!!! rename
-    // TODO: !!!! review
-
-    const oldCombinedValue = _.cloneDeep(this.value);
-
-    // set to outer value layer
-    this.$setSavedValue(newValue);
-
-    // remove user input if field isn't on focus and set dirty to false.
-    // of course if it allows in config.
-    if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
-      this.__storage.setValue(this.$pathToField, undefined);
-      this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
-    }
-
-    // re validate and rise events
-    if (!_.isEqual(oldCombinedValue, this.value)) {
-      this.validate();
-      // rise silent change events
-      this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldCombinedValue);
-    }
-  }
-
 
   /**
    * It's an onChange handler. It must be placed to input onChange attribute.

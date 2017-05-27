@@ -41,7 +41,7 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isFalse(this.form.dirty)
     assert.isTrue(this.form.touched)
 
-  it 'change and revert to fiest value', ->
+  it 'change and revert to first value', ->
     this.form.fields.name.setValue('initValue')
     this.form.fields.name.handleChange('newValue')
     this.form.fields.name.handleChange('initValue')

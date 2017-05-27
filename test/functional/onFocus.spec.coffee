@@ -1,6 +1,6 @@
 formHelper = require('../../src/index')
 
-describe 'Functional. onBlur.', ->
+describe 'Functional. onFocus.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
     this.form.init(['name'])
@@ -12,10 +12,10 @@ describe 'Functional. onBlur.', ->
     this.form.fields.name.handleBlur()
     assert.isFalse(this.form.fields.name.focused)
 
-  it "don't update user input on outer value setting if field is on focus", ->
+  it "don't update user input on saved value change if field is on focus", ->
     this.form.fields.name.handleFocusIn()
     this.form.fields.name.handleChange('oldValue')
-    this.form.setValues({name: 'newerValue'})
+    this.form.setSavedValues({name: 'newerValue'})
 
     assert.equal(this.form.fields.name.value, 'oldValue')
     assert.isTrue(this.form.fields.name.dirty)
