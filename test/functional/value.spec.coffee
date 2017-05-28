@@ -1,6 +1,6 @@
 formHelper = require('../../src/index')
 
-describe 'Functional. Value.', ->
+describe 'Functional. Value, saved value, default value.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
     this.form.init(['name'])

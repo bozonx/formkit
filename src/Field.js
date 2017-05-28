@@ -7,19 +7,18 @@ import { calculateDirty } from './helpers';
 export default class Field {
   constructor(form, fieldName, params) {
     this._form = form;
-    this._pathToField = fieldName;
     this._storage = this._form.$storage;
     this._debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
+
+    this._pathToField = fieldName;
+    this._onSaveCallback = null;
+    this._onChangeCallback = null;
+    this._validateCallback = undefined;
 
     this._init(fieldName, params);
   }
 
   _init(fieldName, params) {
-    this._onSaveCallback = null;
-    this._onChangeCallback = null;
-    this._debouncedCb = undefined;
-    this._validateCb = undefined;
-
     // init state
     // TODO: !!!! this._pathToField и fieldName = одно и то же
     this._storage.initFieldState(this._pathToField, fieldName);
@@ -38,7 +37,6 @@ export default class Field {
     }
 
     if (params.disabled) {
-      // TODO: test it
       this._storage.setFieldState(this._pathToField, { disabled: params.disabled });
     }
 
@@ -88,7 +86,7 @@ export default class Field {
     return this._storage.getFieldState(this._pathToField, 'defaultValue');
   }
   get validateCb() {
-    return this._validateCb;
+    return this._validateCallback;
   }
   get debounceTime() {
     return this._debouncedCall.delay;
@@ -148,7 +146,7 @@ export default class Field {
     this._storage.setFieldState(this._pathToField, { disabled: value });
   }
   setValidateCb(value) {
-    this._validateCb = value;
+    this._validateCallback = value;
   }
   setDebounceTime(delay) {
     this._debouncedCall.delay = delay;
@@ -249,9 +247,9 @@ export default class Field {
    */
   validate() {
     // TODO: review
-    if (!this._validateCb) return;
+    if (!this._validateCallback) return;
 
-    const cbReturn = this._validateCb({ value: this.value });
+    const cbReturn = this._validateCallback({ value: this.value });
     // TODO: test it
     const isValid = (_.isString(cbReturn) && !cbReturn) || cbReturn === true || _.isUndefined(cbReturn);
     let invalidMsg;
