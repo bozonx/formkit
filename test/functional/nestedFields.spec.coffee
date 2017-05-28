@@ -54,7 +54,7 @@ describe 'Functional. nestedFields.', ->
       this.form.onSave(this.formSaveHandler)
       this.form.fields.nested.name.onSave(this.saveHandler)
       this.form.fields.nested.name.handleChange('newValue')
-      this.form.fields.nested.name.__debouncedCall.flush()
+      this.form.fields.nested.name._debouncedCall.flush()
 
       expect(this.saveHandler).to.have.been.calledOnce
       expect(this.saveHandler).to.have.been.calledWith('newValue')

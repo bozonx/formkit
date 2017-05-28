@@ -6,24 +6,23 @@ import { calculateDirty } from './helpers';
 
 export default class Field {
   constructor(form, fieldName, params) {
-    // TODO: protected props rename to _prop
-    this.$form = form;
-    this.$pathToField = fieldName;
-    this.$onChangeCallback = null;
-    this.__storage = this.$form.$storage;
-    this.__onSaveCallback = null;
-    this.__debouncedCall = new DebouncedCall(this.$form.$config.debounceTime);
+    this._form = form;
+    this._pathToField = fieldName;
+    this._storage = this._form.$storage;
+    this._debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
 
     this._init(fieldName, params);
   }
 
   _init(fieldName, params) {
+    this._onSaveCallback = null;
+    this._onChangeCallback = null;
     this._debouncedCb = undefined;
     this._validateCb = undefined;
 
     // init state
-    // TODO: !!!! this.$pathToField и fieldName = одно и то же
-    this.__storage.initFieldState(this.$pathToField, fieldName);
+    // TODO: !!!! this._pathToField и fieldName = одно и то же
+    this._storage.initFieldState(this._pathToField, fieldName);
 
     // set initial value
     if (params.initial) {
@@ -31,7 +30,7 @@ export default class Field {
     }
 
     if (!_.isNil(params.defaultValue)) {
-      this.__storage.setFieldState(this.$pathToField, { defaultValue: params.defaultValue });
+      this._storage.setFieldState(this._pathToField, { defaultValue: params.defaultValue });
       // set default value to current value
       if (_.isNil(this.value)) {
         this.setValue(params.defaultValue);
@@ -40,7 +39,7 @@ export default class Field {
 
     if (params.disabled) {
       // TODO: test it
-      this.__storage.setFieldState(this.$pathToField, { disabled: params.disabled });
+      this._storage.setFieldState(this._pathToField, { disabled: params.disabled });
     }
 
     // TODO: set validate callback
@@ -48,10 +47,10 @@ export default class Field {
   }
 
   get form() {
-    return this.$form;
+    return this._form;
   }
   get savedValue() {
-    return this.__storage.getSavedValue(this.$pathToField);
+    return this._storage.getSavedValue(this._pathToField);
   }
 
   /**
@@ -59,40 +58,40 @@ export default class Field {
    * @return {*}
    */
   get value() {
-    return this.__storage.getValue(this.$pathToField);
+    return this._storage.getValue(this._pathToField);
   }
   get name() {
-    return this.__storage.getFieldState(this.$pathToField, 'name');
+    return this._storage.getFieldState(this._pathToField, 'name');
   }
   get dirty() {
-    return this.__storage.getFieldState(this.$pathToField, 'dirty');
+    return this._storage.getFieldState(this._pathToField, 'dirty');
   }
   get touched() {
-    return this.__storage.getFieldState(this.$pathToField, 'touched');
+    return this._storage.getFieldState(this._pathToField, 'touched');
   }
   get valid() {
-    return this.__storage.getFieldState(this.$pathToField, 'valid');
+    return this._storage.getFieldState(this._pathToField, 'valid');
   }
   get invalidMsg() {
-    return this.__storage.getFieldState(this.$pathToField, 'invalidMsg');
+    return this._storage.getFieldState(this._pathToField, 'invalidMsg');
   }
   get saving() {
-    return this.__storage.getFieldState(this.$pathToField, 'saving');
+    return this._storage.getFieldState(this._pathToField, 'saving');
   }
   get focused() {
-    return this.__storage.getFieldState(this.$pathToField, 'focused');
+    return this._storage.getFieldState(this._pathToField, 'focused');
   }
   get disabled() {
-    return this.__storage.getFieldState(this.$pathToField, 'disabled');
+    return this._storage.getFieldState(this._pathToField, 'disabled');
   }
   get defaultValue() {
-    return this.__storage.getFieldState(this.$pathToField, 'defaultValue');
+    return this._storage.getFieldState(this._pathToField, 'defaultValue');
   }
   get validateCb() {
     return this._validateCb;
   }
   get debounceTime() {
-    return this.__debouncedCall.delay;
+    return this._debouncedCall.delay;
   }
 
   /**
@@ -111,14 +110,14 @@ export default class Field {
     const oldValue = _.cloneDeep(this.value);
 
     // set to outer value layer
-    this.__storage.setValue(this.$pathToField, newValue);
+    this._storage.setValue(this._pathToField, newValue);
     this.$recalcDirty();
 
     // re validate and rise events
     if (!_.isEqual(oldValue, this.value)) {
       this.validate();
       // rise silent change events
-      this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldValue);
+      this._form.$handlers.handleSilentValueChange(this._pathToField, oldValue);
     }
   }
 
@@ -127,32 +126,32 @@ export default class Field {
     const oldValue = _.cloneDeep(this.value);
 
     // set saved value
-    this.__storage.setSavedValue(this.$pathToField, newSavedValue);
+    this._storage.setSavedValue(this._pathToField, newSavedValue);
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
-    if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
+    if (this._form.$config.allowFocusedFieldUpdating || (!this._form.$config.allowFocusedFieldUpdating && !this.focused)) {
       // TODO: пересмотреть
-      this.__storage.setValue(this.$pathToField, newSavedValue);
+      this._storage.setValue(this._pathToField, newSavedValue);
       this.$recalcDirty();
 
       // re validate and rise events
       if (!_.isEqual(oldValue, newSavedValue)) {
         this.validate();
         // rise silent change events
-        this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldValue);
+        this._form.$handlers.handleSilentValueChange(this._pathToField, oldValue);
       }
     }
   }
 
   setDisabled(value) {
-    this.__storage.setFieldState(this.$pathToField, { disabled: value });
+    this._storage.setFieldState(this._pathToField, { disabled: value });
   }
   setValidateCb(value) {
     this._validateCb = value;
   }
   setDebounceTime(delay) {
-    this.__debouncedCall.delay = delay;
+    this._debouncedCall.delay = delay;
   }
 
 
@@ -177,20 +176,20 @@ export default class Field {
     const oldCombinedValue = _.cloneDeep(this.value);
 
     // don't save unchanged value if it allows in config.
-    if (!this.$form.$config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
+    if (!this._form.$config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
 
     // set value to storage
-    this.__storage.setValue(this.$pathToField, newValue);
+    this._storage.setValue(this._pathToField, newValue);
     // set touched to true
-    if (!this.touched) this.$form.$handlers.handleFieldStateChange(this.$pathToField, 'touched', true);
+    if (!this.touched) this._form.$handlers.handleFieldStateChange(this._pathToField, 'touched', true);
     this.$recalcDirty();
     this.validate();
 
     // rise change by user handler
-    this.$form.$handlers.handleValueChangeByUser(this.$pathToField, oldCombinedValue, newValue);
+    this._form.$handlers.handleValueChangeByUser(this._pathToField, oldCombinedValue, newValue);
 
     // rise field's change callback
-    if (this.$onChangeCallback) this.$onChangeCallback(newValue);
+    if (this._onChangeCallback) this._onChangeCallback(newValue);
 
     this.__startSave(false);
   }
@@ -199,14 +198,14 @@ export default class Field {
    * Set field's "focused" prop to true.
    */
   handleFocusIn() {
-    this.__storage.setFieldState(this.$pathToField, { focused: true });
+    this._storage.setFieldState(this._pathToField, { focused: true });
   }
 
   /**
    * Set field's "focused" prop to false.
    */
   handleBlur() {
-    this.__storage.setFieldState(this.$pathToField, { focused: false });
+    this._storage.setFieldState(this._pathToField, { focused: false });
     this.__startSave(true);
   }
 
@@ -223,14 +222,14 @@ export default class Field {
 
   // TODO: лучше сделать отдельные методы - onChange, etc
   on(eventName, cb) {
-    this.$form.$events.addListener(`field.${this.$pathToField}.${eventName}`, cb);
+    this._form.$events.addListener(`field.${this._pathToField}.${eventName}`, cb);
   }
 
   /**
    * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
-    this.$onChangeCallback = cb;
+    this._onChangeCallback = cb;
   }
 
   /**
@@ -238,7 +237,7 @@ export default class Field {
    * @param cb
    */
   onSave(cb) {
-    this.__onSaveCallback = cb;
+    this._onSaveCallback = cb;
   }
 
   /**
@@ -260,7 +259,7 @@ export default class Field {
       invalidMsg = cbReturn || '';
     }
 
-    this.$form.$handlers.handleFieldValidStateChange(this.$pathToField, isValid, invalidMsg);
+    this._form.$handlers.handleFieldValidStateChange(this._pathToField, isValid, invalidMsg);
 
     return isValid;
   }
@@ -272,9 +271,9 @@ export default class Field {
     // TODO: сбросить на saved или defautl значение
     // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg у формы и полей
     // TODO: установить savedValue
-    this.__storage.setValue(this.$pathToField, this.__storage.getSavedValue(this.$pathToField));
+    this._storage.setValue(this._pathToField, this._storage.getSavedValue(this._pathToField));
     // TODO: use $recalcDirty()
-    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
+    this._form.$handlers.handleFieldDirtyChange(this._pathToField, false);
     // TODO: надо пересчитать validate
   }
 
@@ -289,21 +288,21 @@ export default class Field {
    * Cancel debounce waiting for saving
    */
   cancelSaving() {
-    this.__debouncedCall.cancel();
+    this._debouncedCall.cancel();
   }
 
   /**
    * Saving immediately
    */
   flushSaving() {
-    this.__debouncedCall.flush();
+    this._debouncedCall.flush();
   }
 
   /**
    * Recalculate dirty state.
    */
   $recalcDirty() {
-    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField,
+    this._form.$handlers.handleFieldDirtyChange(this._pathToField,
       calculateDirty(this.value, this.savedValue));
   }
 
@@ -320,18 +319,18 @@ export default class Field {
     if (!this.valid) return;
     // TODO: ??? for what???
     // don't save already saved value
-    if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
+    if (!this._form.$handlers.isUnsaved(this._pathToField)) return;
 
     // rise a field's save callback
-    if (this.__onSaveCallback) {
+    if (this._onSaveCallback) {
       // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
       // TODO: должно подняться собитие save этого поля
-      this.__debouncedCall.exec(this.__onSaveCallback, force, this.value);
+      this._debouncedCall.exec(this._onSaveCallback, force, this.value);
     }
     // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
     // TODO: должно подняться собитие save формы
     // rise form's save callback
-    this.$form.$handlers.handleFieldSave(force);
+    this._form.$handlers.handleFieldSave(force);
   }
 
 }
