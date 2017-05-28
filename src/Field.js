@@ -23,25 +23,19 @@ export default class Field {
     // init state
     this._storage.initFieldState(this._pathToField);
 
-    // set initial value
-    if (params.initial) {
-      this.setValue(params.initial);
-    }
-
-    if (!_.isNil(params.defaultValue)) {
+    if (!_.isUndefined(params.defaultValue)) {
       this._storage.setFieldState(this._pathToField, { defaultValue: params.defaultValue });
       // set default value to current value
-      if (_.isNil(this.value)) {
-        this.setValue(params.defaultValue);
-      }
+      if (_.isUndefined(this.value)) this.setValue(params.defaultValue);
     }
 
-    if (params.disabled) {
-      this._storage.setFieldState(this._pathToField, { disabled: params.disabled });
-    }
-
-    // TODO: set validate callback
-    // TODO: set debounceTime
+    // set initial value
+    if (!_.isUndefined(params.initial)) this.setValue(params.initial);
+    if (params.disabled) this._storage.setFieldState(this._pathToField, { disabled: params.disabled });
+    // TODO: test
+    if (params.validate) this.setValidateCb(params.validate);
+    // TODO: test
+    if (!_.isNil(params.debounceTime)) this.setDebounceTime(params.debounceTime);
   }
 
   get form() {
@@ -59,7 +53,6 @@ export default class Field {
     return this._storage.getValue(this._pathToField);
   }
   get name() {
-    //return this._storage.getFieldState(this._pathToField, 'name');
     return this._fieldName;
   }
   get path() {
@@ -155,7 +148,9 @@ export default class Field {
     this._validateCallback = value;
   }
   setDebounceTime(delay) {
-    this._debouncedCall.delay = delay;
+    const toNumber = _.toNumber(delay);
+    if (_.isNull(toNumber) || _.isNaN(toNumber)) throw new Error(`Bad debounceTime value`);
+    this._debouncedCall.delay = toNumber;
   }
 
 
