@@ -36,6 +36,14 @@ export default class Field {
         this.setValue(params.defaultValue);
       }
     }
+
+    if (params.disabled) {
+      // TODO: test it
+      this.__storage.setFieldState(this.$pathToField, { disabled: params.disabled });
+    }
+
+    // TODO: set validate callback
+    // TODO: set debounceTime
   }
 
   get form() {
@@ -95,7 +103,7 @@ export default class Field {
    *
    * It doesn't:
    * * It doesn't rise onChange callback (for user's events).
-   * * ??? It doesn't update "touched" state.
+   * * It doesn't update "touched" state.
    * @param newValue
    */
   setValue(newValue) {
@@ -104,9 +112,6 @@ export default class Field {
     // set to outer value layer
     this.__storage.setValue(this.$pathToField, newValue);
     this.$recalcDirty();
-
-    // TODO: нужно ли устанавливать touched???
-    // TODO: нужно запускать сохранение???
 
     // re validate and rise events
     if (!_.isEqual(oldValue, this.value)) {
@@ -126,6 +131,7 @@ export default class Field {
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
     if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
+      // TODO: пересмотреть
       this.__storage.setValue(this.$pathToField, newSavedValue);
       this.$recalcDirty();
 
@@ -148,25 +154,6 @@ export default class Field {
     this.__debouncedCall.delay = delay;
   }
 
-
-  /**
-   * Recalculate dirty state.
-   */
-  $recalcDirty() {
-    let newDirtyValue;
-
-    // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
-    if ((this.value === '' || _.isNil(this.value))
-      && (this.savedValue === '' || _.isNil(this.savedValue))) {
-      newDirtyValue = false;
-    }
-    else {
-      // just compare current value and saved value
-      newDirtyValue = this.value !== this.savedValue;
-    }
-
-    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
-  }
 
   /**
    * It's an onChange handler. It must be placed to input onChange attribute.
@@ -204,7 +191,7 @@ export default class Field {
     // rise field's change callback
     if (this.$onChangeCallback) this.$onChangeCallback(newValue);
 
-    this.__startSave();
+    this.__startSave(false);
   }
 
   /**
@@ -291,6 +278,13 @@ export default class Field {
   }
 
   /**
+   * Reset to default value
+   */
+  reset() {
+    this.setValue(this.defaultValue);
+  }
+
+  /**
    * Cancel debounce waiting for saving
    */
   cancelSaving() {
@@ -304,6 +298,24 @@ export default class Field {
     this.__debouncedCall.flush();
   }
 
+  /**
+   * Recalculate dirty state.
+   */
+  $recalcDirty() {
+    let newDirtyValue;
+
+    // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
+    if ((this.value === '' || _.isNil(this.value))
+      && (this.savedValue === '' || _.isNil(this.savedValue))) {
+      newDirtyValue = false;
+    }
+    else {
+      // just compare current value and saved value
+      newDirtyValue = this.value !== this.savedValue;
+    }
+
+    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
+  }
 
   /**
    * Start saving field and form in they have a save handlers.

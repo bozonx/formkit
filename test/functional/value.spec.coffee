@@ -72,3 +72,18 @@ describe 'Functional. Value.', ->
     assert.equal(this.form.fields.name.value, 'default value')
     assert.equal(this.form.fields.name.defaultValue, 'default value')
     assert.isUndefined(this.form.fields.name.savedValue)
+
+  it "reset to defaultValue", ->
+    this.form = formHelper.newForm()
+    this.form.init({name: {defaultValue: 'default value'}})
+
+    this.form.fields.name.handleChange('userValue')
+    this.form.fields.name.reset();
+
+    assert.deepEqual(this.form.values, {name: 'default value'})
+    assert.equal(this.form.fields.name.value, 'default value')
+    assert.equal(this.form.fields.name.defaultValue, 'default value')
+    assert.isUndefined(this.form.fields.name.savedValue)
+    assert.isTrue(this.form.fields.name.touched)
+    # saved value = undefined and value = "default value" - dirty = true
+    assert.isTrue(this.form.fields.name.dirty)

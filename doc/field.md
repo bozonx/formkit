@@ -18,6 +18,7 @@ It just initialize those fields, you can configure them later.
         defaultValue: 'no name',
         disabled: true,
         validate: () => {},
+        debounceTime: 1000,
       },
       checkbox: {
         default: true,
