@@ -31,8 +31,9 @@ export default class Storage {
     extendDeep(this._store.savedValues, newValues);
   }
 
-  initFieldState(pathToField, fieldName) {
-    this.setFieldState(pathToField, this._generateNewFieldState(fieldName));
+  initFieldState(pathToField) {
+    //this.setFieldState(pathToField, this._generateNewFieldState());
+    this.setFieldState(pathToField, this._generateNewFieldState(pathToField));
   }
 
   getWholeStorageState() {
@@ -116,6 +117,7 @@ export default class Storage {
   }
 
   _generateNewFieldState(name) {
+    // TODO: remove name
     return {
       name,
       dirty: false,

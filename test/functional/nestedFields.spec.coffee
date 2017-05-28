@@ -7,6 +7,8 @@ describe 'Functional. nestedFields.', ->
       this.form.init(['nested.name'])
 
     it 'initial values', ->
+      assert.equal(this.form.fields.nested.name.name, 'name')
+      assert.equal(this.form.fields.nested.name.path, 'nested.name')
       assert.isUndefined(this.form.fields.nested.name.value)
       assert.isUndefined(this.form.fields.nested.name.savedValue)
 

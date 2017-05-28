@@ -1,27 +1,27 @@
 import _ from 'lodash';
 
 import DebouncedCall from './DebouncedCall';
-import { calculateDirty } from './helpers';
+import { calculateDirty, getFieldName } from './helpers';
 
 
 export default class Field {
-  constructor(form, fieldName, params) {
+  constructor(form, pathToField, params) {
     this._form = form;
     this._storage = this._form.$storage;
     this._debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
 
-    this._pathToField = fieldName;
+    this._pathToField = pathToField;
+    this._fieldName = getFieldName(pathToField);
     this._onSaveCallback = null;
     this._onChangeCallback = null;
     this._validateCallback = undefined;
 
-    this._init(fieldName, params);
+    this._init(params);
   }
 
-  _init(fieldName, params) {
+  _init(params) {
     // init state
-    // TODO: !!!! this._pathToField и fieldName = одно и то же
-    this._storage.initFieldState(this._pathToField, fieldName);
+    this._storage.initFieldState(this._pathToField);
 
     // set initial value
     if (params.initial) {
@@ -59,7 +59,11 @@ export default class Field {
     return this._storage.getValue(this._pathToField);
   }
   get name() {
-    return this._storage.getFieldState(this._pathToField, 'name');
+    //return this._storage.getFieldState(this._pathToField, 'name');
+    return this._fieldName;
+  }
+  get path() {
+    return this._pathToField;
   }
   get dirty() {
     return this._storage.getFieldState(this._pathToField, 'dirty');
