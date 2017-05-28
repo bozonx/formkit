@@ -54,7 +54,7 @@ To set a value by user input, run this on onChange input's event `field.handleCh
 It will set a "value" field and rise a "change" event.
 
 
-### Programmatic setting a value
+### Programmatic setting value
 
 For setting a value from app's code, run `field.setValue()`. It sets a value 
 without rising a rising a "change" event.
