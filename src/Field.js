@@ -32,9 +32,7 @@ export default class Field {
     // set initial value
     if (!_.isUndefined(params.initial)) this.setValue(params.initial);
     if (params.disabled) this._storage.setFieldState(this._pathToField, { disabled: params.disabled });
-    // TODO: test
     if (params.validate) this.setValidateCb(params.validate);
-    // TODO: test
     if (!_.isNil(params.debounceTime)) this.setDebounceTime(params.debounceTime);
   }
 
