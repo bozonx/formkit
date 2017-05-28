@@ -95,8 +95,7 @@ export default class Field {
 
     // set to outer value layer
     this.__storage.setValue(this.$pathToField, newValue);
-    //this.$recalcDirty();
-    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
+    this.$recalcDirty();
 
     // TODO: нужно ли устанавливать touched???
     // TODO: нужно запускать сохранение???
@@ -120,8 +119,7 @@ export default class Field {
     // of course if it allows in config.
     if (this.$form.$config.allowFocusedFieldUpdating || (!this.$form.$config.allowFocusedFieldUpdating && !this.focused)) {
       this.__storage.setValue(this.$pathToField, newSavedValue);
-      //this.$recalcDirty();
-      this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
+      this.$recalcDirty();
 
       // re validate and rise events
       if (!_.isEqual(oldValue, newSavedValue)) {
@@ -149,12 +147,14 @@ export default class Field {
   $recalcDirty() {
     let newDirtyValue;
 
-    if (this.value === '' && (this.savedValue === '' || _.isNil(this.savedValue))) {
+    // TODO: ????? why
+    //if (this.value === '' && (this.savedValue === '' || _.isNil(this.savedValue))) {
+    if ((this.value === '' || _.isNil(this.value)) && (this.savedValue === '' || _.isNil(this.savedValue))) {
       // 0 compares as common value.
       newDirtyValue = false;
     }
     else {
-      // just compare initial value and value
+      // just compare current value and saved value
       newDirtyValue = this.value !== this.savedValue;
     }
 

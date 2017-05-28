@@ -11,8 +11,8 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isFalse(this.form.dirty)
     assert.isFalse(this.form.touched)
 
-  it 'initial state of dirty and touched must be false after setting outer value', ->
-    this.form.fields.name.setValue('savedValue')
+  it 'initial state of dirty and touched must be false after setting saved value', ->
+    this.form.fields.name.setSavedValue('savedValue')
     assert.isFalse(this.form.fields.name.dirty)
     assert.isFalse(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)
@@ -27,22 +27,22 @@ describe 'Functional. Dirty and touched states.', ->
 
   it 'set savedValue after user input', ->
     this.form.fields.name.handleChange('newValue')
-    this.form.fields.name.setValue('savedValue')
+    this.form.fields.name.setSavedValue('savedValue')
     assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)
     assert.isTrue(this.form.touched)
 
-  it 'set the same outer value', ->
+  it 'set the same saved value', ->
     this.form.fields.name.handleChange('newValue')
-    this.form.fields.name.setValue('newValue')
+    this.form.fields.name.setSavedValue('newValue')
     assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)
     assert.isTrue(this.form.touched)
 
   it 'change and revert to first value', ->
-    this.form.fields.name.setValue('initValue')
+    this.form.fields.name.setSavedValue('initValue')
     this.form.fields.name.handleChange('newValue')
     this.form.fields.name.handleChange('initValue')
     assert.isFalse(this.form.fields.name.dirty)
@@ -50,17 +50,9 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isFalse(this.form.dirty)
     assert.isTrue(this.form.touched)
 
-#  it 'after reinit form', ->
-#    this.form.fields.name.handleChange('oldValue')
-#    this.form.init({name: 'newValue'})
-#    assert.isFalse(this.form.fields.name.dirty)
-#    assert.isTrue(this.form.fields.name.touched)
-#    assert.isFalse(this.form.dirty)
-#    assert.isTrue(this.form.touched)
-
   it 'after global setting values', ->
     this.form.fields.name.handleChange('newValue')
-    this.form.setValues({name: 'newValue'})
+    this.form.setSavedValues({name: 'newValue'})
     assert.isFalse(this.form.fields.name.dirty)
     assert.isTrue(this.form.fields.name.touched)
     assert.isFalse(this.form.dirty)
