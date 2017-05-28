@@ -1,6 +1,7 @@
 import _ from 'lodash';
 
 import DebouncedCall from './DebouncedCall';
+import { calculateDirty } from './helpers';
 
 
 export default class Field {
@@ -302,19 +303,8 @@ export default class Field {
    * Recalculate dirty state.
    */
   $recalcDirty() {
-    let newDirtyValue;
-
-    // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
-    if ((this.value === '' || _.isNil(this.value))
-      && (this.savedValue === '' || _.isNil(this.savedValue))) {
-      newDirtyValue = false;
-    }
-    else {
-      // just compare current value and saved value
-      newDirtyValue = this.value !== this.savedValue;
-    }
-
-    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
+    this.$form.$handlers.handleFieldDirtyChange(this.$pathToField,
+      calculateDirty(this.value, this.savedValue));
   }
 
   /**
