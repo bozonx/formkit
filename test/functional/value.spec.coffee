@@ -77,6 +77,15 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.equal(this.form.fields.name.defaultValue, 'default value')
     assert.isUndefined(this.form.fields.name.savedValue)
 
+  it "initial value has more priority", ->
+    this.form = formHelper.newForm()
+    this.form.init({name: {
+      defaultValue: 'default value',
+      initial: 'initial value',
+    }})
+
+    assert.equal(this.form.fields.name.value, 'initial value')
+
   it "reset field to defaultValue", ->
     this.form = formHelper.newForm()
     this.form.init({name: {defaultValue: 'default value'}})

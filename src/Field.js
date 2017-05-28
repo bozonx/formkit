@@ -23,17 +23,11 @@ export default class Field {
     // init state
     this._storage.initFieldState(this._pathToField);
 
-    if (!_.isUndefined(params.defaultValue)) {
-      this._storage.setFieldState(this._pathToField, { defaultValue: params.defaultValue });
-      // set default value to current value
-      if (_.isUndefined(this.value)) this.setValue(params.defaultValue);
-    }
-
-    // set initial value
-    if (!_.isUndefined(params.initial)) this.setValue(params.initial);
-    if (params.disabled) this._storage.setFieldState(this._pathToField, { disabled: params.disabled });
+    if (!_.isUndefined(params.disabled)) this.setDisabled(params.disabled);
+    if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
     if (params.validate) this.setValidateCb(params.validate);
-    if (!_.isNil(params.debounceTime)) this.setDebounceTime(params.debounceTime);
+
+    this._setDefaultAndInitialValue(params.defaultValue, params.initial);
   }
 
   get form() {
@@ -322,6 +316,25 @@ export default class Field {
     // TODO: должно подняться собитие save формы
     // rise form's save callback
     this._form.$handlers.handleFieldSave(force);
+  }
+
+
+  /**
+   * Set default and initial values. Initial has more priority.
+   * @param {*} defaultValue
+   * @param {*} initial
+   * @private
+   */
+  _setDefaultAndInitialValue(defaultValue, initial) {
+    let currentValue;
+    if (!_.isUndefined(defaultValue)) {
+      this._storage.setFieldState(this._pathToField, { defaultValue });
+      // set default value to current value
+      currentValue = defaultValue;
+    }
+    // initial has more priority
+    if (!_.isUndefined(initial)) currentValue = initial;
+    if (!_.isUndefined(currentValue)) this.setValue(currentValue);
   }
 
 }
