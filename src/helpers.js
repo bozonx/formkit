@@ -50,3 +50,12 @@ export function calculateDirty(value, savedValue) {
 
   return newDirtyValue;
 }
+
+export function getFieldName(pathToField) {
+  const split = pathToField.split('.');
+  const onlyOneItem = 1;
+
+  if (split.length <= onlyOneItem) return pathToField;
+
+  return _.last(split);
+}

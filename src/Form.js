@@ -172,12 +172,13 @@ export default class Form {
    * @private
    */
   _initField(pathToField, params) {
+    if (!pathToField) throw new Error('You must pass a "pathToField" param!');
+
     // Create new field if it doesn't exist
     let field = _.get(this.fields, pathToField);
     if (!field) {
       // new field
       field = new Field(this, pathToField, params);
-      // TODO: set defaultValue, disabled, validate
       _.set(this.fields, pathToField, field);
     }
     else {
@@ -188,11 +189,6 @@ export default class Form {
     }
 
     // TODO: test - initial, default, disabled, validate
-
-    // set outer value with reset dirty and user input
-    // TODO: set only initial
-    // TODO: не должно быть null
-    //field.setValue(initial || null);
   }
 
   _updateAllDirtyStates() {
