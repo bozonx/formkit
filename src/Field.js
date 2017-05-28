@@ -107,19 +107,21 @@ export default class Field {
   setValue(newValue) {
     const oldValue = _.cloneDeep(this.value);
 
+    // if value and old value the same - do nothing
+    if (_.isEqual(oldValue, newValue)) return;
+
     // set to outer value layer
     this._storage.setValue(this._pathToField, newValue);
     this.$recalcDirty();
-
-    // re validate and rise events
-    if (!_.isEqual(oldValue, this.value)) {
-      this.validate();
-      // rise silent change events
-      this._form.$handlers.handleSilentValueChange(this._pathToField, oldValue);
-    }
+    this.validate();
+    // rise silent change events
+    this._form.$handlers.handleSilentValueChange(this._pathToField, oldValue);
   }
 
-
+  /**
+   * Set previously saved value. Usually it is saved on server value.
+   * @param {*} newSavedValue
+   */
   setSavedValue(newSavedValue) {
     const oldValue = _.cloneDeep(this.value);
 
@@ -263,16 +265,10 @@ export default class Field {
   }
 
   /**
-   * Clear value(user input) and set saved value to input.
+   * Clear value(user input) and set saved value to current value.
    */
   clear() {
-    // TODO: сбросить на saved или defautl значение
-    // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg у формы и полей
-    // TODO: установить savedValue
-    this._storage.setValue(this._pathToField, this._storage.getSavedValue(this._pathToField));
-    // TODO: use $recalcDirty()
-    this._form.$handlers.handleFieldDirtyChange(this._pathToField, false);
-    // TODO: надо пересчитать validate
+    this.setValue(this.savedValue);
   }
 
   /**

@@ -47,22 +47,26 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.equal(this.form.$storage.getSavedValue('name'), 'newSavedValue')
 
   it "clear user input of field", ->
-    # TODO: review
     this.form.fields.name.setSavedValue('savedValue')
     this.form.fields.name.handleChange('userValue')
+    this.form.fields.name.setValidateCb(() -> 'bad value')
     this.form.fields.name.clear()
 
     assert.equal(this.form.fields.name.value, 'savedValue')
     assert.isFalse(this.form.fields.name.dirty)
+    assert.isFalse(this.form.fields.name.valid)
+    assert.equal(this.form.fields.name.invalidMsg, 'bad value')
 
   it "clear user input of form", ->
-    # TODO: review
     this.form.fields.name.setSavedValue('savedValue')
     this.form.fields.name.handleChange('userValue')
+    this.form.fields.name.setValidateCb(() -> 'bad value')
     this.form.clear()
 
     assert.equal(this.form.fields.name.value, 'savedValue')
     assert.isFalse(this.form.fields.name.dirty)
+    assert.isFalse(this.form.fields.name.valid)
+    assert.equal(this.form.fields.name.invalidMsg, 'bad value')
 
   it "set defaultValue on init", ->
     this.form = formHelper.newForm()
