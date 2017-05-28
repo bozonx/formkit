@@ -47,6 +47,7 @@ describe 'Functional. Value.', ->
     assert.equal(this.form.$storage.getSavedValue('name'), 'newSavedValue')
 
   it "clear user input of field", ->
+    # TODO: review
     this.form.fields.name.setSavedValue('savedValue')
     this.form.fields.name.handleChange('userValue')
     this.form.fields.name.clear()
@@ -55,9 +56,19 @@ describe 'Functional. Value.', ->
     assert.isFalse(this.form.fields.name.dirty)
 
   it "clear user input of form", ->
+    # TODO: review
     this.form.fields.name.setSavedValue('savedValue')
     this.form.fields.name.handleChange('userValue')
     this.form.clear()
 
     assert.equal(this.form.fields.name.value, 'savedValue')
     assert.isFalse(this.form.fields.name.dirty)
+
+  it "set defaultValue on init", ->
+    this.form = formHelper.newForm()
+    this.form.init({name: {defaultValue: 'default value'}})
+
+    assert.deepEqual(this.form.values, {name: 'default value'})
+    assert.equal(this.form.fields.name.value, 'default value')
+    assert.equal(this.form.fields.name.defaultValue, 'default value')
+    assert.isUndefined(this.form.fields.name.savedValue)

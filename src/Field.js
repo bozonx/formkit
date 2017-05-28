@@ -29,8 +29,13 @@ export default class Field {
       this.setValue(params.initial);
     }
 
-    // set default value
-    // TODO: !!!
+    if (!_.isNil(params.defaultValue)) {
+      this.__storage.setFieldState(this.$pathToField, { defaultValue: params.defaultValue });
+      // set default value to current value
+      if (_.isNil(this.value)) {
+        this.setValue(params.defaultValue);
+      }
+    }
   }
 
   get form() {
@@ -70,6 +75,9 @@ export default class Field {
   }
   get disabled() {
     return this.__storage.getFieldState(this.$pathToField, 'disabled');
+  }
+  get defaultValue() {
+    return this.__storage.getFieldState(this.$pathToField, 'defaultValue');
   }
   get validateCb() {
     return this._validateCb;
@@ -147,10 +155,9 @@ export default class Field {
   $recalcDirty() {
     let newDirtyValue;
 
-    // TODO: ????? why
-    //if (this.value === '' && (this.savedValue === '' || _.isNil(this.savedValue))) {
-    if ((this.value === '' || _.isNil(this.value)) && (this.savedValue === '' || _.isNil(this.savedValue))) {
-      // 0 compares as common value.
+    // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
+    if ((this.value === '' || _.isNil(this.value))
+      && (this.savedValue === '' || _.isNil(this.savedValue))) {
       newDirtyValue = false;
     }
     else {
@@ -159,33 +166,6 @@ export default class Field {
     }
 
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
-  }
-
-  /**
-   * Start saving field and form in they have a save handlers.
-   * It will reset saving in progress before start saving.
-   * @param {boolean} force
-   *   * if true it will save immediately.
-   *   * if false it will save with dobounce delay
-   * @private
-   */
-  __startSave(force) {
-    // don't save invalid value
-    if (!this.valid) return;
-    // TODO: ??? for what???
-    // don't save already saved value
-    if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
-
-    // rise a field's save callback
-    if (this.__onSaveCallback) {
-      // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
-      // TODO: должно подняться собитие save этого поля
-      this.__debouncedCall.exec(this.__onSaveCallback, force, this.value);
-    }
-    // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
-    // TODO: должно подняться собитие save формы
-    // rise form's save callback
-    this.$form.$handlers.handleFieldSave(force);
   }
 
   /**
@@ -305,6 +285,7 @@ export default class Field {
     // TODO: наверное должны сброситься touched, dirty, valid, invalidMsg у формы и полей
     // TODO: установить savedValue
     this.__storage.setValue(this.$pathToField, this.__storage.getSavedValue(this.$pathToField));
+    // TODO: use $recalcDirty()
     this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
     // TODO: надо пересчитать validate
   }
@@ -322,4 +303,33 @@ export default class Field {
   flushSaving() {
     this.__debouncedCall.flush();
   }
+
+
+  /**
+   * Start saving field and form in they have a save handlers.
+   * It will reset saving in progress before start saving.
+   * @param {boolean} force
+   *   * if true it will save immediately.
+   *   * if false it will save with dobounce delay
+   * @private
+   */
+  __startSave(force) {
+    // don't save invalid value
+    if (!this.valid) return;
+    // TODO: ??? for what???
+    // don't save already saved value
+    if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
+
+    // rise a field's save callback
+    if (this.__onSaveCallback) {
+      // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
+      // TODO: должно подняться собитие save этого поля
+      this.__debouncedCall.exec(this.__onSaveCallback, force, this.value);
+    }
+    // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
+    // TODO: должно подняться собитие save формы
+    // rise form's save callback
+    this.$form.$handlers.handleFieldSave(force);
+  }
+
 }
