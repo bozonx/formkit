@@ -117,8 +117,8 @@ export default class Storage {
   }
 
   _generateNewFieldState(name) {
-    // TODO: remove name
     return {
+      // TODO: remove name
       name,
       dirty: false,
       touched: false,

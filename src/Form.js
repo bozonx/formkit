@@ -53,7 +53,7 @@ export default class Form {
       _.each(initialFields, (params, pathToField) => this._initField(pathToField, params || {}));
     }
     else {
-      throw new Error(`Bad type of fields param`);
+      throw new Error(`Bad type of field's param`);
     }
   }
 
@@ -168,27 +168,18 @@ export default class Form {
   /**
    * Initialize a field.
    * @param pathToField
-   * @param {object} params - { initial, defaultValue, disabled, validate }
+   * @param {object} params - { initial, defaultValue, disabled, validate, debounceTime }
    * @private
    */
   _initField(pathToField, params) {
-    if (!pathToField) throw new Error('You must pass a "pathToField" param!');
+    if (!pathToField) throw new Error(`You must pass a field's name or path!`);
+    // Try to get existent field
+    const existentField = _.get(this.fields, pathToField);
+    if (existentField) throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
 
-    // Create new field if it doesn't exist
-    let field = _.get(this.fields, pathToField);
-    if (!field) {
-      // new field
-      field = new Field(this, pathToField, params);
-      _.set(this.fields, pathToField, field);
-    }
-    else {
-      // update existing
-      // TODO: reset dirty and other states and update defaultValue, disabled, validate
-
-      console.log(444444444)
-    }
-
-    // TODO: test - initial, default, disabled, validate
+    // create new one
+    const newField = new Field(this, pathToField, params);
+    _.set(this.fields, pathToField, newField);
   }
 
   _updateAllDirtyStates() {
