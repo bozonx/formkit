@@ -19,7 +19,7 @@ describe 'Functional. Validate.', ->
     assert.isFalse(this.form.fields.name.valid)
     assert.isUndefined(this.form.fields.name.invalidMsg)
     assert.isFalse(this.form.valid)
-    assert.deepEqual(this.form.invalidMsgList, [{name: undefined}])
+    assert.deepEqual(this.form.invalidMsgList, [])
 
   it 'validateCb cb returns message', ->
     this.form.fields.name.setValidateCb(() -> 'errorMsg')

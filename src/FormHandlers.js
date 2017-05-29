@@ -104,10 +104,12 @@ export default class FormHandlers {
 
 
   handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
-    // TODO: review
+    // TODO: сохранять несколько ошибок на одно поле
+
     this._form.$storage.setFieldState(pathToField, { valid: isValid });
     this._form.$storage.setFieldState(pathToField, { invalidMsg });
 
+    // TODO: зачем сохранять invalidMsgList ???? если можно получать скомпонованные данные
     const newInvalidMessages = _.clone(this._form.invalidMsgList);
     if (isValid) {
       _.find(newInvalidMessages, (item, index) => {
@@ -119,7 +121,7 @@ export default class FormHandlers {
         }
       });
     }
-    else {
+    else if (invalidMsg) {
       newInvalidMessages.push({ [pathToField]: invalidMsg });
     }
 

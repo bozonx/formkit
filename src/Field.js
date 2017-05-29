@@ -232,7 +232,6 @@ export default class Field {
    *   * true/false - valid/invalid
    *   * string it is an error message, means invalid
    *   * undefined - hasn't done a validation because the field doesn't have a validate callback.
-   *       Or validate callback returns an undefined.
    */
   validate() {
     if (!this._validateCallback) return;
