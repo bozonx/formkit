@@ -123,10 +123,14 @@ export default class Field {
   }
 
   setDisabled(value) {
+    if (!_.isBoolean(value)) throw new Error(`Bad type of disabled value`);
     this._storage.setFieldState(this._pathToField, { disabled: value });
   }
-  setValidateCb(value) {
-    this._validateCallback = value;
+  setValidateCb(validateCallback) {
+    if (!_.isUndefined(validateCallback) && !_.isFunction(validateCallback)) {
+      throw new Error(`Bad type of validate callback`);
+    }
+    this._validateCallback = validateCallback;
   }
   setDebounceTime(delay) {
     const toNumber = _.toNumber(delay);
@@ -235,7 +239,7 @@ export default class Field {
 
     const cbReturn = this._validateCallback({ value: this.value });
 
-    if (_.isUndefined(cbReturn)) return;
+    if (_.isUndefined(cbReturn)) throw new Error(`Validate callback returns an undefined, what does it mean?`);
     if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
 
     const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);

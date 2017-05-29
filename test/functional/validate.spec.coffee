@@ -31,7 +31,7 @@ describe 'Functional. Validate.', ->
     assert.deepEqual(this.form.invalidMsgList, [{name: 'errorMsg'}])
 
   it 'validateCb cb returns false and after that returns true', ->
-    this.form.fields.name.setValidateCb((value) -> !!value)
+    this.form.fields.name.setValidateCb((params) -> !!params.value)
     this.form.fields.name.handleChange(0)
     this.form.fields.name.handleChange(1)
 
@@ -39,3 +39,11 @@ describe 'Functional. Validate.', ->
     assert.isUndefined(this.form.fields.name.invalidMsg)
     assert.isTrue(this.form.valid)
     assert.deepEqual(this.form.invalidMsgList, [])
+
+  it 'validateCb cb returns an empty string = throws an error', ->
+    this.form.fields.name.setValidateCb(() -> '')
+    assert.throws(this.form.fields.name.handleChange.bind(this.form.fields.name, 'newValue'), /empty string/);
+
+  it 'validateCb cb returns undefined = throws an error', ->
+    this.form.fields.name.setValidateCb(() -> undefined)
+    assert.throws(this.form.fields.name.handleChange.bind(this.form.fields.name, 'newValue'), /undefined/);
