@@ -1,19 +1,19 @@
 import _ from 'lodash';
 
-import FormHandlers from './FormHandlers';
+import EventHandlers from './EventHandlers';
 import Field from './Field';
 import { findInFieldRecursively } from './helpers';
 
 
 export default class Form {
   constructor(storage, config, events) {
-    // TODO: rename to _storage - uses in FormHandlers
+    // TODO: rename to _storage - uses in EventHandlers
     this.$storage = storage;
-    // TODO: rename to _events - uses in FormHandlers
+    // TODO: rename to _events - uses in EventHandlers
     this.$events = events;
     this._config = config;
     // TODO: review - isn't good
-    this.$handlers = new FormHandlers(this);
+    this.$handlers = new EventHandlers(this);
 
     this._fields = {};
     this._onSubmitCallback = null;

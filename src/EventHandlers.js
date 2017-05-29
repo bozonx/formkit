@@ -4,7 +4,7 @@ import DebouncedCall from './DebouncedCall';
 import { findInFieldRecursively } from './helpers';
 
 
-export default class FormHandlers {
+export default class EventHandlers {
   constructor(form) {
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
