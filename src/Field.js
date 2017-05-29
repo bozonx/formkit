@@ -96,15 +96,15 @@ export default class Field {
   setValue(newValue) {
     const oldValue = _.cloneDeep(this.value);
 
-    // if value and old value the same - do nothing
-    if (_.isEqual(oldValue, newValue)) return;
-
     // set to outer value layer
     this._storage.setValue(this._pathToField, newValue);
     this.$recalcDirty();
     this.validate();
-    // rise silent change events
-    this._form.$handlers.handleSilentValueChange(this._pathToField, oldValue);
+
+    // rise silent change events if value and old value are different
+    if (!_.isEqual(oldValue, newValue)) {
+      this._form.$handlers.handleSilentValueChange(this._pathToField, oldValue);
+    }
   }
 
   /**
@@ -112,24 +112,13 @@ export default class Field {
    * @param {*} newSavedValue
    */
   setSavedValue(newSavedValue) {
-    const oldValue = _.cloneDeep(this.value);
-
     // set saved value
     this._storage.setSavedValue(this._pathToField, newSavedValue);
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
     if (this._form.$config.allowFocusedFieldUpdating || (!this._form.$config.allowFocusedFieldUpdating && !this.focused)) {
-      // TODO: пересмотреть
-      this._storage.setValue(this._pathToField, newSavedValue);
-      this.$recalcDirty();
-
-      // re validate and rise events
-      if (!_.isEqual(oldValue, newSavedValue)) {
-        this.validate();
-        // rise silent change events
-        this._form.$handlers.handleSilentValueChange(this._pathToField, oldValue);
-      }
+      this.setValue(newSavedValue);
     }
   }
 
