@@ -61,14 +61,8 @@ export function getFieldName(pathToField) {
 }
 
 export function parseValidateCbReturn(cbReturn) {
-  if (_.isUndefined(cbReturn)) return;
-
-  // TODO: test it
-  const valid = cbReturn === true || cbReturn === '';
-  const invalidMsg = _.isString(cbReturn) ? cbReturn : '';
-
   return {
-    valid,
-    invalidMsg,
+    valid: cbReturn === true || cbReturn === '',
+    invalidMsg: _.isString(cbReturn) ? cbReturn : '',
   };
 }

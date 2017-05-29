@@ -237,12 +237,10 @@ export default class Field {
 
     if (_.isUndefined(cbReturn)) return;
     // TODO: test it
-    const isValid = cbReturn === true || cbReturn === '';
-    const invalidMsg = _.isString(cbReturn) ? cbReturn : '';
+    const { valid, invalidMsg } = parseValidateCbReturn(cbReturn);
+    this._form.$handlers.handleFieldValidStateChange(this._pathToField, valid, invalidMsg);
 
-    this._form.$handlers.handleFieldValidStateChange(this._pathToField, isValid, invalidMsg);
-
-    return invalidMsg || isValid;
+    return invalidMsg || valid;
   }
 
   /**
