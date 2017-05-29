@@ -242,7 +242,7 @@ export default class Field {
     if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
 
     const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
-    this._form.$handlers.handleFieldValidStateChange(this._pathToField, valid, invalidMsg);
+    this._form.$handlers.setFieldAndFormValidState(this._pathToField, valid, invalidMsg);
 
     return result;
   }

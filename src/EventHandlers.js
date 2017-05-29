@@ -3,7 +3,10 @@ import _ from 'lodash';
 import DebouncedCall from './DebouncedCall';
 import { findInFieldRecursively } from './helpers';
 
-
+/**
+ * It sets field and form states and rise an event if need
+ * @class
+ */
 export default class EventHandlers {
   constructor(form) {
     this.$onChangeCallback = null;
@@ -111,9 +114,11 @@ export default class EventHandlers {
   }
 
 
-  handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
-    this._form.$storage.setFieldState(pathToField, { valid: isValid });
-    this._form.$storage.setFieldState(pathToField, { invalidMsg });
+  setFieldAndFormValidState(pathToField, isValid, invalidMsg) {
+    this._form.$storage.setFieldState(pathToField, {
+      valid: isValid,
+      invalidMsg,
+    });
 
     const hasAnyErrors = !!findInFieldRecursively(this._form.fields, (field) => {
       if (!field.valid) return true;
