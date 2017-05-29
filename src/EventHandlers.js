@@ -8,15 +8,21 @@ import { findInFieldRecursively } from './helpers';
  * @class
  */
 export default class EventHandlers {
-  constructor(form) {
+  constructor(form, events, storage) {
     this.$onChangeCallback = null;
     this.$onSaveCallback = null;
 
     this._form = form;
+    this._events = events;
+    this._storage = storage;
     // TODO: почему здесь хранятся unsaved - наверное надо в Storage?
     this._unsavedState = {};
 
     this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
+  }
+
+  addListener(eventName, cb) {
+    this._events.addListener(eventName, cb);
   }
 
   // TODO: наверное надо в field перенести???
@@ -51,12 +57,12 @@ export default class EventHandlers {
     const eventData = {
       fieldName: pathToField,
       oldValue: oldCombinedValue,
-      value: this._form.$storage.getValue(pathToField),
+      value: this._storage.getValue(pathToField),
     };
 
     // Rise events
-    this._form.$events.emit('silentChange', eventData);
-    this._form.$events.emit(`field.${pathToField}.silentChange`, eventData);
+    this._events.emit('silentChange', eventData);
+    this._events.emit(`field.${pathToField}.silentChange`, eventData);
 
     this._riseAnyChange(pathToField);
   }
@@ -81,8 +87,8 @@ export default class EventHandlers {
     if (this.$onChangeCallback) this.$onChangeCallback({ [pathToField]: newValue });
 
     // Rise events
-    this._form.$events.emit('change', eventData);
-    this._form.$events.emit(`field.${pathToField}.change`, eventData);
+    this._events.emit('change', eventData);
+    this._events.emit(`field.${pathToField}.change`, eventData);
 
     _.set(this._unsavedState, pathToField, newValue);
 
@@ -91,31 +97,31 @@ export default class EventHandlers {
 
   handleFieldStateChange(pathToField, stateName, newValue) {
     // TODO: review
-    this._form.$storage.setFieldState(pathToField, { touched: true });
-    this._form.$storage.setFormState(stateName, newValue);
+    this._storage.setFieldState(pathToField, { touched: true });
+    this._storage.setFormState(stateName, newValue);
   }
 
   handleFieldDirtyChange(pathToField, newDirtyValue) {
     // TODO: review
-    this._form.$storage.setFieldState(pathToField, { dirty: newDirtyValue });
+    this._storage.setFieldState(pathToField, { dirty: newDirtyValue });
 
     if (newDirtyValue) {
-      this._form.$storage.setFormState('dirty', true);
+      this._storage.setFormState('dirty', true);
     }
     else {
       // TODO: ??? может лучше ничего не делать???
       // search for other dirty values in other fields
-      const hasAnyDirty = this._form.$storage.findRecursively('fieldsState', (field) => {
+      const hasAnyDirty = this._storage.findRecursively('fieldsState', (field) => {
         if (field.dirty) return true;
       });
 
-      this._form.$storage.setFormState('dirty', !!hasAnyDirty);
+      this._storage.setFormState('dirty', !!hasAnyDirty);
     }
   }
 
 
   setFieldAndFormValidState(pathToField, isValid, invalidMsg) {
-    this._form.$storage.setFieldState(pathToField, {
+    this._storage.setFieldState(pathToField, {
       valid: isValid,
       invalidMsg,
     });
@@ -124,7 +130,7 @@ export default class EventHandlers {
       if (!field.valid) return true;
     });
 
-    this._form.$storage.setFormState('valid', !hasAnyErrors);
+    this._storage.setFormState('valid', !hasAnyErrors);
   }
 
   /**
@@ -133,8 +139,8 @@ export default class EventHandlers {
    * @private
    */
   _riseAnyChange(pathToField) {
-    this._form.$events.emit('anyChange');
-    this._form.$events.emit(`field.${pathToField}.anyChange`);
+    this._events.emit('anyChange');
+    this._events.emit(`field.${pathToField}.anyChange`);
   }
 
 }

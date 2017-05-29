@@ -13,7 +13,7 @@ export default class Form {
     this.$events = events;
     this._config = config;
     // TODO: review - isn't good
-    this.$handlers = new EventHandlers(this);
+    this.$handlers = new EventHandlers(this, this.$events, this.$storage);
 
     this._fields = {};
     this._onSubmitCallback = null;
@@ -76,7 +76,7 @@ export default class Form {
    */
   on(eventName, cb) {
     // TODO: почему не поддерживаются остальные методы - onSubmit etc?
-    this.$events.addListener(eventName, cb);
+    this.$handlers.addListener(eventName, cb);
   }
 
   /**
