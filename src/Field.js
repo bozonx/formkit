@@ -222,7 +222,7 @@ export default class Field {
   /**
    * It updates "valid" and "invalidMsg" states using field's validate rule.
    * It runs a validate callback which must return:
-   * * valid: true or empty string
+   * * valid: true
    * * invalid: not empty string or false
    * @returns {boolean|string|undefined}
    *   * true/false - valid/invalid
@@ -236,11 +236,12 @@ export default class Field {
     const cbReturn = this._validateCallback({ value: this.value });
 
     if (_.isUndefined(cbReturn)) return;
-    // TODO: test it
-    const { valid, invalidMsg } = parseValidateCbReturn(cbReturn);
+    if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
+
+    const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
     this._form.$handlers.handleFieldValidStateChange(this._pathToField, valid, invalidMsg);
 
-    return invalidMsg || valid;
+    return result;
   }
 
   /**

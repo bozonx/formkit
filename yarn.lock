@@ -1395,9 +1395,9 @@ escope@^3.6.0:
     esrecurse "^4.1.0"
     estraverse "^4.1.1"
 
-eslint-config-effency@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/eslint-config-effency/-/eslint-config-effency-0.1.1.tgz#8a69c84a559d64e841b5cb99a0a486a9e09cd81a"
+eslint-config-effency@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/eslint-config-effency/-/eslint-config-effency-0.1.2.tgz#305a9c779483d3d78b9cdcc7a29ada391ca0fa34"
 
 eslint-config-google@^0.7.1:
   version "0.7.1"
