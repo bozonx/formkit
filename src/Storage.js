@@ -34,7 +34,6 @@ export default class Storage {
   }
 
   initFieldState(pathToField) {
-    //this.setFieldState(pathToField, this._generateNewFieldState());
     this.setFieldState(pathToField, this._generateNewFieldState(pathToField));
   }
 
@@ -117,10 +116,8 @@ export default class Storage {
     };
   }
 
-  _generateNewFieldState(name) {
+  _generateNewFieldState() {
     return {
-      // TODO: remove name
-      name,
       dirty: false,
       touched: false,
       valid: true,

@@ -154,8 +154,10 @@ export default class Form {
    * @param newValues
    */
   setValues(newValues) {
-    // TODO: ???? WTF is _hardUpdateValues
-    this._hardUpdateValues(newValues);
+    // TODO: test nested values
+    _.each(newValues, (value, fieldName) => {
+      if (this.fields[fieldName]) this.fields[fieldName].setValue(value);
+    });
   }
 
   /**
@@ -163,6 +165,7 @@ export default class Form {
    * @param newValues
    */
   setSavedValues(newValues) {
+    // TODO: test nested values
     _.each(newValues, (value, fieldName) => {
       if (this.fields[fieldName]) this.fields[fieldName].setSavedValue(value);
     });
@@ -193,13 +196,6 @@ export default class Form {
   _updateAllDirtyStates() {
     findInFieldRecursively(this.fields, (field) => {
       field.$recalcDirty();
-    });
-  }
-
-  _hardUpdateValues(newValues) {
-    // TODO: ???? WTF is _hardUpdateValues
-    _.each(newValues, (value, fieldName) => {
-      if (this.fields[fieldName]) this.fields[fieldName].setValue(value);
     });
   }
 

@@ -26,6 +26,7 @@ export default class FormHandlers {
    * @param {boolean} force
    */
   handleFieldSave(force) {
+    // TODO: review
     if (!this.$onSaveCallback) return;
 
     this.$debouncedCall.exec(() => {
@@ -43,6 +44,7 @@ export default class FormHandlers {
    * @param {*} oldCombinedValue
    */
   handleSilentValueChange(pathToField, oldCombinedValue) {
+    // TODO: review
     const eventData = {
       fieldName: pathToField,
       oldValue: oldCombinedValue,
@@ -65,6 +67,7 @@ export default class FormHandlers {
    * @param {*} newValue
    */
   handleValueChangeByUser(pathToField, oldValue, newValue) {
+    // TODO: review
     const eventData = {
       fieldName: pathToField,
       oldValue,
@@ -84,11 +87,13 @@ export default class FormHandlers {
   }
 
   handleFieldStateChange(pathToField, stateName, newValue) {
+    // TODO: review
     this._form.$storage.setFieldState(pathToField, { touched: true });
     this._form.$storage.setFormState(stateName, newValue);
   }
 
   handleFieldDirtyChange(pathToField, newDirtyValue) {
+    // TODO: review
     this._form.$storage.setFieldState(pathToField, { dirty: newDirtyValue });
 
     if (newDirtyValue) {
@@ -106,6 +111,7 @@ export default class FormHandlers {
 
 
   handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
+    // TODO: review
     this._form.$storage.setFieldState(pathToField, { valid: isValid });
     this._form.$storage.setFieldState(pathToField, { invalidMsg });
 
