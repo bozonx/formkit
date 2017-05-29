@@ -35,15 +35,18 @@ export default class Form {
   get valid() {
     return this.$storage.getFormState('valid');
   }
-  get invalidMsgList() {
-    const invalidMsgList = {};
+  get config() {
+    return this.$config;
+  }
+  get invalidMessages() {
+    const invalidMessages = {};
     findInFieldRecursively(this.fields, (field) => {
       if (!field.valid && field.invalidMsg) {
-        invalidMsgList[field.path] = field.invalidMsg;
+        invalidMessages[field.path] = field.invalidMsg;
       }
     });
 
-    return invalidMsgList;
+    return invalidMessages;
   }
 
   /**
@@ -162,10 +165,6 @@ export default class Form {
       if (this.fields[fieldName]) this.fields[fieldName].setSavedValue(value);
     });
   }
-
-  // getConfig() {
-  //   return this.$config;
-  // }
 
   $getWholeStorageState() {
     return this.$storage.getWholeStorageState();

@@ -37,7 +37,7 @@ describe 'Functional. nestedFields.', ->
       assert.isFalse(this.form.fields.nested.name.valid)
       assert.equal(this.form.fields.nested.name.invalidMsg, 'errorMsg')
       assert.isFalse(this.form.valid)
-      assert.deepEqual(this.form.invalidMsgList, {'nested.name': 'errorMsg'})
+      assert.deepEqual(this.form.invalidMessages, {'nested.name': 'errorMsg'})
 
     it 'events', ->
       this.fieldOnChangeHandler = sinon.spy()
