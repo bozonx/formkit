@@ -7,18 +7,20 @@ import { findInFieldRecursively } from './helpers';
 
 export default class Form {
   constructor(storage, config, events) {
+    // TODO: rename to _storage - uses in FormHandlers
     this.$storage = storage;
+    // TODO: rename to _events - uses in FormHandlers
     this.$events = events;
-    this.$config = config;
+    this._config = config;
     // TODO: review - isn't good
     this.$handlers = new FormHandlers(this);
 
-    this.__fields = {};
+    this._fields = {};
     this._onSubmitCallback = null;
   }
 
   get fields() {
-    return this.__fields;
+    return this._fields;
   }
   get values() {
     return this.$storage.getValues();
@@ -36,7 +38,7 @@ export default class Form {
     return this.$storage.getFormState('valid');
   }
   get config() {
-    return this.$config;
+    return this._config;
   }
   get invalidMessages() {
     const invalidMessages = {};
@@ -103,11 +105,11 @@ export default class Form {
     // TODO: добавить возможность просто запускать handleSubmit без указания _onSubmitCallback
     // TODO: должно поддерживать cancelSaving() and flushSaving()
 
-    if (!this.$config.allowSubmitSubmittingForm) {
+    if (!this._config.allowSubmitSubmittingForm) {
       // do nothing if form is submitting at the moment
       if (this.$storage.getFormState('submitting')) return;
     }
-    if (!this.$config.allowSubmitUnchangedForm) {
+    if (!this._config.allowSubmitUnchangedForm) {
       if (!this.$storage.getFormState('dirty')) return;
     }
 
@@ -206,7 +208,7 @@ export default class Form {
     // TODO: review - especially updateSavedValues
 
     const updateSavedValues = () => {
-      if (this.$config.updateSavedValuesAfterSubmit) {
+      if (this._config.updateSavedValuesAfterSubmit) {
         this.$storage.updateSavedValues(values);
         this._updateAllDirtyStates();
       }

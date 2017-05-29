@@ -8,7 +8,7 @@ export default class Field {
   constructor(form, pathToField, params) {
     this._form = form;
     this._storage = this._form.$storage;
-    this._debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
+    this._debouncedCall = new DebouncedCall(this._form.config.debounceTime);
 
     this._pathToField = pathToField;
     this._fieldName = getFieldName(pathToField);
@@ -117,7 +117,7 @@ export default class Field {
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
-    if (this._form.$config.allowFocusedFieldUpdating || (!this._form.$config.allowFocusedFieldUpdating && !this.focused)) {
+    if (this._form.config.allowFocusedFieldUpdating || (!this._form.config.allowFocusedFieldUpdating && !this.focused)) {
       this.setValue(newSavedValue);
     }
   }
@@ -160,7 +160,7 @@ export default class Field {
     const oldCombinedValue = _.cloneDeep(this.value);
 
     // don't save unchanged value if it allows in config.
-    if (!this._form.$config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
+    if (!this._form.config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
 
     // set value to storage
     this._storage.setValue(this._pathToField, newValue);

@@ -13,7 +13,7 @@ export default class FormHandlers {
     // TODO: почему здесь хранятся unsaved - наверное надо в Storage?
     this._unsavedState = {};
 
-    this.$debouncedCall = new DebouncedCall(this._form.$config.debounceTime);
+    this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
   // TODO: наверное надо в field перенести???
