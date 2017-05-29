@@ -59,3 +59,16 @@ export function getFieldName(pathToField) {
 
   return _.last(split);
 }
+
+export function parseValidateCbReturn(cbReturn) {
+  if (_.isUndefined(cbReturn)) return;
+
+  // TODO: test it
+  const valid = cbReturn === true || cbReturn === '';
+  const invalidMsg = _.isString(cbReturn) ? cbReturn : '';
+
+  return {
+    valid,
+    invalidMsg,
+  };
+}

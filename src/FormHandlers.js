@@ -104,6 +104,7 @@ export default class FormHandlers {
 
 
   handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
+    // TODO: review
     this._form.$storage.setFieldState(pathToField, { valid: isValid });
     this._form.$storage.setFieldState(pathToField, { invalidMsg });
 

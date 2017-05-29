@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import DebouncedCall from './DebouncedCall';
-import { calculateDirty, getFieldName } from './helpers';
+import { calculateDirty, getFieldName, parseValidateCbReturn } from './helpers';
 
 
 export default class Field {
@@ -200,7 +200,6 @@ export default class Field {
     this.__startSave(true);
   }
 
-  // TODO: лучше сделать отдельные методы - onChange, etc
   on(eventName, cb) {
     this._form.$events.addListener(`field.${this._pathToField}.${eventName}`, cb);
   }
@@ -222,26 +221,28 @@ export default class Field {
 
   /**
    * It updates "valid" and "invalidMsg" states using field's validate rule.
-   * It runs a validate callback which must retrun:
-   * * valid: empty string or true or undefined
-   * * not valid: not empty string or false
-   * @returns {boolean|undefined}
+   * It runs a validate callback which must return:
+   * * valid: true or empty string
+   * * invalid: not empty string or false
+   * @returns {boolean|string|undefined}
+   *   * true/false - valid/invalid
+   *   * string it is an error message, means invalid
+   *   * undefined - hasn't done a validation because the field doesn't have a validate callback.
+   *       Or validate callback returns an undefined.
    */
   validate() {
-    // TODO: review
     if (!this._validateCallback) return;
 
     const cbReturn = this._validateCallback({ value: this.value });
+
+    if (_.isUndefined(cbReturn)) return;
     // TODO: test it
-    const isValid = (_.isString(cbReturn) && !cbReturn) || cbReturn === true || _.isUndefined(cbReturn);
-    let invalidMsg;
-    if (!isValid) {
-      invalidMsg = cbReturn || '';
-    }
+    const isValid = cbReturn === true || cbReturn === '';
+    const invalidMsg = _.isString(cbReturn) ? cbReturn : '';
 
     this._form.$handlers.handleFieldValidStateChange(this._pathToField, isValid, invalidMsg);
 
-    return isValid;
+    return invalidMsg || isValid;
   }
 
   /**
