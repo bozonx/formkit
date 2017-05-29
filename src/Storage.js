@@ -6,6 +6,8 @@ export default class Storage {
     this.init();
   }
 
+  // TODO: наверное лучше сделать плоские объекты с ключами "path.to.field"
+
   init() {
     this._store = {
       formState: this._generateNewFormState(),
@@ -108,7 +110,6 @@ export default class Storage {
 
   _generateNewFormState() {
     return {
-      invalidMsgList: [],
       dirty: false,
       touched: false,
       submitting: false,

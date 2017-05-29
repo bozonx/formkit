@@ -36,7 +36,14 @@ export default class Form {
     return this.$storage.getFormState('valid');
   }
   get invalidMsgList() {
-    return this.$storage.getFormState('invalidMsgList');
+    const invalidMsgList = {};
+    findInFieldRecursively(this.fields, (field) => {
+      if (!field.valid && field.invalidMsg) {
+        invalidMsgList[field.path] = field.invalidMsg;
+      }
+    });
+
+    return invalidMsgList;
   }
 
   /**

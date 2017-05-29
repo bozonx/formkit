@@ -1,6 +1,8 @@
 import _ from 'lodash';
 
 import DebouncedCall from './DebouncedCall';
+import { findInFieldRecursively } from './helpers';
+
 
 export default class FormHandlers {
   constructor(form) {
@@ -104,31 +106,14 @@ export default class FormHandlers {
 
 
   handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
-    // TODO: сохранять несколько ошибок на одно поле
-
     this._form.$storage.setFieldState(pathToField, { valid: isValid });
     this._form.$storage.setFieldState(pathToField, { invalidMsg });
 
-    // TODO: зачем сохранять invalidMsgList ???? если можно получать скомпонованные данные
-    const newInvalidMessages = _.clone(this._form.invalidMsgList);
-    if (isValid) {
-      _.find(newInvalidMessages, (item, index) => {
-        if (!_.isUndefined(item[pathToField])) {
-          const deleteCount = 1;
-          newInvalidMessages.splice(index, deleteCount);
+    const hasAnyErrors = !!findInFieldRecursively(this._form.fields, (field) => {
+      if (!field.valid) return true;
+    });
 
-          return item;
-        }
-      });
-    }
-    else if (invalidMsg) {
-      newInvalidMessages.push({ [pathToField]: invalidMsg });
-    }
-
-    const isFormValid = _.isEmpty(newInvalidMessages);
-
-    this._form.$storage.setFormState('invalidMsgList', newInvalidMessages);
-    this._form.$storage.setFormState('valid', isFormValid);
+    this._form.$storage.setFormState('valid', !hasAnyErrors);
   }
 
   /**
