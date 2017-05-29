@@ -205,6 +205,7 @@ export default class Form {
 
     const updateSavedValues = () => {
       if (this._config.updateSavedValuesAfterSubmit) {
+        // TODO: WTF???
         this.$storage.updateSavedValues(values);
         this._updateAllDirtyStates();
       }

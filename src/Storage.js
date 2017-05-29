@@ -7,30 +7,14 @@ export default class Storage {
   }
 
   // TODO: наверное лучше сделать плоские объекты с ключами "path.to.field"
+  // TODO: наверное лучше values и state хранить в единой структуре
 
   init() {
     this._store = {
       formState: this._generateNewFormState(),
       fieldsState: {},
       values: {},
-      savedValues: {},
     };
-  }
-
-  /**
-   * Get all the values of form's fields.
-   */
-  getValues() {
-    return {
-      // TODO: add default values
-      ...this._store.savedValues,
-      ...this._store.values,
-    };
-  }
-
-  updateSavedValues(newValues) {
-    // TODO: ??? what's this?
-    extendDeep(this._store.savedValues, newValues);
   }
 
   initFieldState(pathToField) {
@@ -41,8 +25,11 @@ export default class Storage {
     return _.cloneDeep(this._store);
   }
 
-  getSavedValue(pathToField) {
-    return _.cloneDeep(_.get(this._store.savedValues, pathToField));
+  /**
+   * Get all the values of form's fields.
+   */
+  getValues() {
+    return this._store.values;
   }
 
   /**
@@ -52,12 +39,6 @@ export default class Storage {
    */
   getValue(pathToField) {
     return _.cloneDeep(_.get(this._store.values, pathToField));
-
-    // const value = _.get(this._store.values, pathToField);
-    // if (!_.isUndefined(value)) return _.cloneDeep(value);
-    // // else returns outer value
-    //
-    // return _.get(this._store.savedValues, pathToField);
   }
 
   getFormState(stateName) {
@@ -68,13 +49,14 @@ export default class Storage {
     return _.cloneDeep(_.get(this._store.fieldsState, `${pathToField}.${stateName}`));
   }
 
+  updateSavedValues(newValues) {
+    // TODO: ??? what's this?
+    //extendDeep(this._store.savedValues, newValues);
+  }
+
 
   setValue(pathToField, newValue) {
     _.set(this._store.values, pathToField, newValue);
-  }
-
-  setSavedValue(pathToField, newValue) {
-    _.set(this._store.savedValues, pathToField, newValue);
   }
 
   /**
@@ -108,6 +90,7 @@ export default class Storage {
 
 
   _generateNewFormState() {
+    // TODO; add saving
     return {
       dirty: false,
       touched: false,
@@ -126,6 +109,7 @@ export default class Storage {
       disabled: false,
       focused: false,
       defaultValue: undefined,
+      savedValue: undefined,
     };
   }
 

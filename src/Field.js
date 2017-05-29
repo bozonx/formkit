@@ -34,7 +34,7 @@ export default class Field {
     return this._form;
   }
   get savedValue() {
-    return this._storage.getSavedValue(this._pathToField);
+    return this._storage.getFieldState(this._pathToField, 'savedValue');
   }
 
   /**
@@ -113,7 +113,7 @@ export default class Field {
    */
   setSavedValue(newSavedValue) {
     // set saved value
-    this._storage.setSavedValue(this._pathToField, newSavedValue);
+    this._storage.setFieldState(this._pathToField, {savedValue: newSavedValue});
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.

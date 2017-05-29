@@ -100,6 +100,7 @@ export default class FormHandlers {
       this._form.$storage.setFormState('dirty', true);
     }
     else {
+      // TODO: ??? может лучше ничего не делать???
       // search for other dirty values in other fields
       const hasAnyDirty = this._form.$storage.findRecursively('fieldsState', (field) => {
         if (field.dirty) return true;
@@ -111,7 +112,6 @@ export default class FormHandlers {
 
 
   handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
-    // TODO: review
     this._form.$storage.setFieldState(pathToField, { valid: isValid });
     this._form.$storage.setFieldState(pathToField, { invalidMsg });
 
