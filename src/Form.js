@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import EventHandlers from './EventHandlers';
+import State from './State';
 import Field from './Field';
 import { findInFieldRecursively } from './helpers';
 
@@ -15,7 +15,7 @@ export default class Form {
     this._onSubmitCallback = null;
 
     // TODO: rename to $$handlers
-    this.$handlers = new EventHandlers(this, events, storage);
+    this.$handlers = new State(this, events, storage);
   }
 
   get $storage() {

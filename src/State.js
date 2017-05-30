@@ -7,7 +7,7 @@ import { findInFieldRecursively } from './helpers';
  * It sets field and form states and rise an event if need
  * @class
  */
-export default class EventHandlers {
+export default class State {
   constructor(form, events, storage) {
     // TODO: rename to onFormChangeCallback
     this._onFormChangeCallback = null;
