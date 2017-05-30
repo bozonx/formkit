@@ -13,7 +13,7 @@ export default class Field {
     this._pathToField = pathToField;
     this._fieldName = getFieldName(pathToField);
     this._onSaveCallback = null;
-    this._onChangeCallback = null;
+    //this._onChangeCallback = null;
     this._validateCallback = undefined;
 
     this._init(params);
@@ -23,6 +23,7 @@ export default class Field {
     // init state
     this._storage.initFieldState(this._pathToField);
 
+    // TODO: setDisabled без подъема собития
     if (!_.isUndefined(params.disabled)) this.setDisabled(params.disabled);
     if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
     if (params.validate) this.setValidateCb(params.validate);
@@ -125,6 +126,7 @@ export default class Field {
   setDisabled(value) {
     if (!_.isBoolean(value)) throw new Error(`Bad type of disabled value`);
     this._storage.setFieldState(this._pathToField, { disabled: value });
+    // TODO: надо поднять событие silent или any
   }
   setValidateCb(validateCallback) {
     if (!_.isUndefined(validateCallback) && !_.isFunction(validateCallback)) {
@@ -175,7 +177,8 @@ export default class Field {
     this._form.$state.riseUserChangeEvent(this._pathToField, oldCombinedValue, newValue);
 
     // rise field's change callback
-    if (this._onChangeCallback) this._onChangeCallback(newValue);
+    //if (this._onChangeCallback) this._onChangeCallback(newValue);
+    //this._form.$state.riseFieldEvent(this._pathToField, 'change', newValue);
 
     this.__startSave(false);
   }
@@ -214,7 +217,8 @@ export default class Field {
    * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
-    this._onChangeCallback = cb;
+    //this._onChangeCallback = cb;
+    this._form.$state.setFieldChangeHandler(this._pathToField, cb);
   }
 
   /**

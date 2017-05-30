@@ -17,14 +17,42 @@ export default class State {
     this._form = form;
     this._events = events;
     this._storage = storage;
+
     // TODO: почему здесь хранятся unsaved - наверное надо в Storage?
     this._unsavedState = {};
+    this._fieldsHandlers = {};
 
     this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
   setFormChangeCallback(cb) {
     this._onFormChangeCallback = cb;
+  }
+
+  setFieldChangeHandler(pathToField, cb) {
+    this._setFieldHandler(pathToField, 'change', cb);
+  }
+
+  setFieldSaveHandler(pathToField, cb) {
+    this._setFieldHandler(pathToField, 'save', cb);
+  }
+
+  riseFieldEvent(pathToField, eventName, data) {
+    this._events.emit(`field.${pathToField}.${eventName}`, data);
+  }
+
+  _setFieldHandler(pathToField, eventName, cb) {
+    if (!this._fieldsHandlers[pathToField]) {
+      this._fieldsHandlers[pathToField] = {
+        change: [],
+        save: [],
+        silent: [],
+        any: [],
+      };
+    }
+
+    this._fieldsHandlers[pathToField][eventName].push(cb);
+    this.addListener(`field.${pathToField}.${eventName}`, cb);
   }
 
   addListener(eventName, cb) {

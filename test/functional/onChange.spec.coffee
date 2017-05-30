@@ -14,7 +14,7 @@ describe 'Functional. onChange and handleChange.', ->
   it "call after setValue", ->
     this.form.fields.name.handleChange('userValue')
     expect(this.fieldOnChangeHandler).to.have.been.calledOnce
-    expect(this.fieldOnChangeHandler).to.have.been.calledWith('userValue')
+    expect(this.fieldOnChangeHandler).to.have.been.calledWith({ fieldName: "name", oldValue: undefined, value: "userValue" })
 
     expect(this.formOnChangeHandler).to.have.been.calledOnce
     expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'userValue'})
@@ -44,7 +44,7 @@ describe 'Functional. onChange and handleChange.', ->
     this.form.fields.name.handleChange('userValue')
     this.form.fields.name.handleChange('userValue')
     expect(this.fieldOnChangeHandler).to.have.been.calledOnce
-    expect(this.fieldOnChangeHandler).to.have.been.calledWith('userValue')
+    expect(this.fieldOnChangeHandler).to.have.been.calledWith({ fieldName: "name", oldValue: undefined, value: "userValue" })
 
     expect(this.formOnChangeHandler).to.have.been.calledOnce
     expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'userValue'})

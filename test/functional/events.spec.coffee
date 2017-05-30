@@ -1,12 +1,11 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 describe 'Functional. Events.', ->
-  beforeEach () ->
-    this.form = formHelper.newForm()
-    this.form.init(['name'])
-
   describe 'change.', ->
     beforeEach () ->
+      this.form = formkit.newForm()
+      this.form.init(['name'])
+
       this.silentFieldHandler = sinon.spy();
       this.silentFormHandler = sinon.spy();
       this.fieldHandler = sinon.spy();
@@ -16,7 +15,8 @@ describe 'Functional. Events.', ->
 
       this.form.fields.name.on('silentChange', this.silentFieldHandler);
       this.form.on('silentChange', this.silentFormHandler);
-      this.form.fields.name.on('change', this.fieldHandler);
+      #this.form.fields.name.on('change', this.fieldHandler);
+      this.form.fields.name.onChange(this.fieldHandler);
       this.form.on('change', this.formHandler);
       this.form.fields.name.on('anyChange', this.anyFieldHandler);
       this.form.on('anyChange', this.anyFormHandler);
