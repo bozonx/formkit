@@ -10,11 +10,12 @@ export default class Form {
     this._storage = storage;
     this._config = config;
 
+    this._fields = {};
+    // TODO: move to handlers
+    this._onSubmitCallback = null;
+
     // TODO: rename to $$handlers
     this.$handlers = new EventHandlers(this, events, storage);
-
-    this._fields = {};
-    this._onSubmitCallback = null;
   }
 
   get $storage() {

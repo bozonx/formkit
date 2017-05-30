@@ -165,7 +165,7 @@ export default class Field {
     // set value to storage
     this._storage.setValue(this._pathToField, newValue);
     // set touched to true
-    if (!this.touched) this._form.$handlers.handleFieldStateChange(this._pathToField, 'touched', true);
+    if (!this.touched) this._form.$handlers.setFieldAndFormTouched(this._pathToField);
     this.$recalcDirty();
     this.validate();
 
@@ -279,7 +279,7 @@ export default class Field {
    * Recalculate dirty state.
    */
   $recalcDirty() {
-    this._form.$handlers.handleFieldDirtyChange(this._pathToField,
+    this._form.$handlers.setFieldAndFormDirty(this._pathToField,
       calculateDirty(this.value, this.savedValue));
   }
 

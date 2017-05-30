@@ -95,14 +95,12 @@ export default class EventHandlers {
     this._riseAnyChange(pathToField);
   }
 
-  handleFieldStateChange(pathToField, stateName, newValue) {
-    // TODO: review
+  setFieldAndFormTouched(pathToField) {
     this._storage.setFieldState(pathToField, { touched: true });
-    this._storage.setFormState(stateName, newValue);
+    this._storage.setFormState('touched', true);
   }
 
-  handleFieldDirtyChange(pathToField, newDirtyValue) {
-    // TODO: review
+  setFieldAndFormDirty(pathToField, newDirtyValue) {
     this._storage.setFieldState(pathToField, { dirty: newDirtyValue });
 
     if (newDirtyValue) {
@@ -118,7 +116,6 @@ export default class EventHandlers {
       this._storage.setFormState('dirty', !!hasAnyDirty);
     }
   }
-
 
   setFieldAndFormValidState(pathToField, isValid, invalidMsg) {
     this._storage.setFieldState(pathToField, {
