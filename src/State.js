@@ -57,13 +57,12 @@ export default class State {
    * It means - it calls onlu on value changes by machine.
    * It rises a "silentChange" and "anyChange" events.
    * @param {string} pathToField
-   * @param {*} oldCombinedValue
+   * @param {*} oldValue
    */
-  handleSilentValueChange(pathToField, oldCombinedValue) {
-    // TODO: review
+  riseSilentChangeEvent(pathToField, oldValue) {
     const eventData = {
       fieldName: pathToField,
-      oldValue: oldCombinedValue,
+      oldValue: oldValue,
       value: this._storage.getValue(pathToField),
     };
 
@@ -74,9 +73,6 @@ export default class State {
     this._riseAnyChange(pathToField);
   }
 
-
-  //////////////////////////
-
   /**
    * It calls form field on value changed by user
    * It rises a "change" event.
@@ -85,7 +81,7 @@ export default class State {
    * @param {*} oldValue
    * @param {*} newValue
    */
-  handleValueChangeByUser(pathToField, oldValue, newValue) {
+  riseUserChangeEvent(pathToField, oldValue, newValue) {
     const eventData = {
       fieldName: pathToField,
       oldValue,

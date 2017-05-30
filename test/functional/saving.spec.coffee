@@ -56,7 +56,7 @@ describe 'Functional. saving.', ->
 
       this.form.fields.param1._debouncedCall.flush()
       this.form.fields.param3._debouncedCall.flush()
-      this.form.$handlers.$debouncedCall.flush()
+      this.form.$state.$debouncedCall.flush()
 
       expect(this.formSaveHandler).to.have.been.calledOnce
       expect(this.formSaveHandler).to.have.been.calledWith({

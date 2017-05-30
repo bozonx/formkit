@@ -14,7 +14,7 @@ describe 'Functional. onBlur.', ->
   it "run handle blur if there is no one deleyed callback", ->
     this.form.fields.name.handleChange('newValue')
     this.form.fields.name._debouncedCall.flush()
-    this.form.$handlers.$debouncedCall.flush()
+    this.form.$state.$debouncedCall.flush()
     assert.isFalse(this.form.fields.name._debouncedCall.getDelayed())
     this.form.fields.name.handleBlur()
     assert.isFalse(this.form.fields.name._debouncedCall.getDelayed())

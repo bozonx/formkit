@@ -103,7 +103,7 @@ export default class Field {
 
     // rise silent change events if value and old value are different
     if (!_.isEqual(oldValue, newValue)) {
-      this._form.$handlers.handleSilentValueChange(this._pathToField, oldValue);
+      this._form.$state.riseSilentChangeEvent(this._pathToField, oldValue);
     }
   }
 
@@ -113,7 +113,7 @@ export default class Field {
    */
   setSavedValue(newSavedValue) {
     // set saved value
-    this._storage.setFieldState(this._pathToField, {savedValue: newSavedValue});
+    this._storage.setFieldState(this._pathToField, { savedValue: newSavedValue });
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
@@ -162,15 +162,17 @@ export default class Field {
     // don't save unchanged value if it allows in config.
     if (!this._form.config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
 
+    // TODO: use set value
+
     // set value to storage
     this._storage.setValue(this._pathToField, newValue);
     // set touched to true
-    if (!this.touched) this._form.$handlers.setFieldAndFormTouched(this._pathToField);
+    if (!this.touched) this._form.$state.setFieldAndFormTouched(this._pathToField);
     this.$recalcDirty();
     this.validate();
 
     // rise change by user handler
-    this._form.$handlers.handleValueChangeByUser(this._pathToField, oldCombinedValue, newValue);
+    this._form.$state.riseUserChangeEvent(this._pathToField, oldCombinedValue, newValue);
 
     // rise field's change callback
     if (this._onChangeCallback) this._onChangeCallback(newValue);
@@ -205,7 +207,7 @@ export default class Field {
   }
 
   on(eventName, cb) {
-    this._form.$handlers.addListener(`field.${this._pathToField}.${eventName}`, cb);
+    this._form.$state.addListener(`field.${this._pathToField}.${eventName}`, cb);
   }
 
   /**
@@ -242,7 +244,7 @@ export default class Field {
     if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
 
     const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
-    this._form.$handlers.setFieldAndFormValidState(this._pathToField, valid, invalidMsg);
+    this._form.$state.setFieldAndFormValidState(this._pathToField, valid, invalidMsg);
 
     return result;
   }
@@ -279,7 +281,7 @@ export default class Field {
    * Recalculate dirty state.
    */
   $recalcDirty() {
-    this._form.$handlers.setFieldAndFormDirty(this._pathToField,
+    this._form.$state.setFieldAndFormDirty(this._pathToField,
       calculateDirty(this.value, this.savedValue));
   }
 
@@ -296,7 +298,7 @@ export default class Field {
     if (!this.valid) return;
     // TODO: ??? for what???
     // don't save already saved value
-    if (!this._form.$handlers.isUnsaved(this._pathToField)) return;
+    if (!this._form.$state.isUnsaved(this._pathToField)) return;
 
     // rise a field's save callback
     if (this._onSaveCallback) {
@@ -307,7 +309,7 @@ export default class Field {
     // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
     // TODO: должно подняться собитие save формы
     // rise form's save callback
-    this._form.$handlers.handleFieldSave(force);
+    this._form.$state.handleFieldSave(force);
   }
 
 

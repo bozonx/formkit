@@ -11,13 +11,15 @@ export default class Form {
     this._config = config;
 
     this._fields = {};
-    // TODO: move to handlers
+    // TODO: move to state
     this._onSubmitCallback = null;
 
-    // TODO: rename to $$handlers
-    this.$handlers = new State(this, events, storage);
+    this._state = new State(this, events, storage);
   }
 
+  get $state() {
+    return this._state;
+  }
   get $storage() {
     return this._storage;
   }
@@ -78,7 +80,7 @@ export default class Form {
    */
   on(eventName, cb) {
     // TODO: почему не поддерживаются остальные методы - onSubmit etc?
-    this.$handlers.addListener(eventName, cb);
+    this._state.addListener(eventName, cb);
   }
 
   /**
@@ -87,11 +89,11 @@ export default class Form {
    */
   onChange(cb) {
     // TODO: почуму один а не несколько обработчиков???
-    this.$handlers.setFormChangeCallback(cb);
+    this._state.setFormChangeCallback(cb);
   }
 
   onSave(cb) {
-    this.$handlers.$onSaveCallback = cb;
+    this._state.$onSaveCallback = cb;
   }
 
   onSubmit(cb) {
@@ -141,14 +143,14 @@ export default class Form {
    * Cancel debounce waiting for saving
    */
   cancelSaving() {
-    this.$handlers.$debouncedCall.cancel();
+    this._state.$debouncedCall.cancel();
   }
 
   /**
    * Saving immediately
    */
   flushSaving() {
-    this.$handlers.$debouncedCall.flush();
+    this._state.$debouncedCall.flush();
   }
 
   /**
