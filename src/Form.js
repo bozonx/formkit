@@ -92,7 +92,7 @@ export default class Form {
   }
 
   onSave(cb) {
-    this._state.$onSaveCallback = cb;
+    this._state.setFormHandler('save', cb);
   }
 
   onSubmit(cb) {

@@ -297,16 +297,16 @@ export default class Field {
     // don't save already saved value
     if (!this._form.$state.isUnsaved(this._pathToField)) return;
 
-    // rise a field's save callback
+    // rise a field's save handler
     // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
     // TODO: должно подняться собитие save этого поля
     // TODO: упростить
-    this._debouncedCall.exec(this._form.$state.riseFieldEvent.bind(this._form.$state), force, this._pathToField, 'save', this.value);
+    this._debouncedCall.exec(() => {
+      this._form.$state.riseFieldEvent(this._pathToField, 'save', this.value);
+    }, force);
 
-    // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
-    // TODO: должно подняться собитие save формы
-    // rise form's save callback
-    this._form.$state.handleFieldSave(force);
+    // rise form's save handler
+    this._form.$state.riseFormDebouncedSave(force);
   }
 
 

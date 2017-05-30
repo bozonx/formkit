@@ -9,9 +9,6 @@ import { findInFieldRecursively } from './helpers';
  */
 export default class State {
   constructor(form, events, storage) {
-    // TODO: rename to onFormSaveCallback
-    this.$onSaveCallback = null;
-
     this._form = form;
     this._events = events;
     this._storage = storage;
@@ -27,7 +24,7 @@ export default class State {
     // TODO: почему здесь хранятся unsaved - наверное надо в Storage?
     this._unsavedState = {};
 
-    // TODO: переименовать в приватное
+    // TODO: переименовать в приватное или в $$
     this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
@@ -62,24 +59,12 @@ export default class State {
     this._events.addListener(eventName, cb);
   }
 
-
-  // TODO: наверное надо в field перенести???
-  isUnsaved(pathToField) {
-    // TODO: test
-    return _.has(this._unsavedState, pathToField);
-  }
-
-  /**
-   * It calls form field on debounced save handler.
-   * @param {boolean} force
-   */
-  handleFieldSave(force) {
-    // TODO: review
-    if (!this.$onSaveCallback) return;
+  riseFormDebouncedSave(force) {
+    if (_.isEmpty(this._formHandlers.save)) return;
 
     this.$debouncedCall.exec(() => {
       // save current state on the moment
-      this.$onSaveCallback(this._unsavedState);
+      this.riseFormEvent('save', this._unsavedState);
       this._unsavedState = {};
     }, force);
   }
@@ -121,10 +106,10 @@ export default class State {
       value: newValue,
     };
 
-    // run form's change handler
-    this.riseFormEvent('change', { [pathToField]: newValue });
     // Rise events field's change handler
     this.riseFieldEvent(pathToField, 'change', eventData);
+    // run form's change handler
+    this.riseFormEvent('change', { [pathToField]: newValue });
 
     _.set(this._unsavedState, pathToField, newValue);
 
@@ -166,15 +151,25 @@ export default class State {
     this._storage.setFormState('valid', !hasAnyErrors);
   }
 
+  // TODO: наверное надо в field перенести???
+  isUnsaved(pathToField) {
+    // TODO: test
+    return _.has(this._unsavedState, pathToField);
+  }
+
+
   /**
    * It rises a "stateChange" event.
    * It rises on any change of value, initialValue or any state.
    * @private
    */
   _riseAnyChange(pathToField) {
-    // TODO use riseFieldEvent
-    this._events.emit('anyChange');
     this._events.emit(`field.${pathToField}.anyChange`);
+    this._events.emit('anyChange');
+
+    // TODO use riseFieldEvent
+    // this.riseFormEvent('anyChange');
+    // this.riseFieldEvent(pathToField, 'anyChange');
   }
 
 }
