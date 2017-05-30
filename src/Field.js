@@ -12,8 +12,6 @@ export default class Field {
 
     this._pathToField = pathToField;
     this._fieldName = getFieldName(pathToField);
-    this._onSaveCallback = null;
-    //this._onChangeCallback = null;
     this._validateCallback = undefined;
 
     this._init(params);
@@ -164,7 +162,7 @@ export default class Field {
     // don't save unchanged value if it allows in config.
     if (!this._form.config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
 
-    // TODO: use set value
+    // TODO: use this.setValue()
 
     // set value to storage
     this._storage.setValue(this._pathToField, newValue);
@@ -175,10 +173,6 @@ export default class Field {
 
     // rise change by user handler
     this._form.$state.riseUserChangeEvent(this._pathToField, oldCombinedValue, newValue);
-
-    // rise field's change callback
-    //if (this._onChangeCallback) this._onChangeCallback(newValue);
-    //this._form.$state.riseFieldEvent(this._pathToField, 'change', newValue);
 
     this.__startSave(false);
   }
@@ -217,7 +211,6 @@ export default class Field {
    * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
-    //this._onChangeCallback = cb;
     this._form.$state.setFieldChangeHandler(this._pathToField, cb);
   }
 
@@ -226,7 +219,7 @@ export default class Field {
    * @param cb
    */
   onSave(cb) {
-    this._onSaveCallback = cb;
+    this._form.$state.setFieldSaveHandler(this._pathToField, cb);
   }
 
   /**
@@ -305,11 +298,11 @@ export default class Field {
     if (!this._form.$state.isUnsaved(this._pathToField)) return;
 
     // rise a field's save callback
-    if (this._onSaveCallback) {
-      // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
-      // TODO: должно подняться собитие save этого поля
-      this._debouncedCall.exec(this._onSaveCallback, force, this.value);
-    }
+    // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
+    // TODO: должно подняться собитие save этого поля
+    // TODO: упростить
+    this._debouncedCall.exec(this._form.$state.riseFieldEvent.bind(this._form.$state), force, this._pathToField, 'save', this.value);
+
     // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
     // TODO: должно подняться собитие save формы
     // rise form's save callback

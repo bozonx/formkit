@@ -38,6 +38,7 @@ export default class State {
   }
 
   riseFieldEvent(pathToField, eventName, data) {
+    // TODO use riseFieldEvent
     this._events.emit(`field.${pathToField}.${eventName}`, data);
   }
 
@@ -95,6 +96,7 @@ export default class State {
     };
 
     // Rise events
+    // TODO use riseFieldEvent
     this._events.emit('silentChange', eventData);
     this._events.emit(`field.${pathToField}.silentChange`, eventData);
 
@@ -120,6 +122,7 @@ export default class State {
     if (this._onFormChangeCallback) this._onFormChangeCallback({ [pathToField]: newValue });
 
     // Rise events form's and field's events
+    // TODO use riseFieldEvent
     this._events.emit('change', eventData);
     this._events.emit(`field.${pathToField}.change`, eventData);
 
@@ -169,6 +172,7 @@ export default class State {
    * @private
    */
   _riseAnyChange(pathToField) {
+    // TODO use riseFieldEvent
     this._events.emit('anyChange');
     this._events.emit(`field.${pathToField}.anyChange`);
   }
