@@ -211,7 +211,7 @@ export default class Field {
    * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
-    this._form.$state.setFieldChangeHandler(this._pathToField, cb);
+    this._form.$state.setFieldHandler(this._pathToField, 'change', cb);
   }
 
   /**
@@ -219,7 +219,7 @@ export default class Field {
    * @param cb
    */
   onSave(cb) {
-    this._form.$state.setFieldSaveHandler(this._pathToField, cb);
+    this._form.$state.setFieldHandler(this._pathToField, 'save', cb);
   }
 
   /**

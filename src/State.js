@@ -9,8 +9,6 @@ import { findInFieldRecursively } from './helpers';
  */
 export default class State {
   constructor(form, events, storage) {
-    // TODO: rename to onFormChangeCallback
-    this._onFormChangeCallback = null;
     // TODO: rename to onFormSaveCallback
     this.$onSaveCallback = null;
 
@@ -18,37 +16,33 @@ export default class State {
     this._events = events;
     this._storage = storage;
 
+    this._formHandlers = {
+      change: [],
+      silent: [],
+      any: [],
+      save: [],
+      submit: [],
+    };
+    this._fieldsHandlers = {};
     // TODO: почему здесь хранятся unsaved - наверное надо в Storage?
     this._unsavedState = {};
-    this._fieldsHandlers = {};
 
+    // TODO: переименовать в приватное
     this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
-  setFormChangeCallback(cb) {
-    this._onFormChangeCallback = cb;
+  setFormHandler(eventName, cb) {
+    this._formHandlers[eventName].push(cb);
+    this.addListener(`form.${eventName}`, cb);
   }
 
-  setFieldChangeHandler(pathToField, cb) {
-    this._setFieldHandler(pathToField, 'change', cb);
-  }
-
-  setFieldSaveHandler(pathToField, cb) {
-    this._setFieldHandler(pathToField, 'save', cb);
-  }
-
-  riseFieldEvent(pathToField, eventName, data) {
-    // TODO use riseFieldEvent
-    this._events.emit(`field.${pathToField}.${eventName}`, data);
-  }
-
-  _setFieldHandler(pathToField, eventName, cb) {
+  setFieldHandler(pathToField, eventName, cb) {
     if (!this._fieldsHandlers[pathToField]) {
       this._fieldsHandlers[pathToField] = {
         change: [],
-        save: [],
         silent: [],
         any: [],
+        save: [],
       };
     }
 
@@ -56,9 +50,18 @@ export default class State {
     this.addListener(`field.${pathToField}.${eventName}`, cb);
   }
 
+  riseFormEvent(eventName, data) {
+    this._events.emit(`form.${eventName}`, data);
+  }
+
+  riseFieldEvent(pathToField, eventName, data) {
+    this._events.emit(`field.${pathToField}.${eventName}`, data);
+  }
+
   addListener(eventName, cb) {
     this._events.addListener(eventName, cb);
   }
+
 
   // TODO: наверное надо в field перенести???
   isUnsaved(pathToField) {
@@ -91,7 +94,7 @@ export default class State {
   riseSilentChangeEvent(pathToField, oldValue) {
     const eventData = {
       fieldName: pathToField,
-      oldValue: oldValue,
+      oldValue,
       value: this._storage.getValue(pathToField),
     };
 
@@ -118,13 +121,10 @@ export default class State {
       value: newValue,
     };
 
-    // run form's on change callback
-    if (this._onFormChangeCallback) this._onFormChangeCallback({ [pathToField]: newValue });
-
-    // Rise events form's and field's events
-    // TODO use riseFieldEvent
-    this._events.emit('change', eventData);
-    this._events.emit(`field.${pathToField}.change`, eventData);
+    // run form's change handler
+    this.riseFormEvent('change', { [pathToField]: newValue });
+    // Rise events field's change handler
+    this.riseFieldEvent(pathToField, 'change', eventData);
 
     _.set(this._unsavedState, pathToField, newValue);
 

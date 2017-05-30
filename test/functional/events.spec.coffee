@@ -17,7 +17,8 @@ describe 'Functional. Events.', ->
       this.form.on('silentChange', this.silentFormHandler);
       #this.form.fields.name.on('change', this.fieldHandler);
       this.form.fields.name.onChange(this.fieldHandler);
-      this.form.on('change', this.formHandler);
+      #this.form.on('change', this.formHandler);
+      this.form.onChange(this.formHandler);
       this.form.fields.name.on('anyChange', this.anyFieldHandler);
       this.form.on('anyChange', this.anyFormHandler);
 
@@ -29,9 +30,7 @@ describe 'Functional. Events.', ->
         fieldName: 'name', oldValue: undefined , value: 'newValue'
       })
       expect(this.formHandler).to.have.been.calledOnce
-      expect(this.formHandler).to.have.been.calledWith({
-        fieldName: 'name', oldValue: undefined, value: 'newValue'
-      })
+      expect(this.formHandler).to.have.been.calledWith({ name: "newValue" })
       # silent
       expect(this.silentFieldHandler).to.have.not.been.called
       expect(this.silentFormHandler).to.have.not.been.called
