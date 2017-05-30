@@ -87,7 +87,7 @@ export default class Form {
    */
   onChange(cb) {
     // TODO: почуму один а не несколько обработчиков???
-    this.$handlers.$onChangeCallback = cb;
+    this.$handlers.setFormChangeCallback(cb);
   }
 
   onSave(cb) {

@@ -9,7 +9,9 @@ import { findInFieldRecursively } from './helpers';
  */
 export default class EventHandlers {
   constructor(form, events, storage) {
-    this.$onChangeCallback = null;
+    // TODO: rename to onFormChangeCallback
+    this._onFormChangeCallback = null;
+    // TODO: rename to onFormSaveCallback
     this.$onSaveCallback = null;
 
     this._form = form;
@@ -21,12 +23,17 @@ export default class EventHandlers {
     this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
+  setFormChangeCallback(cb) {
+    this._onFormChangeCallback = cb;
+  }
+
   addListener(eventName, cb) {
     this._events.addListener(eventName, cb);
   }
 
   // TODO: наверное надо в field перенести???
   isUnsaved(pathToField) {
+    // TODO: test
     return _.has(this._unsavedState, pathToField);
   }
 
@@ -67,6 +74,9 @@ export default class EventHandlers {
     this._riseAnyChange(pathToField);
   }
 
+
+  //////////////////////////
+
   /**
    * It calls form field on value changed by user
    * It rises a "change" event.
@@ -76,7 +86,6 @@ export default class EventHandlers {
    * @param {*} newValue
    */
   handleValueChangeByUser(pathToField, oldValue, newValue) {
-    // TODO: review
     const eventData = {
       fieldName: pathToField,
       oldValue,
@@ -84,9 +93,9 @@ export default class EventHandlers {
     };
 
     // run form's on change callback
-    if (this.$onChangeCallback) this.$onChangeCallback({ [pathToField]: newValue });
+    if (this._onFormChangeCallback) this._onFormChangeCallback({ [pathToField]: newValue });
 
-    // Rise events
+    // Rise events form's and field's events
     this._events.emit('change', eventData);
     this._events.emit(`field.${pathToField}.change`, eventData);
 
