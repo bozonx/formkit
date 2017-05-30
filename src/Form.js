@@ -7,35 +7,36 @@ import { findInFieldRecursively } from './helpers';
 
 export default class Form {
   constructor(storage, config, events) {
-    // TODO: rename to _storage - uses in EventHandlers
-    this.$storage = storage;
-    // TODO: rename to _events - uses in EventHandlers
-    this.$events = events;
+    this._storage = storage;
     this._config = config;
-    // TODO: review - isn't good
-    this.$handlers = new EventHandlers(this, this.$events, this.$storage);
+
+    // TODO: rename to $$handlers
+    this.$handlers = new EventHandlers(this, events, storage);
 
     this._fields = {};
     this._onSubmitCallback = null;
   }
 
+  get $storage() {
+    return this._storage;
+  }
   get fields() {
     return this._fields;
   }
   get values() {
-    return this.$storage.getValues();
+    return this._storage.getValues();
   }
   get dirty() {
-    return this.$storage.getFormState('dirty');
+    return this._storage.getFormState('dirty');
   }
   get touched() {
-    return this.$storage.getFormState('touched');
+    return this._storage.getFormState('touched');
   }
   get submitting() {
-    return this.$storage.getFormState('submitting');
+    return this._storage.getFormState('submitting');
   }
   get valid() {
-    return this.$storage.getFormState('valid');
+    return this._storage.getFormState('valid');
   }
   get config() {
     return this._config;
@@ -107,14 +108,14 @@ export default class Form {
 
     if (!this._config.allowSubmitSubmittingForm) {
       // do nothing if form is submitting at the moment
-      if (this.$storage.getFormState('submitting')) return;
+      if (this._storage.getFormState('submitting')) return;
     }
     if (!this._config.allowSubmitUnchangedForm) {
-      if (!this.$storage.getFormState('dirty')) return;
+      if (!this._storage.getFormState('dirty')) return;
     }
 
-    this.$storage.setFormState('submitting', true);
-    const values = _.clone(this.$storage.getValues());
+    this._storage.setFormState('submitting', true);
+    const values = _.clone(this._storage.getValues());
 
     // TODO: validate
 
@@ -172,7 +173,7 @@ export default class Form {
   }
 
   $getWholeStorageState() {
-    return this.$storage.getWholeStorageState();
+    return this._storage.getWholeStorageState();
   }
 
 
@@ -206,7 +207,7 @@ export default class Form {
     const updateSavedValues = () => {
       if (this._config.updateSavedValuesAfterSubmit) {
         // TODO: WTF???
-        this.$storage.updateSavedValues(values);
+        this._storage.updateSavedValues(values);
         this._updateAllDirtyStates();
       }
     };
@@ -218,12 +219,12 @@ export default class Form {
       // if promise
       if (returnedValue && returnedValue.then) {
         return returnedValue.then((data) => {
-          this.$storage.setFormState('submitting', false);
+          this._storage.setFormState('submitting', false);
           updateSavedValues();
 
           return data;
         }, (err) => {
-          this.$storage.setFormState('submitting', false);
+          this._storage.setFormState('submitting', false);
 
           return err;
         });
@@ -231,7 +232,7 @@ export default class Form {
     }
 
     // without _onSubmitCallback or with _onSubmitCallback and it doesn't return a promise
-    this.$storage.setFormState('submitting', false);
+    this._storage.setFormState('submitting', false);
     updateSavedValues();
 
     return Promise.resolve();

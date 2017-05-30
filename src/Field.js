@@ -205,7 +205,7 @@ export default class Field {
   }
 
   on(eventName, cb) {
-    this._form.$events.addListener(`field.${this._pathToField}.${eventName}`, cb);
+    this._form.$handlers.addListener(`field.${this._pathToField}.${eventName}`, cb);
   }
 
   /**
