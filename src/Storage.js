@@ -89,6 +89,20 @@ export default class Storage {
     return findInFieldRecursively(this._store[root], cb);
   }
 
+
+
+  getUnsavedValues() {
+    return _.cloneDeep(this._store.unsavedValues);
+  }
+
+  isFieldUnsaved(pathToField) {
+    return _.has(this._store.unsavedValues, pathToField);
+  }
+
+  setUnsavedValue(pathToField, newValue) {
+    _.set(this._store.unsavedValues, pathToField, newValue);
+  }
+
   clearUnsavedValues() {
     this._store.unsavedValues = {};
   }

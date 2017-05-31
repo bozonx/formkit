@@ -21,8 +21,6 @@ export default class State {
       submit: [],
     };
     this._fieldsHandlers = {};
-    // TODO: почему здесь хранятся unsaved - наверное надо в Storage?
-    this._unsavedState = {};
 
     // TODO: переименовать в приватное или в $$
     this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
@@ -69,10 +67,11 @@ export default class State {
   riseFormDebouncedSave(force) {
     if (_.isEmpty(this._formHandlers.save)) return;
 
-    this.$debouncedCall.exec(() => {
+    return this.$debouncedCall.exec(() => {
       // save current state on the moment
-      this.riseFormEvent('save', this._unsavedState);
-      this._unsavedState = {};
+      this.riseFormEvent('save', this._storage.getUnsavedValues());
+      // TODO: вынести в промис
+      this._storage.clearUnsavedValues();
     }, force);
   }
 
@@ -118,7 +117,8 @@ export default class State {
     // run form's change handler
     this.riseFormEvent('change', { [pathToField]: newValue });
 
-    _.set(this._unsavedState, pathToField, newValue);
+    // TODO: вынести в промис
+    this._storage.setUnsavedValue(pathToField, newValue);
 
     this._riseAnyChange(pathToField);
   }
@@ -157,13 +157,6 @@ export default class State {
 
     this._storage.setFormState('valid', !hasAnyErrors);
   }
-
-  // TODO: наверное надо в field перенести???
-  isUnsaved(pathToField) {
-    // TODO: test
-    return _.has(this._unsavedState, pathToField);
-  }
-
 
   /**
    * It rises a "stateChange" event.

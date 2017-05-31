@@ -1,15 +1,15 @@
 import _ from 'lodash';
 
 export default class DebouncedCall {
-  constructor(delay) {
-    this._delay = delay;
+  constructor(delayTime) {
+    this._delayTime = delayTime;
     // waiting for a calling of debounced function
     this._delayed = false;
     // if promise returned from callback has pending state
     this._pending = false;
     this._runAfterCbFulfill = undefined;
 
-    this._debouncedCb = _.debounce((cb) => cb(), this._delay);
+    this._debouncedCb = _.debounce((cb) => cb(), this._delayTime);
   }
 
   getDelayed() {

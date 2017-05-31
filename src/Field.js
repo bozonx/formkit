@@ -296,9 +296,8 @@ export default class Field {
   _startSave(force) {
     // don't save invalid value
     if (!this.valid) return;
-    // TODO: ??? for what???
-    // don't save already saved value
-    if (!this._form.$state.isUnsaved(this._pathToField)) return;
+    // save only value which was modified.
+    if (!this._storage.isFieldUnsaved(this._pathToField)) return;
 
     // rise a field's save handler
     this._debouncedCall.exec(() => {
@@ -310,6 +309,9 @@ export default class Field {
 
     // rise form's save handler
     this._form.$state.riseFormDebouncedSave(force);
+    // this._form.$state.riseFormDebouncedSave(force).then(() => {
+    //   this._storage.clearUnsavedValues();
+    // });
   }
 
 
