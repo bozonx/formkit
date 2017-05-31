@@ -1,5 +1,20 @@
 import _ from 'lodash';
 
+/**
+ * It allows run callback with delay with debounce.
+ * * If callback returns a promise
+ *   * the callback running will be delayed for a specific time
+ *   * The "delayed" and "pending" prop will be true
+ *   * If you try to call another callback while current callback is waiting
+ *     for running and promise fulfilling,
+ *     it will delay it and call it after current callback has fulfilled.
+ *   * After promise has fulfiled, the "pending" prop will bi false.
+ * * If callback returns an undefined:
+ *   * the callback running will be delayed for a specific time
+ *   * The "delayed" prop will be true
+ *   * If you try to call another callback while current callback is waiting for running,
+ *     it will delay it and call it after current callback has fulfilled.
+ */
 export default class DebouncedCall {
   constructor(delayTime) {
     this._delayTime = delayTime;
@@ -20,6 +35,7 @@ export default class DebouncedCall {
   }
 
   exec(cb, force, ...params) {
+    // TODO: ??? review
     if (this._pending) {
       this._runAfterCbFulfill = { cb, params: [ ...params ] };
 
@@ -51,6 +67,7 @@ export default class DebouncedCall {
 
   _runCallBack(cb, ...params) {
     const promise = cb(...params);
+    // TODO: why return???
     if (!promise) return;
 
     this._pending = true;

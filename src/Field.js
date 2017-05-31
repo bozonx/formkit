@@ -135,6 +135,7 @@ export default class Field {
   setDebounceTime(delay) {
     const toNumber = _.toNumber(delay);
     if (_.isNull(toNumber) || _.isNaN(toNumber)) throw new Error(`Bad debounceTime value`);
+    // TODO: не работает
     this._debouncedCall.delay = toNumber;
   }
 
