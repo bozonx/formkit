@@ -94,7 +94,7 @@ export default class DebouncedCall {
     }, (err) => {
       this._runQueuedCb();
 
-      return Promise.reject(err);
+      return err;
     });
 
     this._startDebounced(force);

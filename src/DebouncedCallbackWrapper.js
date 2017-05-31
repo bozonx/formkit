@@ -55,16 +55,14 @@ export default class DebouncedCallbackWrapper {
         this._mainResolve();
 
         return data;
-      }).catch((err) => {
+      }, (err) => {
         this._pending = false;
-        this._mainReject();
+        this._mainReject(err);
 
-        return Promise.reject(err);
+        return err;
       });
     }
     else {
-      // this._cbPromise = Promise.resolve();
-      console.log(1111111111111)
       this._pending = false;
       this._mainResolve();
     }

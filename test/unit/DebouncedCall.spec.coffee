@@ -4,13 +4,24 @@ describe 'Unit. DebouncedCall.', ->
   beforeEach () ->
     this.debounced = new DebouncedCall(300);
 
-    this.firstPromise = new Promise (resolve, reject) =>
-      this.firstPromiseResolve = resolve
-      this.firstPromiseReject = reject
+#    this.firstPromise = new Promise (resolve, reject) =>
+#      this.firstPromiseResolve = resolve
+#      this.firstPromiseReject = reject
+
+    this.promisedHandler = undefined;
+    this.firstPromiseResolve = undefined;
+    this.firstPromiseReject = undefined;
+    this.promisedValue = undefined;
+
+    this.simpleHandler = undefined;
+    this.simpleValue = undefined;
 
     this.promisedHandler = (value) =>
-      this.promisedValue = value;
-      return this.firstPromise
+      return new Promise (resolve, reject) =>
+        this.firstPromiseResolve = () =>
+          this.promisedValue = value;
+          resolve()
+        this.firstPromiseReject = reject
 
     this.simpleHandler = (value) =>
       this.simpleValue = value;
@@ -55,7 +66,7 @@ describe 'Unit. DebouncedCall.', ->
 
 
   it "set promised callback delayed", () ->
-    promise = this.debounced.exec(this.promisedHandler, true, 'promisedValue')
+    promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
     this.debounced.flush();
     this.firstPromiseResolve();
 
@@ -63,6 +74,17 @@ describe 'Unit. DebouncedCall.', ->
       assert.isFalse(this.debounced.getDelayed())
       assert.isFalse(this.debounced.getPending())
       assert.equal(this.promisedValue, 'promisedValue')
+
+  it "set promised callback delayed - promise has rejected", () ->
+    promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
+    this.debounced.flush();
+    this.firstPromiseReject('error');
+
+    promise.catch (err) =>
+      assert.isFalse(this.debounced.getDelayed())
+      assert.isFalse(this.debounced.getPending())
+      assert.isUndefined(this.promisedValue)
+      assert.equal(err, 'error')
 
 
 # TODO: set callback while current is delayed - check statuses
