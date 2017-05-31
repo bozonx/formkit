@@ -7,14 +7,22 @@ describe 'Functional. saving.', ->
       this.form.init(['name'])
       this.saveHandler = sinon.spy();
 
-    it 'after change value must save debounced', ->
-        this.form.onSave(this.formSaveHandler)
-        this.form.fields.name.onSave(this.saveHandler)
-        this.form.fields.name.handleChange('newValue')
-        this.form.fields.name._debouncedCall.flush()
+    it 'save debounced after change value', ->
+      this.form.onSave(this.formSaveHandler)
+      this.form.fields.name.onSave(this.saveHandler)
 
-        expect(this.saveHandler).to.have.been.calledOnce
-        expect(this.saveHandler).to.have.been.calledWith('newValue')
+      assert.isFalse(this.form.fields.name.saving)
+
+      this.form.fields.name.handleChange('newValue')
+
+      assert.isTrue(this.form.fields.name.saving)
+
+      this.form.fields.name._debouncedCall.flush()
+
+      assert.isFalse(this.form.fields.name.saving)
+
+      expect(this.saveHandler).to.have.been.calledOnce
+      expect(this.saveHandler).to.have.been.calledWith('newValue')
 
     it 'after change and pressing enter, value must save immediately and queue must be cancelled', ->
       this.form.fields.name.onSave(this.saveHandler)

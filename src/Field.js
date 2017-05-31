@@ -299,12 +299,14 @@ export default class Field {
     // save only value which was modified.
     if (!this._storage.isFieldUnsaved(this._pathToField)) return;
 
+    this._storage.setFieldState(this._pathToField, { saving: true });
+
     // rise a field's save handler
+    // TODO: только если есть обработчики
     this._debouncedCall.exec(() => {
       this._form.$state.riseFieldEvent(this._pathToField, 'save', this.value);
       // TODO: нужно ли убирать из unsaved???
     }, force);
-
     // this._form.$state.riseFieldDebouncedSave(this._pathToField, this.value, force);
 
     // rise form's save handler

@@ -109,12 +109,12 @@ export default class Storage {
 
 
   _generateNewFormState() {
-    // TODO; add saving
     return {
       dirty: false,
       touched: false,
       submitting: false,
       valid: true,
+      saving: false,
     };
   }
 
