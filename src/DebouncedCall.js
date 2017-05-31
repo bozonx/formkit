@@ -1,5 +1,7 @@
 import _ from 'lodash';
 
+import DebouncedCallbackWrapper from './DebouncedCallbackWrapper';
+
 /**
  * It allows run callback with delay with debounce.
  * * If callback returns a promise
@@ -18,30 +20,39 @@ import _ from 'lodash';
 export default class DebouncedCall {
   constructor(delayTime) {
     this._delayTime = delayTime;
-    // waiting for a calling of debounced function
+    // waiting for start
     this._delayed = false;
-    // if promise returned from callback has pending state
-    this._pending = false;
     // promise which wait while current callback has run and fulfilled.
-    this._waitPromise = null;
-    this._runAfterCbFulfill = undefined;
-
+    // this._waitPromise = null;
     this._debouncedCb = _.debounce((cb) => cb(), this._delayTime);
+    this._cbWrapper = null;
+    // callback which was added while current callback in progress
+    this._queuedCallback = null;
   }
 
   getDelayed() {
     return this._delayed;
   }
+
   getPending() {
-    return this._pending;
+    if (!this._cbWrapper) return false;
+
+    return this._cbWrapper.isPending();
   }
 
-  isWaiting() {
-    return !!this._waitPromise;
+  /**
+   * delayed or pending
+   * @return {boolean}
+   */
+  isInProgress() {
+    return this.getDelayed() || this.getPending();
   }
 
   cancel() {
     if (this._debouncedCb) this._debouncedCb.cancel();
+    // TODO: bad
+    // if (this._cbWrapper) this._cbWrapper.cancel();
+    // this._cbWrapper = null;
     this._delayed = false;
   }
 
@@ -49,74 +60,72 @@ export default class DebouncedCall {
     this._debouncedCb.flush();
   }
 
+
   exec(cb, force, ...params) {
-    // TODO: ??? review
-    if (this._pending) {
-      this._runAfterCbFulfill = { cb, params: [ ...params ] };
+    this._setCallbackWrapper(cb, params, force);
 
-      return;
-    }
-
-    // if (force) {
-    //   this.cancel();
-    //   // run without debounce
-    //   this._runCallBack(cb, ...params);
-    // }
-    // else {
-    //   this._delayed = true;
-    //   this._debouncedCb(() => {
-    //     this._runCallBack(cb, ...params);
-    //     this._delayed = false;
-    //   });
-    // }
-
-    this._run(cb, force, ...params);
-
-    return this._waitPromise;
+    return this._cbWrapper.getPromise();
   }
 
-  /**
-   * Run callback which returns an undefined.
-   * @param cb
-   * @param force
-   * @param params
-   * @private
-   */
-  _run(cb, force, ...params) {
-    if (force) {
-      // TODO: если промис - то перестать ждать
-      this.cancel();
-      // run without debounce
-      this._runCallBack(cb, ...params);
+  _setCallbackWrapper(cb, params, force) {
+    if (this._cbWrapper) {
+      if (this._cbWrapper.isStarted()) {
+        // set this callback in queue
+        this._queuedCallback = { cb, params };
+      }
+      else {
+        // replace callback if it hasn't run.
+        this._cbWrapper.setCallback(cb, params);
+      }
     }
     else {
+      this._runFreshCb(cb, params, force);
+    }
+  }
+
+  _runFreshCb(cb, params, force) {
+    // set new callback wrapper;
+    this._cbWrapper = new DebouncedCallbackWrapper();
+    this._cbWrapper.setCallback(cb, params);
+
+    // after save promise was saved - remove cbWrapper
+    this._cbWrapper.getPromise().then(() => {
+      this._runQueuedCb();
+    }, (err) => {
+      this._runQueuedCb();
+
+      return Promise.reject(err);
+    });
+
+    this._startDebounced(force);
+  }
+
+  _runQueuedCb() {
+    this._cbWrapper = null;
+
+    if (this._queuedCallback) {
+      this._queuedCallback = null;
+      this._runFreshCb(this._queuedCallback.cb, this._queuedCallback.params, true);
+    }
+  }
+
+  _startDebounced(force) {
+    if (force) {
+      this.cancel();
+      // run without debounce
       this._delayed = true;
+      this._cbWrapper.start();
+      this._delayed = false;
+    }
+    else {
+      // run debounced
+      this._delayed = true;
+      // TODO: впринципе можно использовать и timeout / clearTimeout
       this._debouncedCb(() => {
-        this._runCallBack(cb, ...params);
+        if (this._cbWrapper) this._cbWrapper.start();
         this._delayed = false;
       });
     }
   }
 
-  _runCallBack(cb, ...params) {
-    const promise = cb(...params);
-    // TODO: why return???
-    if (!promise) return;
-
-    this._pending = true;
-
-    return promise.then((data) => {
-      this._pending = false;
-      if (this._runAfterCbFulfill) {
-        this.exec(this._runAfterCbFulfill.cb, true, ...this._runAfterCbFulfill.params);
-        this._runAfterCbFulfill = undefined;
-      }
-
-      return data;
-    }).catch((err) => {
-      this._pending = false;
-
-      return Promise.reject(err);
-    });
-  }
 }

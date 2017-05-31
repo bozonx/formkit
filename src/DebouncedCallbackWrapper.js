@@ -12,7 +12,7 @@ export default class DebouncedCallbackWrapper {
       this._mainReject = reject;
     });
     this._callback = null;
-    this._cbPromise = null;
+    // this._cbPromise = null;
     this._started = false;
     this._pending = false;
   }
@@ -34,6 +34,10 @@ export default class DebouncedCallbackWrapper {
     return this._started;
   }
 
+  isFulfilled() {
+    return this.isStarted() && !this.isPending();
+  }
+
   cancel() {
     // TODO: отменить результат если уже выполняется
   }
@@ -44,22 +48,26 @@ export default class DebouncedCallbackWrapper {
     this._started = true;
     this._pending = true;
 
-    this._cbPromise = this._callback.cb(...this._callback.params);
-    if (!this._isPromise(this._cbPromise)) {
-      this._cbPromise = Promise.resolve();
-    }
+    const cbPromise = this._callback.cb(...this._callback.params);
+    if (this._isPromise(cbPromise)) {
+      cbPromise.then((data) => {
+        this._pending = false;
+        this._mainResolve();
 
-    this._cbPromise.then((data) => {
+        return data;
+      }).catch((err) => {
+        this._pending = false;
+        this._mainReject();
+
+        return Promise.reject(err);
+      });
+    }
+    else {
+      // this._cbPromise = Promise.resolve();
+      console.log(1111111111111)
       this._pending = false;
       this._mainResolve();
-
-      return data;
-    }).catch((err) => {
-      this._pending = false;
-      this._mainReject();
-
-      return Promise.reject(err);
-    });
+    }
   }
 
   _isPromise(unnown) {
