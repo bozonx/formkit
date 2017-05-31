@@ -22,6 +22,8 @@ export default class DebouncedCall {
     this._delayed = false;
     // if promise returned from callback has pending state
     this._pending = false;
+    // promise which wait while current callback has run and fulfilled.
+    this._waitPromise = null;
     this._runAfterCbFulfill = undefined;
 
     this._debouncedCb = _.debounce((cb) => cb(), this._delayTime);
@@ -34,6 +36,19 @@ export default class DebouncedCall {
     return this._pending;
   }
 
+  isWaiting() {
+    return !!this._waitPromise;
+  }
+
+  cancel() {
+    if (this._debouncedCb) this._debouncedCb.cancel();
+    this._delayed = false;
+  }
+
+  flush() {
+    this._debouncedCb.flush();
+  }
+
   exec(cb, force, ...params) {
     // TODO: ??? review
     if (this._pending) {
@@ -42,7 +57,34 @@ export default class DebouncedCall {
       return;
     }
 
+    // if (force) {
+    //   this.cancel();
+    //   // run without debounce
+    //   this._runCallBack(cb, ...params);
+    // }
+    // else {
+    //   this._delayed = true;
+    //   this._debouncedCb(() => {
+    //     this._runCallBack(cb, ...params);
+    //     this._delayed = false;
+    //   });
+    // }
+
+    this._run(cb, force, ...params);
+
+    return this._waitPromise;
+  }
+
+  /**
+   * Run callback which returns an undefined.
+   * @param cb
+   * @param force
+   * @param params
+   * @private
+   */
+  _run(cb, force, ...params) {
     if (force) {
+      // TODO: если промис - то перестать ждать
       this.cancel();
       // run without debounce
       this._runCallBack(cb, ...params);
@@ -54,15 +96,6 @@ export default class DebouncedCall {
         this._delayed = false;
       });
     }
-  }
-
-  cancel() {
-    if (this._debouncedCb) this._debouncedCb.cancel();
-    this._delayed = false;
-  }
-
-  flush() {
-    this._debouncedCb.flush();
   }
 
   _runCallBack(cb, ...params) {
