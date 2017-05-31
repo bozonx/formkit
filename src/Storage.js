@@ -14,6 +14,7 @@ export default class Storage {
       formState: this._generateNewFormState(),
       fieldsState: {},
       values: {},
+      unsavedValues: {},
     };
   }
 
@@ -86,6 +87,10 @@ export default class Storage {
 
   findRecursively(root, cb) {
     return findInFieldRecursively(this._store[root], cb);
+  }
+
+  clearUnsavedValues() {
+    this._store.unsavedValues = {};
   }
 
 

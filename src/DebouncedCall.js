@@ -43,7 +43,6 @@ export default class DebouncedCall {
   cancel() {
     if (this._debouncedCb) this._debouncedCb.cancel();
     this._delayed = false;
-    // TODO: а если уже сохранение в процессе???
   }
 
   flush() {

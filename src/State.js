@@ -59,6 +59,13 @@ export default class State {
     this._events.addListener(eventName, cb);
   }
 
+  // riseFieldDebouncedSave(pathToField, value, force) {
+  //   this.$debouncedCall.exec(() => {
+  //     this.riseFieldEvent(pathToField, 'save', value);
+  //     // TODO: нужно ли убирать из unsaved???
+  //   }, force);
+  // }
+
   riseFormDebouncedSave(force) {
     if (_.isEmpty(this._formHandlers.save)) return;
 

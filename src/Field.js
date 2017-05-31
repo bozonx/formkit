@@ -174,7 +174,8 @@ export default class Field {
     // rise change by user handler
     this._form.$state.riseUserChangeEvent(this._pathToField, oldCombinedValue, newValue);
 
-    this.__startSave(false);
+    // start save with debounced delay
+    this._startSave(false);
   }
 
   /**
@@ -189,7 +190,8 @@ export default class Field {
    */
   handleBlur() {
     this._storage.setFieldState(this._pathToField, { focused: false });
-    this.__startSave(true);
+    // start save immediately
+    this._startSave(true);
   }
 
   /**
@@ -200,7 +202,8 @@ export default class Field {
    */
   handlePressEnter() {
     if (this.disabled) return;
-    this.__startSave(true);
+    // start save immediately
+    this._startSave(true);
   }
 
   on(eventName, cb) {
@@ -290,7 +293,7 @@ export default class Field {
    *   * if false it will save with dobounce delay
    * @private
    */
-  __startSave(force) {
+  _startSave(force) {
     // don't save invalid value
     if (!this.valid) return;
     // TODO: ??? for what???
@@ -298,12 +301,12 @@ export default class Field {
     if (!this._form.$state.isUnsaved(this._pathToField)) return;
 
     // rise a field's save handler
-    // TODO: может надо сначала сбросить текущее сохранение если оно идёт?
-    // TODO: должно подняться собитие save этого поля
-    // TODO: упростить
     this._debouncedCall.exec(() => {
       this._form.$state.riseFieldEvent(this._pathToField, 'save', this.value);
+      // TODO: нужно ли убирать из unsaved???
     }, force);
+
+    // this._form.$state.riseFieldDebouncedSave(this._pathToField, this.value, force);
 
     // rise form's save handler
     this._form.$state.riseFormDebouncedSave(force);
