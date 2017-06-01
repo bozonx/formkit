@@ -138,6 +138,12 @@ describe 'Unit. DebouncedCall.', ->
         expect(this.secondHandler).to.have.been.calledOnce
 
   describe 'cancel.', ->
+    beforeEach () ->
+      this.promisedHandler = () =>
+        return new Promise (resolve, reject) =>
+          this.firstPromiseResolve = resolve
+          this.firstPromiseReject = reject
+
     it "cancel delayed", () ->
       firstHandler = sinon.spy()
       this.debounced.exec(firstHandler, false)
@@ -148,4 +154,18 @@ describe 'Unit. DebouncedCall.', ->
       expect(firstHandler).to.have.not.been.called
 
     it "cancel promise in progress", () ->
-      # TODO: cancel - check statuses
+      secondHandler = sinon.spy()
+      promise1 = this.debounced.exec(this.promisedHandler, false)
+      this.debounced.flush();
+      this.debounced.exec(secondHandler, false)
+
+      assert.isTrue(this.debounced.getPending())
+
+      this.debounced.cancel()
+
+      assert.isFalse(this.debounced.getPending())
+
+      # TODO: что должно произойти с первым промисом???
+
+      assert.isNull(this.debounced._queuedCallback)
+      expect(secondHandler).to.have.not.been.called

@@ -40,6 +40,7 @@ export default class DebouncedCallbackWrapper {
 
   cancel() {
     // TODO: отменить результат если уже выполняется
+    //this._pending = false;
   }
 
   start() {

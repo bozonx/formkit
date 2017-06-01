@@ -49,11 +49,20 @@ export default class DebouncedCall {
   }
 
   cancel() {
-    if (this._debouncedCb) this._debouncedCb.cancel();
+    this._cancelDelayed();
+    this._cancelQueue();
     // TODO: cancel current promise in progress
-    // TODO: remove cb in queue
-    // if (this._cbWrapper) this._cbWrapper.cancel();
+    if (this._cbWrapper) this._cbWrapper.cancel();
+    this._cbWrapper = null;
+  }
+
+  _cancelDelayed() {
+    if (this._debouncedCb) this._debouncedCb.cancel();
     this._delayed = false;
+  }
+
+  _cancelQueue() {
+    this._queuedCallback = null;
   }
 
   flush() {
@@ -111,7 +120,7 @@ export default class DebouncedCall {
   _startDebounced(force) {
     if (force) {
       // TODO: наверное тут нужно отменить только delayed, но не промисы
-      this.cancel();
+      this._cancelDelayed();
       // run without debounce
       this._delayed = true;
       this._cbWrapper.start();
