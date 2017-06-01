@@ -69,7 +69,10 @@ export default class DebouncedCall {
 
   _setCallbackWrapper(cb, params, force) {
     if (this._cbWrapper) {
-      if (this._cbWrapper.isStarted()) {
+      if (this._cbWrapper.isFulfilled()) {
+        this._runFreshCb(cb, params, force);
+      }
+      else if (this._cbWrapper.isStarted()) {
         // set this callback in queue
         this._queuedCallback = { cb, params };
       }

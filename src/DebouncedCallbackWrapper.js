@@ -44,6 +44,7 @@ export default class DebouncedCallbackWrapper {
 
   start() {
     if (!this._callback) throw new Error(`There isn't a callback to run!`);
+    if (this.isFulfilled()) throw new Error(`The promise was fulfilled, you can't start another one!`);
 
     this._started = true;
     this._pending = true;
