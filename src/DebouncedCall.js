@@ -86,7 +86,9 @@ export default class DebouncedCall {
       else {
         // replace callback if it hasn't run.
         this._cbWrapper.setCallback(cb, params);
-        // TODO: if force - cancel and run force
+
+        this._cancelDelayed();
+        this._runWithoutDebounce();
       }
     }
     else {
@@ -96,7 +98,26 @@ export default class DebouncedCall {
 
   _runFreshCb(cb, params, force) {
     this._setupNewCbWrapper(cb, params, force);
-    this._startDebounced(force);
+
+    if (force) {
+      this._runWithoutDebounce();
+    }
+    else {
+      // run debounced
+      this._delayed = true;
+      // TODO: впринципе можно использовать и timeout / clearTimeout
+      this._debouncedCb(() => {
+        if (this._cbWrapper) this._cbWrapper.start();
+        this._delayed = false;
+      });
+    }
+  }
+
+  _runWithoutDebounce() {
+    // run without debounce
+    this._delayed = true;
+    this._cbWrapper.start();
+    this._delayed = false;
   }
 
   /**
@@ -124,30 +145,6 @@ export default class DebouncedCall {
       this._runFreshCb(this._queuedCallback.cb, this._queuedCallback.params, true);
       // remove queue
       this._cancelQueue();
-    }
-  }
-
-  /**
-   * Start waiting for callback run.
-   * There aren't promise in progress and waiting queue and delayed cb on moment of running the method.
-   * @param {boolean} force
-   * @private
-   */
-  _startDebounced(force) {
-    if (force) {
-      // run without debounce
-      this._delayed = true;
-      this._cbWrapper.start();
-      this._delayed = false;
-    }
-    else {
-      // run debounced
-      this._delayed = true;
-      // TODO: впринципе можно использовать и timeout / clearTimeout
-      this._debouncedCb(() => {
-        if (this._cbWrapper) this._cbWrapper.start();
-        this._delayed = false;
-      });
     }
   }
 

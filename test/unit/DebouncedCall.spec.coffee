@@ -98,8 +98,6 @@ describe 'Unit. DebouncedCall.', ->
     it "set simple callback force while current is delayed - the first will be canceled", () ->
       this.debounced.exec(this.firstHandler, false)
       this.debounced.exec(this.secondHandler, true)
-      # TODO: поидее flush тут не нужен
-      this.debounced.flush();
 
       expect(this.firstHandler).to.have.not.been.called
       expect(this.secondHandler).to.have.been.calledOnce
