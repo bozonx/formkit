@@ -1,9 +1,11 @@
 DebouncedCall = require('../../src/DebouncedCall').default
 
 describe 'Unit. DebouncedCall.', ->
+  beforeEach () ->
+    this.debounced = new DebouncedCall(300);
+
   describe 'Simple callback.', ->
     beforeEach () ->
-      this.debounced = new DebouncedCall(300);
       this.simpleValue = undefined;
       this.simpleHandler = (value) =>
         this.simpleValue = value;
@@ -37,7 +39,6 @@ describe 'Unit. DebouncedCall.', ->
 
   describe 'Promises.', ->
     beforeEach () ->
-      this.debounced = new DebouncedCall(300);
       this.promisedHandler = undefined;
       this.firstPromiseResolve = undefined;
       this.firstPromiseReject = undefined;
@@ -83,7 +84,6 @@ describe 'Unit. DebouncedCall.', ->
 
   describe 'Collisions with delay.', ->
     beforeEach () ->
-      this.debounced = new DebouncedCall(300);
       this.firstHandler = sinon.spy()
       this.secondHandler = sinon.spy()
 
@@ -113,7 +113,6 @@ describe 'Unit. DebouncedCall.', ->
 
   describe 'Collisions with promise pending.', ->
     beforeEach () ->
-      this.debounced = new DebouncedCall(300);
       this.promisedHandler = () =>
         return new Promise (resolve, reject) =>
           this.firstPromiseResolve = resolve
@@ -138,6 +137,7 @@ describe 'Unit. DebouncedCall.', ->
       promise1.then =>
         expect(this.secondHandler).to.have.been.calledOnce
 
+  describe 'Collisions with promise pending.', ->
 
 
 # TODO: cancel - check statuses
