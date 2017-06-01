@@ -50,9 +50,9 @@ export default class DebouncedCall {
 
   cancel() {
     if (this._debouncedCb) this._debouncedCb.cancel();
-    // TODO: bad
+    // TODO: cancel current promise in progress
+    // TODO: remove cb in queue
     // if (this._cbWrapper) this._cbWrapper.cancel();
-    // this._cbWrapper = null;
     this._delayed = false;
   }
 
@@ -102,9 +102,6 @@ export default class DebouncedCall {
   }
 
   _runQueuedCb() {
-    // TODO: впринципе можно и не очищать, так как сработает условие на isFulfilled
-    //this._cbWrapper = null;
-
     if (this._queuedCallback) {
       this._runFreshCb(this._queuedCallback.cb, this._queuedCallback.params, true);
       this._queuedCallback = null;
@@ -113,6 +110,7 @@ export default class DebouncedCall {
 
   _startDebounced(force) {
     if (force) {
+      // TODO: наверное тут нужно отменить только delayed, но не промисы
       this.cancel();
       // run without debounce
       this._delayed = true;

@@ -137,7 +137,15 @@ describe 'Unit. DebouncedCall.', ->
       promise1.then =>
         expect(this.secondHandler).to.have.been.calledOnce
 
-  describe 'Collisions with promise pending.', ->
+  describe 'cancel.', ->
+    it "cancel delayed", () ->
+      firstHandler = sinon.spy()
+      this.debounced.exec(firstHandler, false)
+      assert.isTrue(this.debounced.getDelayed())
+      this.debounced.cancel()
+      assert.isFalse(this.debounced.getDelayed())
 
+      expect(firstHandler).to.have.not.been.called
 
-# TODO: cancel - check statuses
+    it "cancel promise in progress", () ->
+      # TODO: cancel - check statuses
