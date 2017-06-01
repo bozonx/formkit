@@ -1,20 +1,23 @@
 import _ from 'lodash';
 
+import Storage from './Storage';
+import Events from './Events';
 import State from './State';
 import Field from './Field';
 import { findInFieldRecursively } from './helpers';
 
 
 export default class Form {
-  constructor(storage, config, events) {
-    this._storage = storage;
+  constructor(config, eventEmitter) {
     this._config = config;
 
     this._fields = {};
     // TODO: move to state
     this._onSubmitCallback = null;
 
-    this._state = new State(this, events, storage);
+    this._storage = new Storage();
+    this._state = new State(this, eventEmitter, this._storage);
+    this._events = new Events(this, eventEmitter, this._storage);
   }
 
   get $state() {
@@ -22,6 +25,9 @@ export default class Form {
   }
   get $storage() {
     return this._storage;
+  }
+  get $events() {
+    return this._events;
   }
   get fields() {
     return this._fields;
