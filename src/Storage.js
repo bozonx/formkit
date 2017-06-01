@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { extendDeep, findInFieldRecursively } from './helpers';
+import { extendDeep, findRecursively } from './helpers';
 
 export default class Storage {
   constructor() {
@@ -31,6 +31,17 @@ export default class Storage {
    */
   getValues() {
     return this._store.values;
+  }
+
+  /**
+   * Returns true if form or one or more of its field is saving.
+   */
+  getSaving() {
+    if (this._store.formState.saving) return true;
+
+    return !!findRecursively(this._store.fieldsState, (field) => {
+      if (field.saving) return true;
+    });
   }
 
   /**
@@ -85,8 +96,9 @@ export default class Storage {
     extendDeep(field, newState);
   }
 
+  // TODO: ???? why??? does it work?
   findRecursively(root, cb) {
-    return findInFieldRecursively(this._store[root], cb);
+    return findRecursively(this._store[root], cb);
   }
 
 

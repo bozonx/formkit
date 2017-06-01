@@ -35,6 +35,9 @@ export default class Form {
   get touched() {
     return this._storage.getFormState('touched');
   }
+  get saving() {
+    return this._storage.getSaving();
+  }
   get submitting() {
     return this._storage.getFormState('submitting');
   }

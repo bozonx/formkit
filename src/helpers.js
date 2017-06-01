@@ -23,9 +23,37 @@ export function extendDeep(willExtend, newValues) {
 export function findInFieldRecursively(rootObject, cb) {
   const recursive = (obj) => _.find(obj, (item) => {
     if (_.isPlainObject(item)) {
+      // it's a container
       return recursive(item);
     }
     else if (_.isObject(item)) {
+      // it's a field
+      return cb(item);
+    }
+  });
+
+  return recursive(rootObject);
+}
+
+export function findRecursively(rootObject, cb) {
+  const isContainer = (item) => {
+    let container = true;
+    _.find(item, (field) => {
+      if (!_.isPlainObject(field)) {
+        container = false;
+
+        return true;
+      }
+    });
+
+    return container;
+  };
+
+  const recursive = (obj) => _.find(obj, (item) => {
+    if (_.isPlainObject(item) && isContainer(item)) {
+      return recursive(item);
+    }
+    else {
       // it's field
       return cb(item);
     }

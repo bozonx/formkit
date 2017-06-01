@@ -11,13 +11,13 @@ describe 'Functional. saving.', ->
       this.form.onSave(this.formSaveHandler)
       this.form.fields.name.onSave(this.saveHandler)
 
-      # TODO: test form saving state
       assert.isFalse(this.form.fields.name.saving)
+      assert.isFalse(this.form.saving)
 
       this.form.fields.name.handleChange('newValue')
 
-      # TODO: test form saving state
       assert.isTrue(this.form.fields.name.saving)
+      assert.isTrue(this.form.saving)
 
       this.form.fields.name._debouncedCall.flush()
 
@@ -58,8 +58,13 @@ describe 'Functional. saving.', ->
 
     it 'save param1 and param3', ->
       this.form.onSave(this.formSaveHandler)
+
+      assert.isFalse(this.form.saving)
+
       this.form.fields.param1.handleChange('newValue1')
       this.form.fields.param3.handleChange('newValue3')
+
+      assert.isTrue(this.form.saving)
 
       this.form.fields.param1._debouncedCall.flush()
       this.form.fields.param3._debouncedCall.flush()
