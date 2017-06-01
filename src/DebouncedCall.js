@@ -69,12 +69,12 @@ export default class DebouncedCall {
 
 
   exec(cb, force, ...params) {
-    this._setCallbackWrapper(cb, params, force);
+    this._chooseTheWay(cb, params, force);
 
     return this._cbWrapper.getPromise();
   }
 
-  _setCallbackWrapper(cb, params, force) {
+  _chooseTheWay(cb, params, force) {
     if (this._cbWrapper) {
       if (this._cbWrapper.isFulfilled() || this._cbWrapper.isCanceled()) {
         this._runFreshCb(cb, params, force);
@@ -86,6 +86,7 @@ export default class DebouncedCall {
       else {
         // replace callback if it hasn't run.
         this._cbWrapper.setCallback(cb, params);
+        // TODO: if force - cancel and run force
       }
     }
     else {
@@ -94,31 +95,46 @@ export default class DebouncedCall {
   }
 
   _runFreshCb(cb, params, force) {
+    this._setupNewCbWrapper(cb, params, force);
+    this._startDebounced(force);
+  }
+
+  /**
+   * Set new callback wrapper.
+   * There aren't promise in progress and waiting queue and delayed cb on moment of running the method.
+   * @param cb
+   * @param params
+   * @private
+   */
+  _setupNewCbWrapper(cb, params) {
     // set new callback wrapper;
     this._cbWrapper = new DebouncedCallbackWrapper();
     this._cbWrapper.setCallback(cb, params);
 
-    // after save promise was saved - remove cbWrapper
+    // after save promise was saved - run cb in queue
     this._cbWrapper.getPromise().then(() => this._runQueuedCb(), (err) => {
       this._runQueuedCb();
 
       return err;
     });
-
-    this._startDebounced(force);
   }
 
   _runQueuedCb() {
     if (this._queuedCallback) {
       this._runFreshCb(this._queuedCallback.cb, this._queuedCallback.params, true);
-      this._queuedCallback = null;
+      // remove queue
+      this._cancelQueue();
     }
   }
 
+  /**
+   * Start waiting for callback run.
+   * There aren't promise in progress and waiting queue and delayed cb on moment of running the method.
+   * @param {boolean} force
+   * @private
+   */
   _startDebounced(force) {
     if (force) {
-      // TODO: наверное тут нужно отменить только delayed, но не промисы
-      this._cancelDelayed();
       // run without debounce
       this._delayed = true;
       this._cbWrapper.start();

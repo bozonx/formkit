@@ -26,6 +26,7 @@ describe 'Functional. onBlur.', ->
     this.form.fields.name.handleChange('newValue')
     assert.isTrue(this.form.fields.name._debouncedCall.getDelayed())
     this.form.fields.name.handleBlur()
+    #this.form.fields.name._debouncedCall.flush()
     assert.isFalse(this.form.fields.name._debouncedCall.getDelayed())
 
     expect(this.fieldOnSaveHandler).to.have.been.calledOnce

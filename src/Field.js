@@ -307,6 +307,9 @@ export default class Field {
     this._debouncedCall.exec(() => {
       this._form.$state.riseFieldEvent(this._pathToField, 'save', this.value);
       // TODO: нужно ли убирать из unsaved???
+
+      // TODO: поидее нужно брать промис с обработчика saved - и только тогда ставить false
+      this._storage.setFieldState(this._pathToField, { saving: false });
     }, force);
     // this._form.$state.riseFieldDebouncedSave(this._pathToField, this.value, force);
 
