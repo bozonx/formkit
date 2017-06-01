@@ -15,6 +15,7 @@ export default class DebouncedCallbackWrapper {
     // this._cbPromise = null;
     this._started = false;
     this._pending = false;
+    this._canceled = false;
   }
 
   getPromise() {
@@ -35,12 +36,18 @@ export default class DebouncedCallbackWrapper {
   }
 
   isFulfilled() {
-    return this.isStarted() && !this.isPending();
+    return this.isStarted() && !this.isPending() && !this._canceled;
+  }
+
+  isCanceled() {
+    return this._canceled;
   }
 
   cancel() {
+    // TODO: cancel current promise in progress
     // TODO: отменить результат если уже выполняется
-    //this._pending = false;
+    this._pending = false;
+    this._canceled = true;
   }
 
   start() {

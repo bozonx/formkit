@@ -51,9 +51,7 @@ export default class DebouncedCall {
   cancel() {
     this._cancelDelayed();
     this._cancelQueue();
-    // TODO: cancel current promise in progress
     if (this._cbWrapper) this._cbWrapper.cancel();
-    this._cbWrapper = null;
   }
 
   _cancelDelayed() {
@@ -78,7 +76,7 @@ export default class DebouncedCall {
 
   _setCallbackWrapper(cb, params, force) {
     if (this._cbWrapper) {
-      if (this._cbWrapper.isFulfilled()) {
+      if (this._cbWrapper.isFulfilled() || this._cbWrapper.isCanceled()) {
         this._runFreshCb(cb, params, force);
       }
       else if (this._cbWrapper.isStarted()) {
