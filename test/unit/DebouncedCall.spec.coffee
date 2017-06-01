@@ -98,6 +98,7 @@ describe 'Unit. DebouncedCall.', ->
     it "set simple callback force while current is delayed - the first will be canceled", () ->
       this.debounced.exec(this.firstHandler, false)
       this.debounced.exec(this.secondHandler, true)
+      # TODO: поидее flush тут не нужен
       this.debounced.flush();
 
       expect(this.firstHandler).to.have.not.been.called
@@ -105,49 +106,38 @@ describe 'Unit. DebouncedCall.', ->
 
     it "set both simple callbacks force - all of them have to run", () ->
       this.debounced.exec(this.firstHandler, true)
-      this.debounced.flush();
       this.debounced.exec(this.secondHandler, true)
-      this.debounced.flush();
 
       expect(this.firstHandler).to.have.been.calledOnce
       expect(this.secondHandler).to.have.been.calledOnce
 
-  ###### Collisions with promise pending
-#  it "set promised callback while current is pending - they run in order", () ->
-#    promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
-#    this.debounced.flush();
+  describe 'Collisions with promise pending.', ->
+    beforeEach () ->
+      this.debounced = new DebouncedCall(300);
+      this.promisedHandler = () =>
+        return new Promise (resolve, reject) =>
+          this.firstPromiseResolve = resolve
+          this.firstPromiseReject = reject
+      this.secondHandler = sinon.spy()
+
+    it "set promised callback while current is pending - they run in order", () ->
+      promise1 = this.debounced.exec(this.promisedHandler, false)
+      this.debounced.flush();
+
+      assert.isFalse(this.debounced.getDelayed())
+      assert.isTrue(this.debounced.getPending())
+
+      this.debounced.exec(this.secondHandler, false)
+      # the second one is in queue
+      assert.deepEqual(this.debounced._queuedCallback.cb, this.secondHandler)
+
+      this.firstPromiseResolve()
+
+      expect(this.secondHandler).to.have.not.been.called
+
+      promise1.then =>
+        expect(this.secondHandler).to.have.been.calledOnce
+
+
 
 # TODO: cancel - check statuses
-
-
-
-#  it "start saving and saving again in duration of last save. The second one must wait for first.", (done) ->
-#    this.debounced.exec(this.saveHandler1, true, 'value1')
-#    this.debounced.exec(this.saveHandler2, true, 'value2')
-#
-#    # at the moment only first callback is running
-#    assert.equal(this.value1, 'value1')
-#    assert.isUndefined(this.value2)
-#
-#    # fulfill first promise
-#    this.promiseResolve1();
-#
-#    expect(this.firstPromise).to.eventually.notify =>
-#      # the second promise is starting immediately
-#      assert.equal(this.value2, 'value2')
-#      done()
-#
-#  it "if the first promise was rejected, the second one will be start immediately", (done) ->
-#    this.debounced.exec(this.saveHandler1, true, 'value1')
-#    this.debounced.exec(this.saveHandler2, true, 'value2')
-#
-#    # reject first promise
-#    this.promiseReject1('error');
-#    Promise.all([
-#      expect(this.firstPromise).to.eventually.rejected.and.equal('error'),
-#      expect(this.firstPromise).to.eventually.notify =>
-#        # the second promise is starting immediately
-#        assert.equal(this.value2, 'value2')
-#        done()
-#    ]);
-#    return undefined

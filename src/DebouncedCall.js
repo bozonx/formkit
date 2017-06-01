@@ -92,9 +92,7 @@ export default class DebouncedCall {
     this._cbWrapper.setCallback(cb, params);
 
     // after save promise was saved - remove cbWrapper
-    this._cbWrapper.getPromise().then(() => {
-      this._runQueuedCb();
-    }, (err) => {
+    this._cbWrapper.getPromise().then(() => this._runQueuedCb(), (err) => {
       this._runQueuedCb();
 
       return err;
@@ -104,11 +102,12 @@ export default class DebouncedCall {
   }
 
   _runQueuedCb() {
-    this._cbWrapper = null;
+    // TODO: впринципе можно и не очищать, так как сработает условие на isFulfilled
+    //this._cbWrapper = null;
 
     if (this._queuedCallback) {
-      this._queuedCallback = null;
       this._runFreshCb(this._queuedCallback.cb, this._queuedCallback.params, true);
+      this._queuedCallback = null;
     }
   }
 

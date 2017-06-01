@@ -69,8 +69,8 @@ export default class DebouncedCallbackWrapper {
     }
   }
 
-  _isPromise(unnown) {
-    return _.isObject(unnown) && unnown.then;
+  _isPromise(unkown) {
+    return _.isObject(unkown) && unkown.then;
   }
 
 }
