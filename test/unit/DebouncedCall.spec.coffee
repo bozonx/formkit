@@ -1,85 +1,84 @@
 DebouncedCall = require('../../src/DebouncedCall').default
 
 describe 'Unit. DebouncedCall.', ->
-  beforeEach () ->
-    this.debounced = new DebouncedCall(300);
+  describe 'Simple callback.', ->
+    beforeEach () ->
+      this.debounced = new DebouncedCall(300);
+      this.simpleValue = undefined;
+      this.simpleHandler = (value) =>
+        this.simpleValue = value;
 
-    this.promisedHandler = undefined;
-    this.firstPromiseResolve = undefined;
-    this.firstPromiseReject = undefined;
-    this.promisedValue = undefined;
+    it "set simple callback force - check statuses and result", ->
+      assert.isFalse(this.debounced.getDelayed())
+      assert.isFalse(this.debounced.getPending())
 
-    this.simpleHandler = undefined;
-    this.simpleValue = undefined;
+      this.debounced.exec(this.simpleHandler, true, 'simpleValue')
 
-    this.promisedHandler = (value) =>
-      return new Promise (resolve, reject) =>
-        this.firstPromiseResolve = () =>
-          this.promisedValue = value;
-          resolve()
-        this.firstPromiseReject = reject
-
-    this.simpleHandler = (value) =>
-      this.simpleValue = value;
-
-  ###### Simple callback
-  it "set simple callback force - check statuses and result", ->
-    assert.isFalse(this.debounced.getDelayed())
-    assert.isFalse(this.debounced.getPending())
-
-    this.debounced.exec(this.simpleHandler, true, 'simpleValue')
-
-    assert.isFalse(this.debounced.getDelayed())
-    assert.isFalse(this.debounced.getPending())
-    assert.equal(this.simpleValue, 'simpleValue')
-
-  it "set simple callback force - check promise", ->
-    promise = this.debounced.exec(this.simpleHandler, true, 'simpleValue')
-
-    promise.then () =>
       assert.isFalse(this.debounced.getDelayed())
       assert.isFalse(this.debounced.getPending())
       assert.equal(this.simpleValue, 'simpleValue')
 
-  it "set simple callback delayed", ->
-    promise = this.debounced.exec(this.simpleHandler, false, 'simpleValue')
-    this.debounced.flush();
+    it "set simple callback force - check promise", ->
+      promise = this.debounced.exec(this.simpleHandler, true, 'simpleValue')
 
-    promise.then () =>
-      assert.isFalse(this.debounced.getDelayed())
-      assert.isFalse(this.debounced.getPending())
-      assert.equal(this.simpleValue, 'simpleValue')
+      promise.then () =>
+        assert.isFalse(this.debounced.getDelayed())
+        assert.isFalse(this.debounced.getPending())
+        assert.equal(this.simpleValue, 'simpleValue')
 
-  ###### Promises
-  it "set promised callback force", ->
-    promise = this.debounced.exec(this.promisedHandler, true, 'promisedValue')
-    this.firstPromiseResolve();
+    it "set simple callback delayed", ->
+      promise = this.debounced.exec(this.simpleHandler, false, 'simpleValue')
+      this.debounced.flush();
 
-    promise.then () =>
-      assert.isFalse(this.debounced.getDelayed())
-      assert.isFalse(this.debounced.getPending())
-      assert.equal(this.promisedValue, 'promisedValue')
+      promise.then () =>
+        assert.isFalse(this.debounced.getDelayed())
+        assert.isFalse(this.debounced.getPending())
+        assert.equal(this.simpleValue, 'simpleValue')
 
-  it "set promised callback delayed", () ->
-    promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
-    this.debounced.flush();
-    this.firstPromiseResolve();
+  describe 'Promises.', ->
+    beforeEach () ->
+      this.debounced = new DebouncedCall(300);
+      this.promisedHandler = undefined;
+      this.firstPromiseResolve = undefined;
+      this.firstPromiseReject = undefined;
+      this.promisedValue = undefined;
 
-    promise.then () =>
-      assert.isFalse(this.debounced.getDelayed())
-      assert.isFalse(this.debounced.getPending())
-      assert.equal(this.promisedValue, 'promisedValue')
+      this.promisedHandler = (value) =>
+        return new Promise (resolve, reject) =>
+          this.firstPromiseResolve = () =>
+            this.promisedValue = value;
+            resolve()
+          this.firstPromiseReject = reject
 
-  it "set promised callback delayed - promise has rejected", () ->
-    promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
-    this.debounced.flush();
-    this.firstPromiseReject('error');
+    it "set promised callback force", ->
+      promise = this.debounced.exec(this.promisedHandler, true, 'promisedValue')
+      this.firstPromiseResolve();
 
-    promise.catch (err) =>
-      assert.isFalse(this.debounced.getDelayed())
-      assert.isFalse(this.debounced.getPending())
-      assert.isUndefined(this.promisedValue)
-      assert.equal(err, 'error')
+      promise.then () =>
+        assert.isFalse(this.debounced.getDelayed())
+        assert.isFalse(this.debounced.getPending())
+        assert.equal(this.promisedValue, 'promisedValue')
+
+    it "set promised callback delayed", () ->
+      promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
+      this.debounced.flush();
+      this.firstPromiseResolve();
+
+      promise.then () =>
+        assert.isFalse(this.debounced.getDelayed())
+        assert.isFalse(this.debounced.getPending())
+        assert.equal(this.promisedValue, 'promisedValue')
+
+    it "set promised callback delayed - promise has rejected", () ->
+      promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
+      this.debounced.flush();
+      this.firstPromiseReject('error');
+
+      promise.catch (err) =>
+        assert.isFalse(this.debounced.getDelayed())
+        assert.isFalse(this.debounced.getPending())
+        assert.isUndefined(this.promisedValue)
+        assert.equal(err, 'error')
 
 
   describe 'Collisions with delay.', ->
