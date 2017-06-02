@@ -12,8 +12,6 @@ export default class Form {
     this._config = config;
 
     this._fields = {};
-    // TODO: move to events
-    this._onSubmitCallback = null;
 
     this._storage = new Storage();
     this._state = new State(this, this._storage);
@@ -107,7 +105,7 @@ export default class Form {
   }
 
   onSubmit(cb) {
-    this._onSubmitCallback = cb;
+    this._events.setFormCallback('submit', cb);
   }
 
 
@@ -231,8 +229,9 @@ export default class Form {
     };
 
 
-    if (this._onSubmitCallback) {
-      const returnedValue = this._onSubmitCallback(values);
+    if (this._events.getFormCallback('submit')) {
+      // TODO: поднять startSubmit and endSubmit
+      const returnedValue = this._events.getFormCallback('submit')(values);
 
       // if promise
       if (returnedValue && returnedValue.then) {
