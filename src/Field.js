@@ -160,10 +160,10 @@ export default class Field {
      // don't do anything if disabled
     if (this.disabled) return;
 
-    const oldCombinedValue = _.cloneDeep(this.value);
+    const oldValue = _.cloneDeep(this.value);
 
     // don't save unchanged value if it allows in config.
-    if (!this._form.config.unchangedValueSaving && _.isEqual(oldCombinedValue, newValue)) return;
+    if (!this._form.config.allowSaveUnchanged && _.isEqual(oldValue, newValue)) return;
 
     // TODO: use this.setValue()
 
@@ -175,7 +175,7 @@ export default class Field {
     this.validate();
 
     // rise change by user handler
-    this._events.riseUserChangeEvent(this._pathToField, oldCombinedValue, newValue);
+    this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
 
     // start save with debounced delay
     this._startSave(false);
