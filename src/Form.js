@@ -89,8 +89,7 @@ export default class Form {
    * @param cb
    */
   on(eventName, cb) {
-    // TODO: use `form.${eventName}`
-    this._events.addListener(eventName, cb);
+    this._events.addFormListener(eventName, cb);
   }
 
   /**

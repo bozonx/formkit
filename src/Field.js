@@ -220,7 +220,7 @@ export default class Field {
    * @param cb
    */
   on(eventName, cb) {
-    this._events.addListener(`field.${this._pathToField}.${eventName}`, cb);
+    this._events.addFieldListener(this._pathToField, eventName, cb);
   }
 
   /**

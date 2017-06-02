@@ -12,13 +12,6 @@ export default class Events {
     this._eventEmitter = eventEmitter;
     this._storage = storage;
 
-    this._formHandlers = {
-      change: [],
-      silent: [],
-      any: [],
-    };
-    this._fieldsHandlers = {};
-
     this._formCallbacks = {
       change: null,
       save: null,
@@ -26,8 +19,6 @@ export default class Events {
     };
     this._fieldsCallbacks = {};
 
-    // TODO: переименовать в приватное или в $$
-    // TODO: на save и submit должны быть отдельные DebouncedCall
     this._formSaveDebouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
@@ -48,7 +39,6 @@ export default class Events {
     }
 
     this._fieldsCallbacks[pathToField][eventName] = cb;
-    //this.addListener(`field.${pathToField}.${eventName}`, cb);
   }
 
   riseFieldSave(pathToField, data) {
@@ -60,6 +50,7 @@ export default class Events {
   }
 
   riseFormDebouncedSave(force) {
+    // TODO: review
     //if (_.isEmpty(this._formHandlers.save)) return;
 
     return this._formSaveDebouncedCall.exec(() => {
@@ -73,6 +64,13 @@ export default class Events {
     }, force);
   }
 
+  // riseFieldDebouncedSave(pathToField, value, force) {
+  //   this._formSaveDebouncedCall.exec(() => {
+  //     this._riseFieldEvent(pathToField, 'save', value);
+  //     // TODO: нужно ли убирать из unsaved???
+  //   }, force);
+  // }
+
   /**
    * It calls from field on silent value change (after outer value setting).
    * It means - it calls onlu on value changes by machine.
@@ -81,6 +79,7 @@ export default class Events {
    * @param {*} oldValue
    */
   riseSilentChangeEvent(pathToField, oldValue) {
+    // TODO: review
     const eventData = {
       fieldName: pathToField,
       oldValue,
@@ -89,8 +88,10 @@ export default class Events {
 
     // Rise events
     // TODO use _riseFieldEvent
-    this._eventEmitter.emit('silentChange', eventData);
-    this._eventEmitter.emit(`field.${pathToField}.silentChange`, eventData);
+    this._riseFormEvent('silentChange', eventData);
+    this._riseFieldEvent(pathToField, 'silentChange', eventData);
+    // this._eventEmitter.emit('silentChange', eventData);
+    // this._eventEmitter.emit(`field.${pathToField}.silentChange`, eventData);
 
     this._riseAnyChange(pathToField);
   }
@@ -104,6 +105,7 @@ export default class Events {
    * @param {*} newValue
    */
   riseUserChangeEvent(pathToField, oldValue, newValue) {
+    // TODO: review
     const eventData = {
       fieldName: pathToField,
       oldValue,
@@ -130,17 +132,13 @@ export default class Events {
     this._riseAnyChange(pathToField);
   }
 
-  addListener(eventName, cb) {
-    this._eventEmitter.addListener(eventName, cb);
+  addFormListener(eventName, cb) {
+    this._eventEmitter.addListener(`form.${eventName}`, cb);
   }
 
-  // riseFieldDebouncedSave(pathToField, value, force) {
-  //   this._formSaveDebouncedCall.exec(() => {
-  //     this._riseFieldEvent(pathToField, 'save', value);
-  //     // TODO: нужно ли убирать из unsaved???
-  //   }, force);
-  // }
-
+  addFieldListener(pathToField, eventName, cb) {
+    this._eventEmitter.addListener(`field.${pathToField}.${eventName}`, cb);
+  }
 
   cancelFormSaving() {
     this._formSaveDebouncedCall.cancel();
@@ -165,12 +163,8 @@ export default class Events {
    * @private
    */
   _riseAnyChange(pathToField) {
-    this._eventEmitter.emit(`field.${pathToField}.anyChange`);
-    this._eventEmitter.emit('anyChange');
-
-    // TODO use _riseFieldEvent
-    // this.riseFormEvent('anyChange');
-    // this._riseFieldEvent(pathToField, 'anyChange');
+    this._riseFormEvent('anyChange');
+    this._riseFieldEvent(pathToField, 'anyChange');
   }
 
 }
