@@ -16,8 +16,6 @@ export default class Events {
       change: [],
       silent: [],
       any: [],
-      save: [],
-      submit: [],
     };
     this._fieldsHandlers = {};
 
@@ -26,18 +24,41 @@ export default class Events {
       save: null,
       submit: null,
     };
+    this._fieldsCallbacks = {};
 
     // TODO: переименовать в приватное или в $$
     this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
-  getFormCallback(event) {
-    return this._formCallbacks[event];
+  getFormCallback(eventName) {
+    return this._formCallbacks[eventName];
   }
 
-  setFormCallback(event, cb) {
-    this._formCallbacks[event] = cb;
+  setFormCallback(eventName, cb) {
+    this._formCallbacks[eventName] = cb;
   }
+
+  setFieldCallback(pathToField, eventName, cb) {
+    if (!this._fieldsCallbacks[pathToField]) {
+      this._fieldsCallbacks[pathToField] = {
+        change: null,
+        save: null,
+      };
+    }
+
+    this._fieldsCallbacks[pathToField][eventName] = cb;
+    //this.addListener(`field.${pathToField}.${eventName}`, cb);
+  }
+
+  riseFieldSave(pathToField, data) {
+    const eventName = 'save';
+    if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField][eventName]) {
+      this._fieldsCallbacks[pathToField][eventName](data);
+    }
+    this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
+  }
+
+
 
 
   setFormHandler(eventName, cb) {
@@ -51,7 +72,6 @@ export default class Events {
         change: [],
         silent: [],
         any: [],
-        save: [],
       };
     }
 
@@ -59,7 +79,7 @@ export default class Events {
     this.addListener(`field.${pathToField}.${eventName}`, cb);
   }
 
-  riseFormEvent(eventName, data) {
+  _riseFormEvent(eventName, data) {
     this._eventEmitter.emit(`form.${eventName}`, data);
   }
 
@@ -79,11 +99,14 @@ export default class Events {
   // }
 
   riseFormDebouncedSave(force) {
-    if (_.isEmpty(this._formHandlers.save)) return;
+    //if (_.isEmpty(this._formHandlers.save)) return;
 
     return this.$debouncedCall.exec(() => {
       // save current state on the moment
-      this.riseFormEvent('save', this._storage.getUnsavedValues());
+      const data = this._storage.getUnsavedValues();
+      if (this._formCallbacks.save) this._formCallbacks.save(data);
+      this._riseFormEvent('save', data);
+
       // TODO: вынести в промис
       this._storage.clearUnsavedValues();
     }, force);
@@ -129,7 +152,7 @@ export default class Events {
     // Rise events field's change handler
     this.riseFieldEvent(pathToField, 'change', eventData);
     // run form's change handler
-    this.riseFormEvent('change', { [pathToField]: newValue });
+    this._riseFormEvent('change', { [pathToField]: newValue });
 
     // TODO: вынести в промис
     this._storage.setUnsavedValue(pathToField, newValue);

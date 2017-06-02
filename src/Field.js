@@ -225,7 +225,8 @@ export default class Field {
    * @param cb
    */
   onSave(cb) {
-    this._events.setFieldHandler(this._pathToField, 'save', cb);
+    //this._events.setFieldHandler(this._pathToField, 'save', cb);
+    this._events.setFieldCallback(this._pathToField, 'save', cb);
   }
 
   /**
@@ -307,7 +308,7 @@ export default class Field {
     // rise a field's save handler
     // TODO: только если есть обработчики
     this._debouncedCall.exec(() => {
-      this._events.riseFieldEvent(this._pathToField, 'save', this.value);
+      this._events.riseFieldSave(this._pathToField, this.value);
       // TODO: нужно ли убирать из unsaved???
 
       // TODO: поидее нужно брать промис с обработчика saved - и только тогда ставить false

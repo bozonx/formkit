@@ -31,7 +31,7 @@ export default class Form {
     return this._storage.getFormState('touched');
   }
   get saving() {
-    return this._storage.getSaving();
+    return this._storage.getFormSaving();
   }
   get submitting() {
     return this._storage.getFormState('submitting');
@@ -98,10 +98,13 @@ export default class Form {
    */
   onChange(cb) {
     this._events.setFormHandler('change', cb);
+    // TODO: !!!!!
+    //this._events.setFormCallback('change', cb);
   }
 
   onSave(cb) {
-    this._events.setFormHandler('save', cb);
+    //this._events.setFormHandler('save', cb);
+    this._events.setFormCallback('save', cb);
   }
 
   onSubmit(cb) {
@@ -151,6 +154,7 @@ export default class Form {
    * Cancel debounce waiting for saving
    */
   cancelSaving() {
+    // TODO: this._events.cancelFormSaving();
     this._events.$debouncedCall.cancel();
   }
 
@@ -158,6 +162,7 @@ export default class Form {
    * Saving immediately
    */
   flushSaving() {
+    // TODO: this._events.flushFormSaving();
     this._events.$debouncedCall.flush();
   }
 
@@ -173,7 +178,9 @@ export default class Form {
   }
 
   /**
-   * Set saved values and update values.
+   * Set values to "saved" level and update current values.
+   * It usually runs after saving has successfully done.
+   * It needs if you want to rollback user changes to previously saved values.
    * @param newValues
    */
   setSavedValues(newValues) {

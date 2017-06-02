@@ -36,7 +36,7 @@ export default class Storage {
   /**
    * Returns true if form or one or more of its field is saving.
    */
-  getSaving() {
+  getFormSaving() {
     if (this._store.formState.saving) return true;
 
     return !!findRecursively(this._store.fieldsState, (field) => {
