@@ -11,8 +11,8 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.equal(this.form.fields.name.value, 'newValue')
     assert.isUndefined(this.form.fields.name.savedValue)
 
-    assert.equal(this.form.$storage.getValue('name'), 'newValue')
-    assert.isUndefined(this.form.$storage.getFieldState('name', 'savedValue'))
+    assert.equal(this.form._storage.getValue('name'), 'newValue')
+    assert.isUndefined(this.form._storage.getFieldState('name', 'savedValue'))
 
   it "set initial value", ->
     this.form = formHelper.newForm()
@@ -21,8 +21,8 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.equal(this.form.fields.name.value, 'initValue')
     assert.isUndefined(this.form.fields.name.savedValue)
 
-    assert.equal(this.form.$storage.getValue('name'), 'initValue')
-    assert.isUndefined(this.form.$storage.getFieldState('name', 'savedValue'))
+    assert.equal(this.form._storage.getValue('name'), 'initValue')
+    assert.isUndefined(this.form._storage.getFieldState('name', 'savedValue'))
 
   it "set new saved value", ->
     this.form.fields.name.handleChange('newValue')
@@ -32,8 +32,8 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.equal(this.form.fields.name.value, 'newSavedValue')
     assert.equal(this.form.fields.name.savedValue, 'newSavedValue')
 
-    assert.equal(this.form.$storage.getValue('name'), 'newSavedValue')
-    assert.equal(this.form.$storage.getFieldState('name', 'savedValue'), 'newSavedValue')
+    assert.equal(this.form._storage.getValue('name'), 'newSavedValue')
+    assert.equal(this.form._storage.getFieldState('name', 'savedValue'), 'newSavedValue')
 
   it "set new values to whole form (machine update)", ->
     this.form.fields.name.handleChange('newValue')
@@ -43,8 +43,8 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.equal(this.form.fields.name.value, 'newSavedValue')
     assert.equal(this.form.fields.name.savedValue, 'newSavedValue')
 
-    assert.equal(this.form.$storage.getValue('name'), 'newSavedValue')
-    assert.equal(this.form.$storage.getFieldState('name', 'savedValue'), 'newSavedValue')
+    assert.equal(this.form._storage.getValue('name'), 'newSavedValue')
+    assert.equal(this.form._storage.getFieldState('name', 'savedValue'), 'newSavedValue')
 
   it "clear user input of field", ->
     this.form.fields.name.setSavedValue('savedValue')

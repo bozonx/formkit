@@ -12,7 +12,7 @@ export default class Form {
     this._config = config;
 
     this._fields = {};
-    // TODO: move to state
+    // TODO: move to events
     this._onSubmitCallback = null;
 
     this._storage = new Storage();
@@ -20,14 +20,6 @@ export default class Form {
     this._events = new Events(this, eventEmitter, this._storage);
   }
 
-  get $state() {
-    // TODO: remove
-    return this._state;
-  }
-  get $storage() {
-    // TODO: remove
-    return this._storage;
-  }
   get fields() {
     return this._fields;
   }
