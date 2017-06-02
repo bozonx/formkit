@@ -5,9 +5,11 @@ import { calculateDirty, getFieldName, parseValidateCbReturn } from './helpers';
 
 
 export default class Field {
-  constructor(form, pathToField, params) {
+  constructor(pathToField, params, { form, events, storage, state }) {
     this._form = form;
-    this._storage = this._form.$storage;
+    this._events = events;
+    this._storage = storage;
+    this._state = state;
     this._debouncedCall = new DebouncedCall(this._form.config.debounceTime);
 
     this._pathToField = pathToField;

@@ -21,13 +21,12 @@ export default class Form {
   }
 
   get $state() {
+    // TODO: remove
     return this._state;
   }
   get $storage() {
+    // TODO: remove
     return this._storage;
-  }
-  get $events() {
-    return this._events;
   }
   get fields() {
     return this._fields;
@@ -201,7 +200,12 @@ export default class Form {
     if (existentField) throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
 
     // create new one
-    const newField = new Field(this, pathToField, params);
+    const newField = new Field(pathToField, params, {
+      form: this,
+      events: this._events,
+      storage: this._storage,
+      state: this._state,
+    });
     _.set(this.fields, pathToField, newField);
   }
 
