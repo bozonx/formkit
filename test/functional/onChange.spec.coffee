@@ -7,9 +7,13 @@ describe 'Functional. onChange and handleChange.', ->
 
     this.fieldOnChangeHandler = sinon.spy();
     this.formOnChangeHandler = sinon.spy();
+    this.fieldOnSaveHandler = sinon.spy();
+    this.formOnSaveHandler = sinon.spy();
 
     this.form.fields.name.onChange(this.fieldOnChangeHandler);
     this.form.onChange(this.formOnChangeHandler);
+    this.form.fields.name.onSave(this.fieldOnSaveHandler);
+    this.form.onSave(this.formOnSaveHandler);
 
   it "call after setValue", ->
     this.form.fields.name.handleChange('userValue')
@@ -31,28 +35,35 @@ describe 'Functional. onChange and handleChange.', ->
 
     expect(this.formOnChangeHandler).to.not.have.been.called
 
-  it "call after uncahnged value if this.form.config.allowSaveUnchanged = true", ->
-    this.form.config.allowSaveUnchanged = true;
+  it "call after uncahnged value if this.form.config.allowUnchanged = true", ->
+    this.form.config.allowUnchanged = true;
     this.form.fields.name.handleChange('userValue')
     this.form.fields.name.handleChange('userValue')
 
-    # TODO: нужно проверять save callback
+    this.form.fields.name.flushSaving();
+    this.form.flushSaving();
 
     expect(this.fieldOnChangeHandler).to.have.been.calledTwice
     expect(this.formOnChangeHandler).to.have.been.calledTwice
+    expect(this.fieldOnSaveHandler).to.have.been.calledOnce
+    expect(this.formOnSaveHandler).to.have.been.calledOnce
 
-  it "dont call after uncahnged value if this.form.config.allowSaveUnchanged = false", ->
-    this.form.config.allowSaveUnchanged = false;
+  it "dont call after uncahnged value if this.form.config.allowUnchanged = false", ->
+    this.form.config.allowUnchanged = false;
     this.form.fields.name.handleChange('userValue')
     this.form.fields.name.handleChange('userValue')
 
-    # TODO: нужно проверять save callback
+    this.form.fields.name.flushSaving();
+    this.form.flushSaving();
 
     expect(this.fieldOnChangeHandler).to.have.been.calledOnce
     expect(this.fieldOnChangeHandler).to.have.been.calledWith({ fieldName: "name", oldValue: undefined, value: "userValue" })
 
     expect(this.formOnChangeHandler).to.have.been.calledOnce
     expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'userValue'})
+
+    expect(this.fieldOnSaveHandler).to.have.been.calledOnce
+    expect(this.formOnSaveHandler).to.have.been.calledOnce
 
   it "don't do anything if disabled", ->
     this.form.fields.name.handleChange('oldValue')

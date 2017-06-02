@@ -167,14 +167,14 @@ export default class Field {
       this._setValueDirtyValidate(newValue);
     }
 
-    // don't save unchanged value if it allows in config.
-    if (!this._form.config.allowSaveUnchanged && !isChanged) return;
+    // rise change event and save only changed value
+    if (this._form.config.allowUnchanged || isChanged) {
+      // rise change by user event handlers and callbacks of form and field
+      this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
 
-    // rise change by user event handlers and callbacks of form and field
-    this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
-
-    // start save with debounced delay
-    this._startSave(false);
+      // start save with debounced delay
+      this._startSave(false);
+    }
   }
 
   /**
