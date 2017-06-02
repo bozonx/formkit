@@ -8,9 +8,9 @@ import { findInFieldRecursively } from './helpers';
  * @class
  */
 export default class State {
-  constructor(form, events, storage) {
+  constructor(form, eventEmitter, storage) {
     this._form = form;
-    this._events = events;
+    this._eventEmitter = eventEmitter;
     this._storage = storage;
 
     this._formHandlers = {
@@ -46,15 +46,15 @@ export default class State {
   }
 
   riseFormEvent(eventName, data) {
-    this._events.emit(`form.${eventName}`, data);
+    this._eventEmitter.emit(`form.${eventName}`, data);
   }
 
   riseFieldEvent(pathToField, eventName, data) {
-    this._events.emit(`field.${pathToField}.${eventName}`, data);
+    this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
   }
 
   addListener(eventName, cb) {
-    this._events.addListener(eventName, cb);
+    this._eventEmitter.addListener(eventName, cb);
   }
 
   // riseFieldDebouncedSave(pathToField, value, force) {
@@ -91,8 +91,8 @@ export default class State {
 
     // Rise events
     // TODO use riseFieldEvent
-    this._events.emit('silentChange', eventData);
-    this._events.emit(`field.${pathToField}.silentChange`, eventData);
+    this._eventEmitter.emit('silentChange', eventData);
+    this._eventEmitter.emit(`field.${pathToField}.silentChange`, eventData);
 
     this._riseAnyChange(pathToField);
   }
@@ -164,8 +164,8 @@ export default class State {
    * @private
    */
   _riseAnyChange(pathToField) {
-    this._events.emit(`field.${pathToField}.anyChange`);
-    this._events.emit('anyChange');
+    this._eventEmitter.emit(`field.${pathToField}.anyChange`);
+    this._eventEmitter.emit('anyChange');
 
     // TODO use riseFieldEvent
     // this.riseFormEvent('anyChange');
