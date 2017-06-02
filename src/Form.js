@@ -44,6 +44,11 @@ export default class Form {
   get config() {
     return this._config;
   }
+
+  /**
+   * Get all messages of invalid fields
+   * @return {object} like {"path.to.field": "msg"}
+   */
   get invalidMessages() {
     const invalidMessages = {};
     findInFieldRecursively(this.fields, (field) => {
@@ -74,12 +79,18 @@ export default class Form {
   }
 
   /**
-   * Add one or more handlers on form's event: 'change', 'silentChange' and 'anyChange'
+   * Add one or more handlers on form's event:
+   * * change
+   * * silentChange
+   * * anyChange
+   * * saveStart
+   * * saveEnd
+   * * submitStart
+   * * submitEnd
    * @param eventName
    * @param cb
    */
   on(eventName, cb) {
-    // TODO: почему не поддерживаются остальные методы - onSubmit etc?
     this._events.addListener(eventName, cb);
   }
 
