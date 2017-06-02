@@ -10,6 +10,10 @@ export default class State {
     this._storage = storage;
   }
 
+  setFormSavingState(value) {
+    this._storage.setFormState('saving', value);
+  }
+
   setFieldSavingState(pathToField, value) {
     this._storage.setFieldState(pathToField, { saving: value });
   }

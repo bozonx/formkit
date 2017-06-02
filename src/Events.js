@@ -1,14 +1,16 @@
 import DebouncedCall from './DebouncedCall';
+import { isPromise } from './helpers';
 
 /**
  * It sets field and form states and rise an event if need
  * @class
  */
 export default class Events {
-  constructor(form, eventEmitter, storage) {
+  constructor(form, eventEmitter, storage, state) {
     this._form = form;
     this._eventEmitter = eventEmitter;
     this._storage = storage;
+    this._state = state;
 
     this._formCallbacks = {
       change: null,
@@ -49,11 +51,11 @@ export default class Events {
     // if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField].save) {
     //   this._fieldsCallbacks[pathToField].save(data);
     // }
-    this._eventEmitter.emit(`field.${pathToField}.saveStart`, data);
+    this._riseFieldEvent(pathToField, 'saveStart', data);
   }
 
   riseFieldSaveEnd(pathToField) {
-    this._eventEmitter.emit(`field.${pathToField}.saveEnd`);
+    this._riseFieldEvent(pathToField, 'saveEnd');
   }
 
   riseFormDebouncedSave(force) {
@@ -62,11 +64,40 @@ export default class Events {
     return this._formSaveDebouncedCall.exec(() => {
       // save current state on the moment
       const data = this._storage.getUnsavedValues();
-      if (this._formCallbacks.save) this._formCallbacks.save(data);
-      this._riseFormEvent('save', data);
 
-      // TODO: вынести в промис
-      this._storage.clearUnsavedValues();
+      // set saving: true
+      this._state.setFormSavingState(true);
+      // rise saveStart event
+      this._riseFormEvent('saveStart', data);
+
+
+      const saveEnd = () => {
+        // set saving: false
+        this._state.setFormSavingState(false);
+        // rise saveEnd
+        this._riseFormEvent('saveEnd');
+        // TODO: вынести в промис
+        this._storage.clearUnsavedValues();
+      };
+
+      if (this._formCallbacks.save) {
+        // run save callback
+        const cbPromise = this._formCallbacks.save(data);
+        if (isPromise(cbPromise)) {
+          cbPromise.then(() => {
+            saveEnd();
+          });
+
+          return cbPromise;
+        }
+
+        // if save callback hasn't returned a promise
+        saveEnd();
+      }
+      else {
+        // if there isn't save callback
+        saveEnd();
+      }
     }, force);
   }
 
@@ -86,11 +117,8 @@ export default class Events {
     };
 
     // Rise events
-    // TODO use _riseFieldEvent
     this._riseFormEvent('silentChange', eventData);
     this._riseFieldEvent(pathToField, 'silentChange', eventData);
-    // this._eventEmitter.emit('silentChange', eventData);
-    // this._eventEmitter.emit(`field.${pathToField}.silentChange`, eventData);
 
     this._riseAnyChange(pathToField);
   }

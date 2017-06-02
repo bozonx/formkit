@@ -47,11 +47,9 @@ describe 'Functional. saving.', ->
       startSaveHandler = sinon.spy()
       endSaveHandler = sinon.spy()
       handlerResolve = null
-      handlerReject = null
       saveHandler = () =>
-        return new Promise (resolve, reject) =>
+        return new Promise (resolve) =>
           handlerResolve = resolve
-          handlerReject = reject
 
       this.form.fields.name.onSave(saveHandler)
       this.form.fields.name.on('saveStart', startSaveHandler)
@@ -94,3 +92,30 @@ describe 'Functional. saving.', ->
         param1: 'newValue1',
         param3: 'newValue3',
       })
+
+    it "save callback returns a promise", ->
+      startSaveHandler = sinon.spy()
+      endSaveHandler = sinon.spy()
+      handlerResolve = null
+      saveHandler = () =>
+        return new Promise (resolve) =>
+          handlerResolve = resolve
+
+      this.form.onSave(saveHandler)
+      this.form.on('saveStart', startSaveHandler)
+      this.form.on('saveEnd', endSaveHandler)
+      this.form.fields.param1.handleChange('newValue')
+
+      assert.isFalse(this.form.saving)
+
+      this.form.fields.param1.cancelSaving()
+      savePromise = this.form.save()
+
+      assert.isTrue(this.form.saving)
+
+      handlerResolve()
+
+      savePromise.then () =>
+        assert.isFalse(this.form.saving)
+        expect(startSaveHandler).to.have.been.calledOnce
+        expect(endSaveHandler).to.have.been.calledOnce

@@ -10,6 +10,7 @@ export default class Field {
     this._events = events;
     this._storage = storage;
     this._state = state;
+    // TODO: move to events
     this._debouncedCall = new DebouncedCall(this._form.config.debounceTime);
 
     this._pathToField = pathToField;
@@ -314,6 +315,7 @@ export default class Field {
     // don't save invalid value
     if (!this.valid) return Promise.reject(new Error('Field is invalid'));
     // save only value which was modified.
+    // TODO: уже же есть проверка в handleChange
     if (!this._storage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
     // rise a field's save handlers, callback and switch saving state
@@ -330,6 +332,8 @@ export default class Field {
   }
 
   _startSaving() {
+    // TODO: move to events
+
     // set saving: true
     this._state.setFieldSavingState(this._pathToField, true);
     // rise saveStart event

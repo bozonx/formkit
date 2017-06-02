@@ -15,7 +15,7 @@ export default class Form {
 
     this._storage = new Storage();
     this._state = new State(this, this._storage);
-    this._events = new Events(this, eventEmitter, this._storage);
+    this._events = new Events(this, eventEmitter, this._storage, this._state);
   }
 
   get fields() {
