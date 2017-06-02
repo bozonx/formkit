@@ -21,20 +21,22 @@ export default class Events {
     };
     this._fieldsHandlers = {};
 
-    this._formChangeCallback = null;
-    this._formSaveCallback = null;
-    this._formSubmitCallback = null;
+    this._formCallbacks = {
+      change: null,
+      save: null,
+      submit: null,
+    };
 
     // TODO: переименовать в приватное или в $$
     this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
   getFormCallback(event) {
-    return this[`_form${_.capitalize(event)}Callback`];
+    return this._formCallbacks[event];
   }
 
   setFormCallback(event, cb) {
-    this[`_form${_.capitalize(event)}Callback`] = cb;
+    this._formCallbacks[event] = cb;
   }
 
 
