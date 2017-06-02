@@ -134,6 +134,16 @@ export default class Form {
   }
 
   /**
+   * Start form save immediately.
+   * @return {Promise}
+   */
+  save() {
+    if (!this.valid) return Promise.reject(new Error('Form is invalid'));
+
+    return this._events.riseFormDebouncedSave(true);
+  }
+
+  /**
    * Roll back to previously saved values.
    */
   clear() {

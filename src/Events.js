@@ -51,7 +51,6 @@ export default class Events {
 
   riseFormDebouncedSave(force) {
     // TODO: review
-    // if (_.isEmpty(this._formHandlers.save)) return;
 
     return this._formSaveDebouncedCall.exec(() => {
       // save current state on the moment

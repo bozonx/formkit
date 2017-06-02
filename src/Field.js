@@ -168,13 +168,12 @@ export default class Field {
     }
 
     // rise change event and save only changed value
-    if (this._form.config.allowUnchanged || isChanged) {
-      // rise change by user event handlers and callbacks of form and field
-      this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
+    if (!this._form.config.allowUnchanged && !isChanged) return;
 
-      // start save with debounced delay
-      this._startSave(false);
-    }
+    // rise change by user event handlers and callbacks of form and field
+    this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
+    // start save with debounced delay
+    this._startSave(false);
   }
 
   /**
@@ -202,7 +201,7 @@ export default class Field {
   handlePressEnter() {
     if (this.disabled) return;
     // start save immediately
-    this._startSave(true);
+    this.save();
   }
 
   /**
@@ -259,6 +258,14 @@ export default class Field {
   }
 
   /**
+   * Start field save immediately.
+   * @return {Promise}
+   */
+  save() {
+    return this._startSave(true);
+  }
+
+  /**
    * Clear value(user input) and set saved value to current value.
    */
   clear() {
@@ -301,18 +308,19 @@ export default class Field {
    *   * if true it will save immediately.
    *   * if false it will save with dobounce delay
    * @private
+   * @return {Promise}
    */
   _startSave(force) {
     // don't save invalid value
-    if (!this.valid) return;
+    if (!this.valid) return Promise.reject(new Error('Field is invalid'));
     // save only value which was modified.
-    if (!this._storage.isFieldUnsaved(this._pathToField)) return;
+    if (!this._storage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
     this._storage.setFieldState(this._pathToField, { saving: true });
 
     // rise a field's save handler
     // TODO: только если есть обработчики
-    this._debouncedCall.exec(() => {
+    const fieldPromise = this._debouncedCall.exec(() => {
       this._events.riseFieldSave(this._pathToField, this.value);
       // TODO: нужно ли убирать из unsaved???
 
@@ -326,6 +334,8 @@ export default class Field {
     // this._form.$state.riseFormDebouncedSave(force).then(() => {
     //   this._storage.clearUnsavedValues();
     // });
+
+    return fieldPromise;
   }
 
   _setValueDirtyValidate(newValue) {
