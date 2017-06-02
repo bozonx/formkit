@@ -54,6 +54,16 @@ export default class DebouncedCall {
     if (this._cbWrapper) this._cbWrapper.cancel();
   }
 
+  flush() {
+    this._debouncedCb.flush();
+  }
+
+  exec(cb, force, ...params) {
+    this._chooseTheWay(cb, params, force);
+
+    return this._cbWrapper.getPromise();
+  }
+
   _cancelDelayed() {
     if (this._debouncedCb) this._debouncedCb.cancel();
     this._delayed = false;
@@ -61,17 +71,6 @@ export default class DebouncedCall {
 
   _cancelQueue() {
     this._queuedCallback = null;
-  }
-
-  flush() {
-    this._debouncedCb.flush();
-  }
-
-
-  exec(cb, force, ...params) {
-    this._chooseTheWay(cb, params, force);
-
-    return this._cbWrapper.getPromise();
   }
 
   _chooseTheWay(cb, params, force) {
@@ -83,12 +82,14 @@ export default class DebouncedCall {
         // set this callback in queue
         this._queuedCallback = { cb, params };
       }
-      else {
+      else if (force) {
         // replace callback if it hasn't run.
-        this._cbWrapper.setCallback(cb, params);
-
         this._cancelDelayed();
+        this._cbWrapper.setCallback(cb, params);
         this._runWithoutDebounce();
+      }
+      else {
+        this._cbWrapper.setCallback(cb, params);
       }
     }
     else {
@@ -132,7 +133,7 @@ export default class DebouncedCall {
     this._cbWrapper = new DebouncedCallbackWrapper();
     this._cbWrapper.setCallback(cb, params);
 
-    // after save promise was saved - run cb in queue
+    // after current promise was finished - run next cb in queue
     this._cbWrapper.getPromise().then(() => this._runQueuedCb(), (err) => {
       this._runQueuedCb();
 

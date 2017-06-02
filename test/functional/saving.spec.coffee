@@ -64,10 +64,12 @@ describe 'Functional. saving.', ->
 
       assert.isTrue(this.form.fields.name.saving)
 
+      handlerResolve()
+
       savePromise.then () =>
-        #assert.isFalse(this.form.fields.name.saving)
+        assert.isFalse(this.form.fields.name.saving)
         expect(startSaveHandler).to.have.been.calledOnce
-        #expect(endSaveHandler).to.have.been.calledOnce
+        expect(endSaveHandler).to.have.been.calledOnce
 
 
   describe 'whole form saving.', ->
