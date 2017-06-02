@@ -58,46 +58,6 @@ export default class Events {
     this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
   }
 
-
-
-
-  setFormHandler(eventName, cb) {
-    this._formHandlers[eventName].push(cb);
-    this.addListener(`form.${eventName}`, cb);
-  }
-
-  setFieldHandler(pathToField, eventName, cb) {
-    if (!this._fieldsHandlers[pathToField]) {
-      this._fieldsHandlers[pathToField] = {
-        change: [],
-        silent: [],
-        any: [],
-      };
-    }
-
-    this._fieldsHandlers[pathToField][eventName].push(cb);
-    this.addListener(`field.${pathToField}.${eventName}`, cb);
-  }
-
-  _riseFormEvent(eventName, data) {
-    this._eventEmitter.emit(`form.${eventName}`, data);
-  }
-
-  riseFieldEvent(pathToField, eventName, data) {
-    this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
-  }
-
-  addListener(eventName, cb) {
-    this._eventEmitter.addListener(eventName, cb);
-  }
-
-  // riseFieldDebouncedSave(pathToField, value, force) {
-  //   this.$debouncedCall.exec(() => {
-  //     this.riseFieldEvent(pathToField, 'save', value);
-  //     // TODO: нужно ли убирать из unsaved???
-  //   }, force);
-  // }
-
   riseFormDebouncedSave(force) {
     //if (_.isEmpty(this._formHandlers.save)) return;
 
@@ -127,7 +87,7 @@ export default class Events {
     };
 
     // Rise events
-    // TODO use riseFieldEvent
+    // TODO use _riseFieldEvent
     this._eventEmitter.emit('silentChange', eventData);
     this._eventEmitter.emit(`field.${pathToField}.silentChange`, eventData);
 
@@ -149,8 +109,17 @@ export default class Events {
       value: newValue,
     };
 
+    // run field's cb
+    if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField].change) {
+      this._fieldsCallbacks[pathToField].change(eventData);
+    }
+    // run forms's cb
+    if (this._formCallbacks.change) {
+      this._formCallbacks.change({ [pathToField]: newValue });
+    }
+
     // Rise events field's change handler
-    this.riseFieldEvent(pathToField, 'change', eventData);
+    this._riseFieldEvent(pathToField, 'change', eventData);
     // run form's change handler
     this._riseFormEvent('change', { [pathToField]: newValue });
 
@@ -158,6 +127,29 @@ export default class Events {
     this._storage.setUnsavedValue(pathToField, newValue);
 
     this._riseAnyChange(pathToField);
+  }
+
+  addListener(eventName, cb) {
+    this._eventEmitter.addListener(eventName, cb);
+  }
+
+  // riseFieldDebouncedSave(pathToField, value, force) {
+  //   this.$debouncedCall.exec(() => {
+  //     this._riseFieldEvent(pathToField, 'save', value);
+  //     // TODO: нужно ли убирать из unsaved???
+  //   }, force);
+  // }
+
+
+
+
+
+  _riseFormEvent(eventName, data) {
+    this._eventEmitter.emit(`form.${eventName}`, data);
+  }
+
+  _riseFieldEvent(pathToField, eventName, data) {
+    this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
   }
 
   /**
@@ -169,9 +161,9 @@ export default class Events {
     this._eventEmitter.emit(`field.${pathToField}.anyChange`);
     this._eventEmitter.emit('anyChange');
 
-    // TODO use riseFieldEvent
+    // TODO use _riseFieldEvent
     // this.riseFormEvent('anyChange');
-    // this.riseFieldEvent(pathToField, 'anyChange');
+    // this._riseFieldEvent(pathToField, 'anyChange');
   }
 
 }

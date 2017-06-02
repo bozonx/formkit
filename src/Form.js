@@ -89,6 +89,7 @@ export default class Form {
    * @param cb
    */
   on(eventName, cb) {
+    // TODO: use `form.${eventName}`
     this._events.addListener(eventName, cb);
   }
 
@@ -97,13 +98,11 @@ export default class Form {
    * @param cb
    */
   onChange(cb) {
-    this._events.setFormHandler('change', cb);
-    // TODO: !!!!!
-    //this._events.setFormCallback('change', cb);
+    //this._events.setFormHandler('change', cb);
+    this._events.setFormCallback('change', cb);
   }
 
   onSave(cb) {
-    //this._events.setFormHandler('save', cb);
     this._events.setFormCallback('save', cb);
   }
 

@@ -209,6 +209,16 @@ export default class Field {
     this._startSave(true);
   }
 
+  /**
+   * Add one or more handlers on fields's event:
+   * * change
+   * * silentChange
+   * * anyChange
+   * * saveStart
+   * * saveEnd
+   * @param eventName
+   * @param cb
+   */
   on(eventName, cb) {
     this._events.addListener(`field.${this._pathToField}.${eventName}`, cb);
   }
@@ -217,7 +227,7 @@ export default class Field {
    * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
-    this._events.setFieldHandler(this._pathToField, 'change', cb);
+    this._events.setFieldCallback(this._pathToField, 'change', cb);
   }
 
   /**
@@ -225,7 +235,6 @@ export default class Field {
    * @param cb
    */
   onSave(cb) {
-    //this._events.setFieldHandler(this._pathToField, 'save', cb);
     this._events.setFieldCallback(this._pathToField, 'save', cb);
   }
 
