@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import DebouncedCall from './DebouncedCall';
-import { calculateDirty, getFieldName, parseValidateCbReturn } from './helpers';
+import { calculateDirty, getFieldName, parseValidateCbReturn, isPromise } from './helpers';
 
 
 export default class Field {
@@ -336,16 +336,19 @@ export default class Field {
       if (fieldSaveCb) {
         // run save callback
         const cbPromise = fieldSaveCb(this.value);
-        if (cbPromise) {
+        if (isPromise(cbPromise)) {
           cbPromise.then(() => {
             saveEnd();
           });
+
+          return cbPromise;
         }
-        else {
-          saveEnd();
-        }
+
+        // if save callback hasn't returned a promise
+        saveEnd();
       }
       else {
+        // if there isn't save callback
         saveEnd();
       }
     }, force);

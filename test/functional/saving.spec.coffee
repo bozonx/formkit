@@ -43,6 +43,33 @@ describe 'Functional. saving.', ->
       this.form.fields.name.handleChange('newValue')
       this.form.fields.name._debouncedCall.flush()
 
+    it "save callback returns a promise", ->
+      startSaveHandler = sinon.spy()
+      endSaveHandler = sinon.spy()
+      handlerResolve = null
+      handlerReject = null
+      saveHandler = () =>
+        return new Promise (resolve, reject) =>
+          handlerResolve = resolve
+          handlerReject = reject
+
+      this.form.fields.name.onSave(saveHandler)
+      this.form.fields.name.on('saveStart', startSaveHandler)
+      this.form.fields.name.on('saveEnd', endSaveHandler)
+      this.form.fields.name.handleChange('newValue')
+
+      assert.isFalse(this.form.fields.name.saving)
+
+      savePromise = this.form.fields.name.save()
+
+      assert.isTrue(this.form.fields.name.saving)
+
+      savePromise.then () =>
+        #assert.isFalse(this.form.fields.name.saving)
+        expect(startSaveHandler).to.have.been.calledOnce
+        #expect(endSaveHandler).to.have.been.calledOnce
+
+
   describe 'whole form saving.', ->
     beforeEach () ->
       this.form = formHelper.newForm()

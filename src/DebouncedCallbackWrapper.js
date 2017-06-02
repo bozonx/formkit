@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { isPromise } from './helpers';
 
 /**
  *
@@ -58,7 +58,7 @@ export default class DebouncedCallbackWrapper {
     this._pending = true;
 
     const cbPromise = this._callback.cb(...this._callback.params);
-    if (this._isPromise(cbPromise)) {
+    if (isPromise(cbPromise)) {
       cbPromise.then((data) => {
         this._pending = false;
         this._mainResolve();
@@ -75,10 +75,6 @@ export default class DebouncedCallbackWrapper {
       this._pending = false;
       this._mainResolve();
     }
-  }
-
-  _isPromise(unkown) {
-    return _.isObject(unkown) && unkown.then;
   }
 
 }
