@@ -97,10 +97,7 @@ export default class Field {
   setValue(newValue) {
     const oldValue = _.cloneDeep(this.value);
 
-    // set to outer value layer
-    this._storage.setValue(this._pathToField, newValue);
-    this.$recalcDirty();
-    this.validate();
+    this._setValueDirtyValidate(newValue);
 
     // rise silent change events if value and old value are different
     if (!_.isEqual(oldValue, newValue)) {
@@ -163,18 +160,15 @@ export default class Field {
     const oldValue = _.cloneDeep(this.value);
 
     // don't save unchanged value if it allows in config.
+    // TODO: why there???? place it near _startSave
     if (!this._form.config.allowSaveUnchanged && _.isEqual(oldValue, newValue)) return;
 
-    // TODO: use this.setValue()
-
-    // set value to storage
-    this._storage.setValue(this._pathToField, newValue);
     // set touched to true
     if (!this.touched) this._state.setFieldAndFormTouched(this._pathToField);
-    this.$recalcDirty();
-    this.validate();
+    // set value, dirty state and validate
+    this._setValueDirtyValidate(newValue);
 
-    // rise change by user handler
+    // rise change by user event handlers and callbacks of form and field
     this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
 
     // start save with debounced delay
@@ -330,6 +324,14 @@ export default class Field {
     // this._form.$state.riseFormDebouncedSave(force).then(() => {
     //   this._storage.clearUnsavedValues();
     // });
+  }
+
+  _setValueDirtyValidate(newValue) {
+    // TODO: move to _state
+    // set to outer value layer
+    this._storage.setValue(this._pathToField, newValue);
+    this.$recalcDirty();
+    this.validate();
   }
 
 

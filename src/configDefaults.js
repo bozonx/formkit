@@ -7,6 +7,7 @@ module.exports = {
    * If false - it disallow start saving if value doesn't change, but handle change has run.
    */
   allowSaveUnchanged: false,
+
   allowFocusedFieldUpdating: false,
   allowSubmitSubmittingForm: false,
   allowSubmitUnchangedForm: false,
