@@ -104,7 +104,7 @@ export default class Field {
 
     // rise silent change events if value and old value are different
     if (!_.isEqual(oldValue, newValue)) {
-      this._form.$state.riseSilentChangeEvent(this._pathToField, oldValue);
+      this._events.riseSilentChangeEvent(this._pathToField, oldValue);
     }
   }
 
@@ -170,12 +170,12 @@ export default class Field {
     // set value to storage
     this._storage.setValue(this._pathToField, newValue);
     // set touched to true
-    if (!this.touched) this._form.$state.setFieldAndFormTouched(this._pathToField);
+    if (!this.touched) this._state.setFieldAndFormTouched(this._pathToField);
     this.$recalcDirty();
     this.validate();
 
     // rise change by user handler
-    this._form.$state.riseUserChangeEvent(this._pathToField, oldCombinedValue, newValue);
+    this._events.riseUserChangeEvent(this._pathToField, oldCombinedValue, newValue);
 
     // start save with debounced delay
     this._startSave(false);
@@ -210,14 +210,14 @@ export default class Field {
   }
 
   on(eventName, cb) {
-    this._form.$state.addListener(`field.${this._pathToField}.${eventName}`, cb);
+    this._events.addListener(`field.${this._pathToField}.${eventName}`, cb);
   }
 
   /**
    * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
-    this._form.$state.setFieldHandler(this._pathToField, 'change', cb);
+    this._events.setFieldHandler(this._pathToField, 'change', cb);
   }
 
   /**
@@ -225,7 +225,7 @@ export default class Field {
    * @param cb
    */
   onSave(cb) {
-    this._form.$state.setFieldHandler(this._pathToField, 'save', cb);
+    this._events.setFieldHandler(this._pathToField, 'save', cb);
   }
 
   /**
@@ -247,7 +247,7 @@ export default class Field {
     if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
 
     const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
-    this._form.$state.setFieldAndFormValidState(this._pathToField, valid, invalidMsg);
+    this._state.setFieldAndFormValidState(this._pathToField, valid, invalidMsg);
 
     return result;
   }
@@ -284,7 +284,7 @@ export default class Field {
    * Recalculate dirty state.
    */
   $recalcDirty() {
-    this._form.$state.setFieldAndFormDirty(this._pathToField,
+    this._state.setFieldAndFormDirty(this._pathToField,
       calculateDirty(this.value, this.savedValue));
   }
 
@@ -307,7 +307,7 @@ export default class Field {
     // rise a field's save handler
     // TODO: только если есть обработчики
     this._debouncedCall.exec(() => {
-      this._form.$state.riseFieldEvent(this._pathToField, 'save', this.value);
+      this._events.riseFieldEvent(this._pathToField, 'save', this.value);
       // TODO: нужно ли убирать из unsaved???
 
       // TODO: поидее нужно брать промис с обработчика saved - и только тогда ставить false
@@ -316,7 +316,7 @@ export default class Field {
     // this._form.$state.riseFieldDebouncedSave(this._pathToField, this.value, force);
 
     // rise form's save handler
-    this._form.$state.riseFormDebouncedSave(force);
+    this._events.riseFormDebouncedSave(force);
     // this._form.$state.riseFormDebouncedSave(force).then(() => {
     //   this._storage.clearUnsavedValues();
     // });

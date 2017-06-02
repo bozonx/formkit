@@ -16,7 +16,7 @@ export default class Form {
     this._onSubmitCallback = null;
 
     this._storage = new Storage();
-    this._state = new State(this, eventEmitter, this._storage);
+    this._state = new State(this, this._storage);
     this._events = new Events(this, eventEmitter, this._storage);
   }
 
@@ -88,7 +88,7 @@ export default class Form {
    */
   on(eventName, cb) {
     // TODO: почему не поддерживаются остальные методы - onSubmit etc?
-    this._state.addListener(eventName, cb);
+    this._events.addListener(eventName, cb);
   }
 
   /**
@@ -96,11 +96,11 @@ export default class Form {
    * @param cb
    */
   onChange(cb) {
-    this._state.setFormHandler('change', cb);
+    this._events.setFormHandler('change', cb);
   }
 
   onSave(cb) {
-    this._state.setFormHandler('save', cb);
+    this._events.setFormHandler('save', cb);
   }
 
   onSubmit(cb) {
@@ -150,14 +150,14 @@ export default class Form {
    * Cancel debounce waiting for saving
    */
   cancelSaving() {
-    this._state.$debouncedCall.cancel();
+    this._events.$debouncedCall.cancel();
   }
 
   /**
    * Saving immediately
    */
   flushSaving() {
-    this._state.$debouncedCall.flush();
+    this._events.$debouncedCall.flush();
   }
 
   /**
