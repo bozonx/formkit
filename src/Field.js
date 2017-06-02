@@ -158,15 +158,17 @@ export default class Field {
     if (this.disabled) return;
 
     const oldValue = _.cloneDeep(this.value);
+    const isChanged = !_.isEqual(oldValue, newValue);
+
+    if (isChanged) {
+      // set touched to true
+      if (!this.touched) this._state.setFieldAndFormTouched(this._pathToField);
+      // set value, dirty state and validate
+      this._setValueDirtyValidate(newValue);
+    }
 
     // don't save unchanged value if it allows in config.
-    // TODO: why there???? place it near _startSave
-    if (!this._form.config.allowSaveUnchanged && _.isEqual(oldValue, newValue)) return;
-
-    // set touched to true
-    if (!this.touched) this._state.setFieldAndFormTouched(this._pathToField);
-    // set value, dirty state and validate
-    this._setValueDirtyValidate(newValue);
+    if (!this._form.config.allowSaveUnchanged && !isChanged) return;
 
     // rise change by user event handlers and callbacks of form and field
     this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);

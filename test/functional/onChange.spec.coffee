@@ -36,6 +36,8 @@ describe 'Functional. onChange and handleChange.', ->
     this.form.fields.name.handleChange('userValue')
     this.form.fields.name.handleChange('userValue')
 
+    # TODO: нужно проверять save callback
+
     expect(this.fieldOnChangeHandler).to.have.been.calledTwice
     expect(this.formOnChangeHandler).to.have.been.calledTwice
 
@@ -43,6 +45,9 @@ describe 'Functional. onChange and handleChange.', ->
     this.form.config.allowSaveUnchanged = false;
     this.form.fields.name.handleChange('userValue')
     this.form.fields.name.handleChange('userValue')
+
+    # TODO: нужно проверять save callback
+
     expect(this.fieldOnChangeHandler).to.have.been.calledOnce
     expect(this.fieldOnChangeHandler).to.have.been.calledWith({ fieldName: "name", oldValue: undefined, value: "userValue" })
 
