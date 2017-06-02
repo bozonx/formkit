@@ -335,7 +335,7 @@ export default class Field {
       const fieldSaveCb = this._events.getFieldCallback(this._pathToField, 'save');
       if (fieldSaveCb) {
         // run save callback
-        const cbPromise = fieldSaveCb.save(this.value);
+        const cbPromise = fieldSaveCb(this.value);
         if (cbPromise) {
           cbPromise.then(() => {
             saveEnd();
