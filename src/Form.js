@@ -94,11 +94,10 @@ export default class Form {
   }
 
   /**
-   * Add only one handler of 'change' event. It usefull for use as handler of component.
-   * @param cb
+   * Add only one callback of 'change' event. It usefull for use as handler of component.
+   * @param {function} cb
    */
   onChange(cb) {
-    //this._events.setFormHandler('change', cb);
     this._events.setFormCallback('change', cb);
   }
 
@@ -150,19 +149,26 @@ export default class Form {
   }
 
   /**
-   * Cancel debounce waiting for saving
+   * Cancel saving
    */
   cancelSaving() {
-    // TODO: this._events.cancelFormSaving();
-    this._events.$debouncedCall.cancel();
+    // TODO: test
+    this._events.cancelFormSaving();
+  }
+
+  /**
+   * Cancel submitting
+   */
+  cancelSubmitting() {
+    // TODO: add
+    // TODO: test
   }
 
   /**
    * Saving immediately
    */
   flushSaving() {
-    // TODO: this._events.flushFormSaving();
-    this._events.$debouncedCall.flush();
+    this._events.flushFormSaving();
   }
 
   /**

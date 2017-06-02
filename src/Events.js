@@ -27,7 +27,8 @@ export default class Events {
     this._fieldsCallbacks = {};
 
     // TODO: переименовать в приватное или в $$
-    this.$debouncedCall = new DebouncedCall(this._form.config.debounceTime);
+    // TODO: на save и submit должны быть отдельные DebouncedCall
+    this._formSaveDebouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
   getFormCallback(eventName) {
@@ -61,7 +62,7 @@ export default class Events {
   riseFormDebouncedSave(force) {
     //if (_.isEmpty(this._formHandlers.save)) return;
 
-    return this.$debouncedCall.exec(() => {
+    return this._formSaveDebouncedCall.exec(() => {
       // save current state on the moment
       const data = this._storage.getUnsavedValues();
       if (this._formCallbacks.save) this._formCallbacks.save(data);
@@ -134,14 +135,20 @@ export default class Events {
   }
 
   // riseFieldDebouncedSave(pathToField, value, force) {
-  //   this.$debouncedCall.exec(() => {
+  //   this._formSaveDebouncedCall.exec(() => {
   //     this._riseFieldEvent(pathToField, 'save', value);
   //     // TODO: нужно ли убирать из unsaved???
   //   }, force);
   // }
 
 
+  cancelFormSaving() {
+    this._formSaveDebouncedCall.cancel();
+  }
 
+  flushFormSaving() {
+    this._formSaveDebouncedCall.flush();
+  }
 
 
   _riseFormEvent(eventName, data) {
