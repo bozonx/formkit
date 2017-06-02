@@ -61,9 +61,9 @@ export default class Storage {
     return _.cloneDeep(_.get(this._store.fieldsState, `${pathToField}.${stateName}`));
   }
 
-  updateSavedValues(newValues) {
+  updateSavedValues() {
     // TODO: ??? what's this?
-    //extendDeep(this._store.savedValues, newValues);
+    // extendDeep(this._store.savedValues, newValues);
   }
 
 
@@ -100,7 +100,6 @@ export default class Storage {
   findRecursively(root, cb) {
     return findRecursively(this._store[root], cb);
   }
-
 
 
   getUnsavedValues() {

@@ -316,19 +316,41 @@ export default class Field {
     // save only value which was modified.
     if (!this._storage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
-    this._storage.setFieldState(this._pathToField, { saving: true });
-
     // rise a field's save handler
-    // TODO: только если есть обработчики
     const fieldPromise = this._debouncedCall.exec(() => {
-      this._events.riseFieldSave(this._pathToField, this.value);
+      // set saving: true
+      this._state.setFieldSavingState(this._pathToField, true);
+      // rise saveStart event
+      this._events.riseFieldSaveStart(this._pathToField, this.value);
+
       // TODO: нужно ли убирать из unsaved???
 
-      // TODO: поидее нужно брать промис с обработчика saved - и только тогда ставить false
-      this._storage.setFieldState(this._pathToField, { saving: false });
-    }, force);
-    // this._form.$state.riseFieldDebouncedSave(this._pathToField, this.value, force);
+      const saveEnd = () => {
+        // set saving: false
+        this._state.setFieldSavingState(this._pathToField, false);
+        // rise saveEnd
+        this._events.riseFieldSaveEnd(this._pathToField);
+      };
 
+      const fieldSaveCb = this._events.getFieldCallback(this._pathToField, 'save');
+      if (fieldSaveCb) {
+        // run save callback
+        const cbPromise = fieldSaveCb.save(this.value);
+        if (cbPromise) {
+          cbPromise.then(() => {
+            saveEnd();
+          });
+        }
+        else {
+          saveEnd();
+        }
+      }
+      else {
+        saveEnd();
+      }
+    }, force);
+
+    // TODO: review
     // rise form's save handler
     this._events.riseFormDebouncedSave(force);
     // this._form.$state.riseFormDebouncedSave(force).then(() => {

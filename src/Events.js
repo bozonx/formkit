@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import DebouncedCall from './DebouncedCall';
 
 /**
@@ -26,6 +24,12 @@ export default class Events {
     return this._formCallbacks[eventName];
   }
 
+  getFieldCallback(pathToField, eventName) {
+    if (!this._fieldsCallbacks[pathToField]) return;
+
+    return this._fieldsCallbacks[pathToField][eventName];
+  }
+
   setFormCallback(eventName, cb) {
     this._formCallbacks[eventName] = cb;
   }
@@ -41,12 +45,15 @@ export default class Events {
     this._fieldsCallbacks[pathToField][eventName] = cb;
   }
 
-  riseFieldSave(pathToField, data) {
-    const eventName = 'save';
-    if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField][eventName]) {
-      this._fieldsCallbacks[pathToField][eventName](data);
-    }
-    this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
+  riseFieldSaveStart(pathToField, data) {
+    // if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField].save) {
+    //   this._fieldsCallbacks[pathToField].save(data);
+    // }
+    this._eventEmitter.emit(`field.${pathToField}.saveStart`, data);
+  }
+
+  riseFieldSaveEnd(pathToField) {
+    this._eventEmitter.emit(`field.${pathToField}.saveEnd`);
   }
 
   riseFormDebouncedSave(force) {
@@ -62,13 +69,6 @@ export default class Events {
       this._storage.clearUnsavedValues();
     }, force);
   }
-
-  // riseFieldDebouncedSave(pathToField, value, force) {
-  //   this._formSaveDebouncedCall.exec(() => {
-  //     this._riseFieldEvent(pathToField, 'save', value);
-  //     // TODO: нужно ли убирать из unsaved???
-  //   }, force);
-  // }
 
   /**
    * It calls from field on silent value change (after outer value setting).

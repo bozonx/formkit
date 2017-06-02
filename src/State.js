@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import { findInFieldRecursively } from './helpers';
 
 /**
@@ -10,6 +8,10 @@ export default class State {
   constructor(form, storage) {
     this._form = form;
     this._storage = storage;
+  }
+
+  setFieldSavingState(pathToField, value) {
+    this._storage.setFieldState(pathToField, { saving: value });
   }
 
   setFieldAndFormTouched(pathToField) {
