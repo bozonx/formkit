@@ -319,18 +319,24 @@ export default class Field {
     if (!this._storage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
     // rise a field's save handlers, callback and switch saving state
-    const fieldPromise = this._debouncedCall.exec(() => this._startSaving(), force);
+    //const fieldPromise = this._debouncedCall.exec(() => this._startSaving(), force);
+    const fieldPromise = this._debouncedCall.exec(() => this._events.$startSaving(
+      this.value,
+      this._events.getFieldCallback(this._pathToField, 'save'),
+      (...p) => this._state.setFieldSavingState(this._pathToField, ...p),
+      (...p) => this._events.riseFieldSaveStart(this._pathToField, ...p)
+    ), force);
 
     // TODO: review
     // rise form's save handler
     const formPromise = this._events.riseFormDebouncedSave(force);
 
-    // Promise.all([ fieldPromise, formPromise ]).then(() => {
-    //   // clear unsaved state
-    //   this._storage.clearUnsavedValues();
-    // });
+    return Promise.all([ fieldPromise, formPromise ]).then(() => {
+      // clear unsaved state
+      this._storage.clearUnsavedValues();
+    });
 
-    return fieldPromise;
+    //return fieldPromise;
   }
 
   _startSaving() {
