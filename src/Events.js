@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import DebouncedCall from './DebouncedCall';
 import { isPromise } from './helpers';
 
@@ -59,9 +61,14 @@ export default class Events {
   }
 
   riseFormDebouncedSave(force) {
-    // TODO: review
-
     return this._formSaveDebouncedCall.exec(() => {
+      // // save current state on the moment
+      // const data = this._storage.getUnsavedValues();
+      //
+      // return this._startSaving('form', data, this._formCallbacks.save);
+
+
+
       // save current state on the moment
       const data = this._storage.getUnsavedValues();
 
@@ -99,6 +106,44 @@ export default class Events {
         saveEnd();
       }
     }, force);
+  }
+
+  _startSaving(fieldOrForm, data, saveCb) {
+    // const setSavingState = this._state[fieldOrForm === 'fieldOrForm' ? 'setFormSavingState' : 'setFieldSavingState'];
+    // const riseEvent = this[`_rise${_.capitalize(fieldOrForm)}Event`];
+
+    const setSavingState = this._state.setFormSavingState;
+    const riseEvent = this._riseFormEvent;
+
+    // set saving: true
+
+    console.log(1111111111111)
+
+    setSavingState(true);
+    // rise saveStart event
+    riseEvent('saveStart', data);
+
+    const saveEnd = () => {
+      // set saving: false
+      setSavingState(false);
+      // rise saveEnd
+      riseEvent('saveEnd');
+    };
+
+    if (saveCb) {
+      // run save callback
+      const cbPromise = saveCb(data);
+      if (isPromise(cbPromise)) {
+        return cbPromise.then(() => saveEnd());
+      }
+
+      // if save callback hasn't returned a promise
+      saveEnd();
+    }
+    else {
+      // if there isn't save callback
+      saveEnd();
+    }
   }
 
   /**

@@ -323,8 +323,10 @@ export default class Field {
 
     // TODO: review
     // rise form's save handler
-    this._events.riseFormDebouncedSave(force);
-    // this._form.$state.riseFormDebouncedSave(force).then(() => {
+    const formPromise = this._events.riseFormDebouncedSave(force);
+
+    // Promise.all([ fieldPromise, formPromise ]).then(() => {
+    //   // clear unsaved state
     //   this._storage.clearUnsavedValues();
     // });
 
