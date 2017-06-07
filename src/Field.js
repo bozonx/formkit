@@ -24,8 +24,7 @@ export default class Field {
     // init state
     this._storage.initFieldState(this._pathToField);
 
-    // TODO: setDisabled without any events rise
-    if (!_.isUndefined(params.disabled)) this.setDisabled(params.disabled);
+    if (!_.isUndefined(params.disabled)) this._setDisabled(params.disabled);
     if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
     if (params.validate) this.setValidateCb(params.validate);
 
@@ -122,10 +121,10 @@ export default class Field {
   }
 
   setDisabled(value) {
-    if (!_.isBoolean(value)) throw new Error(`Bad type of disabled value`);
-    this._storage.setFieldState(this._pathToField, { disabled: value });
-    // TODO: rise event silent or any
+    this._setDisabled(value);
+    this._events.riseAnyChange(this._pathToField);
   }
+
   setValidateCb(validateCallback) {
     if (!_.isUndefined(validateCallback) && !_.isFunction(validateCallback)) {
       throw new Error(`Bad type of validate callback`);
@@ -300,6 +299,12 @@ export default class Field {
   $recalcDirty() {
     this._state.setFieldAndFormDirty(this._pathToField,
       calculateDirty(this.value, this.savedValue));
+  }
+
+
+  _setDisabled(value) {
+    if (!_.isBoolean(value)) throw new Error(`Bad type of disabled value`);
+    this._storage.setFieldState(this._pathToField, { disabled: value });
   }
 
   /**

@@ -141,7 +141,7 @@ export default class Events {
     // Rise events
     this.riseFieldEvent(pathToField, 'silentChange', eventData);
     this._riseFormEvent('silentChange', eventData);
-    this._riseAnyChange(pathToField);
+    this.riseAnyChange(pathToField);
   }
 
   /**
@@ -172,7 +172,7 @@ export default class Events {
     this.riseFieldEvent(pathToField, 'change', eventData);
     // run form's change handler
     this._riseFormEvent('change', { [pathToField]: newValue });
-    this._riseAnyChange(pathToField);
+    this.riseAnyChange(pathToField);
   }
 
   addFormListener(eventName, cb) {
@@ -195,18 +195,18 @@ export default class Events {
     this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
   }
 
-  _riseFormEvent(eventName, data) {
-    this._eventEmitter.emit(`form.${eventName}`, data);
-  }
-
   /**
    * It rises a "stateChange" event.
    * It rises on any change of value, initialValue or any state.
    * @private
    */
-  _riseAnyChange(pathToField) {
-    this._riseFormEvent('anyChange');
+  riseAnyChange(pathToField) {
     this.riseFieldEvent(pathToField, 'anyChange');
+    this._riseFormEvent('anyChange');
+  }
+
+  _riseFormEvent(eventName, data) {
+    this._eventEmitter.emit(`form.${eventName}`, data);
   }
 
 }
