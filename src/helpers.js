@@ -148,6 +148,6 @@ export function parseValidateCbReturn(cbReturn) {
   };
 }
 
-export function isPromise(unkown) {
-  return _.isObject(unkown) && unkown.then;
+export function isPromise(unknown) {
+  return _.isObject(unknown) && unknown.then;
 }

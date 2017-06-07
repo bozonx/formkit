@@ -24,13 +24,16 @@ export default class State {
   }
 
   setFieldAndFormDirty(pathToField, newDirtyValue) {
+    // set to field
     this._storage.setFieldState(pathToField, { dirty: newDirtyValue });
 
+    // set to form
     if (newDirtyValue) {
+      // if field is dirty it means the form is dirty too
       this._storage.setFormState('dirty', true);
     }
     else {
-      // TODO: ??? may be nothing to do will be better?
+      // if field not dirty - calculate form's dirty state
       // search for other dirty values in other fields
       const hasAnyDirty = this._storage.findFieldStateRecursively('fieldsState', (field) => {
         if (field.dirty) return true;
