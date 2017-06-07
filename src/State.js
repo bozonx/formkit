@@ -32,7 +32,7 @@ export default class State {
     else {
       // TODO: ??? may be nothing to do will be better?
       // search for other dirty values in other fields
-      const hasAnyDirty = this._storage.findRecursively('fieldsState', (field) => {
+      const hasAnyDirty = this._storage.findFieldStateRecursively('fieldsState', (field) => {
         if (field.dirty) return true;
       });
 

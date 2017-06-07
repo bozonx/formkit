@@ -48,7 +48,7 @@ export function findInFieldRecursively(rootObject, cb) {
  * @param rootObject
  * @param cb
  */
-export function findRecursively(rootObject, cb) {
+export function findFieldLikeStructureRecursively(rootObject, cb) {
   const isContainer = (item) => {
     let container = true;
     _.find(item, (field) => {
@@ -87,7 +87,7 @@ export function findRecursively(rootObject, cb) {
  * @param rootObject
  * @param cb
  */
-export function eachRecursively(rootObject, cb) {
+export function findRecursively(rootObject, cb) {
   const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
     const itemPath = _.trim(`${rootPath}.${name}`, '.');
 

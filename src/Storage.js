@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { extendDeep, findRecursively } from './helpers';
+import { extendDeep, findFieldLikeStructureRecursively } from './helpers';
 
 export default class Storage {
   constructor() {
@@ -32,7 +32,7 @@ export default class Storage {
   getFormSavedValues() {
     const savedValues = {};
 
-    findRecursively(this._store.fieldsState, (field, path) => {
+    findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
       _.set(savedValues, path, field.savedValue);
     });
 
@@ -45,7 +45,7 @@ export default class Storage {
   getFormSaving() {
     if (this._store.formState.saving) return true;
 
-    return !!findRecursively(this._store.fieldsState, (field) => {
+    return !!findFieldLikeStructureRecursively(this._store.fieldsState, (field) => {
       if (field.saving) return true;
     });
   }
@@ -68,7 +68,7 @@ export default class Storage {
   }
 
   setAllSavedValues(submittedValues) {
-    findRecursively(this._store.fieldsState, (field, path) => {
+    findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
       field.savedValue = _.get(submittedValues, path);
     });
   }
@@ -102,15 +102,15 @@ export default class Storage {
     extendDeep(field, newState);
   }
 
-  findRecursively(root, cb) {
-    return findRecursively(this._store[root], cb);
+  findFieldStateRecursively(root, cb) {
+    return findFieldLikeStructureRecursively(this._store[root], cb);
   }
 
 
   getFormUnsavedValues() {
     const unsavedValues = {};
 
-    findRecursively(this._store.fieldsState, (field, path) => {
+    findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
       const curValue = _.get(this._store.values, path);
       if (field.savedValue !== curValue) {
         _.set(unsavedValues, path, curValue);
