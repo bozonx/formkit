@@ -13,7 +13,7 @@ describe 'Functional. Submit.', ->
     this.form.handleSubmit()
     expect(this.submitHandler).to.have.been.calledOnce
     expect(this.submitHandler).to.have.been.calledWith({name: 'newValue'})
-    assert.equal(this.form.submitting, false)
+    assert.isFalse(this.form.submitting)
 
   it 'submitting with promise', (done) ->
     this.submitHandler = () ->
@@ -25,10 +25,10 @@ describe 'Functional. Submit.', ->
     this.form.fields.name.handleChange('newValue')
 
     handleSubmitReturn = this.form.handleSubmit()
-    assert.equal(this.form.submitting, true)
+    assert.isTrue(this.form.submitting)
 
     expect(handleSubmitReturn).to.eventually.notify =>
-      assert.equal(this.form.submitting, false)
+      assert.isFalse(this.form.submitting)
       done()
 
   it 'rejected promise', (done) ->
