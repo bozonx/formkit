@@ -21,7 +21,7 @@ describe 'Functional. Validate.', ->
     assert.isFalse(this.form.valid)
     assert.deepEqual(this.form.invalidMessages, {})
 
-  it 'validateCb cb returns message', ->
+  it 'validateCb cb returns message. It means an error', ->
     this.form.fields.name.setValidateCb(() -> 'errorMsg')
     this.form.fields.name.handleChange('newValue')
 
