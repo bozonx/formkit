@@ -45,7 +45,7 @@ export default class Events {
 
   riseFormDebouncedSave(force) {
     return this._formSaveDebouncedCall.exec(() => this.$startSaving(
-      this._storage.getUnsavedValues(),
+      this._storage.getFormUnsavedValues(),
       this._formCallbacks.save,
       (...p) => this._state.setFormSavingState(...p),
       (...p) => this._riseFormEvent(...p),

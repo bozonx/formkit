@@ -42,6 +42,9 @@ export default class Form {
   get config() {
     return this._config;
   }
+  get unsavedValues() {
+    return this._storage.getFormUnsavedValues();
+  }
 
   /**
    * Get all messages of invalid fields

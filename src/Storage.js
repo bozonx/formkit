@@ -97,7 +97,7 @@ export default class Storage {
   }
 
 
-  getUnsavedValues() {
+  getFormUnsavedValues() {
     const unsavedValues = {};
 
     findRecursively(this._store.fieldsState, (field, path) => {
