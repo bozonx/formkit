@@ -44,7 +44,7 @@ export default class DebouncedCallbackWrapper {
   }
 
   cancel() {
-    // TODO: cancel current promise in progress или отменить результат если уже выполняется
+    // TODO: cancel current promise in progress
     this._pending = false;
     this._canceled = true;
   }

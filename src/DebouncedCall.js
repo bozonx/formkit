@@ -106,7 +106,7 @@ export default class DebouncedCall {
     else {
       // run debounced
       this._delayed = true;
-      // TODO: впринципе можно использовать и timeout / clearTimeout
+      // TODO: may be use timeout / clearTimeout instead?
       this._debouncedCb(() => {
         if (this._cbWrapper) this._cbWrapper.start();
         this._delayed = false;

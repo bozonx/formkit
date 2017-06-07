@@ -24,7 +24,7 @@ export default class Field {
     // init state
     this._storage.initFieldState(this._pathToField);
 
-    // TODO: setDisabled без подъема собития
+    // TODO: setDisabled without any events rise
     if (!_.isUndefined(params.disabled)) this.setDisabled(params.disabled);
     if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
     if (params.validate) this.setValidateCb(params.validate);
@@ -124,7 +124,7 @@ export default class Field {
   setDisabled(value) {
     if (!_.isBoolean(value)) throw new Error(`Bad type of disabled value`);
     this._storage.setFieldState(this._pathToField, { disabled: value });
-    // TODO: надо поднять событие silent или any
+    // TODO: rise event silent or any
   }
   setValidateCb(validateCallback) {
     if (!_.isUndefined(validateCallback) && !_.isFunction(validateCallback)) {
@@ -135,7 +135,7 @@ export default class Field {
   setDebounceTime(delay) {
     const toNumber = _.toNumber(delay);
     if (_.isNull(toNumber) || _.isNaN(toNumber)) throw new Error(`Bad debounceTime value`);
-    // TODO: не работает
+    // TODO: doesn't work
     this._debouncedCall.delay = toNumber;
   }
 

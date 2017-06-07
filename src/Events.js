@@ -22,11 +22,6 @@ export default class Events {
     this._formSaveDebouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
-  // TODO: make private
-  getFormCallback(eventName) {
-    return this._formCallbacks[eventName];
-  }
-
   getFieldCallback(pathToField, eventName) {
     if (!this._fieldsCallbacks[pathToField]) return;
 
@@ -71,9 +66,9 @@ export default class Events {
       }
     };
 
-    if (this.getFormCallback('submit')) {
+    if (this._formCallbacks.submit) {
       // run submit callback
-      const returnedValue = this.getFormCallback('submit')(values);
+      const returnedValue = this._formCallbacks.submit(values);
 
       // if cb returns a promise - wait for its fulfilling
       if (isPromise(returnedValue)) {
