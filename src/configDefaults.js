@@ -1,19 +1,28 @@
 module.exports = {
-  silent: false,
+  /**
+   * Delay time after field changing
+   */
   debounceTime: 800,
 
   /**
-   * If true - it runs change event and starts saving callback and rise saving events even field's value doesn't change.
-   * If false - it disallows run change event and start saving if value doesn't change.
+   * Allow/disallow start saving if field doesn't change.
+   * If true - it saving even field's value doesn't change.
+   * If false - it disallows start saving if value doesn't change.
    */
-  allowUnchanged: false,
+  allowSaveUnmodifiedField: false,
 
+  /**
+   * Allow/disallow update focused field after setting value from server.
+   */
   allowFocusedFieldUpdating: false,
 
   /**
-   * Allow run submit even the form hasn't changed.
+   * Allow/disallow run submit even the form hasn't changed.
    */
   allowSubmitUnchangedForm: false,
 
-  updateSavedValuesAfterSubmit: true,
+  /**
+   * Allow/disallow update `field.savedValue` after form submit
+   */
+  allowUpdateSavedValuesAfterSubmit: true,
 };

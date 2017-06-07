@@ -57,7 +57,7 @@ export default class Events {
 
     const afterSubmitSuccess = () => {
       this._storage.setFormState('submitting', false);
-      if (this._form.config.updateSavedValuesAfterSubmit) {
+      if (this._form.config.allowUpdateSavedValuesAfterSubmit) {
         this._storage.setAllSavedValues(values);
         // update all the dirty states
         findInFieldRecursively(this._form.fields, (field) => {

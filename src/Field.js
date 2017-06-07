@@ -169,7 +169,7 @@ export default class Field {
     }
 
     // rise change event and save only changed value
-    if (!this._form.config.allowUnchanged && !isChanged) return;
+    if (!this._form.config.allowSaveUnmodifiedField && !isChanged) return;
 
     // rise change by user event handlers and callbacks of form and field
     this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);

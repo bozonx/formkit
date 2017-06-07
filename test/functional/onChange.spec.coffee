@@ -35,8 +35,8 @@ describe 'Functional. onChange and handleChange.', ->
 
     expect(this.formOnChangeHandler).to.not.have.been.called
 
-  it "call after uncahnged value if this.form.config.allowUnchanged = true", ->
-    this.form.config.allowUnchanged = true;
+  it "call after uncahnged value if this.form.config.allowSaveUnmodifiedField = true", ->
+    this.form.config.allowSaveUnmodifiedField = true;
     this.form.fields.name.handleChange('userValue')
     this.form.fields.name.handleChange('userValue')
 
@@ -48,8 +48,8 @@ describe 'Functional. onChange and handleChange.', ->
     expect(this.fieldOnSaveHandler).to.have.been.calledOnce
     expect(this.formOnSaveHandler).to.have.been.calledOnce
 
-  it "dont call after uncahnged value if this.form.config.allowUnchanged = false", ->
-    this.form.config.allowUnchanged = false;
+  it "dont call after uncahnged value if this.form.config.allowSaveUnmodifiedField = false", ->
+    this.form.config.allowSaveUnmodifiedField = false;
     this.form.fields.name.handleChange('userValue')
     this.form.fields.name.handleChange('userValue')
 
