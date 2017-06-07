@@ -51,13 +51,13 @@ export default class Form {
 
   /**
    * Get all messages of invalid fields
-   * @return {object} like {"path.to.field": "msg"}
+   * @return {Array} like [{path: "path.to.field", message: "msg"}, ...]
    */
   get invalidMessages() {
-    const invalidMessages = {};
+    const invalidMessages = [];
     findInFieldRecursively(this.fields, (field) => {
       if (!field.valid && field.invalidMsg) {
-        invalidMessages[field.path] = field.invalidMsg;
+        invalidMessages.push({ path: field.path, message: field.invalidMsg });
       }
     });
 
