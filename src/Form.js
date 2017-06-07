@@ -22,7 +22,10 @@ export default class Form {
     return this._fields;
   }
   get values() {
-    return this._storage.getValues();
+    return this._storage.getFormValues();
+  }
+  get savedValues() {
+    return this._storage.getFormSavedValues();
   }
   get dirty() {
     return this._storage.getFormState('dirty');
@@ -126,7 +129,7 @@ export default class Form {
       if (!this._storage.getFormState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
     }
 
-    const values = _.clone(this._storage.getValues());
+    const values = _.clone(this._storage.getFormValues());
 
     return this._events.riseFormSubmit(values);
   }

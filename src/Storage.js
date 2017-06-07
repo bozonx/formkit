@@ -25,8 +25,18 @@ export default class Storage {
   /**
    * Get all the values of form's fields.
    */
-  getValues() {
+  getFormValues() {
     return this._store.values;
+  }
+
+  getFormSavedValues() {
+    const savedValues = {};
+
+    findRecursively(this._store.fieldsState, (field, path) => {
+      _.set(savedValues, path, field.savedValue);
+    });
+
+    return savedValues;
   }
 
   /**
