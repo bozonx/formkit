@@ -10,7 +10,7 @@ export default class Field {
     this._events = events;
     this._storage = storage;
     this._state = state;
-    // TODO: move to events
+    // TODO: may be move to events?
     this._debouncedCall = new DebouncedCall(this._form.config.debounceTime);
 
     this._pathToField = pathToField;
@@ -337,7 +337,7 @@ export default class Field {
   }
 
   _setValueDirtyValidate(newValue) {
-    // TODO: move to _state
+    // TODO: may be move to _state?
     // set to outer value layer
     this._storage.setValue(this._pathToField, newValue);
     this.$recalcDirty();

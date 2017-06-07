@@ -52,7 +52,6 @@ describe 'Functional. Submit.', ->
     return undefined
 
   it "don't submit while form is submitting at the moment", (done) ->
-    # TODO: fix promises error
     this.resolver = null;
     this.submitHandler = () =>
       new Promise (resolve) =>

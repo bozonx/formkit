@@ -153,7 +153,7 @@ describe 'Unit. DebouncedCall.', ->
 
     it "cancel promise in progress", () ->
       secondHandler = sinon.spy()
-      promise1 = this.debounced.exec(this.promisedHandler, false)
+      this.debounced.exec(this.promisedHandler, false)
       this.debounced.flush();
       this.debounced.exec(secondHandler, false)
 
@@ -162,8 +162,6 @@ describe 'Unit. DebouncedCall.', ->
       this.debounced.cancel()
 
       assert.isFalse(this.debounced.getPending())
-
-      # TODO: что должно произойти с первым промисом???
 
       assert.isNull(this.debounced._queuedCallback)
       expect(secondHandler).to.have.not.been.called

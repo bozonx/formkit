@@ -30,7 +30,7 @@ export default class State {
       this._storage.setFormState('dirty', true);
     }
     else {
-      // TODO: ??? может лучше ничего не делать???
+      // TODO: ??? may be nothing to do will be better?
       // search for other dirty values in other fields
       const hasAnyDirty = this._storage.findRecursively('fieldsState', (field) => {
         if (field.dirty) return true;

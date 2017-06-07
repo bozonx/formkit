@@ -123,7 +123,6 @@ export default class Form {
       if (!this._storage.getFormState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
     }
 
-    // TODO: может брать только изменившиеся значения???
     const values = _.clone(this._storage.getValues());
 
     return this._events.riseFormSubmit(values);
@@ -165,8 +164,7 @@ export default class Form {
    * Cancel submitting
    */
   cancelSubmitting() {
-    // TODO: add
-    // TODO: test
+    // TODO: add and test
   }
 
   /**
