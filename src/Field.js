@@ -327,17 +327,13 @@ export default class Field {
       (...p) => this._events.riseFieldSaveStart(this._pathToField, ...p)
     ), force);
 
-    // TODO: which promise have to return?
     // rise form's save handler
     // TODO: а если нету??? обработчика?
     const formPromise = this._events.riseFormDebouncedSave(force);
 
-    return Promise.all([ fieldPromise, formPromise ]).then(() => {
-      // clear unsaved state
-      //this._storage.clearUnsavedValues();
-    });
+    return fieldPromise;
 
-    //return fieldPromise;
+    //return Promise.all([ fieldPromise, formPromise ]);
   }
 
   _setValueDirtyValidate(newValue) {

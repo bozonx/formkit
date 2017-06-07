@@ -11,10 +11,9 @@ describe 'Functional. onBlur.', ->
     this.form.fields.name.onSave(this.fieldOnSaveHandler);
     this.form.onSave(this.formOnSaveHandler);
 
-  it "run handle blur if there is no one deleyed callback", ->
-    this.form.fields.name.handleChange('newValue')
-    this.form.fields.name._debouncedCall.flush()
-    this.form._events.flushFormSaving()
+  it "run handle blur if there is no one delayed callback", ->
+    this.form.fields.name.setValue('newValue')
+
     assert.isFalse(this.form.fields.name._debouncedCall.getDelayed())
     this.form.fields.name.handleBlur()
     assert.isFalse(this.form.fields.name._debouncedCall.getDelayed())
