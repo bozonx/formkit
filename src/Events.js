@@ -95,7 +95,6 @@ export default class Events {
    * @param {*} oldValue
    */
   riseSilentChangeEvent(pathToField, oldValue) {
-    // TODO: review
     const eventData = {
       fieldName: pathToField,
       oldValue,
@@ -103,9 +102,8 @@ export default class Events {
     };
 
     // Rise events
-    this._riseFormEvent('silentChange', eventData);
     this.riseFieldEvent(pathToField, 'silentChange', eventData);
-
+    this._riseFormEvent('silentChange', eventData);
     this._riseAnyChange(pathToField);
   }
 
@@ -118,7 +116,6 @@ export default class Events {
    * @param {*} newValue
    */
   riseUserChangeEvent(pathToField, oldValue, newValue) {
-    // TODO: review
     const eventData = {
       fieldName: pathToField,
       oldValue,
@@ -138,7 +135,6 @@ export default class Events {
     this.riseFieldEvent(pathToField, 'change', eventData);
     // run form's change handler
     this._riseFormEvent('change', { [pathToField]: newValue });
-
     this._riseAnyChange(pathToField);
   }
 

@@ -53,10 +53,23 @@ describe 'Functional. nestedFields.', ->
 
     it 'saving', ->
       this.saveHandler = sinon.spy();
-      this.form.onSave(this.formSaveHandler)
       this.form.fields.nested.name.onSave(this.saveHandler)
       this.form.fields.nested.name.handleChange('newValue')
       this.form.fields.nested.name._debouncedCall.flush()
 
       expect(this.saveHandler).to.have.been.calledOnce
       expect(this.saveHandler).to.have.been.calledWith('newValue')
+
+  describe 'form saving.', ->
+    beforeEach () ->
+      this.form = formHelper.newForm()
+      this.form.init(['nested.name'])
+      this.formSaveHandler = sinon.spy();
+
+    it 'saving', ->
+      this.form.onSave(this.formSaveHandler)
+      this.form.fields.nested.name.setValue('newValue')
+      this.form.save()
+
+      expect(this.formSaveHandler).to.have.been.calledOnce
+      expect(this.formSaveHandler).to.have.been.calledWith({ nested: { name: "newValue" } })

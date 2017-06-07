@@ -69,7 +69,7 @@ describe 'Functional. saving.', ->
       savePromise.then () =>
         assert.isFalse(this.form.fields.name.saving)
         expect(startSaveHandler).to.have.been.calledOnce
-        #expect(endSaveHandler).to.have.been.calledOnce
+        expect(endSaveHandler).to.have.been.calledOnce
 
 
   describe 'whole form saving.', ->

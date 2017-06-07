@@ -6,9 +6,6 @@ export default class Storage {
     this.init();
   }
 
-  // TODO: наверное лучше сделать плоские объекты с ключами "path.to.field"
-  // TODO: наверное лучше values и state хранить в единой структуре
-
   init() {
     this._store = {
       formState: this._generateNewFormState(),
@@ -91,11 +88,9 @@ export default class Storage {
       field = {};
       _.set(this._store.fieldsState, pathToField, field);
     }
-    // TODO: может лучше использовать _.update
     extendDeep(field, newState);
   }
 
-  // TODO: ???? why??? does it work?
   findRecursively(root, cb) {
     return findRecursively(this._store[root], cb);
   }

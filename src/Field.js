@@ -315,11 +315,9 @@ export default class Field {
     // don't save invalid value
     if (!this.valid) return Promise.reject(new Error('Field is invalid'));
     // save only value which was modified.
-    // TODO: уже же есть проверка в handleChange
     if (!this._storage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
     // rise a field's save handlers, callback and switch saving state
-    // TODO: а если нету??? обработчика?
     const fieldPromise = this._debouncedCall.exec(() => this._events.$startSaving(
       this.value,
       this._events.getFieldCallback(this._pathToField, 'save'),
@@ -328,7 +326,6 @@ export default class Field {
     ), force);
 
     // rise form's save handler
-    // TODO: а если нету??? обработчика?
     this._events.riseFormDebouncedSave(force);
 
     return fieldPromise;
