@@ -1,5 +1,5 @@
 import DebouncedCall from './DebouncedCall';
-import { isPromise } from './helpers';
+import { isPromise, findInFieldRecursively } from './helpers';
 
 /**
  * It sets field and form states and rise an event if need
@@ -22,6 +22,7 @@ export default class Events {
     this._formSaveDebouncedCall = new DebouncedCall(this._form.config.debounceTime);
   }
 
+  // TODO: make private
   getFormCallback(eventName) {
     return this._formCallbacks[eventName];
   }
@@ -54,6 +55,49 @@ export default class Events {
       (...p) => this._state.setFormSavingState(...p),
       (...p) => this._riseFormEvent(...p),
     ), force);
+  }
+
+  riseFormSubmit(values) {
+    this._storage.setFormState('submitting', true);
+
+    const afterSubmitSuccess = () => {
+      this._storage.setFormState('submitting', false);
+      if (this._form.config.updateSavedValuesAfterSubmit) {
+        this._storage.setAllSavedValues(values);
+        // update all the dirty states
+        findInFieldRecursively(this._form.fields, (field) => {
+          field.$recalcDirty();
+        });
+      }
+    };
+
+    if (this.getFormCallback('submit')) {
+      // run submit callback
+      const returnedValue = this.getFormCallback('submit')(values);
+
+      // if cb returns a promise - wait for its fulfilling
+      if (isPromise(returnedValue)) {
+        return returnedValue.then((data) => {
+          afterSubmitSuccess();
+
+          return data;
+        }, (err) => {
+          this._storage.setFormState('submitting', false);
+
+          return err;
+        });
+      }
+      else {
+        // else if cb returns any other types - don't wait and finish submit process
+        afterSubmitSuccess();
+
+        return Promise.resolve();
+      }
+    }
+    // else if there isn't a submit callback, just finish submit process
+    afterSubmitSuccess();
+
+    return Promise.resolve();
   }
 
   $startSaving(data, saveCb, setSavingState, riseEvent) {

@@ -125,7 +125,10 @@ export default class Form {
       if (!this._storage.getFormState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
     }
 
-    return this._handleSubmitCallback();
+    // TODO: может брать только изменившиеся значения???
+    const values = _.clone(this._storage.getValues());
+
+    return this._events.riseFormSubmit(values);
   }
 
   /**
@@ -224,54 +227,6 @@ export default class Form {
       state: this._state,
     });
     _.set(this.fields, pathToField, newField);
-  }
-
-  _updateAllDirtyStates() {
-    findInFieldRecursively(this.fields, (field) => {
-      field.$recalcDirty();
-    });
-  }
-
-  _handleSubmitCallback() {
-    const values = _.clone(this._storage.getValues());
-    this._storage.setFormState('submitting', true);
-
-    // TODO: make simpler
-    // TODO: review - especially updateSavedValues
-
-    const updateSavedValues = () => {
-      if (this._config.updateSavedValuesAfterSubmit) {
-        // TODO: WTF???
-        this._storage.updateSavedValues(values);
-        this._updateAllDirtyStates();
-      }
-    };
-
-
-    if (this._events.getFormCallback('submit')) {
-      // TODO: поднять startSubmit and endSubmit
-      const returnedValue = this._events.getFormCallback('submit')(values);
-
-      // if promise
-      if (returnedValue && returnedValue.then) {
-        return returnedValue.then((data) => {
-          this._storage.setFormState('submitting', false);
-          updateSavedValues();
-
-          return data;
-        }, (err) => {
-          this._storage.setFormState('submitting', false);
-
-          return err;
-        });
-      }
-    }
-
-    // without _onSubmitCallback or with _onSubmitCallback and it doesn't return a promise
-    this._storage.setFormState('submitting', false);
-    updateSavedValues();
-
-    return Promise.resolve();
   }
 
 }
