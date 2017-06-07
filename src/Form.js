@@ -4,7 +4,7 @@ import Storage from './Storage';
 import Events from './Events';
 import State from './State';
 import Field from './Field';
-import { findInFieldRecursively } from './helpers';
+import { findInFieldRecursively, eachRecursively } from './helpers';
 
 
 export default class Form {
@@ -185,9 +185,10 @@ export default class Form {
    * @param newValues
    */
   setValues(newValues) {
-    // TODO: test nested values
-    _.each(newValues, (value, fieldName) => {
-      if (this.fields[fieldName]) this.fields[fieldName].setValue(value);
+    eachRecursively(newValues, (value, path) => {
+      const field = _.get(this.fields, path);
+      if (!field) return;
+      field.setValue(value);
     });
   }
 
@@ -198,9 +199,10 @@ export default class Form {
    * @param newValues
    */
   setSavedValues(newValues) {
-    // TODO: test nested values
-    _.each(newValues, (value, fieldName) => {
-      if (this.fields[fieldName]) this.fields[fieldName].setSavedValue(value);
+    eachRecursively(newValues, (value, path) => {
+      const field = _.get(this.fields, path);
+      if (!field) return;
+      field.setSavedValue(value);
     });
   }
 

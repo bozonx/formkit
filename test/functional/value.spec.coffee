@@ -115,3 +115,27 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.isTrue(this.form.fields.name.touched)
     # saved value = undefined and value = "default value" - dirty = true
     assert.isTrue(this.form.fields.name.dirty)
+
+  it "form.setValues", ->
+    this.form = formHelper.newForm()
+    this.form.init(['parent.child'])
+
+    this.form.setValues({
+      parent: { child: 'newValue' }
+    })
+
+    assert.deepEqual(this.form.values, {
+      parent: { child: 'newValue' }
+    })
+
+  it "form.setSavedValues", ->
+    this.form = formHelper.newForm()
+    this.form.init(['parent.child'])
+
+    this.form.setSavedValues({
+      parent: { child: 'newValue' }
+    })
+
+    assert.deepEqual(this.form.savedValues, {
+      parent: { child: 'newValue' }
+    })

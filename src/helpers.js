@@ -35,6 +35,19 @@ export function findInFieldRecursively(rootObject, cb) {
   return recursive(rootObject);
 }
 
+/**
+ * It works with structure like this:
+ *     {
+ *       parent: {
+ *         // this will be pass to callback: cb({fieldProp: 'value'}, 'parent.field')
+ *         field: {
+ *           fieldProp: 'value'
+ *         }
+ *       }
+ *     }
+ * @param rootObject
+ * @param cb
+ */
 export function findRecursively(rootObject, cb) {
   const isContainer = (item) => {
     let container = true;
@@ -51,7 +64,34 @@ export function findRecursively(rootObject, cb) {
 
   const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
     const itemPath = _.trim(`${rootPath}.${name}`, '.');
+
     if (_.isPlainObject(item) && isContainer(item)) {
+      return recursive(item, itemPath);
+    }
+    else {
+      // it's field
+      return cb(item, itemPath);
+    }
+  });
+
+  return recursive(rootObject, '');
+}
+
+/**
+ * It works with common structures like
+ *     {
+ *       parent: {
+ *         prop: 'value'
+ *       }
+ *     }
+ * @param rootObject
+ * @param cb
+ */
+export function eachRecursively(rootObject, cb) {
+  const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
+    const itemPath = _.trim(`${rootPath}.${name}`, '.');
+
+    if (_.isPlainObject(item)) {
       return recursive(item, itemPath);
     }
     else {
