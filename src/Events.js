@@ -49,29 +49,16 @@ export default class Events {
     this._fieldsCallbacks[pathToField][eventName] = cb;
   }
 
-  riseFieldSaveStart(pathToField, data) {
-    // if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField].save) {
-    //   this._fieldsCallbacks[pathToField].save(data);
-    // }
-    this._riseFieldEvent(pathToField, 'saveStart', data);
-  }
-
-  riseFieldSaveEnd(pathToField) {
-    this._riseFieldEvent(pathToField, 'saveEnd');
-  }
-
   riseFormDebouncedSave(force) {
     return this._formSaveDebouncedCall.exec(() => this.$startSaving(
       this._storage.getUnsavedValues(),
       this._formCallbacks.save,
       (...p) => this._state.setFormSavingState(...p),
       (...p) => this._riseFormEvent(...p),
-      // TODO: убрать
-      //() => this._storage.clearUnsavedValues()
     ), force);
   }
 
-  $startSaving(data, saveCb, setSavingState, riseEvent, endCb) {
+  $startSaving(data, saveCb, setSavingState, riseEvent) {
     // set saving: true
     setSavingState(true);
     // rise saveStart event
@@ -82,8 +69,6 @@ export default class Events {
       setSavingState(false);
       // rise saveEnd
       riseEvent('saveEnd');
-      // TODO: убрать
-      if (endCb) endCb();
     };
 
     if (saveCb) {
@@ -119,7 +104,7 @@ export default class Events {
 
     // Rise events
     this._riseFormEvent('silentChange', eventData);
-    this._riseFieldEvent(pathToField, 'silentChange', eventData);
+    this.riseFieldEvent(pathToField, 'silentChange', eventData);
 
     this._riseAnyChange(pathToField);
   }
@@ -150,7 +135,7 @@ export default class Events {
     }
 
     // Rise events field's change handler
-    this._riseFieldEvent(pathToField, 'change', eventData);
+    this.riseFieldEvent(pathToField, 'change', eventData);
     // run form's change handler
     this._riseFormEvent('change', { [pathToField]: newValue });
 
@@ -173,13 +158,12 @@ export default class Events {
     this._formSaveDebouncedCall.flush();
   }
 
+  riseFieldEvent(pathToField, eventName, data) {
+    this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
+  }
 
   _riseFormEvent(eventName, data) {
     this._eventEmitter.emit(`form.${eventName}`, data);
-  }
-
-  _riseFieldEvent(pathToField, eventName, data) {
-    this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
   }
 
   /**
@@ -189,7 +173,7 @@ export default class Events {
    */
   _riseAnyChange(pathToField) {
     this._riseFormEvent('anyChange');
-    this._riseFieldEvent(pathToField, 'anyChange');
+    this.riseFieldEvent(pathToField, 'anyChange');
   }
 
 }

@@ -324,16 +324,14 @@ export default class Field {
       this.value,
       this._events.getFieldCallback(this._pathToField, 'save'),
       (...p) => this._state.setFieldSavingState(this._pathToField, ...p),
-      (...p) => this._events.riseFieldSaveStart(this._pathToField, ...p)
+      (...p) => this._events.riseFieldEvent(this._pathToField, ...p)
     ), force);
 
     // rise form's save handler
     // TODO: а если нету??? обработчика?
-    const formPromise = this._events.riseFormDebouncedSave(force);
+    this._events.riseFormDebouncedSave(force);
 
     return fieldPromise;
-
-    //return Promise.all([ fieldPromise, formPromise ]);
   }
 
   _setValueDirtyValidate(newValue) {
