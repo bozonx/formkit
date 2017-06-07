@@ -319,7 +319,7 @@ export default class Field {
     if (!this._storage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
     // rise a field's save handlers, callback and switch saving state
-    //const fieldPromise = this._debouncedCall.exec(() => this._startSaving(), force);
+    // TODO: а если нету??? обработчика?
     const fieldPromise = this._debouncedCall.exec(() => this._events.$startSaving(
       this.value,
       this._events.getFieldCallback(this._pathToField, 'save'),
@@ -327,8 +327,9 @@ export default class Field {
       (...p) => this._events.riseFieldSaveStart(this._pathToField, ...p)
     ), force);
 
-    // TODO: review
+    // TODO: which promise have to return?
     // rise form's save handler
+    // TODO: а если нету??? обработчика?
     const formPromise = this._events.riseFormDebouncedSave(force);
 
     return Promise.all([ fieldPromise, formPromise ]).then(() => {
@@ -337,44 +338,6 @@ export default class Field {
     });
 
     //return fieldPromise;
-  }
-
-  _startSaving() {
-    // TODO: move to events
-
-    // set saving: true
-    this._state.setFieldSavingState(this._pathToField, true);
-    // rise saveStart event
-    this._events.riseFieldSaveStart(this._pathToField, this.value);
-
-    // TODO: нужно ли убирать из unsaved???
-
-    const saveEnd = () => {
-      // set saving: false
-      this._state.setFieldSavingState(this._pathToField, false);
-      // rise saveEnd
-      this._events.riseFieldSaveEnd(this._pathToField);
-    };
-
-    const fieldSaveCb = this._events.getFieldCallback(this._pathToField, 'save');
-    if (fieldSaveCb) {
-      // run save callback
-      const cbPromise = fieldSaveCb(this.value);
-      if (isPromise(cbPromise)) {
-        cbPromise.then(() => {
-          saveEnd();
-        });
-
-        return cbPromise;
-      }
-
-      // if save callback hasn't returned a promise
-      saveEnd();
-    }
-    else {
-      // if there isn't save callback
-      saveEnd();
-    }
   }
 
   _setValueDirtyValidate(newValue) {

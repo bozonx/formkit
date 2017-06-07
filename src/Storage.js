@@ -14,6 +14,7 @@ export default class Storage {
       formState: this._generateNewFormState(),
       fieldsState: {},
       values: {},
+      // modified values from previous save
       unsavedValues: {},
     };
   }

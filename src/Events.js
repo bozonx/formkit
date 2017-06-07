@@ -61,59 +61,17 @@ export default class Events {
   }
 
   riseFormDebouncedSave(force) {
-    return this._formSaveDebouncedCall.exec(() => {
-      // save current state on the moment
-      const data = this._storage.getUnsavedValues();
-
-      return this.$startSaving(
-        data,
-        this._formCallbacks.save,
-        (...p) => this._state.setFormSavingState(...p),
-        (...p) => this._riseFormEvent(...p)
-      );
-
-
-      //
-      // // save current state on the moment
-      // const data = this._storage.getUnsavedValues();
-      //
-      // // set saving: true
-      // this._state.setFormSavingState(true);
-      // // rise saveStart event
-      // this._riseFormEvent('saveStart', data);
-      //
-      //
-      // const saveEnd = () => {
-      //   // set saving: false
-      //   this._state.setFormSavingState(false);
-      //   // rise saveEnd
-      //   this._riseFormEvent('saveEnd');
-      //   // TODO: вынести в промис
-      //   this._storage.clearUnsavedValues();
-      // };
-      //
-      // if (this._formCallbacks.save) {
-      //   // run save callback
-      //   const cbPromise = this._formCallbacks.save(data);
-      //   if (isPromise(cbPromise)) {
-      //     cbPromise.then(() => {
-      //       saveEnd();
-      //     });
-      //
-      //     return cbPromise;
-      //   }
-      //
-      //   // if save callback hasn't returned a promise
-      //   saveEnd();
-      // }
-      // else {
-      //   // if there isn't save callback
-      //   saveEnd();
-      // }
-    }, force);
+    return this._formSaveDebouncedCall.exec(() => this.$startSaving(
+      this._storage.getUnsavedValues(),
+      this._formCallbacks.save,
+      (...p) => this._state.setFormSavingState(...p),
+      (...p) => this._riseFormEvent(...p),
+      // TODO: убрать
+      //() => this._storage.clearUnsavedValues()
+    ), force);
   }
 
-  $startSaving(data, saveCb, setSavingState, riseEvent) {
+  $startSaving(data, saveCb, setSavingState, riseEvent, endCb) {
     // set saving: true
     setSavingState(true);
     // rise saveStart event
@@ -124,6 +82,8 @@ export default class Events {
       setSavingState(false);
       // rise saveEnd
       riseEvent('saveEnd');
+      // TODO: убрать
+      if (endCb) endCb();
     };
 
     if (saveCb) {

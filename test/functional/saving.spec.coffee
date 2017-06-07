@@ -50,18 +50,19 @@ describe 'Functional. saving.', ->
       saveHandler = () =>
         return new Promise (resolve) =>
           handlerResolve = resolve
-
       this.form.fields.name.onSave(saveHandler)
       this.form.fields.name.on('saveStart', startSaveHandler)
       this.form.fields.name.on('saveEnd', endSaveHandler)
+
+      # change field's data
       this.form.fields.name.handleChange('newValue')
-
+      # saving is false because the save cb is waiting for running
       assert.isFalse(this.form.fields.name.saving)
-
+      # start saving by hands
       savePromise = this.form.fields.name.save()
-
+      # saving is true after saving has started
       assert.isTrue(this.form.fields.name.saving)
-
+      # resolve the save promise
       handlerResolve()
 
       savePromise.then () =>
@@ -100,10 +101,10 @@ describe 'Functional. saving.', ->
       saveHandler = () =>
         return new Promise (resolve) =>
           handlerResolve = resolve
-
       this.form.onSave(saveHandler)
       this.form.on('saveStart', startSaveHandler)
       this.form.on('saveEnd', endSaveHandler)
+
       this.form.fields.param1.handleChange('newValue')
 
       assert.isFalse(this.form.saving)
