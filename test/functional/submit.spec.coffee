@@ -6,85 +6,105 @@ describe 'Functional. Submit.', ->
     this.form.init(['name'])
 
   it 'simple submit', ->
-    this.submitHandler = sinon.spy();
-    this.form.onSubmit(this.submitHandler)
+    submitHandler = sinon.spy();
+    this.form.onSubmit(submitHandler)
 
     this.form.fields.name.handleChange('newValue')
     this.form.handleSubmit()
-    expect(this.submitHandler).to.have.been.calledOnce
-    expect(this.submitHandler).to.have.been.calledWith({name: 'newValue'})
+    expect(submitHandler).to.have.been.calledOnce
+    expect(submitHandler).to.have.been.calledWith({name: 'newValue'})
     assert.isFalse(this.form.submitting)
 
-  it 'submitting with promise', (done) ->
-    this.submitHandler = () ->
+  it 'submitting with promise', ->
+    submitHandler = () ->
       return new Promise (resolve) =>
         resolve()
 
-    this.form.onSubmit(this.submitHandler)
+    this.form.onSubmit(submitHandler)
 
     this.form.fields.name.handleChange('newValue')
 
     handleSubmitReturn = this.form.handleSubmit()
     assert.isTrue(this.form.submitting)
 
-    expect(handleSubmitReturn).to.eventually.notify =>
+    handleSubmitReturn.then () =>
       assert.isFalse(this.form.submitting)
-      done()
 
-  it 'rejected promise', (done) ->
-    this.submitHandler = ->
+  it 'rejected promise', ->
+    submitHandler = ->
       new Promise (resolve, reject) =>
-        reject('error')
+        reject(new Error('error'))
 
-    this.form.onSubmit(this.submitHandler)
+    this.form.onSubmit(submitHandler)
 
     this.form.fields.name.handleChange('newValue')
 
     handleSubmitReturn = this.form.handleSubmit()
+
     assert.isTrue(this.form.submitting)
+    expect(handleSubmitReturn).to.eventually.rejected
 
-    Promise.all([
-      expect(handleSubmitReturn).to.eventually.rejected.and.equal('error'),
-      expect(handleSubmitReturn).to.eventually.rejected.and.notify =>
-        assert.isFalse(this.form.submitting)
-        done()
-    ]);
-    return undefined
+    handleSubmitReturn.catch =>
+      assert.isFalse(this.form.submitting)
 
-  it "don't submit while form is submitting at the moment", (done) ->
-    this.resolver = null;
-    this.submitHandler = () =>
+  it "don't submit while form is submitting at the moment.", ->
+    promiseResolve = null;
+    savedData = null
+    submitHandler = (values) =>
+      savedData = values
       new Promise (resolve) =>
-        this.resolver = () => resolve()
-
-    this.form.onSubmit(this.submitHandler)
+        promiseResolve = resolve
+    this.form.onSubmit(submitHandler)
 
     this.form.fields.name.handleChange('newValue')
-
-    handleSubmitReturn = this.form.handleSubmit()
+    firstSubmit = this.form.handleSubmit()
     assert.isTrue(this.form.submitting)
 
     # run second time
     this.form.fields.name.handleChange('newValue2')
-    this.form.onSubmit()
+    secondSubmit = this.form.handleSubmit()
     assert.isTrue(this.form.submitting)
 
-    this.resolver()
+    promiseResolve()
 
-    expect(handleSubmitReturn).to.eventually.notify =>
+    expect(secondSubmit).to.eventually.rejected
+
+    firstSubmit.then =>
       assert.isFalse(this.form.submitting)
-      done()
+      assert.deepEqual(savedData, { name: 'newValue' })
 
-  it "don't do another submit if data isn't change", ->
-    this.submitHandler = sinon.spy();
-    this.form.onSubmit(this.submitHandler)
-
-    this.form.fields.name.handleChange('newValue')
-    this.form.handleSubmit()
+  it "don't do another submit if data hasn't changed", ->
+    submitHandler = sinon.spy();
+    this.form.onSubmit(submitHandler)
 
     this.form.fields.name.handleChange('newValue')
     this.form.handleSubmit()
 
-    expect(this.submitHandler).to.have.been.calledOnce
-    expect(this.submitHandler).to.have.been.calledWith({name: 'newValue'})
+    this.form.fields.name.handleChange('newValue')
+    this.form.handleSubmit()
+
+    expect(submitHandler).to.have.been.calledOnce
+    expect(submitHandler).to.have.been.calledWith({name: 'newValue'})
     assert.equal(this.form.submitting, false)
+
+  it "disallow submit invalid form", ->
+    submitHandler = sinon.spy();
+    this.form.onSubmit(submitHandler)
+    this.form.fields.name._validateCallback = () -> false
+
+    this.form.fields.name.handleChange('newValue')
+    this.form.handleSubmit()
+
+    expect(submitHandler).to.have.not.been.called
+    assert.equal(this.form.submitting, false)
+
+  it "run submit witout submit callback", ->
+    this.form.fields.name.handleChange('newValue')
+
+    assert.deepEqual(this.form.unsavedValues, { name: 'newValue' })
+    assert.isTrue(this.form.dirty)
+    this.form.handleSubmit()
+
+    assert.equal(this.form.submitting, false)
+    assert.deepEqual(this.form.unsavedValues, {})
+    assert.isFalse(this.form.dirty)

@@ -79,7 +79,7 @@ export default class Events {
         }, (err) => {
           this._storage.setFormState('submitting', false);
 
-          return err;
+          return Promise.reject(err);
         });
       }
       else {
