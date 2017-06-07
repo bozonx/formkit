@@ -116,11 +116,9 @@ export default class Form {
   handleSubmit() {
     // disallow submit invalid form
     if (!this.valid) return Promise.reject(new Error(`The form is invalid`));
+    // do nothing if form is submitting at the moment
+    if (this._storage.getFormState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
 
-    if (!this._config.allowSubmitSubmittingForm) {
-      // do nothing if form is submitting at the moment
-      if (this._storage.getFormState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
-    }
     if (!this._config.allowSubmitUnchangedForm) {
       if (!this._storage.getFormState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
     }
