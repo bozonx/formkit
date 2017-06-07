@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import DebouncedCall from './DebouncedCall';
-import { calculateDirty, getFieldName, parseValidateCbReturn, isPromise } from './helpers';
+import { calculateDirty, getFieldName, parseValidateCbReturn } from './helpers';
 
 
 export default class Field {

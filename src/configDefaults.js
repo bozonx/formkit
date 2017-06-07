@@ -9,7 +9,16 @@ module.exports = {
   allowUnchanged: false,
 
   allowFocusedFieldUpdating: false,
+
+  /**
+   * Allow run new submit process if current in progress.
+   */
   allowSubmitSubmittingForm: false,
+
+  /**
+   * Allow run submit even the form hasn't changed.
+   */
   allowSubmitUnchangedForm: false,
+
   updateSavedValuesAfterSubmit: true,
 };

@@ -114,23 +114,18 @@ export default class Form {
    * @return {Promise}
    */
   handleSubmit() {
-    // TODO: добавить возможность просто запускать handleSubmit без указания _onSubmitCallback
-    // TODO: должно поддерживать cancelSaving() and flushSaving()
+    // disallow submit invalid form
+    if (!this.valid) return Promise.reject(new Error(`The form is invalid`));
 
     if (!this._config.allowSubmitSubmittingForm) {
       // do nothing if form is submitting at the moment
-      if (this._storage.getFormState('submitting')) return;
+      if (this._storage.getFormState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
     }
     if (!this._config.allowSubmitUnchangedForm) {
-      if (!this._storage.getFormState('dirty')) return;
+      if (!this._storage.getFormState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
     }
 
-    this._storage.setFormState('submitting', true);
-    const values = _.clone(this._storage.getValues());
-
-    // TODO: validate
-
-    return this._handleSubmitCallback(values);
+    return this._handleSubmitCallback();
   }
 
   /**
@@ -237,7 +232,10 @@ export default class Form {
     });
   }
 
-  _handleSubmitCallback(values) {
+  _handleSubmitCallback() {
+    const values = _.clone(this._storage.getValues());
+    this._storage.setFormState('submitting', true);
+
     // TODO: make simpler
     // TODO: review - especially updateSavedValues
 

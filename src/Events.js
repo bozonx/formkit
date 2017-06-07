@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import DebouncedCall from './DebouncedCall';
 import { isPromise } from './helpers';
 
