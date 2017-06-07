@@ -334,7 +334,7 @@ export default class Field {
 
     return Promise.all([ fieldPromise, formPromise ]).then(() => {
       // clear unsaved state
-      this._storage.clearUnsavedValues();
+      //this._storage.clearUnsavedValues();
     });
 
     //return fieldPromise;

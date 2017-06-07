@@ -49,17 +49,18 @@ export function findRecursively(rootObject, cb) {
     return container;
   };
 
-  const recursive = (obj) => _.find(obj, (item) => {
+  const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
+    const itemPath = _.trim(`${rootPath}.${name}`, '.');
     if (_.isPlainObject(item) && isContainer(item)) {
-      return recursive(item);
+      return recursive(item, itemPath);
     }
     else {
       // it's field
-      return cb(item);
+      return cb(item, itemPath);
     }
   });
 
-  return recursive(rootObject);
+  return recursive(rootObject, '');
 }
 
 export function calculateDirty(value, savedValue) {

@@ -14,8 +14,6 @@ export default class Storage {
       formState: this._generateNewFormState(),
       fieldsState: {},
       values: {},
-      // modified values from previous save
-      unsavedValues: {},
     };
   }
 
@@ -104,19 +102,20 @@ export default class Storage {
 
 
   getUnsavedValues() {
-    return _.cloneDeep(this._store.unsavedValues);
+    const unsavedValues = {};
+
+    findRecursively(this._store.fieldsState, (field, path) => {
+      const curValue = _.get(this._store.values, path);
+      if (field.savedValue !== curValue) {
+        _.set(unsavedValues, path, curValue);
+      }
+    });
+
+    return unsavedValues;
   }
 
   isFieldUnsaved(pathToField) {
-    return _.has(this._store.unsavedValues, pathToField);
-  }
-
-  setUnsavedValue(pathToField, newValue) {
-    _.set(this._store.unsavedValues, pathToField, newValue);
-  }
-
-  clearUnsavedValues() {
-    this._store.unsavedValues = {};
+    return _.get(this._store.fieldsState, pathToField).savedValue !== _.get(this._store.values, pathToField);
   }
 
 

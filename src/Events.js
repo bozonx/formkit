@@ -154,9 +154,6 @@ export default class Events {
     // run form's change handler
     this._riseFormEvent('change', { [pathToField]: newValue });
 
-    // TODO: вынести в промис
-    this._storage.setUnsavedValue(pathToField, newValue);
-
     this._riseAnyChange(pathToField);
   }
 
