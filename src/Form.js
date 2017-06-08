@@ -40,7 +40,7 @@ export default class Form {
     return this._storage.getFormState('submitting');
   }
   get valid() {
-    return this._storage.getFormState('valid');
+    return this._storage.getFormValid();
   }
   get config() {
     return this._config;

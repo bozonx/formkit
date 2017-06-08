@@ -1,5 +1,3 @@
-import { findInFieldRecursively } from './helpers';
-
 /**
  * It sets field and form states and rise an event if need
  * @class
@@ -41,19 +39,6 @@ export default class State {
 
       this._storage.setFormState('dirty', !!hasAnyDirty);
     }
-  }
-
-  setFieldAndFormValidState(pathToField, isValid, invalidMsg) {
-    this._storage.setFieldState(pathToField, {
-      valid: isValid,
-      invalidMsg,
-    });
-
-    const hasAnyErrors = !!findInFieldRecursively(this._form.fields, (field) => {
-      if (!field.valid) return true;
-    });
-
-    this._storage.setFormState('valid', !hasAnyErrors);
   }
 
 }

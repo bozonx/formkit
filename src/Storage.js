@@ -50,6 +50,20 @@ export default class Storage {
     });
   }
 
+  getFormValid() {
+    let valid = true;
+
+    findFieldLikeStructureRecursively(this._store.fieldsState, (field) => {
+      if (!field.valid) {
+        valid = false;
+
+        return true;
+      }
+    });
+
+    return valid;
+  }
+
   /**
    * get current value
    * @param pathToField
@@ -130,7 +144,6 @@ export default class Storage {
       dirty: false,
       touched: false,
       submitting: false,
-      valid: true,
       saving: false,
     };
   }
