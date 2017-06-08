@@ -73,7 +73,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -17166,7 +17166,7 @@ return /******/ (function(modules) { // webpackBootstrap
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(12)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(13)(module)))
 
 /***/ }),
 /* 1 */
@@ -17178,140 +17178,14 @@ return /******/ (function(modules) { // webpackBootstrap
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _lodash = __webpack_require__(0);
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var DebouncedCall = function () {
-  function DebouncedCall(delay) {
-    _classCallCheck(this, DebouncedCall);
-
-    this._delay = delay;
-    // waiting to call debaunced function
-    this._deleyed = false;
-    // if promise returned from callback has pending state
-    this._pending = false;
-    this._runAfterCbFulfill = undefined;
-
-    this._debouncedCb = _lodash2.default.debounce(function (cb) {
-      return cb();
-    }, this._delay);
-  }
-
-  _createClass(DebouncedCall, [{
-    key: 'exec',
-
-
-    // get delay() {
-    //   return this.delay;
-    // }
-    // set delay(delay) {
-    //   this.delay = delay;
-    // }
-
-    value: function exec(cb, force) {
-      for (var _len = arguments.length, params = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-        params[_key - 2] = arguments[_key];
-      }
-
-      var _this = this;
-
-      if (this._pending) {
-        this._runAfterCbFulfill = { cb: cb, params: [].concat(params) };
-
-        return;
-      }
-
-      if (force) {
-        this.cancel();
-        // run without debounce
-        this._runCallBack.apply(this, [cb].concat(params));
-      } else {
-        this._deleyed = true;
-        this._debouncedCb(function () {
-          _this._runCallBack.apply(_this, [cb].concat(params));
-          _this._deleyed = false;
-        });
-      }
-    }
-  }, {
-    key: 'cancel',
-    value: function cancel() {
-      if (this._debouncedCb) this._debouncedCb.cancel();
-      this._deleyed = false;
-      // TODO: а если уже сохранение в процессе???
-    }
-  }, {
-    key: 'flush',
-    value: function flush() {
-      this._debouncedCb.flush();
-    }
-  }, {
-    key: '_runCallBack',
-    value: function _runCallBack(cb) {
-      var _this2 = this;
-
-      for (var _len2 = arguments.length, params = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-        params[_key2 - 1] = arguments[_key2];
-      }
-
-      var promise = cb.apply(undefined, params);
-      if (!promise) return;
-
-      this._pending = true;
-
-      return promise.then(function (data) {
-        _this2._pending = false;
-        if (_this2._runAfterCbFulfill) {
-          _this2.exec.apply(_this2, [_this2._runAfterCbFulfill.cb, true].concat(_toConsumableArray(_this2._runAfterCbFulfill.params)));
-          _this2._runAfterCbFulfill = undefined;
-        }
-
-        return data;
-      }).catch(function (err) {
-        _this2._pending = false;
-
-        return Promise.reject(err);
-      });
-    }
-  }, {
-    key: 'deleyed',
-    get: function get() {
-      return this._deleyed;
-    }
-  }, {
-    key: 'pending',
-    get: function get() {
-      return this._pending;
-    }
-  }]);
-
-  return DebouncedCall;
-}();
-
-exports.default = DebouncedCall;
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports.extendDeep = extendDeep;
 exports.findInFieldRecursively = findInFieldRecursively;
+exports.findFieldLikeStructureRecursively = findFieldLikeStructureRecursively;
+exports.findRecursively = findRecursively;
+exports.calculateDirty = calculateDirty;
+exports.getFieldName = getFieldName;
+exports.parseValidateCbReturn = parseValidateCbReturn;
+exports.isPromise = isPromise;
 
 var _lodash = __webpack_require__(0);
 
@@ -17334,23 +17208,343 @@ function extendDeep(willExtend, newValues) {
   });
 
   return willExtend;
-}
+} /* eslint func-style: off */
 
 function findInFieldRecursively(rootObject, cb) {
   var recursive = function recursive(obj) {
     return _lodash2.default.find(obj, function (item) {
-      if (!_lodash2.default.isPlainObject(item) && !item.name) return;
-      if (item.name) {
-        // it's field
-        return cb(item);
-      } else {
+      if (_lodash2.default.isPlainObject(item)) {
+        // it's a container
         return recursive(item);
+      } else if (_lodash2.default.isObject(item)) {
+        // it's a field
+        return cb(item);
       }
     });
   };
 
   return recursive(rootObject);
 }
+
+/**
+ * It works with structure like this:
+ *     {
+ *       parent: {
+ *         // this will be pass to callback: cb({fieldProp: 'value'}, 'parent.field')
+ *         field: {
+ *           fieldProp: 'value'
+ *         }
+ *       }
+ *     }
+ * @param rootObject
+ * @param cb
+ */
+function findFieldLikeStructureRecursively(rootObject, cb) {
+  var isContainer = function isContainer(item) {
+    var container = true;
+    _lodash2.default.find(item, function (field) {
+      if (!_lodash2.default.isPlainObject(field)) {
+        container = false;
+
+        return true;
+      }
+    });
+
+    return container;
+  };
+
+  var recursive = function recursive(obj, rootPath) {
+    return _lodash2.default.find(obj, function (item, name) {
+      var itemPath = _lodash2.default.trim(rootPath + '.' + name, '.');
+
+      if (_lodash2.default.isPlainObject(item) && isContainer(item)) {
+        return recursive(item, itemPath);
+      } else {
+        // it's field
+        return cb(item, itemPath);
+      }
+    });
+  };
+
+  return recursive(rootObject, '');
+}
+
+/**
+ * It works with common structures like
+ *     {
+ *       parent: {
+ *         prop: 'value'
+ *       }
+ *     }
+ * @param rootObject
+ * @param cb
+ */
+function findRecursively(rootObject, cb) {
+  var recursive = function recursive(obj, rootPath) {
+    return _lodash2.default.find(obj, function (item, name) {
+      var itemPath = _lodash2.default.trim(rootPath + '.' + name, '.');
+
+      if (_lodash2.default.isPlainObject(item)) {
+        return recursive(item, itemPath);
+      } else {
+        // it's field
+        return cb(item, itemPath);
+      }
+    });
+  };
+
+  return recursive(rootObject, '');
+}
+
+function calculateDirty(value, savedValue) {
+  var newDirtyValue = void 0;
+
+  // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
+  if ((value === '' || _lodash2.default.isNil(value)) && (savedValue === '' || _lodash2.default.isNil(savedValue))) {
+    newDirtyValue = false;
+  } else {
+    // just compare current value and saved value
+    newDirtyValue = value !== savedValue;
+  }
+
+  return newDirtyValue;
+}
+
+function getFieldName(pathToField) {
+  var split = pathToField.split('.');
+  var onlyOneItem = 1;
+
+  if (split.length <= onlyOneItem) return pathToField;
+
+  return _lodash2.default.last(split);
+}
+
+function parseValidateCbReturn(cbReturn) {
+  var invalidMsg = _lodash2.default.isString(cbReturn) && cbReturn !== '' ? cbReturn : undefined;
+  var result = void 0;
+  if (cbReturn === true) {
+    result = true;
+  } else if (invalidMsg) {
+    result = invalidMsg;
+  } else {
+    result = false;
+  }
+
+  return {
+    valid: cbReturn === true,
+    invalidMsg: invalidMsg,
+    result: result
+  };
+}
+
+function isPromise(unknown) {
+  return _lodash2.default.isObject(unknown) && unknown.then;
+}
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _lodash = __webpack_require__(0);
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _DebouncedCallbackWrapper = __webpack_require__(6);
+
+var _DebouncedCallbackWrapper2 = _interopRequireDefault(_DebouncedCallbackWrapper);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * It allows run callback with delay with debounce.
+ * * If callback returns a promise
+ *   * the callback running will be delayed for a specific time
+ *   * The "delayed" and "pending" prop will be true
+ *   * If you try to call another callback while current callback is waiting
+ *     for running and promise fulfilling,
+ *     it will delay it and call it after current callback has fulfilled.
+ *   * After promise has fulfiled, the "pending" prop will bi false.
+ * * If callback returns an undefined:
+ *   * the callback running will be delayed for a specific time
+ *   * The "delayed" prop will be true
+ *   * If you try to call another callback while current callback is waiting for running,
+ *     it will delay it and call it after current callback has fulfilled.
+ */
+var DebouncedCall = function () {
+  function DebouncedCall(delayTime) {
+    _classCallCheck(this, DebouncedCall);
+
+    this._delayTime = delayTime;
+    // waiting for start
+    this._delayed = false;
+    // promise which wait while current callback has run and fulfilled.
+    // this._waitPromise = null;
+    this._debouncedCb = _lodash2.default.debounce(function (cb) {
+      return cb();
+    }, this._delayTime);
+    this._cbWrapper = null;
+    // callback which was added while current callback in progress
+    this._queuedCallback = null;
+  }
+
+  _createClass(DebouncedCall, [{
+    key: 'getDelayed',
+    value: function getDelayed() {
+      return this._delayed;
+    }
+  }, {
+    key: 'getPending',
+    value: function getPending() {
+      if (!this._cbWrapper) return false;
+
+      return this._cbWrapper.isPending();
+    }
+
+    /**
+     * delayed or pending
+     * @return {boolean}
+     */
+
+  }, {
+    key: 'isInProgress',
+    value: function isInProgress() {
+      return this.getDelayed() || this.getPending();
+    }
+  }, {
+    key: 'cancel',
+    value: function cancel() {
+      this._cancelDelayed();
+      this._cancelQueue();
+      if (this._cbWrapper) this._cbWrapper.cancel();
+    }
+  }, {
+    key: 'flush',
+    value: function flush() {
+      this._debouncedCb.flush();
+    }
+  }, {
+    key: 'exec',
+    value: function exec(cb, force) {
+      for (var _len = arguments.length, params = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+        params[_key - 2] = arguments[_key];
+      }
+
+      this._chooseTheWay(cb, params, force);
+
+      return this._cbWrapper.getPromise();
+    }
+  }, {
+    key: '_cancelDelayed',
+    value: function _cancelDelayed() {
+      if (this._debouncedCb) this._debouncedCb.cancel();
+      this._delayed = false;
+    }
+  }, {
+    key: '_cancelQueue',
+    value: function _cancelQueue() {
+      this._queuedCallback = null;
+    }
+  }, {
+    key: '_chooseTheWay',
+    value: function _chooseTheWay(cb, params, force) {
+      if (this._cbWrapper) {
+        if (this._cbWrapper.isFulfilled() || this._cbWrapper.isCanceled()) {
+          this._runFreshCb(cb, params, force);
+        } else if (this._cbWrapper.isStarted()) {
+          // set this callback in queue
+          this._queuedCallback = { cb: cb, params: params };
+        } else if (force) {
+          // replace callback if it hasn't run.
+          this._cancelDelayed();
+          this._cbWrapper.setCallback(cb, params);
+          this._runWithoutDebounce();
+        } else {
+          this._cbWrapper.setCallback(cb, params);
+        }
+      } else {
+        this._runFreshCb(cb, params, force);
+      }
+    }
+  }, {
+    key: '_runFreshCb',
+    value: function _runFreshCb(cb, params, force) {
+      var _this = this;
+
+      this._setupNewCbWrapper(cb, params, force);
+
+      if (force) {
+        this._runWithoutDebounce();
+      } else {
+        // run debounced
+        this._delayed = true;
+        // TODO: may be use timeout / clearTimeout instead?
+        this._debouncedCb(function () {
+          if (_this._cbWrapper) _this._cbWrapper.start();
+          _this._delayed = false;
+        });
+      }
+    }
+  }, {
+    key: '_runWithoutDebounce',
+    value: function _runWithoutDebounce() {
+      // run without debounce
+      this._delayed = true;
+      this._cbWrapper.start();
+      this._delayed = false;
+    }
+
+    /**
+     * Set new callback wrapper.
+     * There aren't promise in progress and waiting queue and delayed cb on moment of running the method.
+     * @param cb
+     * @param params
+     * @private
+     */
+
+  }, {
+    key: '_setupNewCbWrapper',
+    value: function _setupNewCbWrapper(cb, params) {
+      var _this2 = this;
+
+      // set new callback wrapper;
+      this._cbWrapper = new _DebouncedCallbackWrapper2.default();
+      this._cbWrapper.setCallback(cb, params);
+
+      // after current promise was finished - run next cb in queue
+      this._cbWrapper.getPromise().then(function () {
+        return _this2._runQueuedCb();
+      }, function (err) {
+        _this2._runQueuedCb();
+
+        return err;
+      });
+    }
+  }, {
+    key: '_runQueuedCb',
+    value: function _runQueuedCb() {
+      if (this._queuedCallback) {
+        this._runFreshCb(this._queuedCallback.cb, this._queuedCallback.params, true);
+        // remove queue
+        this._cancelQueue();
+      }
+    }
+  }]);
+
+  return DebouncedCall;
+}();
+
+exports.default = DebouncedCall;
 
 /***/ }),
 /* 3 */
@@ -17369,122 +17563,186 @@ var _lodash = __webpack_require__(0);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _FormBase2 = __webpack_require__(8);
+var _Storage = __webpack_require__(10);
 
-var _FormBase3 = _interopRequireDefault(_FormBase2);
+var _Storage2 = _interopRequireDefault(_Storage);
+
+var _Events = __webpack_require__(7);
+
+var _Events2 = _interopRequireDefault(_Events);
+
+var _State = __webpack_require__(9);
+
+var _State2 = _interopRequireDefault(_State);
+
+var _Field = __webpack_require__(8);
+
+var _Field2 = _interopRequireDefault(_Field);
+
+var _helpers = __webpack_require__(1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var Form = function (_FormBase) {
-  _inherits(Form, _FormBase);
-
-  function Form(storage, config, events) {
+var Form = function () {
+  function Form(config, eventEmitter) {
     _classCallCheck(this, Form);
 
-    var _this = _possibleConstructorReturn(this, (Form.__proto__ || Object.getPrototypeOf(Form)).call(this, storage, config, events));
+    this._config = config;
 
-    _this._onSubmitCallback = null;
-    return _this;
+    this._fields = {};
+
+    this._storage = new _Storage2.default();
+    this._state = new _State2.default(this, this._storage);
+    this._events = new _Events2.default(this, eventEmitter, this._storage, this._state);
   }
 
   _createClass(Form, [{
     key: 'init',
+
+
+    /**
+     * It calls from outer app's code to init form.
+     * @param {array|object} initialFields
+     *   * if array: you can pass just fields name like: ['id', 'title', 'body']
+     *   * if object: you can pass a fields config like: {name: {default: 'no name', validate: () => {}, ...}}
+     */
     value: function init(initialFields) {
-      this.__reinitFields(initialFields);
+      var _this = this;
+
+      if (_lodash2.default.isArray(initialFields)) {
+        _lodash2.default.each(initialFields, function (pathToField) {
+          return _this._initField(pathToField, {});
+        });
+      } else if (_lodash2.default.isPlainObject(initialFields)) {
+        _lodash2.default.each(initialFields, function (params, pathToField) {
+          return _this._initField(pathToField, params || {});
+        });
+      } else {
+        throw new Error('Bad type of field\'s param');
+      }
     }
 
     /**
-     * Roll back to outer value which sat previously.
+     * Add one or more handlers on form's event:
+     * * change
+     * * silentChange
+     * * anyChange
+     * * saveStart
+     * * saveEnd
+     * * submitStart
+     * * submitEnd
+     * @param eventName
+     * @param cb
      */
 
   }, {
-    key: 'resetUserInput',
-    value: function resetUserInput() {
-      this._resetUserInput();
+    key: 'on',
+    value: function on(eventName, cb) {
+      this._events.addFormListener(eventName, cb);
     }
 
     /**
-     * It must be placed to <form> element on onSubmit attribute.
+     * Add only one callback of 'change' event. It usefull for use as handler of component.
+     * @param {function} cb
+     */
+
+  }, {
+    key: 'onChange',
+    value: function onChange(cb) {
+      this._events.setFormCallback('change', cb);
+    }
+  }, {
+    key: 'onSave',
+    value: function onSave(cb) {
+      this._events.setFormCallback('save', cb);
+    }
+  }, {
+    key: 'onSubmit',
+    value: function onSubmit(cb) {
+      this._events.setFormCallback('submit', cb);
+    }
+
+    /**
+     * It can be placed ad a handler of <form> element on onSubmit attribute.
+     * @return {Promise}
      */
 
   }, {
     key: 'handleSubmit',
     value: function handleSubmit() {
-      var _this2 = this;
+      // disallow submit invalid form
+      if (!this.valid) return Promise.reject(new Error('The form is invalid'));
+      // do nothing if form is submitting at the moment
+      if (this._storage.getFormState('submitting')) return Promise.reject(new Error('The form is submitting now.'));
 
-      if (!this._onSubmitCallback) return;
-      if (!this.$config.allowSubmitSubmittingForm) {
-        // do nothing if form is submitting at the moment
-        if (this.$storage.getFormState('submitting')) return;
-      }
-      if (!this.$config.allowSubmitUnchangedForm) {
-        if (!this.$storage.getFormState('dirty')) return;
+      if (!this._config.allowSubmitUnchangedForm) {
+        if (!this._storage.getFormState('dirty')) return Promise.reject(new Error('The form hasn\'t changed'));
       }
 
-      var updateOuterValues = function updateOuterValues() {
-        if (_this2.$config.updateOuterValuesAfterSubmit) {
-          _this2.$storage.updateOuterValues(values);
-          _this2.$updateDirtyStates();
-        }
-      };
+      var values = _lodash2.default.clone(this._storage.getFormValues());
 
-      this.$storage.setFormState('submitting', true);
-      var values = _lodash2.default.clone(this.$storage.values);
-      var returnedValue = this._onSubmitCallback(values);
-
-      // if promise
-      if (returnedValue && returnedValue.then) {
-        return returnedValue.then(function (data) {
-          _this2.$storage.setFormState('submitting', false);
-          updateOuterValues();
-
-          return data;
-        }, function (err) {
-          _this2.$storage.setFormState('submitting', false);
-
-          return err;
-        });
-      }
-      // without promise
-      this.$storage.setFormState('submitting', false);
-      updateOuterValues();
-    }
-  }, {
-    key: 'on',
-    value: function on(eventName, cb) {
-      this.$events.addListener(eventName, cb);
-    }
-  }, {
-    key: 'onChange',
-    value: function onChange(cb) {
-      this.$handlers.$onChangeCallback = cb;
-    }
-  }, {
-    key: 'onSave',
-    value: function onSave(cb) {
-      this.$handlers.$onSaveCallback = cb;
-    }
-  }, {
-    key: 'onSubmit',
-    value: function onSubmit(cb) {
-      this._onSubmitCallback = cb;
+      return this._events.riseFormSubmit(values);
     }
 
     /**
-     * Cancel debounce waiting for saving
+     * Start form save immediately.
+     * @return {Promise}
+     */
+
+  }, {
+    key: 'save',
+    value: function save() {
+      if (!this.valid) return Promise.reject(new Error('Form is invalid'));
+
+      return this._events.riseFormDebouncedSave(true);
+    }
+
+    /**
+     * Roll back to previously saved values.
+     */
+
+  }, {
+    key: 'clear',
+    value: function clear() {
+      (0, _helpers.findInFieldRecursively)(this.fields, function (field) {
+        return field.clear();
+      });
+    }
+
+    /**
+     * Reset values to default values.
+     */
+
+  }, {
+    key: 'reset',
+    value: function reset() {
+      (0, _helpers.findInFieldRecursively)(this.fields, function (field) {
+        return field.reset();
+      });
+    }
+
+    /**
+     * Cancel saving
      */
 
   }, {
     key: 'cancelSaving',
     value: function cancelSaving() {
-      this.$handlers.$debouncedCall.cancel();
+      // TODO: test
+      this._events.cancelFormSaving();
     }
+
+    /**
+     * Cancel submitting
+     */
+
+  }, {
+    key: 'cancelSubmitting',
+    value: function cancelSubmitting() {}
+    // TODO: add and test
+
 
     /**
      * Saving immediately
@@ -17493,12 +17751,146 @@ var Form = function (_FormBase) {
   }, {
     key: 'flushSaving',
     value: function flushSaving() {
-      this.$handlers.$debouncedCall.flush();
+      this._events.flushFormSaving();
+    }
+
+    /**
+     * Set form's values without rise a "change event"
+     * @param newValues
+     */
+
+  }, {
+    key: 'setValues',
+    value: function setValues(newValues) {
+      var _this2 = this;
+
+      (0, _helpers.findRecursively)(newValues, function (value, path) {
+        var field = _lodash2.default.get(_this2.fields, path);
+        if (!field) return;
+        field.setValue(value);
+      });
+    }
+
+    /**
+     * Set values to "saved" level and update current values.
+     * It usually runs after saving has successfully done.
+     * It needs if you want to rollback user changes to previously saved values.
+     * @param newValues
+     */
+
+  }, {
+    key: 'setSavedValues',
+    value: function setSavedValues(newValues) {
+      var _this3 = this;
+
+      (0, _helpers.findRecursively)(newValues, function (value, path) {
+        var field = _lodash2.default.get(_this3.fields, path);
+        if (!field) return;
+        field.setSavedValue(value);
+      });
+    }
+  }, {
+    key: '$getWholeStorageState',
+    value: function $getWholeStorageState() {
+      return this._storage.getWholeStorageState();
+    }
+
+    /**
+     * Initialize a field.
+     * @param pathToField
+     * @param {object} params - { initial, defaultValue, disabled, validate, debounceTime }
+     * @private
+     */
+
+  }, {
+    key: '_initField',
+    value: function _initField(pathToField, params) {
+      if (!pathToField) throw new Error('You must pass a field\'s name or path!');
+      // Try to get existent field
+      var existentField = _lodash2.default.get(this.fields, pathToField);
+      if (existentField) throw new Error('The field "' + pathToField + '" is exist! You can\'t reinitialize it!');
+
+      // create new one
+      var newField = new _Field2.default(pathToField, params, {
+        form: this,
+        events: this._events,
+        storage: this._storage,
+        state: this._state
+      });
+      _lodash2.default.set(this.fields, pathToField, newField);
+    }
+  }, {
+    key: 'fields',
+    get: function get() {
+      return this._fields;
+    }
+  }, {
+    key: 'values',
+    get: function get() {
+      return this._storage.getFormValues();
+    }
+  }, {
+    key: 'savedValues',
+    get: function get() {
+      return this._storage.getFormSavedValues();
+    }
+  }, {
+    key: 'dirty',
+    get: function get() {
+      return this._storage.getFormState('dirty');
+    }
+  }, {
+    key: 'touched',
+    get: function get() {
+      return this._storage.getFormState('touched');
+    }
+  }, {
+    key: 'saving',
+    get: function get() {
+      return this._storage.getFormSaving();
+    }
+  }, {
+    key: 'submitting',
+    get: function get() {
+      return this._storage.getFormState('submitting');
+    }
+  }, {
+    key: 'valid',
+    get: function get() {
+      return this._storage.getFormState('valid');
+    }
+  }, {
+    key: 'config',
+    get: function get() {
+      return this._config;
+    }
+  }, {
+    key: 'unsavedValues',
+    get: function get() {
+      return this._storage.getFormUnsavedValues();
+    }
+
+    /**
+     * Get all messages of invalid fields
+     * @return {Array} like [{path: "path.to.field", message: "msg"}, ...]
+     */
+
+  }, {
+    key: 'invalidMessages',
+    get: function get() {
+      var invalidMessages = [];
+      (0, _helpers.findInFieldRecursively)(this.fields, function (field) {
+        if (!field.valid && field.invalidMsg) {
+          invalidMessages.push({ path: field.path, message: field.invalidMsg });
+        }
+      });
+
+      return invalidMessages;
     }
   }]);
 
   return Form;
-}(_FormBase3.default);
+}();
 
 exports.default = Form;
 
@@ -17509,167 +17901,34 @@ exports.default = Form;
 "use strict";
 
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+module.exports = {
+  /**
+   * Delay time after field changing
+   */
+  debounceTime: 800,
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+  /**
+   * Allow/disallow start saving if field doesn't change.
+   * If true - it saving even field's value doesn't change.
+   * If false - it disallows start saving if value doesn't change.
+   */
+  allowSaveUnmodifiedField: false,
 
-var _lodash = __webpack_require__(0);
+  /**
+   * Allow/disallow update focused field after setting value from server.
+   */
+  allowFocusedFieldUpdating: false,
 
-var _lodash2 = _interopRequireDefault(_lodash);
+  /**
+   * Allow/disallow run submit even the form hasn't changed.
+   */
+  allowSubmitUnchangedForm: false,
 
-var _helpers = __webpack_require__(2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Storage = function () {
-  function Storage() {
-    _classCallCheck(this, Storage);
-
-    this._store = {
-      formState: {},
-      fieldsState: {},
-      userInputs: {},
-      outerValues: {}
-    };
-  }
-
-  // combined values
-
-
-  _createClass(Storage, [{
-    key: 'updateOuterValues',
-    value: function updateOuterValues(newValues) {
-      (0, _helpers.extendDeep)(this._store.outerValues, newValues);
-    }
-  }, {
-    key: 'initFormState',
-    value: function initFormState() {
-      this._store.formState = this._generateNewFormState();
-    }
-  }, {
-    key: 'initFieldState',
-    value: function initFieldState(pathToField, fieldName) {
-      this.setFieldState(pathToField, this._generateNewFieldState(fieldName));
-    }
-  }, {
-    key: 'getWholeStorageState',
-    value: function getWholeStorageState() {
-      return _lodash2.default.cloneDeep(this._store);
-    }
-  }, {
-    key: 'getUserInput',
-    value: function getUserInput(pathToField) {
-      return _lodash2.default.cloneDeep(_lodash2.default.get(this._store.userInputs, pathToField));
-    }
-  }, {
-    key: 'getOuterValue',
-    value: function getOuterValue(pathToField) {
-      return _lodash2.default.cloneDeep(_lodash2.default.get(this._store.outerValues, pathToField));
-    }
-  }, {
-    key: 'getValue',
-    value: function getValue(pathToField) {
-      var value = _lodash2.default.get(this._store.userInputs, pathToField);
-      if (!_lodash2.default.isUndefined(value)) return _lodash2.default.cloneDeep(value);
-      // else returns outer value
-
-      return _lodash2.default.get(this._store.outerValues, pathToField);
-    }
-  }, {
-    key: 'getFormState',
-    value: function getFormState(stateName) {
-      return _lodash2.default.cloneDeep(_lodash2.default.get(this._store.formState, stateName));
-    }
-  }, {
-    key: 'getFieldState',
-    value: function getFieldState(pathToField, stateName) {
-      return _lodash2.default.cloneDeep(_lodash2.default.get(this._store.fieldsState, pathToField + '.' + stateName));
-    }
-  }, {
-    key: 'setUserInput',
-    value: function setUserInput(pathToField, newValue) {
-      _lodash2.default.set(this._store.userInputs, pathToField, newValue);
-    }
-  }, {
-    key: 'setOuterValue',
-    value: function setOuterValue(pathToField, newValue) {
-      _lodash2.default.set(this._store.outerValues, pathToField, newValue);
-    }
-
-    /**
-     * Set form's state. Only primitive, not container or array
-     * @param stateName
-     * @param newValue
-     */
-
-  }, {
-    key: 'setFormState',
-    value: function setFormState(stateName, newValue) {
-      _lodash2.default.set(this._store.formState, stateName, newValue);
-    }
-
-    /**
-     * Set field's state.
-     * @param pathToField
-     * @param newState
-     */
-
-  }, {
-    key: 'setFieldState',
-    value: function setFieldState(pathToField, newState) {
-      var field = _lodash2.default.get(this._store.fieldsState, pathToField);
-      if (_lodash2.default.isUndefined(field)) {
-        field = {};
-        _lodash2.default.set(this._store.fieldsState, pathToField, field);
-      }
-      // TODO: может лучше использовать _.update
-      (0, _helpers.extendDeep)(field, newState);
-    }
-  }, {
-    key: 'findRecursively',
-    value: function findRecursively(root, cb) {
-      return (0, _helpers.findInFieldRecursively)(this._store[root], cb);
-    }
-  }, {
-    key: '_generateNewFormState',
-    value: function _generateNewFormState() {
-      return {
-        invalidMsgList: [],
-        dirty: false,
-        touched: false,
-        submitting: false,
-        valid: true
-      };
-    }
-  }, {
-    key: '_generateNewFieldState',
-    value: function _generateNewFieldState(name) {
-      return {
-        name: name,
-        dirty: false,
-        touched: false,
-        valid: true,
-        invalidMsg: undefined,
-        saving: false,
-        disabled: false,
-        focused: false
-      };
-    }
-  }, {
-    key: 'values',
-    get: function get() {
-      return _lodash2.default.defaultsDeep(_lodash2.default.cloneDeep(this._store.userInputs), this._store.outerValues);
-    }
-  }]);
-
-  return Storage;
-}();
-
-exports.default = Storage;
+  /**
+   * Allow/disallow update `field.savedValue` after form submit
+   */
+  allowUpdateSavedValuesAfterSubmit: true
+};
 
 /***/ }),
 /* 5 */
@@ -18002,176 +18261,108 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _lodash = __webpack_require__(0);
+var _helpers = __webpack_require__(1);
 
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _FieldBase2 = __webpack_require__(7);
-
-var _FieldBase3 = _interopRequireDefault(_FieldBase2);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+/**
+ *
+ */
+var DebouncedCallbackWrapper = function () {
+  function DebouncedCallbackWrapper() {
+    var _this = this;
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+    _classCallCheck(this, DebouncedCallbackWrapper);
 
-var Field = function (_FieldBase) {
-  _inherits(Field, _FieldBase);
-
-  function Field() {
-    _classCallCheck(this, Field);
-
-    return _possibleConstructorReturn(this, (Field.__proto__ || Object.getPrototypeOf(Field)).apply(this, arguments));
+    this._mainResolve = null;
+    this._mainReject = null;
+    this._mainPromise = new Promise(function (resolve, reject) {
+      _this._mainResolve = resolve;
+      _this._mainReject = reject;
+    });
+    this._callback = null;
+    // this._cbPromise = null;
+    this._started = false;
+    this._pending = false;
+    this._canceled = false;
   }
 
-  _createClass(Field, [{
-    key: 'handleChange',
-
-    /**
-     * It's onChange handler. It must be placed to input onChange attribute.
-     * It does:
-     * * don't do anything if disabled
-     * * don't save if value is unchanged
-     * * update userInput value
-     * * update "touched" state
-     * * Rises "change" events for field and form
-     * * Runs onChange callback if it assigned.
-     * * Starts saving
-     * @param {*} newValue
-     */
-    value: function handleChange(newValue) {
-      // don't do anything if disabled
-      if (this.disabled) return;
-
-      var oldCombinedValue = _lodash2.default.cloneDeep(this.value);
-
-      // TODO: а изменения разрешать?
-      // don't save unchanged value if it allows in config.
-      if (!this.$form.$config.unchangedValueSaving && _lodash2.default.isEqual(oldCombinedValue, newValue)) return;
-
-      this.__storage.setUserInput(this.$pathToField, newValue);
-
-      // update touched
-      if (!this.touched) this.$form.$handlers.handleFieldStateChange(this.$pathToField, 'touched', true);
-
-      this.$updateDirty();
-      this.validate();
-
-      this.$form.$handlers.handleValueChangeByUser(this.$pathToField, oldCombinedValue, newValue);
-
-      // run on change callback
-      if (this.$onChangeCallback) this.$onChangeCallback(newValue);
-
-      this.__startSave();
+  _createClass(DebouncedCallbackWrapper, [{
+    key: 'getPromise',
+    value: function getPromise() {
+      return this._mainPromise;
     }
   }, {
-    key: 'handleFocusIn',
-    value: function handleFocusIn() {
-      this.__storage.setFieldState(this.$pathToField, { focused: true });
+    key: 'setCallback',
+    value: function setCallback(cb, params) {
+      if (this._started) throw new Error('The current callback is in progress, you can\'t set another one.');
+      this._callback = { cb: cb, params: params };
     }
   }, {
-    key: 'handleBlur',
-    value: function handleBlur() {
-      this.__storage.setFieldState(this.$pathToField, { focused: false });
-      this.__startSave(true);
-    }
-
-    /**
-     * bind it to your component to onEnter event.
-     * It does:
-     * * cancel previous save in queue
-     * * immediately starts save
-     */
-
-  }, {
-    key: 'handlePressEnter',
-    value: function handlePressEnter() {
-      if (this.disabled) return;
-      this.__startSave(true);
+    key: 'isPending',
+    value: function isPending() {
+      return this._pending;
     }
   }, {
-    key: 'on',
-    value: function on(eventName, cb) {
-      this.$form.$events.addListener('field.' + this.$pathToField + '.' + eventName, cb);
+    key: 'isStarted',
+    value: function isStarted() {
+      return this._started;
     }
-
-    /**
-     * It rises on field's value changes by user
-     */
-
   }, {
-    key: 'onChange',
-    value: function onChange(cb) {
-      this.$onChangeCallback = cb;
+    key: 'isFulfilled',
+    value: function isFulfilled() {
+      return this.isStarted() && !this.isPending() && !this._canceled;
     }
-
-    /**
-     * It rises with debounce on start saving after updating field value by user
-     * @param cb
-     */
-
   }, {
-    key: 'onSave',
-    value: function onSave(cb) {
-      this.__onSaveCallback = cb;
+    key: 'isCanceled',
+    value: function isCanceled() {
+      return this._canceled;
     }
-
-    /**
-     * It updates "valid" and "invalidMsg" states using field's validate rule.
-     * @returns {boolean|undefined}
-     */
-
   }, {
-    key: 'validate',
-    value: function validate() {
-      if (!this.validateCb) return;
+    key: 'cancel',
+    value: function cancel() {
+      // TODO: cancel current promise in progress
+      this._pending = false;
+      this._canceled = true;
+    }
+  }, {
+    key: 'start',
+    value: function start() {
+      var _callback,
+          _this2 = this;
 
-      var cbReturn = this._validateCb({ value: this.value });
-      var isValid = cbReturn === true;
-      var invalidMsg = void 0;
-      if (!isValid) {
-        invalidMsg = cbReturn || '';
+      if (!this._callback) throw new Error('There isn\'t a callback to run!');
+      if (this.isFulfilled()) throw new Error('The promise was fulfilled, you can\'t start another one!');
+
+      this._started = true;
+      this._pending = true;
+
+      var cbPromise = (_callback = this._callback).cb.apply(_callback, _toConsumableArray(this._callback.params));
+      if ((0, _helpers.isPromise)(cbPromise)) {
+        cbPromise.then(function (data) {
+          _this2._pending = false;
+          _this2._mainResolve();
+
+          return data;
+        }, function (err) {
+          _this2._pending = false;
+          _this2._mainReject(err);
+
+          return err;
+        });
+      } else {
+        this._pending = false;
+        this._mainResolve();
       }
-
-      this.$form.$handlers.handleFieldValidStateChange(this.$pathToField, isValid, invalidMsg);
-
-      return cbReturn;
-    }
-  }, {
-    key: 'resetUserInput',
-    value: function resetUserInput() {
-      this.__storage.setUserInput(this.$pathToField, undefined);
-      this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
-    }
-
-    /**
-     * Cancel debounce waiting for saving
-     */
-
-  }, {
-    key: 'cancelSaving',
-    value: function cancelSaving() {
-      this.__debouncedCall.cancel();
-    }
-
-    /**
-     * Saving immediately
-     */
-
-  }, {
-    key: 'flushSaving',
-    value: function flushSaving() {
-      this.__debouncedCall.flush();
     }
   }]);
 
-  return Field;
-}(_FieldBase3.default);
+  return DebouncedCallbackWrapper;
+}();
 
-exports.default = Field;
+exports.default = DebouncedCallbackWrapper;
 
 /***/ }),
 /* 7 */
@@ -18186,199 +18377,262 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _lodash = __webpack_require__(0);
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _DebouncedCall = __webpack_require__(1);
+var _DebouncedCall = __webpack_require__(2);
 
 var _DebouncedCall2 = _interopRequireDefault(_DebouncedCall);
 
+var _helpers = __webpack_require__(1);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FieldBase = function () {
-  function FieldBase(form, fieldName) {
-    _classCallCheck(this, FieldBase);
+/**
+ * It sets field and form states and rise an event if need
+ * @class
+ */
+var Events = function () {
+  function Events(form, eventEmitter, storage, state) {
+    _classCallCheck(this, Events);
 
-    this.$form = form;
-    this.$pathToField = fieldName;
-    this.$onChangeCallback = null;
-    this.__storage = this.$form.$storage;
-    this.__onSaveCallback = null;
-    this.__debouncedCall = new _DebouncedCall2.default(this.$form.$config.debounceTime);
+    this._form = form;
+    this._eventEmitter = eventEmitter;
+    this._storage = storage;
+    this._state = state;
 
-    this._debouncedCb = undefined;
-    this._validateCb = undefined;
+    this._formCallbacks = {
+      change: null,
+      save: null,
+      submit: null
+    };
+    this._fieldsCallbacks = {};
 
-    // init state
-    this.__storage.initFieldState(this.$pathToField, fieldName);
+    this._formSaveDebouncedCall = new _DebouncedCall2.default(this._form.config.debounceTime);
   }
 
-  _createClass(FieldBase, [{
-    key: '$setOuterValue',
-    value: function $setOuterValue(newValue) {
-      this.__storage.setOuterValue(this.$pathToField, newValue);
+  _createClass(Events, [{
+    key: 'getFieldCallback',
+    value: function getFieldCallback(pathToField, eventName) {
+      if (!this._fieldsCallbacks[pathToField]) return;
+
+      return this._fieldsCallbacks[pathToField][eventName];
     }
   }, {
-    key: '$updateDirty',
-    value: function $updateDirty() {
-      var newDirtyValue = void 0;
+    key: 'setFormCallback',
+    value: function setFormCallback(eventName, cb) {
+      this._formCallbacks[eventName] = cb;
+    }
+  }, {
+    key: 'setFieldCallback',
+    value: function setFieldCallback(pathToField, eventName, cb) {
+      if (!this._fieldsCallbacks[pathToField]) {
+        this._fieldsCallbacks[pathToField] = {
+          change: null,
+          save: null
+        };
+      }
 
-      if (this.userInput === '' && (this.outerValue === '' || _lodash2.default.isNil(this.outerValue))) {
-        // 0 compares as common value.
-        newDirtyValue = false;
+      this._fieldsCallbacks[pathToField][eventName] = cb;
+    }
+  }, {
+    key: 'riseFormDebouncedSave',
+    value: function riseFormDebouncedSave(force) {
+      var _this = this;
+
+      return this._formSaveDebouncedCall.exec(function () {
+        return _this.$startSaving(_this._storage.getFormUnsavedValues(), _this._formCallbacks.save, function () {
+          var _state;
+
+          return (_state = _this._state).setFormSavingState.apply(_state, arguments);
+        }, function () {
+          return _this._riseFormEvent.apply(_this, arguments);
+        });
+      }, force);
+    }
+  }, {
+    key: 'riseFormSubmit',
+    value: function riseFormSubmit(values) {
+      var _this2 = this;
+
+      this._storage.setFormState('submitting', true);
+
+      var afterSubmitSuccess = function afterSubmitSuccess() {
+        _this2._storage.setFormState('submitting', false);
+        if (_this2._form.config.allowUpdateSavedValuesAfterSubmit) {
+          _this2._storage.setAllSavedValues(values);
+          // update all the dirty states
+          (0, _helpers.findInFieldRecursively)(_this2._form.fields, function (field) {
+            field.$recalcDirty();
+          });
+        }
+      };
+
+      if (this._formCallbacks.submit) {
+        // run submit callback
+        var returnedValue = this._formCallbacks.submit(values);
+
+        // if cb returns a promise - wait for its fulfilling
+        if ((0, _helpers.isPromise)(returnedValue)) {
+          return returnedValue.then(function (data) {
+            afterSubmitSuccess();
+
+            return data;
+          }, function (err) {
+            _this2._storage.setFormState('submitting', false);
+
+            return Promise.reject(err);
+          });
+        } else {
+          // else if cb returns any other types - don't wait and finish submit process
+          afterSubmitSuccess();
+
+          return Promise.resolve();
+        }
+      }
+      // else if there isn't a submit callback, just finish submit process
+      afterSubmitSuccess();
+
+      return Promise.resolve();
+    }
+  }, {
+    key: '$startSaving',
+    value: function $startSaving(data, saveCb, setSavingState, riseEvent) {
+      // set saving: true
+      setSavingState(true);
+      // rise saveStart event
+      riseEvent('saveStart', data);
+
+      var saveEnd = function saveEnd() {
+        // set saving: false
+        setSavingState(false);
+        // rise saveEnd
+        riseEvent('saveEnd');
+      };
+
+      if (saveCb) {
+        // run save callback
+        var cbPromise = saveCb(data);
+        if ((0, _helpers.isPromise)(cbPromise)) {
+          return cbPromise.then(function () {
+            return saveEnd();
+          });
+        }
+
+        // if save callback hasn't returned a promise
+        saveEnd();
       } else {
-        // just compare initial value and value
-        newDirtyValue = this.userInput !== this.outerValue;
+        // if there isn't save callback
+        saveEnd();
       }
-
-      this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, newDirtyValue);
-    }
-  }, {
-    key: '__startSave',
-    value: function __startSave(force) {
-      // don't save invalid value
-      if (!this.valid) return;
-      if (!this.$form.$handlers.isUnsaved(this.$pathToField)) return;
-
-      if (this.__onSaveCallback) {
-        this.__debouncedCall.exec(this.__onSaveCallback, force, this.value);
-      }
-
-      this.$form.$handlers.handleFieldSave(force);
     }
 
     /**
-     * Silent update. It uses for set outer(from machine) values (not user's).
-     *
-     * It does:
-     * * It set up new value to self instance and to storage
-     * * It updates "dirty" and "valid" states.
-     * * It rises anyChange event for field and whole form.
-     *
-     * It doesn't:
-     * * It doesn't rise onChange callback (for user's events).
-     * * It doesn't update "touched" state.
+     * It calls from field on silent value change (after outer value setting).
+     * It means - it calls onlu on value changes by machine.
+     * It rises a "silentChange" and "anyChange" events.
+     * @param {string} pathToField
+     * @param {*} oldValue
+     */
+
+  }, {
+    key: 'riseSilentChangeEvent',
+    value: function riseSilentChangeEvent(pathToField, oldValue) {
+      var eventData = {
+        fieldName: pathToField,
+        oldValue: oldValue,
+        value: this._storage.getValue(pathToField)
+      };
+
+      // Rise events
+      this.riseFieldEvent(pathToField, 'silentChange', eventData);
+      this._riseFormEvent('silentChange', eventData);
+      this.riseAnyChange(pathToField);
+    }
+
+    /**
+     * It calls form field on value changed by user
+     * It rises a "change" event.
+     * It rises only if value changed by user.
+     * @param {string} pathToField
+     * @param {*} oldValue
      * @param {*} newValue
      */
 
   }, {
-    key: '_hardlySetOuterValue',
-    value: function _hardlySetOuterValue(newValue) {
-      var oldCombinedValue = _lodash2.default.cloneDeep(this.value);
+    key: 'riseUserChangeEvent',
+    value: function riseUserChangeEvent(pathToField, oldValue, newValue) {
+      var eventData = {
+        fieldName: pathToField,
+        oldValue: oldValue,
+        value: newValue
+      };
 
-      // set to outer value layer
-      this.$setOuterValue(newValue);
-
-      // remove user input if field isn't on focus and set dirty to false.
-      // of course if it allows in config.
-      if (this.$form.$config.allowFocusedFieldUpdating || !this.$form.$config.allowFocusedFieldUpdating && !this.focused) {
-        this.__storage.setUserInput(this.$pathToField, undefined);
-        this.$form.$handlers.handleFieldDirtyChange(this.$pathToField, false);
+      // run field's cb
+      if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField].change) {
+        this._fieldsCallbacks[pathToField].change(eventData);
+      }
+      // run forms's cb
+      if (this._formCallbacks.change) {
+        this._formCallbacks.change(_defineProperty({}, pathToField, newValue));
       }
 
-      // re validate and rise events
-      if (!_lodash2.default.isEqual(oldCombinedValue, this.value)) {
-        this.validate();
-        // rise silent change events
-        this.$form.$handlers.handleSilentValueChange(this.$pathToField, oldCombinedValue);
-      }
+      // Rise events field's change handler
+      this.riseFieldEvent(pathToField, 'change', eventData);
+      // run form's change handler
+      this._riseFormEvent('change', _defineProperty({}, pathToField, newValue));
+      this.riseAnyChange(pathToField);
     }
   }, {
-    key: 'form',
-    get: function get() {
-      return this.$form;
+    key: 'addFormListener',
+    value: function addFormListener(eventName, cb) {
+      this._eventEmitter.addListener('form.' + eventName, cb);
     }
   }, {
-    key: 'userInput',
-    get: function get() {
-      return this.__storage.getUserInput(this.$pathToField);
+    key: 'addFieldListener',
+    value: function addFieldListener(pathToField, eventName, cb) {
+      this._eventEmitter.addListener('field.' + pathToField + '.' + eventName, cb);
     }
   }, {
-    key: 'outerValue',
-    get: function get() {
-      return this.__storage.getOuterValue(this.$pathToField);
+    key: 'cancelFormSaving',
+    value: function cancelFormSaving() {
+      this._formSaveDebouncedCall.cancel();
     }
-    // combined value
+  }, {
+    key: 'flushFormSaving',
+    value: function flushFormSaving() {
+      this._formSaveDebouncedCall.flush();
+    }
+  }, {
+    key: 'riseFieldEvent',
+    value: function riseFieldEvent(pathToField, eventName, data) {
+      this._eventEmitter.emit('field.' + pathToField + '.' + eventName, data);
+    }
+
+    /**
+     * It rises a "stateChange" event.
+     * It rises on any change of value, initialValue or any state.
+     * @private
+     */
 
   }, {
-    key: 'value',
-    get: function get() {
-      return this.__storage.getValue(this.$pathToField);
-    },
-
-
-    // set outer value with clearing user input
-    set: function set(newOuterValue) {
-      this._hardlySetOuterValue(newOuterValue);
+    key: 'riseAnyChange',
+    value: function riseAnyChange(pathToField) {
+      this.riseFieldEvent(pathToField, 'anyChange');
+      this._riseFormEvent('anyChange');
     }
   }, {
-    key: 'name',
-    get: function get() {
-      return this.__storage.getFieldState(this.$pathToField, 'name');
-    }
-  }, {
-    key: 'dirty',
-    get: function get() {
-      return this.__storage.getFieldState(this.$pathToField, 'dirty');
-    }
-  }, {
-    key: 'touched',
-    get: function get() {
-      return this.__storage.getFieldState(this.$pathToField, 'touched');
-    }
-  }, {
-    key: 'valid',
-    get: function get() {
-      return this.__storage.getFieldState(this.$pathToField, 'valid');
-    }
-  }, {
-    key: 'invalidMsg',
-    get: function get() {
-      return this.__storage.getFieldState(this.$pathToField, 'invalidMsg');
-    }
-  }, {
-    key: 'saving',
-    get: function get() {
-      return this.__storage.getFieldState(this.$pathToField, 'saving');
-    }
-  }, {
-    key: 'focused',
-    get: function get() {
-      return this.__storage.getFieldState(this.$pathToField, 'focused');
-    }
-  }, {
-    key: 'disabled',
-    get: function get() {
-      return this.__storage.getFieldState(this.$pathToField, 'disabled');
-    },
-    set: function set(value) {
-      this.__storage.setFieldState(this.$pathToField, { disabled: value });
-    }
-  }, {
-    key: 'validateCb',
-    get: function get() {
-      return this._validateCb;
-    },
-    set: function set(value) {
-      this._validateCb = value;
-    }
-  }, {
-    key: 'debounceTime',
-    get: function get() {
-      return this.__debouncedCall.delay;
-    },
-    set: function set(delay) {
-      this.__debouncedCall.delay = delay;
+    key: '_riseFormEvent',
+    value: function _riseFormEvent(eventName, data) {
+      this._eventEmitter.emit('form.' + eventName, data);
     }
   }]);
 
-  return FieldBase;
+  return Events;
 }();
 
-exports.default = FieldBase;
+exports.default = Events;
 
 /***/ }),
 /* 8 */
@@ -18397,160 +18651,583 @@ var _lodash = __webpack_require__(0);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _FormHandlers = __webpack_require__(9);
+var _DebouncedCall = __webpack_require__(2);
 
-var _FormHandlers2 = _interopRequireDefault(_FormHandlers);
+var _DebouncedCall2 = _interopRequireDefault(_DebouncedCall);
 
-var _Field = __webpack_require__(6);
-
-var _Field2 = _interopRequireDefault(_Field);
-
-var _helpers = __webpack_require__(2);
+var _helpers = __webpack_require__(1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FormBase = function () {
-  function FormBase(storage, config, events) {
-    _classCallCheck(this, FormBase);
+var Field = function () {
+  function Field(pathToField, params, _ref) {
+    var form = _ref.form,
+        events = _ref.events,
+        storage = _ref.storage,
+        state = _ref.state;
 
-    this.$storage = storage;
-    this.$events = events;
-    this.$config = config;
-    this.$handlers = new _FormHandlers2.default(this);
+    _classCallCheck(this, Field);
 
-    // set initial form state
-    this.$storage.initFormState();
+    this._form = form;
+    this._events = events;
+    this._storage = storage;
+    this._state = state;
+    // TODO: may be move to events?
+    this._debouncedCall = new _DebouncedCall2.default(this._form.config.debounceTime);
 
-    this.__fields = {};
+    this._pathToField = pathToField;
+    this._fieldName = (0, _helpers.getFieldName)(pathToField);
+    this._validateCallback = undefined;
+
+    this._init(params);
   }
 
-  _createClass(FormBase, [{
-    key: 'setValues',
+  _createClass(Field, [{
+    key: '_init',
+    value: function _init(params) {
+      // init state
+      this._storage.initFieldState(this._pathToField);
 
+      if (!_lodash2.default.isUndefined(params.disabled)) this._setDisabled(params.disabled);
+      if (!_lodash2.default.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
+      if (params.validate) this.setValidateCb(params.validate);
 
-    // set values(newValues) {this._hardUpdateValues(newValues)}
+      this._setDefaultAndInitialValue(params.defaultValue, params.initial);
+    }
+  }, {
+    key: 'setValue',
+
 
     /**
-     * Soft update of values
-     * @param newValues
+     * Set value silently(don't rise a change event).
+     * It does:
+     * * It set a new value to self instance and to storage
+     * * It updates "dirty" and "valid" states.
+     * * It rises anyChange event for field and whole form.
+     *
+     * It doesn't:
+     * * It doesn't rise onChange callback (for user's events).
+     * * It doesn't update "touched" state.
+     * @param newValue
      */
-    value: function setValues(newValues) {
-      this._hardUpdateValues(newValues);
-    }
-  }, {
-    key: 'getConfig',
-    value: function getConfig() {
-      return this.$config;
-    }
-  }, {
-    key: '$getWholeStorageState',
-    value: function $getWholeStorageState() {
-      return this.$storage.getWholeStorageState();
-    }
-  }, {
-    key: '$updateDirtyStates',
-    value: function $updateDirtyStates() {
-      (0, _helpers.findInFieldRecursively)(this.fields, function (field) {
-        field.$updateDirty();
-      });
-    }
-  }, {
-    key: '__reinitFields',
-    value: function __reinitFields(initialFields) {
-      var _this = this;
+    value: function setValue(newValue) {
+      var oldValue = _lodash2.default.cloneDeep(this.value);
 
-      if (_lodash2.default.isArray(initialFields)) {
-        _lodash2.default.each(initialFields, function (pathToField) {
-          // Create new field if it doesn't exist
-          var field = _lodash2.default.get(_this.fields, pathToField);
-          if (!field) {
-            field = new _Field2.default(_this, pathToField);
-            _lodash2.default.set(_this.fields, pathToField, field);
-          } else {}
-          // reset dirty
+      this._setValueDirtyValidate(newValue);
 
-          // set outer value with reset dirty and user input
-          field.value = null;
-        });
-      } else if (_lodash2.default.isPlainObject(initialFields)) {
-        _lodash2.default.each(initialFields, function (value, pathToField) {
-          // Create new field if it doesn't exist
-          var field = _lodash2.default.get(_this.fields, pathToField);
-          if (!field) {
-            field = new _Field2.default(_this, pathToField);
-            _lodash2.default.set(_this.fields, pathToField, field);
-          } else {}
-          // reset dirty
+      // rise silent change events if value and old value are different
+      if (!_lodash2.default.isEqual(oldValue, newValue)) {
+        this._events.riseSilentChangeEvent(this._pathToField, oldValue);
+      }
+    }
 
-          // set outer value with reset dirty and user input
-          field.value = value;
-        });
-      } else {
-        throw new Error('Bad type of fields param');
+    /**
+     * Set previously saved value. Usually it is saved on server value.
+     * @param {*} newSavedValue
+     */
+
+  }, {
+    key: 'setSavedValue',
+    value: function setSavedValue(newSavedValue) {
+      // set saved value
+      this._storage.setFieldState(this._pathToField, { savedValue: newSavedValue });
+
+      // update user input if field isn't on focus and set dirty to false.
+      // of course if it allows in config.
+      if (this._form.config.allowFocusedFieldUpdating || !this._form.config.allowFocusedFieldUpdating && !this.focused) {
+        this.setValue(newSavedValue);
       }
     }
   }, {
-    key: '_hardUpdateValues',
-    value: function _hardUpdateValues(newValues) {
-      var _this2 = this;
+    key: 'setDisabled',
+    value: function setDisabled(value) {
+      this._setDisabled(value);
+      this._events.riseAnyChange(this._pathToField);
+    }
+  }, {
+    key: 'setValidateCb',
+    value: function setValidateCb(validateCallback) {
+      if (!_lodash2.default.isUndefined(validateCallback) && !_lodash2.default.isFunction(validateCallback)) {
+        throw new Error('Bad type of validate callback');
+      }
+      this._validateCallback = validateCallback;
+    }
+  }, {
+    key: 'setDebounceTime',
+    value: function setDebounceTime(delay) {
+      var toNumber = _lodash2.default.toNumber(delay);
+      if (_lodash2.default.isNull(toNumber) || _lodash2.default.isNaN(toNumber)) throw new Error('Bad debounceTime value');
+      // TODO: doesn't work
+      this._debouncedCall.delay = toNumber;
+    }
 
-      _lodash2.default.each(newValues, function (value, fieldName) {
-        if (_this2.fields[fieldName]) _this2.fields[fieldName].value = value;
-      });
+    /**
+     * It's an onChange handler. It must be placed to input onChange attribute.
+     * It sets a new user's value and start saving.
+     * It does:
+     * * don't do anything if field is disabled
+     * * don't save if value isn't changed
+     * * update value
+     * * update "touched" and "dirty" states
+     * * validate
+     * * Rise a "change" events for field and form
+     * * Run an onChange callback if it assigned.
+     * * Start saving
+     * @param {*} newValue
+     */
+
+  }, {
+    key: 'handleChange',
+    value: function handleChange(newValue) {
+      // don't do anything if disabled
+      if (this.disabled) return;
+
+      var oldValue = _lodash2.default.cloneDeep(this.value);
+      var isChanged = !_lodash2.default.isEqual(oldValue, newValue);
+
+      if (isChanged) {
+        // set touched to true
+        if (!this.touched) this._state.setFieldAndFormTouched(this._pathToField);
+        // set value, dirty state and validate
+        this._setValueDirtyValidate(newValue);
+      }
+
+      // rise change event and save only changed value
+      if (!this._form.config.allowSaveUnmodifiedField && !isChanged) return;
+
+      // rise change by user event handlers and callbacks of form and field
+      this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
+      // start save with debounced delay
+      this._addSavingInQueue(false);
+    }
+
+    /**
+     * Set field's "focused" prop to true.
+     */
+
+  }, {
+    key: 'handleFocusIn',
+    value: function handleFocusIn() {
+      this._storage.setFieldState(this._pathToField, { focused: true });
+    }
+
+    /**
+     * Set field's "focused" prop to false.
+     */
+
+  }, {
+    key: 'handleBlur',
+    value: function handleBlur() {
+      this._storage.setFieldState(this._pathToField, { focused: false });
+      // start save immediately
+      this._addSavingInQueue(true);
+    }
+
+    /**
+     * bind it to your component to onEnter event.
+     * It does:
+     * * cancel previous save in queue
+     * * immediately starts save
+     */
+
+  }, {
+    key: 'handlePressEnter',
+    value: function handlePressEnter() {
+      if (this.disabled) return;
+      // start save immediately
+      this.save();
+    }
+
+    /**
+     * Add one or more handlers on fields's event:
+     * * change
+     * * silentChange
+     * * anyChange
+     * * saveStart
+     * * saveEnd
+     * @param eventName
+     * @param cb
+     */
+
+  }, {
+    key: 'on',
+    value: function on(eventName, cb) {
+      this._events.addFieldListener(this._pathToField, eventName, cb);
+    }
+
+    /**
+     * It rises a callback on field's value changes which has made by user
+     */
+
+  }, {
+    key: 'onChange',
+    value: function onChange(cb) {
+      this._events.setFieldCallback(this._pathToField, 'change', cb);
+    }
+
+    /**
+     * It rises with debounce delay on start saving.
+     * @param cb
+     */
+
+  }, {
+    key: 'onSave',
+    value: function onSave(cb) {
+      this._events.setFieldCallback(this._pathToField, 'save', cb);
+    }
+
+    /**
+     * It updates "valid" and "invalidMsg" states using field's validate rule.
+     * It runs a validate callback which must return:
+     * * valid: true
+     * * invalid: not empty string or false
+     * @returns {boolean|string|undefined}
+     *   * true/false - valid/invalid
+     *   * string it is an error message, means invalid
+     *   * undefined - hasn't done a validation because the field doesn't have a validate callback.
+     */
+
+  }, {
+    key: 'validate',
+    value: function validate() {
+      if (!this._validateCallback) return;
+
+      var cbReturn = this._validateCallback({ value: this.value });
+
+      if (_lodash2.default.isUndefined(cbReturn)) throw new Error('Validate callback returns an undefined, what does it mean?');
+      if (cbReturn === '') throw new Error('Validate callback returns an empty string, what does it mean?');
+
+      var _parseValidateCbRetur = (0, _helpers.parseValidateCbReturn)(cbReturn),
+          valid = _parseValidateCbRetur.valid,
+          invalidMsg = _parseValidateCbRetur.invalidMsg,
+          result = _parseValidateCbRetur.result;
+
+      this._state.setFieldAndFormValidState(this._pathToField, valid, invalidMsg);
+
+      return result;
+    }
+
+    /**
+     * Start field save immediately.
+     * @return {Promise}
+     */
+
+  }, {
+    key: 'save',
+    value: function save() {
+      return this._addSavingInQueue(true);
+    }
+
+    /**
+     * Clear value(user input) and set saved value to current value.
+     */
+
+  }, {
+    key: 'clear',
+    value: function clear() {
+      this.setValue(this.savedValue);
+    }
+
+    /**
+     * Reset to default value
+     */
+
+  }, {
+    key: 'reset',
+    value: function reset() {
+      this.setValue(this.defaultValue);
+    }
+
+    /**
+     * Cancel debounce waiting for saving
+     */
+
+  }, {
+    key: 'cancelSaving',
+    value: function cancelSaving() {
+      this._debouncedCall.cancel();
+    }
+
+    /**
+     * Saving immediately
+     */
+
+  }, {
+    key: 'flushSaving',
+    value: function flushSaving() {
+      this._debouncedCall.flush();
+    }
+
+    /**
+     * Recalculate dirty state.
+     */
+
+  }, {
+    key: '$recalcDirty',
+    value: function $recalcDirty() {
+      this._state.setFieldAndFormDirty(this._pathToField, (0, _helpers.calculateDirty)(this.value, this.savedValue));
     }
   }, {
-    key: '_resetUserInput',
-    value: function _resetUserInput() {
-      (0, _helpers.findInFieldRecursively)(this.fields, function (field) {
-        field.resetUserInput();
-      });
+    key: '_setDisabled',
+    value: function _setDisabled(value) {
+      if (!_lodash2.default.isBoolean(value)) throw new Error('Bad type of disabled value');
+      this._storage.setFieldState(this._pathToField, { disabled: value });
+    }
+
+    /**
+     * Start saving field and form in they have a save handlers.
+     * It will reset saving in progress before start saving.
+     * @param {boolean} force
+     *   * if true it will save immediately.
+     *   * if false it will save with dobounce delay
+     * @private
+     * @return {Promise}
+     */
+
+  }, {
+    key: '_addSavingInQueue',
+    value: function _addSavingInQueue(force) {
+      var _this = this;
+
+      // don't save invalid value
+      if (!this.valid) return Promise.reject(new Error('Field is invalid'));
+      // save only value which was modified.
+      if (!this._storage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error('Value hasn\'t modified'));
+
+      // rise a field's save handlers, callback and switch saving state
+      var fieldPromise = this._debouncedCall.exec(function () {
+        return _this._events.$startSaving(_this.value, _this._events.getFieldCallback(_this._pathToField, 'save'), function () {
+          var _state;
+
+          for (var _len = arguments.length, p = Array(_len), _key = 0; _key < _len; _key++) {
+            p[_key] = arguments[_key];
+          }
+
+          return (_state = _this._state).setFieldSavingState.apply(_state, [_this._pathToField].concat(p));
+        }, function () {
+          var _events;
+
+          for (var _len2 = arguments.length, p = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            p[_key2] = arguments[_key2];
+          }
+
+          return (_events = _this._events).riseFieldEvent.apply(_events, [_this._pathToField].concat(p));
+        });
+      }, force);
+
+      // rise form's save handler
+      this._events.riseFormDebouncedSave(force);
+
+      return fieldPromise;
     }
   }, {
-    key: 'fields',
+    key: '_setValueDirtyValidate',
+    value: function _setValueDirtyValidate(newValue) {
+      // TODO: may be move to _state?
+      // set to outer value layer
+      this._storage.setValue(this._pathToField, newValue);
+      this.$recalcDirty();
+      this.validate();
+    }
+
+    /**
+     * Set default and initial values. Initial has more priority.
+     * @param {*} defaultValue
+     * @param {*} initial
+     * @private
+     */
+
+  }, {
+    key: '_setDefaultAndInitialValue',
+    value: function _setDefaultAndInitialValue(defaultValue, initial) {
+      var currentValue = void 0;
+      if (!_lodash2.default.isUndefined(defaultValue)) {
+        this._storage.setFieldState(this._pathToField, { defaultValue: defaultValue });
+        // set default value to current value
+        currentValue = defaultValue;
+      }
+      // initial has more priority
+      if (!_lodash2.default.isUndefined(initial)) currentValue = initial;
+      if (!_lodash2.default.isUndefined(currentValue)) this.setValue(currentValue);
+    }
+  }, {
+    key: 'form',
     get: function get() {
-      return this.__fields;
+      return this._form;
     }
   }, {
-    key: 'values',
+    key: 'savedValue',
     get: function get() {
-      return this.$storage.values;
+      return this._storage.getFieldState(this._pathToField, 'savedValue');
+    }
+
+    /**
+     * Current value
+     * @return {*}
+     */
+
+  }, {
+    key: 'value',
+    get: function get() {
+      return this._storage.getValue(this._pathToField);
+    }
+  }, {
+    key: 'name',
+    get: function get() {
+      return this._fieldName;
+    }
+  }, {
+    key: 'path',
+    get: function get() {
+      return this._pathToField;
     }
   }, {
     key: 'dirty',
     get: function get() {
-      return this.$storage.getFormState('dirty');
+      return this._storage.getFieldState(this._pathToField, 'dirty');
     }
   }, {
     key: 'touched',
     get: function get() {
-      return this.$storage.getFormState('touched');
-    }
-  }, {
-    key: 'submitting',
-    get: function get() {
-      return this.$storage.getFormState('submitting');
+      return this._storage.getFieldState(this._pathToField, 'touched');
     }
   }, {
     key: 'valid',
     get: function get() {
-      return this.$storage.getFormState('valid');
+      return this._storage.getFieldState(this._pathToField, 'valid');
     }
   }, {
-    key: 'invalidMsgList',
+    key: 'invalidMsg',
     get: function get() {
-      return this.$storage.getFormState('invalidMsgList');
+      return this._storage.getFieldState(this._pathToField, 'invalidMsg');
+    }
+  }, {
+    key: 'saving',
+    get: function get() {
+      return this._storage.getFieldState(this._pathToField, 'saving');
+    }
+  }, {
+    key: 'focused',
+    get: function get() {
+      return this._storage.getFieldState(this._pathToField, 'focused');
+    }
+  }, {
+    key: 'disabled',
+    get: function get() {
+      return this._storage.getFieldState(this._pathToField, 'disabled');
+    }
+  }, {
+    key: 'defaultValue',
+    get: function get() {
+      return this._storage.getFieldState(this._pathToField, 'defaultValue');
+    }
+  }, {
+    key: 'validateCb',
+    get: function get() {
+      return this._validateCallback;
+    }
+  }, {
+    key: 'debounceTime',
+    get: function get() {
+      return this._debouncedCall.delay;
     }
   }]);
 
-  return FormBase;
+  return Field;
 }();
 
-exports.default = FormBase;
+exports.default = Field;
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _helpers = __webpack_require__(1);
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/**
+ * It sets field and form states and rise an event if need
+ * @class
+ */
+var State = function () {
+  function State(form, storage) {
+    _classCallCheck(this, State);
+
+    this._form = form;
+    this._storage = storage;
+  }
+
+  _createClass(State, [{
+    key: 'setFormSavingState',
+    value: function setFormSavingState(value) {
+      this._storage.setFormState('saving', value);
+    }
+  }, {
+    key: 'setFieldSavingState',
+    value: function setFieldSavingState(pathToField, value) {
+      this._storage.setFieldState(pathToField, { saving: value });
+    }
+  }, {
+    key: 'setFieldAndFormTouched',
+    value: function setFieldAndFormTouched(pathToField) {
+      this._storage.setFieldState(pathToField, { touched: true });
+      this._storage.setFormState('touched', true);
+    }
+  }, {
+    key: 'setFieldAndFormDirty',
+    value: function setFieldAndFormDirty(pathToField, newDirtyValue) {
+      // set to field
+      this._storage.setFieldState(pathToField, { dirty: newDirtyValue });
+
+      // set to form
+      if (newDirtyValue) {
+        // if field is dirty it means the form is dirty too
+        this._storage.setFormState('dirty', true);
+      } else {
+        // if field not dirty - calculate form's dirty state
+        // search for other dirty values in other fields
+        var hasAnyDirty = this._storage.findFieldStateRecursively('fieldsState', function (field) {
+          if (field.dirty) return true;
+        });
+
+        this._storage.setFormState('dirty', !!hasAnyDirty);
+      }
+    }
+  }, {
+    key: 'setFieldAndFormValidState',
+    value: function setFieldAndFormValidState(pathToField, isValid, invalidMsg) {
+      this._storage.setFieldState(pathToField, {
+        valid: isValid,
+        invalidMsg: invalidMsg
+      });
+
+      var hasAnyErrors = !!(0, _helpers.findInFieldRecursively)(this._form.fields, function (field) {
+        if (!field.valid) return true;
+      });
+
+      this._storage.setFormState('valid', !hasAnyErrors);
+    }
+  }]);
+
+  return State;
+}();
+
+exports.default = State;
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18566,176 +19243,197 @@ var _lodash = __webpack_require__(0);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _DebouncedCall = __webpack_require__(1);
-
-var _DebouncedCall2 = _interopRequireDefault(_DebouncedCall);
+var _helpers = __webpack_require__(1);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var FormHandlers = function () {
-  function FormHandlers(form) {
-    _classCallCheck(this, FormHandlers);
+var Storage = function () {
+  function Storage() {
+    _classCallCheck(this, Storage);
 
-    this.$onChangeCallback = null;
-    this.$onSaveCallback = null;
-
-    this._form = form;
-    this._unsavedState = {};
-
-    this.$debouncedCall = new _DebouncedCall2.default(this._form.$config.debounceTime);
+    this.init();
   }
 
-  _createClass(FormHandlers, [{
-    key: 'isUnsaved',
-    value: function isUnsaved(pathToField) {
-      return _lodash2.default.has(this._unsavedState, pathToField);
+  _createClass(Storage, [{
+    key: 'init',
+    value: function init() {
+      this._store = {
+        formState: this._generateNewFormState(),
+        fieldsState: {},
+        values: {}
+      };
+    }
+  }, {
+    key: 'initFieldState',
+    value: function initFieldState(pathToField) {
+      this.setFieldState(pathToField, this._generateNewFieldState(pathToField));
+    }
+  }, {
+    key: 'getWholeStorageState',
+    value: function getWholeStorageState() {
+      return _lodash2.default.cloneDeep(this._store);
     }
 
     /**
-     * It calls form field on debounced save handler.
-     * @param {boolean} force
+     * Get all the values of form's fields.
      */
 
   }, {
-    key: 'handleFieldSave',
-    value: function handleFieldSave(force) {
+    key: 'getFormValues',
+    value: function getFormValues() {
+      return this._store.values;
+    }
+  }, {
+    key: 'getFormSavedValues',
+    value: function getFormSavedValues() {
+      var savedValues = {};
+
+      (0, _helpers.findFieldLikeStructureRecursively)(this._store.fieldsState, function (field, path) {
+        _lodash2.default.set(savedValues, path, field.savedValue);
+      });
+
+      return savedValues;
+    }
+
+    /**
+     * Returns true if form or one or more of its field is saving.
+     */
+
+  }, {
+    key: 'getFormSaving',
+    value: function getFormSaving() {
+      if (this._store.formState.saving) return true;
+
+      return !!(0, _helpers.findFieldLikeStructureRecursively)(this._store.fieldsState, function (field) {
+        if (field.saving) return true;
+      });
+    }
+
+    /**
+     * get current value
+     * @param pathToField
+     * @return {*}
+     */
+
+  }, {
+    key: 'getValue',
+    value: function getValue(pathToField) {
+      return _lodash2.default.cloneDeep(_lodash2.default.get(this._store.values, pathToField));
+    }
+  }, {
+    key: 'getFormState',
+    value: function getFormState(stateName) {
+      return _lodash2.default.cloneDeep(_lodash2.default.get(this._store.formState, stateName));
+    }
+  }, {
+    key: 'getFieldState',
+    value: function getFieldState(pathToField, stateName) {
+      return _lodash2.default.cloneDeep(_lodash2.default.get(this._store.fieldsState, pathToField + '.' + stateName));
+    }
+  }, {
+    key: 'setAllSavedValues',
+    value: function setAllSavedValues(submittedValues) {
+      (0, _helpers.findFieldLikeStructureRecursively)(this._store.fieldsState, function (field, path) {
+        field.savedValue = _lodash2.default.get(submittedValues, path);
+      });
+    }
+  }, {
+    key: 'setValue',
+    value: function setValue(pathToField, newValue) {
+      _lodash2.default.set(this._store.values, pathToField, newValue);
+    }
+
+    /**
+     * Set form's state. Only primitive, not container or array
+     * @param stateName
+     * @param newValue
+     */
+
+  }, {
+    key: 'setFormState',
+    value: function setFormState(stateName, newValue) {
+      _lodash2.default.set(this._store.formState, stateName, newValue);
+    }
+
+    /**
+     * Set field's state.
+     * @param pathToField
+     * @param newState
+     */
+
+  }, {
+    key: 'setFieldState',
+    value: function setFieldState(pathToField, newState) {
+      var field = _lodash2.default.get(this._store.fieldsState, pathToField);
+      if (_lodash2.default.isUndefined(field)) {
+        field = {};
+        _lodash2.default.set(this._store.fieldsState, pathToField, field);
+      }
+      (0, _helpers.extendDeep)(field, newState);
+    }
+  }, {
+    key: 'findFieldStateRecursively',
+    value: function findFieldStateRecursively(root, cb) {
+      return (0, _helpers.findFieldLikeStructureRecursively)(this._store[root], cb);
+    }
+  }, {
+    key: 'getFormUnsavedValues',
+    value: function getFormUnsavedValues() {
       var _this = this;
 
-      if (!this.$onSaveCallback) return;
+      var unsavedValues = {};
 
-      this.$debouncedCall.exec(function () {
-        // save current state on the moment
-        _this.$onSaveCallback(_this._unsavedState);
-        _this._unsavedState = {};
-      }, force);
+      (0, _helpers.findFieldLikeStructureRecursively)(this._store.fieldsState, function (field, path) {
+        var curValue = _lodash2.default.get(_this._store.values, path);
+        if (field.savedValue !== curValue) {
+          _lodash2.default.set(unsavedValues, path, curValue);
+        }
+      });
+
+      return unsavedValues;
     }
-
-    /**
-     * It calls from field on silent value change (after outer value setting).
-     * It means - it calls onlu on value changes by machine.
-     * It rises a "silentChange" and "anyChange" events.
-     * @param {string} pathToField
-     * @param {*} oldCombinedValue
-     */
-
   }, {
-    key: 'handleSilentValueChange',
-    value: function handleSilentValueChange(pathToField, oldCombinedValue) {
-      var eventData = {
-        fieldName: pathToField,
-        oldValue: oldCombinedValue,
-        value: this._form.$storage.getValue(pathToField)
+    key: 'isFieldUnsaved',
+    value: function isFieldUnsaved(pathToField) {
+      return _lodash2.default.get(this._store.fieldsState, pathToField).savedValue !== _lodash2.default.get(this._store.values, pathToField);
+    }
+  }, {
+    key: '_generateNewFormState',
+    value: function _generateNewFormState() {
+      return {
+        dirty: false,
+        touched: false,
+        submitting: false,
+        valid: true,
+        saving: false
       };
-
-      // Rise events
-      this._form.$events.emit('silentChange', eventData);
-      this._form.$events.emit('field.' + pathToField + '.silentChange', eventData);
-
-      this._riseAnyChange(pathToField);
     }
-
-    /**
-     * It calls form field on value changed by user
-     * It rises a "change" event.
-     * It rises only if value changed by user.
-     * @param {string} pathToField
-     * @param {*} oldValue
-     * @param {*} newValue
-     */
-
   }, {
-    key: 'handleValueChangeByUser',
-    value: function handleValueChangeByUser(pathToField, oldValue, newValue) {
-      var eventData = {
-        fieldName: pathToField,
-        oldValue: oldValue,
-        value: newValue
+    key: '_generateNewFieldState',
+    value: function _generateNewFieldState() {
+      return {
+        dirty: false,
+        touched: false,
+        valid: true,
+        invalidMsg: undefined,
+        saving: false,
+        disabled: false,
+        focused: false,
+        defaultValue: undefined,
+        savedValue: undefined
       };
-
-      // run form's on change callback
-      if (this.$onChangeCallback) this.$onChangeCallback(_defineProperty({}, pathToField, newValue));
-
-      // Rise events
-      this._form.$events.emit('change', eventData);
-      this._form.$events.emit('field.' + pathToField + '.change', eventData);
-
-      _lodash2.default.set(this._unsavedState, pathToField, newValue);
-
-      this._riseAnyChange(pathToField);
-    }
-  }, {
-    key: 'handleFieldStateChange',
-    value: function handleFieldStateChange(pathToField, stateName, newValue) {
-      this._form.$storage.setFieldState(pathToField, { touched: true });
-      this._form.$storage.setFormState(stateName, newValue);
-    }
-  }, {
-    key: 'handleFieldDirtyChange',
-    value: function handleFieldDirtyChange(pathToField, newDirtyValue) {
-      this._form.$storage.setFieldState(pathToField, { dirty: newDirtyValue });
-
-      if (newDirtyValue) {
-        this._form.$storage.setFormState('dirty', true);
-      } else {
-        // search for other dirty values in other fields
-        var hasAnyDirty = this._form.$storage.findRecursively('fieldsState', function (field) {
-          if (field.dirty) return true;
-        });
-
-        this._form.$storage.setFormState('dirty', !!hasAnyDirty);
-      }
-    }
-  }, {
-    key: 'handleFieldValidStateChange',
-    value: function handleFieldValidStateChange(pathToField, isValid, invalidMsg) {
-      this._form.$storage.setFieldState(pathToField, { valid: isValid });
-      this._form.$storage.setFieldState(pathToField, { invalidMsg: invalidMsg });
-
-      var newInvalidMessages = _lodash2.default.clone(this._form.invalidMsgList);
-      if (isValid) {
-        _lodash2.default.find(newInvalidMessages, function (item, index) {
-          if (!_lodash2.default.isUndefined(item[pathToField])) {
-            var deleteCount = 1;
-            newInvalidMessages.splice(index, deleteCount);
-
-            return item;
-          }
-        });
-      } else {
-        newInvalidMessages.push(_defineProperty({}, pathToField, invalidMsg));
-      }
-
-      var isFormValid = _lodash2.default.isEmpty(newInvalidMessages);
-
-      this._form.$storage.setFormState('invalidMsgList', newInvalidMessages);
-      this._form.$storage.setFormState('valid', isFormValid);
-    }
-
-    /**
-     * It rises a "stateChange" event.
-     * It rises on any change of value, initialValue or any state.
-     * @private
-     */
-
-  }, {
-    key: '_riseAnyChange',
-    value: function _riseAnyChange(pathToField) {
-      this._form.$events.emit('anyChange');
-      this._form.$events.emit('field.' + pathToField + '.anyChange');
     }
   }]);
 
-  return FormHandlers;
+  return Storage;
 }();
 
-exports.default = FormHandlers;
+exports.default = Storage;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18745,43 +19443,34 @@ var _lodash = __webpack_require__(0);
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _Form = __webpack_require__(3);
-
-var _Form2 = _interopRequireDefault(_Form);
-
-var _Storage = __webpack_require__(4);
-
-var _Storage2 = _interopRequireDefault(_Storage);
-
 var _eventemitter = __webpack_require__(5);
 
 var _eventemitter2 = _interopRequireDefault(_eventemitter);
 
+var _Form = __webpack_require__(3);
+
+var _Form2 = _interopRequireDefault(_Form);
+
+var _configDefaults = __webpack_require__(4);
+
+var _configDefaults2 = _interopRequireDefault(_configDefaults);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var globalConfig = {
-  silent: false,
-  debounceTime: 800,
-  unchangedValueSaving: false,
-  allowFocusedFieldUpdating: false,
-  allowSubmitSubmittingForm: false,
-  allowSubmitUnchangedForm: false,
-  updateOuterValuesAfterSubmit: true
-};
-
+var globalConfig = _configDefaults2.default;
 var plugins = [];
 
 module.exports = {
-  setDefaults: function setDefaults(config) {
+  setDefaultConfig: function setDefaultConfig(config) {
     _lodash2.default.extend(globalConfig, config);
   },
   newForm: function newForm(config) {
     var newConfig = _lodash2.default.defaults(_lodash2.default.clone(config), globalConfig);
-    var events = new _eventemitter2.default();
-    var storage = new _Storage2.default();
 
-    var newForm = new _Form2.default(storage, newConfig, events);
+    var eventEmitter = new _eventemitter2.default();
+    var newForm = new _Form2.default(newConfig, eventEmitter);
 
+    // init plugins which has a "afterNewFormCreated" method
     _lodash2.default.each(plugins, function (plugin) {
       return plugin.afterNewFormCreated && plugin.afterNewFormCreated(newForm);
     });
@@ -18794,7 +19483,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 var g;
@@ -18821,7 +19510,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
