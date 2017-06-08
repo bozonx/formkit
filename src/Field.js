@@ -131,6 +131,7 @@ export default class Field {
     }
     this._validateCallback = validateCallback;
   }
+
   setDebounceTime(delay) {
     const toNumber = _.toNumber(delay);
     if (_.isNull(toNumber) || _.isNaN(toNumber)) throw new Error(`Bad debounceTime value`);
