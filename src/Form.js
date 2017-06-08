@@ -39,6 +39,14 @@ export default class Form {
   get submitting() {
     return this._storage.getFormState('submitting');
   }
+
+  /**
+   * allow/disallow submit. It helpful to use as "disabled" button's attribute.
+   * @return {*}
+   */
+  get submitable() {
+    return this.valid && !this.submitting;
+  }
   get valid() {
     return this._storage.getFormValid();
   }
