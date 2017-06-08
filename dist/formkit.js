@@ -17854,10 +17854,21 @@ var Form = function () {
     get: function get() {
       return this._storage.getFormState('submitting');
     }
+
+    /**
+     * allow/disallow submit. It helpful to use as "disabled" button's attribute.
+     * @return {*}
+     */
+
+  }, {
+    key: 'submitable',
+    get: function get() {
+      return this.valid && !this.submitting;
+    }
   }, {
     key: 'valid',
     get: function get() {
-      return this._storage.getFormState('valid');
+      return this._storage.getFormValid();
     }
   }, {
     key: 'config',
@@ -18692,9 +18703,14 @@ var Field = function () {
 
       if (!_lodash2.default.isUndefined(params.disabled)) this._setDisabled(params.disabled);
       if (!_lodash2.default.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
-      if (params.validate) this.setValidateCb(params.validate);
 
       this._setDefaultAndInitialValue(params.defaultValue, params.initial);
+
+      if (params.validate) this.setValidateCb(params.validate);
+
+      if (!_lodash2.default.isUndefined(this.value)) {
+        this._events.riseSilentChangeEvent(this._pathToField, undefined);
+      }
     }
   }, {
     key: 'setValue',
@@ -18753,6 +18769,9 @@ var Field = function () {
         throw new Error('Bad type of validate callback');
       }
       this._validateCallback = validateCallback;
+
+      // revalidate with new callback
+      this.validate();
     }
   }, {
     key: 'setDebounceTime',
@@ -18904,7 +18923,10 @@ var Field = function () {
           invalidMsg = _parseValidateCbRetur.invalidMsg,
           result = _parseValidateCbRetur.result;
 
-      this._state.setFieldAndFormValidState(this._pathToField, valid, invalidMsg);
+      this._storage.setFieldState(this._pathToField, {
+        valid: valid,
+        invalidMsg: invalidMsg
+      });
 
       return result;
     }
@@ -19050,7 +19072,7 @@ var Field = function () {
       }
       // initial has more priority
       if (!_lodash2.default.isUndefined(initial)) currentValue = initial;
-      if (!_lodash2.default.isUndefined(currentValue)) this.setValue(currentValue);
+      if (!_lodash2.default.isUndefined(currentValue)) this._setValueDirtyValidate(currentValue);
     }
   }, {
     key: 'form',
@@ -19153,8 +19175,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _helpers = __webpack_require__(1);
-
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
@@ -19204,20 +19224,6 @@ var State = function () {
 
         this._storage.setFormState('dirty', !!hasAnyDirty);
       }
-    }
-  }, {
-    key: 'setFieldAndFormValidState',
-    value: function setFieldAndFormValidState(pathToField, isValid, invalidMsg) {
-      this._storage.setFieldState(pathToField, {
-        valid: isValid,
-        invalidMsg: invalidMsg
-      });
-
-      var hasAnyErrors = !!(0, _helpers.findInFieldRecursively)(this._form.fields, function (field) {
-        if (!field.valid) return true;
-      });
-
-      this._storage.setFormState('valid', !hasAnyErrors);
     }
   }]);
 
@@ -19309,6 +19315,21 @@ var Storage = function () {
       return !!(0, _helpers.findFieldLikeStructureRecursively)(this._store.fieldsState, function (field) {
         if (field.saving) return true;
       });
+    }
+  }, {
+    key: 'getFormValid',
+    value: function getFormValid() {
+      var valid = true;
+
+      (0, _helpers.findFieldLikeStructureRecursively)(this._store.fieldsState, function (field) {
+        if (!field.valid) {
+          valid = false;
+
+          return true;
+        }
+      });
+
+      return valid;
     }
 
     /**
@@ -19406,7 +19427,6 @@ var Storage = function () {
         dirty: false,
         touched: false,
         submitting: false,
-        valid: true,
         saving: false
       };
     }
