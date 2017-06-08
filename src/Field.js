@@ -31,7 +31,9 @@ export default class Field {
 
     if (params.validate) this.setValidateCb(params.validate);
 
-    // TODO: silent change должен подняться в самом конце, а он поднимается в this._setDefaultAndInitialValue
+    if (!_.isUndefined(this.value)) {
+      this._events.riseSilentChangeEvent(this._pathToField, undefined);
+    }
   }
 
   get form() {
@@ -371,7 +373,7 @@ export default class Field {
     }
     // initial has more priority
     if (!_.isUndefined(initial)) currentValue = initial;
-    if (!_.isUndefined(currentValue)) this.setValue(currentValue);
+    if (!_.isUndefined(currentValue)) this._setValueDirtyValidate(currentValue);
   }
 
 }
