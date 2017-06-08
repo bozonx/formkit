@@ -5,9 +5,16 @@ describe 'Functional. Validate.', ->
     this.form = formHelper.newForm()
     this.form.init(['name'])
 
+  it 'validate on init', ->
+    this.form = formHelper.newForm()
+    this.form.init({ name: {validate: () -> false} })
+
+    assert.isFalse(this.form.valid)
+    assert.isFalse(this.form.fields.name.valid)
+
   it 'set validateCb on init', ->
     this.form = formHelper.newForm()
-    this.form.init({name: {validate: () -> false}})
+    this.form.init({ name: {validate: () -> false} })
 
     this.form.fields.name.handleChange('newValue')
     assert.isFalse(this.form.fields.name.valid)

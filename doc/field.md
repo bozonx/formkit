@@ -14,7 +14,7 @@ It just initialize those fields, you can configure them later.
     form.init({
       id: null,
       name: {
-        initial: 'first value',   // value which will be inserted to field fixed value.
+        initial: 'first value',   // value which will be inserted to field value.
         defaultValue: 'no name',
         disabled: true,
         validate: () => {},

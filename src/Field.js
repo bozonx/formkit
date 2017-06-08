@@ -29,6 +29,9 @@ export default class Field {
     if (params.validate) this.setValidateCb(params.validate);
 
     this._setDefaultAndInitialValue(params.defaultValue, params.initial);
+
+    // set valid state on field init
+    this.validate();
   }
 
   get form() {
