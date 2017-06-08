@@ -12,6 +12,12 @@ describe 'Functional. Validate.', ->
     assert.isFalse(this.form.valid)
     assert.isFalse(this.form.fields.name.valid)
 
+  it 'validate after setValidateCb', ->
+    this.form.fields.name.setValidateCb(() -> false)
+
+    assert.isFalse(this.form.valid)
+    assert.isFalse(this.form.fields.name.valid)
+
   it 'set validateCb on init', ->
     this.form = formHelper.newForm()
     this.form.init({ name: {validate: () -> false} })
@@ -48,9 +54,7 @@ describe 'Functional. Validate.', ->
     assert.deepEqual(this.form.invalidMessages, [])
 
   it 'validateCb cb returns an empty string = throws an error', ->
-    this.form.fields.name.setValidateCb(() -> '')
-    assert.throws(this.form.fields.name.handleChange.bind(this.form.fields.name, 'newValue'), /empty string/);
+    assert.throws(this.form.fields.name.setValidateCb.bind(this.form.fields.name, () -> ''), /empty string/);
 
   it 'validateCb cb returns undefined = throws an error', ->
-    this.form.fields.name.setValidateCb(() -> undefined)
-    assert.throws(this.form.fields.name.handleChange.bind(this.form.fields.name, 'newValue'), /undefined/);
+    assert.throws(this.form.fields.name.setValidateCb.bind(this.form.fields.name, () -> undefined), /undefined/);

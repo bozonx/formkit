@@ -26,12 +26,12 @@ export default class Field {
 
     if (!_.isUndefined(params.disabled)) this._setDisabled(params.disabled);
     if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
-    if (params.validate) this.setValidateCb(params.validate);
 
     this._setDefaultAndInitialValue(params.defaultValue, params.initial);
 
-    // set valid state on field init
-    this.validate();
+    if (params.validate) this.setValidateCb(params.validate);
+
+    // TODO: silent change должен подняться в самом конце, а он поднимается в this._setDefaultAndInitialValue
   }
 
   get form() {
@@ -133,6 +133,9 @@ export default class Field {
       throw new Error(`Bad type of validate callback`);
     }
     this._validateCallback = validateCallback;
+
+    // revalidate with new callback
+    this.validate();
   }
 
   setDebounceTime(delay) {
