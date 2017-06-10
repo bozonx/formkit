@@ -54,6 +54,7 @@ export default class Events {
 
   riseFormSubmit(values) {
     this._storage.setFormState('submitting', true);
+    this._riseFormEvent('submitStart', values);
 
     const afterSubmitSuccess = () => {
       this._storage.setFormState('submitting', false);
@@ -64,6 +65,7 @@ export default class Events {
           field.$recalcDirty();
         });
       }
+      this._riseFormEvent('submitEnd');
     };
 
     if (this._formCallbacks.submit) {
@@ -76,10 +78,11 @@ export default class Events {
           afterSubmitSuccess();
 
           return data;
-        }, (err) => {
+        }, (error) => {
           this._storage.setFormState('submitting', false);
+          this._riseFormEvent('submitEnd', { error });
 
-          return Promise.reject(err);
+          return Promise.reject(error);
         });
       }
       else {
@@ -112,7 +115,12 @@ export default class Events {
       // run save callback
       const cbPromise = saveCb(data);
       if (isPromise(cbPromise)) {
-        return cbPromise.then(() => saveEnd());
+        return cbPromise.then(() => saveEnd(), (error) => {
+          setSavingState(false);
+          riseEvent('saveEnd', { error });
+
+          return Promise.reject(error);
+        });
       }
 
       // if save callback hasn't returned a promise
