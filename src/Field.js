@@ -163,7 +163,7 @@ export default class Field {
    * @param {*} newValue
    */
   handleChange(newValue) {
-     // don't do anything if disabled
+    // don't do anything if disabled
     if (this.disabled) return;
 
     const oldValue = _.cloneDeep(this.value);
