@@ -127,7 +127,7 @@ export default class Form {
    * It can be placed ad a handler of <form> element on onSubmit attribute.
    * @return {Promise}
    */
-  handleSubmit() {
+  handleSubmit = () => {
     // disallow submit invalid form
     if (!this.valid) return Promise.reject(new Error(`The form is invalid`));
     // do nothing if form is submitting at the moment
@@ -140,31 +140,31 @@ export default class Form {
     const values = _.clone(this._storage.getFormValues());
 
     return this._events.riseFormSubmit(values);
-  }
+  };
 
   /**
    * Start form save immediately.
    * @return {Promise}
    */
-  save() {
+  save = () => {
     if (!this.valid) return Promise.reject(new Error('Form is invalid'));
 
     return this._events.riseFormDebouncedSave(true);
-  }
+  };
 
   /**
    * Roll back to previously saved values.
    */
-  clear() {
+  clear = () => {
     findInFieldRecursively(this.fields, (field) => field.clear());
-  }
+  };
 
   /**
    * Reset values to default values.
    */
-  reset() {
+  reset = () => {
     findInFieldRecursively(this.fields, (field) => field.reset());
-  }
+  };
 
   /**
    * Cancel saving

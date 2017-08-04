@@ -162,7 +162,7 @@ export default class Field {
    * * Start saving
    * @param {*} newValue
    */
-  handleChange(newValue) {
+  handleChange = (newValue) => {
     // don't do anything if disabled
     if (this.disabled) return;
 
@@ -183,23 +183,23 @@ export default class Field {
     this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
     // start save with debounced delay
     this._addSavingInQueue(false);
-  }
+  };
 
   /**
    * Set field's "focused" prop to true.
    */
-  handleFocusIn() {
+  handleFocusIn = () => {
     this._storage.setFieldState(this._pathToField, { focused: true });
-  }
+  };
 
   /**
    * Set field's "focused" prop to false.
    */
-  handleBlur() {
+  handleBlur = () => {
     this._storage.setFieldState(this._pathToField, { focused: false });
     // start save immediately
     this._addSavingInQueue(true);
-  }
+  };
 
   /**
    * bind it to your component to onEnter event.
@@ -207,11 +207,11 @@ export default class Field {
    * * cancel previous save in queue
    * * immediately starts save
    */
-  handlePressEnter() {
+  handlePressEnter = () => {
     if (this.disabled) return;
     // start save immediately
     this.save();
-  }
+  };
 
   /**
    * Add one or more handlers on fields's event:
@@ -274,23 +274,23 @@ export default class Field {
    * Start field save immediately.
    * @return {Promise}
    */
-  save() {
+  save = () => {
     return this._addSavingInQueue(true);
-  }
+  };
 
   /**
    * Clear value(user input) and set saved value to current value.
    */
-  clear() {
+  clear = () => {
     this.setValue(this.savedValue);
-  }
+  };
 
   /**
    * Reset to default value
    */
-  reset() {
+  reset = () => {
     this.setValue(this.defaultValue);
-  }
+  };
 
   /**
    * Cancel debounce waiting for saving
