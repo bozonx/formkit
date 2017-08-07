@@ -18500,13 +18500,13 @@ var Events = function () {
           // else if cb returns any other types - don't wait and finish submit process
           afterSubmitSuccess();
 
-          return Promise.resolve();
+          return Promise.resolve(values);
         }
       }
       // else if there isn't a submit callback, just finish submit process
       afterSubmitSuccess();
 
-      return Promise.resolve();
+      return Promise.resolve(values);
     }
   }, {
     key: '$startSaving',
