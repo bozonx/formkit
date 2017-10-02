@@ -1007,9 +1007,13 @@ coffee-coverage@^2.0.1:
     minimatch "^3.0.2"
     pkginfo ">=0.2.3"
 
-coffee-script@>=1.6.2, coffee-script@^1.12.6:
+coffee-script@>=1.6.2:
   version "1.12.6"
   resolved "https://registry.yarnpkg.com/coffee-script/-/coffee-script-1.12.6.tgz#285a3f7115689065064d6bf9ef4572db66695cbf"
+
+coffeescript@next:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/coffeescript/-/coffeescript-2.0.1.tgz#7b74a62ee5b9bc833c9a77968605327421c5312a"
 
 combined-stream@^1.0.5, combined-stream@~1.0.5:
   version "1.0.5"
