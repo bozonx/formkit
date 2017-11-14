@@ -17788,6 +17788,18 @@ var Form = function () {
       });
     }
   }, {
+    key: 'setValidators',
+    value: function setValidators(config) {
+      var _this5 = this;
+
+      // TODO: test it
+      if (!_lodash2.default.isPlainObject(config)) throw new Error('ERROR: setValidators: Bad type of config');
+      _lodash2.default.each(config, function (validator, name) {
+        // TODO: поддержка списка валадаторов
+        _this5.fields[name].setValidateCb(validator);
+      });
+    }
+  }, {
     key: '$getWholeStorageState',
     value: function $getWholeStorageState() {
       return this._storage.getWholeStorageState();

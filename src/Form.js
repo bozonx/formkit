@@ -214,6 +214,15 @@ export default class Form {
     });
   }
 
+  setValidators(config) {
+    // TODO: test it
+    if (!_.isPlainObject(config)) throw new Error(`ERROR: setValidators: Bad type of config`);
+    _.each(config, (validator, name) => {
+      // TODO: поддержка списка валадаторов
+      this.fields[name].setValidateCb(validator);
+    })
+  }
+
   $getWholeStorageState() {
     return this._storage.getWholeStorageState();
   }
