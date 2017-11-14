@@ -154,6 +154,7 @@ export default class Storage {
       touched: false,
       valid: true,
       invalidMsg: undefined,
+      validCombined: true,
       saving: false,
       disabled: false,
       focused: false,

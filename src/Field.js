@@ -68,6 +68,15 @@ export default class Field {
   get invalidMsg() {
     return this._storage.getFieldState(this._pathToField, 'invalidMsg');
   }
+
+  get validCombo() {
+    if (this.valid) return true;
+
+    if (this.invalidMsg) return this.invalidMsg;
+
+    return false;
+  }
+
   get saving() {
     return this._storage.getFieldState(this._pathToField, 'saving');
   }
