@@ -5,7 +5,7 @@
   "repository": "git@github.com:bozonx/formkit.git",
   "license": "MIT",
   "engines": {
-    "node": ">=5.0.0"
+    "node": ">=9.x"
   },
   "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
   "main": "dist/formkit.js",
