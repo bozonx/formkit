@@ -15,6 +15,11 @@ module.exports = class Form {
     this._storage = new Storage();
     this._state = new State(this, this._storage);
     this._events = new Events(this, eventEmitter, this._storage, this._state);
+
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.save = this.save.bind(this);
+    this.clear = this.clear.bind(this);
+    this.reset = this.reset.bind(this);
   }
 
   get fields() {
@@ -126,7 +131,7 @@ module.exports = class Form {
    * It can be placed ad a handler of <form> element on onSubmit attribute.
    * @return {Promise}
    */
-  handleSubmit = () => {
+  handleSubmit() {
     // disallow submit invalid form
     if (!this.valid) return Promise.reject(new Error(`The form is invalid`));
     // do nothing if form is submitting at the moment
@@ -145,7 +150,7 @@ module.exports = class Form {
    * Start form save immediately.
    * @return {Promise}
    */
-  save = () => {
+  save() {
     if (!this.valid) return Promise.reject(new Error('Form is invalid'));
 
     return this._events.riseFormDebouncedSave(true);
@@ -154,14 +159,14 @@ module.exports = class Form {
   /**
    * Roll back to previously saved values.
    */
-  clear = () => {
+  clear() {
     findInFieldRecursively(this.fields, (field) => field.clear());
   };
 
   /**
    * Reset values to default values.
    */
-  reset = () => {
+  reset() {
     findInFieldRecursively(this.fields, (field) => field.reset());
   };
 

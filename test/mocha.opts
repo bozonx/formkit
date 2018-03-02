@@ -1,4 +1,4 @@
 --recursive
 --ui bdd
 --colors
---compilers js:babel-register,coffee:coffeescript/register
+--compilers coffee:coffeescript/register
