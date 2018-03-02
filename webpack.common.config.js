@@ -9,13 +9,17 @@ module.exports = {
     sourceMapFilename: '[file].map',
   },
   cache: false,
-  module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
-        use: 'babel-loader',
-        exclude: /node_modules/,
-      },
-    ],
-  },
+  // module: {
+  //   rules: [
+  //     {
+  //       test: /\.js$/,
+  //       exclude: /node_modules/,
+  //     },
+  //     // {
+  //     //   test: /\.jsx?$/,
+  //     //   use: 'babel-loader',
+  //     //   exclude: /node_modules/,
+  //     // },
+  //   ],
+  // },
 };
