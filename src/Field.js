@@ -1,10 +1,9 @@
-import _ from 'lodash';
+const _ = require('lodash');
+const DebouncedCall = require('./DebouncedCall');
+const { calculateDirty, getFieldName, parseValidateCbReturn } = require('./helpers');
 
-import DebouncedCall from './DebouncedCall';
-import { calculateDirty, getFieldName, parseValidateCbReturn } from './helpers';
 
-
-export default class Field {
+module.exports = class Field {
   constructor(pathToField, params, { form, events, storage, state }) {
     this._form = form;
     this._events = events;
@@ -385,4 +384,4 @@ export default class Field {
     if (!_.isUndefined(currentValue)) this._setValueDirtyValidate(currentValue);
   }
 
-}
+};

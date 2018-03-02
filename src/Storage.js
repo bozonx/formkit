@@ -1,7 +1,8 @@
-import _ from 'lodash';
-import { extendDeep, findFieldLikeStructureRecursively } from './helpers';
+const _ = require('lodash');
+const { extendDeep, findFieldLikeStructureRecursively } = require('./helpers');
 
-export default class Storage {
+
+module.exports = class Storage {
   constructor() {
     this.init();
   }
@@ -163,4 +164,4 @@ export default class Storage {
     };
   }
 
-}
+};

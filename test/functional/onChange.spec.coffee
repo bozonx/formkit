@@ -1,5 +1,6 @@
 formHelper = require('../../src/index')
 
+
 describe 'Functional. onChange and handleChange.', ->
   beforeEach () ->
     this.form = formHelper.newForm()

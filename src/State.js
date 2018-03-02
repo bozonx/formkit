@@ -2,7 +2,7 @@
  * It sets field and form states and rise an event if need
  * @class
  */
-export default class State {
+module.exports = class State {
   constructor(form, storage) {
     this._form = form;
     this._storage = storage;
@@ -41,4 +41,4 @@ export default class State {
     }
   }
 
-}
+};

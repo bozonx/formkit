@@ -1,11 +1,12 @@
-import DebouncedCall from './DebouncedCall';
-import { isPromise, findInFieldRecursively } from './helpers';
+const DebouncedCall = require('./DebouncedCall');
+const { isPromise, findInFieldRecursively } = require('./helpers');
+
 
 /**
  * It sets field and form states and rise an event if need
  * @class
  */
-export default class Events {
+module.exports = class Events {
   constructor(form, eventEmitter, storage, state) {
     this._form = form;
     this._eventEmitter = eventEmitter;
@@ -217,4 +218,4 @@ export default class Events {
     this._eventEmitter.emit(`form.${eventName}`, data);
   }
 
-}
+};

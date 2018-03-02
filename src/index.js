@@ -1,8 +1,7 @@
-import _ from 'lodash';
-import EventEmitter from 'eventemitter3';
-
-import Form from './Form';
-import configDefaults from './configDefaults';
+const _ = require('lodash');
+const EventEmitter = require('eventemitter3');
+const Form = require('./Form');
+const configDefaults = require('./configDefaults');
 
 const globalConfig = configDefaults;
 const plugins = [];

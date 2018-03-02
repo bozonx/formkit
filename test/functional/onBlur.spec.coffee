@@ -1,5 +1,6 @@
 formHelper = require('../../src/index')
 
+
 describe 'Functional. onBlur.', ->
   beforeEach () ->
     this.form = formHelper.newForm()

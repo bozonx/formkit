@@ -1,13 +1,12 @@
-import _ from 'lodash';
+const _ = require('lodash');
+const Storage = require('./Storage');
+const Events = require('./Events');
+const State = require('./State');
+const Field = require('./Field');
+const { findInFieldRecursively, findRecursively } = require('./helpers');
 
-import Storage from './Storage';
-import Events from './Events';
-import State from './State';
-import Field from './Field';
-import { findInFieldRecursively, findRecursively } from './helpers';
 
-
-export default class Form {
+module.exports = class Form {
   constructor(config, eventEmitter) {
     this._config = config;
 
@@ -248,4 +247,4 @@ export default class Form {
     _.set(this.fields, pathToField, newField);
   }
 
-}
+};

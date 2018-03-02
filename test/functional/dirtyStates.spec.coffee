@@ -1,5 +1,6 @@
 formHelper = require('../../src/index')
 
+
 describe 'Functional. Dirty and touched states.', ->
   beforeEach () ->
     this.form = formHelper.newForm()

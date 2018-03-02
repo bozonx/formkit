@@ -1,9 +1,7 @@
-import { isPromise } from './helpers';
+const { isPromise } = require('./helpers');
 
-/**
- *
- */
-export default class DebouncedCallbackWrapper {
+
+module.exports = class DebouncedCallbackWrapper {
   constructor() {
     this._mainResolve = null;
     this._mainReject = null;
@@ -76,4 +74,4 @@ export default class DebouncedCallbackWrapper {
     }
   }
 
-}
+};

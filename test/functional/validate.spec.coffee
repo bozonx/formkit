@@ -1,5 +1,6 @@
 formHelper = require('../../src/index')
 
+
 describe 'Functional. Validate.', ->
   beforeEach () ->
     this.form = formHelper.newForm()

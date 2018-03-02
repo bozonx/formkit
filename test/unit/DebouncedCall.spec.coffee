@@ -1,4 +1,5 @@
-DebouncedCall = require('../../src/DebouncedCall').default
+DebouncedCall = require('../../src/DebouncedCall')
+
 
 describe 'Unit. DebouncedCall.', ->
   beforeEach () ->

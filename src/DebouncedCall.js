@@ -1,6 +1,6 @@
-import _ from 'lodash';
+const _ = require('lodash');
+const DebouncedCallbackWrapper = require('./DebouncedCallbackWrapper');
 
-import DebouncedCallbackWrapper from './DebouncedCallbackWrapper';
 
 /**
  * It allows run callback with delay with debounce.
@@ -17,7 +17,7 @@ import DebouncedCallbackWrapper from './DebouncedCallbackWrapper';
  *   * If you try to call another callback while current callback is waiting for running,
  *     it will delay it and call it after current callback has fulfilled.
  */
-export default class DebouncedCall {
+module.exports = class DebouncedCall {
   constructor(delayTime) {
     this._delayTime = delayTime;
     // waiting for start
@@ -149,4 +149,4 @@ export default class DebouncedCall {
     }
   }
 
-}
+};
