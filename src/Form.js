@@ -218,11 +218,25 @@ module.exports = class Form {
     });
   }
 
-  setValidators(config) {
-    if (!_.isPlainObject(config)) throw new Error(`ERROR: setValidators: Bad type of config`);
-    _.each(config, (validator, name) => {
-      this.fields[name].setValidateCb(validator);
-    })
+  setValidators(validators) {
+    if (!_.isPlainObject(validators)) throw new Error(`ERROR: setValidators: Bad type of config`);
+
+    const recursively = (container, fields) => {
+      _.each(container, (item, name) => {
+        if (_.isFunction(item)) {
+          fields[name].setValidateCb(item);
+        }
+        else if (_.isPlainObject(item)) {
+          // go deeper
+          recursively(item, fields[name]);
+        }
+        else {
+          throw new Error(`ERROR: setValidators: Bad type of config`);
+        }
+      });
+    };
+
+    recursively(validators, this.fields);
   }
 
   $getWholeStorageState() {
