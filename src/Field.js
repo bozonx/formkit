@@ -271,7 +271,7 @@ module.exports = class Field {
   validate() {
     if (!this._validateCallback) return;
 
-    const cbReturn = this._validateCallback({ value: this.value });
+    const cbReturn = this._validateCallback({ value: this.value, formValues: this.form.values });
 
     if (_.isUndefined(cbReturn)) throw new Error(`Validate callback returns an undefined, what does it mean?`);
     if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);

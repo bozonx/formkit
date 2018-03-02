@@ -19,6 +19,14 @@ describe 'Functional. Validate.', ->
 
     assert.equal(@form.fields.name._validateCallback, validators.name)
 
+  it 'formValues', ->
+    validator = sinon.stub().returns(true)
+    @form.fields.name.setValidateCb(validator)
+
+    @form.fields.name.handleChange('newValue')
+
+    sinon.assert.calledWith(validator, { value: 'newValue', formValues: { name: 'newValue' } })
+
   it 'validate on init', ->
     @form = formHelper.newForm()
     @form.init({ name: {validate: () -> false} })
