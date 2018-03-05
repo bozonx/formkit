@@ -3,7 +3,7 @@ const Storage = require('./Storage');
 const Events = require('./Events');
 const State = require('./State');
 const Field = require('./Field');
-const { findInFieldRecursively, findRecursively } = require('./helpers');
+const { findInFieldRecursively, findRecursively, parseValidateCbReturn } = require('./helpers');
 
 
 module.exports = class Form {
@@ -79,7 +79,7 @@ module.exports = class Form {
    * It calls from outer app's code to init form.
    * @param {array|object} initialFields
    *   * if array: you can pass just fields name like: ['id', 'title', 'body']
-   *   * if object: you can pass a fields config like: {name: {default: 'no name', validate: () => {}, ...}}
+   *   * if object: you can pass a fields config like: {name: {default: 'no name', ...}}
    * @param {function} validateCb - function which will be called on each change to validate form
    */
   init(initialFields, validateCb) {
@@ -146,7 +146,7 @@ module.exports = class Form {
     const values = _.clone(this._storage.getFormValues());
 
     return this._events.riseFormSubmit(values);
-  };
+  }
 
   /**
    * Start form save immediately.
@@ -156,21 +156,21 @@ module.exports = class Form {
     if (!this.valid) return Promise.reject(new Error('Form is invalid'));
 
     return this._events.riseFormDebouncedSave(true);
-  };
+  }
 
   /**
    * Roll back to previously saved values.
    */
   clear() {
     findInFieldRecursively(this.fields, (field) => field.clear());
-  };
+  }
 
   /**
    * Reset values to default values.
    */
   reset() {
     findInFieldRecursively(this.fields, (field) => field.reset());
-  };
+  }
 
   /**
    * Cancel saving
@@ -220,29 +220,57 @@ module.exports = class Form {
     });
   }
 
-  setValidators(validators) {
+  /**
+   * Validate whole form.
+   * @return {string|undefined} - valid if undefined or error message.
+   */
+  validate() {
+    if (!this._validateCb) return;
 
-    // TODO: review
+    const errors = {};
 
-    if (!_.isPlainObject(validators)) throw new Error(`ERROR: setValidators: Bad type of config`);
+    // TODO: do it recursivelly
+    _.each(this.values, (item, name) => {
+      errors[name] = {};
+    });
 
-    const recursively = (container, fields) => {
-      _.each(container, (item, name) => {
-        if (_.isFunction(item)) {
-          fields[name].setValidateCb(item);
-        }
-        else if (_.isPlainObject(item)) {
-          // go deeper
-          recursively(item, fields[name]);
-        }
-        else {
-          throw new Error(`ERROR: setValidators: Bad type of config`);
-        }
-      });
-    };
+    return this._validateCb(errors, this.values);
 
-    recursively(validators, this.fields);
+    // if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
+    //
+    // const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
+    //
+    // this._storage.setFieldState(this._pathToField, {
+    //   valid,
+    //   invalidMsg,
+    // });
+    //
+    // return result;
   }
+
+  // setValidators(validators) {
+  //
+  //   // TODO: review
+  //
+  //   if (!_.isPlainObject(validators)) throw new Error(`ERROR: setValidators: Bad type of config`);
+  //
+  //   const recursively = (container, fields) => {
+  //     _.each(container, (item, name) => {
+  //       if (_.isFunction(item)) {
+  //         fields[name].setValidateCb(item);
+  //       }
+  //       else if (_.isPlainObject(item)) {
+  //         // go deeper
+  //         recursively(item, fields[name]);
+  //       }
+  //       else {
+  //         throw new Error(`ERROR: setValidators: Bad type of config`);
+  //       }
+  //     });
+  //   };
+  //
+  //   recursively(validators, this.fields);
+  // }
 
   $getWholeStorageState() {
     return this._storage.getWholeStorageState();

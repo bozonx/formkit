@@ -13,7 +13,7 @@ Smart form helper. It's framework agnostic.
 
     import formkit from 'formkit';
 
-    const validate = (errors, values, field) => {
+    const validate = (errors, values) => {
       if (!values.firstname) errors.firstname = 'Required';
     };
 

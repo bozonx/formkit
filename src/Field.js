@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const DebouncedCall = require('./DebouncedCall');
-const { calculateDirty, getFieldName, parseValidateCbReturn } = require('./helpers');
+const { calculateDirty, getFieldName } = require('./helpers');
 
 
 module.exports = class Field {
@@ -14,7 +14,6 @@ module.exports = class Field {
 
     this._pathToField = pathToField;
     this._fieldName = getFieldName(pathToField);
-    this._validateCallback = undefined;
 
     this._init(params);
 
@@ -28,6 +27,7 @@ module.exports = class Field {
   }
 
   _init(params) {
+    // TODO: review
     // init state
     this._storage.initFieldState(this._pathToField);
 
@@ -36,7 +36,7 @@ module.exports = class Field {
 
     this._setDefaultAndInitialValue(params.defaultValue, params.initial);
 
-    if (params.validate) this.setValidateCb(params.validate);
+    //if (params.validate) this.setValidateCb(params.validate);
 
     if (!_.isUndefined(this.value)) {
       this._events.riseSilentChangeEvent(this._pathToField, undefined);
@@ -97,9 +97,6 @@ module.exports = class Field {
   get defaultValue() {
     return this._storage.getFieldState(this._pathToField, 'defaultValue');
   }
-  get validateCb() {
-    return this._validateCallback;
-  }
   get debounceTime() {
     return this._debouncedCall.delay;
   }
@@ -147,19 +144,6 @@ module.exports = class Field {
     this._events.riseAnyChange(this._pathToField);
   }
 
-  setValidateCb(validateCallback) {
-
-    // TODO: remove
-
-    if (!_.isUndefined(validateCallback) && !_.isFunction(validateCallback)) {
-      throw new Error(`Bad type of validate callback`);
-    }
-    this._validateCallback = validateCallback;
-
-    // revalidate with new callback
-    this.validate();
-  }
-
   setDebounceTime(delay) {
     const toNumber = _.toNumber(delay);
     if (_.isNull(toNumber) || _.isNaN(toNumber)) throw new Error(`Bad debounceTime value`);
@@ -194,6 +178,7 @@ module.exports = class Field {
 
     if (isChanged) {
       // set touched to true
+      // TODO: do not combine actions
       if (!this.touched) this._state.setFieldAndFormTouched(this._pathToField);
       // set value, dirty state and validate
       this._setValueDirtyValidate(newValue);
@@ -265,40 +250,44 @@ module.exports = class Field {
     this._events.setFieldCallback(this._pathToField, 'save', cb);
   }
 
-  /**
-   * It updates "valid" and "invalidMsg" states using field's validate rule.
-   * It runs a validate callback which must return:
-   * * valid: true
-   * * invalid: not empty string or false
-   * @returns {boolean|string|undefined}
-   *   * true/false - valid/invalid
-   *   * string it is an error message, means invalid
-   *   * undefined - hasn't done a validation because the field doesn't have a validate callback.
-   */
-  validate() {
-    if (!this._validateCallback) return;
-
-    let cbReturn = this._validateCallback({ value: this.value, formValues: this.form.values });
-
-
-    // TODO: review
-    //if (_.isUndefined(cbReturn)) throw new Error(`Validate callback returns an undefined, what does it mean?`);
-    if (_.isUndefined(cbReturn)) {
-      cbReturn = true;
-    }
-
-
-    if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
-
-    const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
-
-    this._storage.setFieldState(this._pathToField, {
-      valid,
-      invalidMsg,
-    });
-
-    return result;
-  }
+  // /**
+  //  * It updates "valid" and "invalidMsg" states using field's validate rule.
+  //  * It runs a validate callback which must return:
+  //  * * valid: true
+  //  * * invalid: not empty string or false
+  //  * @returns {boolean|string|undefined}
+  //  *   * true/false - valid/invalid
+  //  *   * string it is an error message, means invalid
+  //  *   * undefined - hasn't done a validation because the field doesn't have a validate callback.
+  //  */
+  // validate() {
+  //
+  //
+  //   // TODO: remake
+  //
+  //   // if (!this._validateCallback) return;
+  //   //
+  //   // let cbReturn = this._validateCallback({ value: this.value, formValues: this.form.values });
+  //   //
+  //   //
+  //   // // TODO: review
+  //   // //if (_.isUndefined(cbReturn)) throw new Error(`Validate callback returns an undefined, what does it mean?`);
+  //   // if (_.isUndefined(cbReturn)) {
+  //   //   cbReturn = true;
+  //   // }
+  //   //
+  //   //
+  //   // if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
+  //   //
+  //   // const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
+  //   //
+  //   // this._storage.setFieldState(this._pathToField, {
+  //   //   valid,
+  //   //   invalidMsg,
+  //   // });
+  //   //
+  //   // return result;
+  // }
 
   /**
    * Start field save immediately.
@@ -389,7 +378,7 @@ module.exports = class Field {
     // set to outer value layer
     this._storage.setValue(this._pathToField, newValue);
     this.$recalcDirty();
-    this.validate();
+    this.form.validate();
   }
 
 
