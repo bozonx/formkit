@@ -5,13 +5,33 @@ describe 'Functional. Validate.', ->
   beforeEach () ->
     @form = formHelper.newForm()
 
-  it.only 'formValues', ->
-    validator = sinon.stub().returns(true)
-    @form.fields.name.setValidateCb(validator)
+  it 'params hierarchy', ->
+    validateCb = sinon.spy()
+    @form.init([
+      'topParam'
+      'parent.subParam'
+    ], validateCb)
 
-    @form.fields.name.handleChange('newValue')
+    @form.fields.parent.subParam.handleChange('newValue')
 
-    sinon.assert.calledWith(validator, { value: 'newValue', formValues: { name: 'newValue' } })
+    sinon.assert.calledWith(validateCb, { parent: {} }, { parent: { subParam: 'newValue' } })
+
+  it 'params hierarchy - check result', ->
+    validateCb = (errors, values) ->
+      errors.parent.subParam = 'error'
+    @form.init([
+      'topParam'
+      'parent.subParam'
+    ], validateCb)
+
+    @form.fields.parent.subParam.handleChange('newValue')
+
+    assert.deepEqual(@form.invalidMessages, [
+      {
+        message: 'error'
+        path: 'parent.subParam'
+      }
+    ])
 
   it 'validate after setValidateCb', ->
     @form.init([ 'name' ])
@@ -44,23 +64,3 @@ describe 'Functional. Validate.', ->
     #assert.equal(@form.fields.name.invalidMsg, 'errorMsg')
     assert.isFalse(@form.valid)
     assert.deepEqual(@form.invalidMessages, [{path: 'name', message: 'errorMsg'}])
-
-
-  # TODO: test deep fields errors
-
-
-  it 'validateCb cb returns false and after that returns true', ->
-    @form.fields.name.setValidateCb((params) -> !!params.value)
-    @form.fields.name.handleChange(0)
-    @form.fields.name.handleChange(1)
-
-    assert.isTrue(@form.fields.name.valid)
-    assert.isUndefined(@form.fields.name.invalidMsg)
-    assert.isTrue(@form.valid)
-    assert.deepEqual(@form.invalidMessages, [])
-
-  it 'validateCb cb returns an empty string = throws an error', ->
-    assert.throws(@form.fields.name.setValidateCb.bind(@form.fields.name, () -> ''), /empty string/);
-
-  it 'validateCb cb returns undefined = throws an error', ->
-    assert.throws(@form.fields.name.setValidateCb.bind(@form.fields.name, () -> undefined), /undefined/);

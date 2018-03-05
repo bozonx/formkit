@@ -234,9 +234,15 @@ module.exports = class Form {
 
     const errors = {};
 
-    // TODO: do it recursivelly
-    _.each(this.values, (item, name) => {
-      errors[name] = {};
+    // add sub structures for easy access to error
+    findRecursively(this.fields, (value, path) => {
+      const split = path.split('.');
+      if (split.length < 2) return;
+
+      split.pop();
+      const basePath = split.join();
+
+      _.set(errors, basePath, {});
     });
 
     this._validateCb(errors, this.values);
