@@ -206,7 +206,7 @@ module.exports = class Form {
   setValues(newValues) {
     findRecursively(newValues, (value, path) => {
       const field = _.get(this.fields, path);
-      if (!field || !field.constructor || field.constructor.name !== 'Field') return;
+      if (!field || !(field instanceof Field)) return;
       field.setValue(value);
     });
   }
@@ -220,7 +220,7 @@ module.exports = class Form {
   setSavedValues(newValues) {
     findRecursively(newValues, (value, path) => {
       const field = _.get(this.fields, path);
-      if (!field || !field.constructor || field.constructor.name !== 'Field') return;
+      if (!field || !(field instanceof Field)) return;
       field.setSavedValue(value);
     });
   }
@@ -249,7 +249,7 @@ module.exports = class Form {
 
     findRecursively(errors, (value, path) => {
       const field = _.get(this.fields, path);
-      if (!field || !field.constructor || field.constructor.name !== 'Field') return;
+      if (!field || !(field instanceof Field)) return;
       field.$setValidState(value);
     });
 
