@@ -32,7 +32,7 @@ describe 'Functional. nestedFields.', ->
       assert.deepEqual(this.form.values, {nested: {name: 'savedValue'}})
 
     it 'validation', ->
-      this.form.fields.nested.name.setValidateCb(() -> 'errorMsg')
+      this.form.setValidateCb((errors) -> errors.nested.name = 'errorMsg')
       this.form.fields.nested.name.handleChange('newValue')
 
       assert.isFalse(this.form.fields.nested.name.valid)

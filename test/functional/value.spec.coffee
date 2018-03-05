@@ -50,7 +50,7 @@ describe 'Functional. Value, saved value, default value.', ->
   it "clear user input of field", ->
     this.form.fields.name.setSavedValue('savedValue')
     this.form.fields.name.handleChange('userValue')
-    this.form.fields.name.setValidateCb(() -> 'bad value')
+    this.form.setValidateCb((errors) -> errors.name = 'bad value')
     this.form.fields.name.clear()
 
     assert.equal(this.form.fields.name.value, 'savedValue')
@@ -61,7 +61,7 @@ describe 'Functional. Value, saved value, default value.', ->
   it "clear user input of form", ->
     this.form.fields.name.setSavedValue('savedValue')
     this.form.fields.name.handleChange('userValue')
-    this.form.fields.name.setValidateCb(() -> 'bad value')
+    this.form.setValidateCb((errors) -> errors.name = 'bad value')
     this.form.clear()
 
     assert.equal(this.form.fields.name.value, 'savedValue')

@@ -104,7 +104,7 @@ describe 'Functional. Submit.', ->
   it "disallow submit invalid form", ->
     submitHandler = sinon.spy();
     this.form.onSubmit(submitHandler)
-    this.form.fields.name._validateCallback = () -> false
+    this.form.setValidateCb((errors) -> errors.name = 'invalid' )
 
     this.form.fields.name.handleChange('newValue')
     this.form.handleSubmit()

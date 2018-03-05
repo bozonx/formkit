@@ -31,7 +31,7 @@ describe 'Functional. saving.', ->
       expect(this.saveHandler).to.have.been.calledWith('newValue')
 
     it "don't save invalid value", ->
-      this.form.fields.name.setValidateCb(() -> false)
+      this.form.setValidateCb((errors) -> errors.name = 'bad value')
       this.form.fields.name.onSave(this.saveHandler)
       this.form.fields.name.handleChange('newValue')
       this.form.fields.name._debouncedCall.flush()
