@@ -76,6 +76,7 @@ module.exports = class Field {
     return this._storage.getFieldState(this._pathToField, 'invalidMsg');
   }
 
+  // TODO: ??????
   get validCombo() {
     if (this.valid) return true;
 
@@ -147,6 +148,9 @@ module.exports = class Field {
   }
 
   setValidateCb(validateCallback) {
+
+    // TODO: remove
+
     if (!_.isUndefined(validateCallback) && !_.isFunction(validateCallback)) {
       throw new Error(`Bad type of validate callback`);
     }
@@ -179,6 +183,9 @@ module.exports = class Field {
    * @param {*} newValue
    */
   handleChange(newValue) {
+
+    // TODO: review
+
     // don't do anything if disabled
     if (this.disabled) return;
 
@@ -199,14 +206,14 @@ module.exports = class Field {
     this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
     // start save with debounced delay
     this._addSavingInQueue(false);
-  };
+  }
 
   /**
    * Set field's "focused" prop to true.
    */
   handleFocusIn() {
     this._storage.setFieldState(this._pathToField, { focused: true });
-  };
+  }
 
   /**
    * Set field's "focused" prop to false.
@@ -215,7 +222,7 @@ module.exports = class Field {
     this._storage.setFieldState(this._pathToField, { focused: false });
     // start save immediately
     this._addSavingInQueue(true);
-  };
+  }
 
   /**
    * bind it to your component to onEnter event.
@@ -227,7 +234,7 @@ module.exports = class Field {
     if (this.disabled) return;
     // start save immediately
     this.save();
-  };
+  }
 
   /**
    * Add one or more handlers on fields's event:
@@ -299,21 +306,21 @@ module.exports = class Field {
    */
   save() {
     return this._addSavingInQueue(true);
-  };
+  }
 
   /**
    * Clear value(user input) and set saved value to current value.
    */
   clear() {
     this.setValue(this.savedValue);
-  };
+  }
 
   /**
    * Reset to default value
    */
   reset() {
     this.setValue(this.defaultValue);
-  };
+  }
 
   /**
    * Cancel debounce waiting for saving
@@ -353,6 +360,9 @@ module.exports = class Field {
    * @return {Promise}
    */
   _addSavingInQueue(force) {
+
+    // TODO: review
+
     // don't save invalid value
     if (!this.valid) return Promise.reject(new Error('Field is invalid'));
     // save only value which was modified.
@@ -373,7 +383,9 @@ module.exports = class Field {
   }
 
   _setValueDirtyValidate(newValue) {
+
     // TODO: may be move to _state?
+
     // set to outer value layer
     this._storage.setValue(this._pathToField, newValue);
     this.$recalcDirty();
@@ -388,6 +400,9 @@ module.exports = class Field {
    * @private
    */
   _setDefaultAndInitialValue(defaultValue, initial) {
+
+    // TODO: review
+
     let currentValue;
     if (!_.isUndefined(defaultValue)) {
       this._storage.setFieldState(this._pathToField, { defaultValue });

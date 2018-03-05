@@ -29,7 +29,12 @@ Smart form helper. It's framework agnostic.
     form.onSubmit(submitHandler);
     
     // change field's value
-    form.fields.handleChange('my new name');
+    form.fields.firstname.handleChange('my new name');
+    
+    console.log(form.fields.firstname.dirty)        // false - field is different with previously saved state
+    console.log(form.fields.firstname.touched)      // true - field was dirty at least once since form has initialized.
+    console.log(form.fields.firstname.valid)        // true
+    console.log(form.fields.firstname.invalidMsg)   // '' - message which sets in validate function
     
     // emit submit event - "submitHandler" will be called
     form.handleSubmit();

@@ -221,6 +221,9 @@ module.exports = class Form {
   }
 
   setValidators(validators) {
+
+    // TODO: review
+
     if (!_.isPlainObject(validators)) throw new Error(`ERROR: setValidators: Bad type of config`);
 
     const recursively = (container, fields) => {
