@@ -9,9 +9,8 @@ const { findInFieldRecursively, findRecursively } = require('./helpers');
 module.exports = class Form {
   constructor(config, eventEmitter) {
     this._config = config;
-
     this._fields = {};
-
+    this._validateCb = null;
     this._storage = new Storage();
     this._state = new State(this, this._storage);
     this._events = new Events(this, eventEmitter, this._storage, this._state);
@@ -81,8 +80,11 @@ module.exports = class Form {
    * @param {array|object} initialFields
    *   * if array: you can pass just fields name like: ['id', 'title', 'body']
    *   * if object: you can pass a fields config like: {name: {default: 'no name', validate: () => {}, ...}}
+   * @param {function} validateCb - function which will be called on each change to validate form
    */
-  init(initialFields) {
+  init(initialFields, validateCb) {
+    this._validateCb = validateCb;
+
     if (_.isArray(initialFields)) {
       _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
     }

@@ -9,7 +9,32 @@ Smart form helper. It's framework agnostic.
 
     npm install formkit
 
+## Usage
 
-### Test running
+    import formkit from 'formkit';
+
+    const validate = (errors, values, field) => {
+      if (!values.firstname) errors.firstname = 'Required';
+    };
+
+    
+    // get new form instance
+    const form = formHelper.newForm();
+    // initialize form fields
+    form.init([
+      'firstname',
+    ], validate);
+    
+    const submitHandler = (values) => console.log('The form has submittes with', values);
+    form.onSubmit(submitHandler);
+    
+    // change field's value
+    form.fields.handleChange('my new name');
+    
+    // emit submit event - "submitHandler" will be called
+    form.handleSubmit();
+
+
+## Test running
 
     npm test
