@@ -11,12 +11,13 @@ Smart form helper. It's framework agnostic.
 
 ## Usage
 
+There is example of common usage without any frameworks.
+
     import formkit from 'formkit';
 
     const validate = (errors, values) => {
       if (!values.firstname) errors.firstname = 'Required';
     };
-
     
     // get new form instance
     const form = formHelper.newForm();
@@ -38,6 +39,11 @@ Smart form helper. It's framework agnostic.
     
     // emit submit event - "submitHandler" will be called
     form.handleSubmit();
+
+To use in your favorite framework you have to call field's `handleChange` method
+after each field changes. And call `fom.handleSubmit()` submit on form submit if submitting is using.
+In other hand you can add handler on form saving `form.onSave(callback)`
+to save form's state after field change.
 
 
 ## Test running
