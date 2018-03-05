@@ -4,22 +4,8 @@ formHelper = require('../../src/index')
 describe 'Functional. Validate.', ->
   beforeEach () ->
     @form = formHelper.newForm()
-    @form.init(['name'])
 
-  it 'form.setValidators', ->
-    @form = formHelper.newForm()
-    @form.init([ 'name', 'nested.name' ])
-    validators = {
-      name: () -> true
-      nested: {
-        name: () -> true
-      }
-    }
-    @form.setValidators(validators)
-
-    assert.equal(@form.fields.name._validateCallback, validators.name)
-
-  it 'formValues', ->
+  it.only 'formValues', ->
     validator = sinon.stub().returns(true)
     @form.fields.name.setValidateCb(validator)
 
@@ -27,43 +13,41 @@ describe 'Functional. Validate.', ->
 
     sinon.assert.calledWith(validator, { value: 'newValue', formValues: { name: 'newValue' } })
 
-  it 'validate on init', ->
-    @form = formHelper.newForm()
-    @form.init({ name: {validate: () -> false} })
-
-    assert.isFalse(@form.valid)
-    assert.isFalse(@form.fields.name.valid)
-
   it 'validate after setValidateCb', ->
-    @form.fields.name.setValidateCb(() -> false)
+    @form.init([ 'name' ])
+
+    assert.isTrue(@form.valid)
+    assert.isTrue(@form.fields.name.valid)
+
+    validateCb = (error, values) -> error.name = 'errorMsg'
+    @form.setValidateCb(validateCb)
 
     assert.isFalse(@form.valid)
     assert.isFalse(@form.fields.name.valid)
 
-  it 'set validateCb on init', ->
-    @form = formHelper.newForm()
-    @form.init({ name: {validate: () -> false} })
-
-    @form.fields.name.handleChange('newValue')
-    assert.isFalse(@form.fields.name.valid)
-
-  it 'validateCb returns false', ->
-    @form.fields.name.setValidateCb(() -> false)
+  it 'validateCb returns undefined. It means - valid', ->
+    validateCb = -> undefined
+    @form.init([ 'name' ], validateCb)
     @form.fields.name.handleChange('newValue')
 
-    assert.isFalse(@form.fields.name.valid)
+    assert.isTrue(@form.fields.name.valid)
     assert.isUndefined(@form.fields.name.invalidMsg)
-    assert.isFalse(@form.valid)
+    assert.isTrue(@form.valid)
     assert.deepEqual(@form.invalidMessages, [])
 
   it 'validateCb cb returns message. It means an error', ->
-    @form.fields.name.setValidateCb(() -> 'errorMsg')
+    validateCb = (error, values) -> error.name = 'errorMsg'
+    @form.init([ 'name' ], validateCb)
     @form.fields.name.handleChange('newValue')
 
-    assert.isFalse(@form.fields.name.valid)
-    assert.equal(@form.fields.name.invalidMsg, 'errorMsg')
+    #assert.isFalse(@form.fields.name.valid)
+    #assert.equal(@form.fields.name.invalidMsg, 'errorMsg')
     assert.isFalse(@form.valid)
     assert.deepEqual(@form.invalidMessages, [{path: 'name', message: 'errorMsg'}])
+
+
+  # TODO: test deep fields errors
+
 
   it 'validateCb cb returns false and after that returns true', ->
     @form.fields.name.setValidateCb((params) -> !!params.value)

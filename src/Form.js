@@ -187,6 +187,11 @@ module.exports = class Form {
     // TODO: add and test
   }
 
+  setValidateCb(cb) {
+    this._validateCb = cb;
+    this.validate();
+  }
+
   /**
    * Saving immediately
    */
@@ -234,7 +239,13 @@ module.exports = class Form {
       errors[name] = {};
     });
 
-    return this._validateCb(errors, this.values);
+    this._validateCb(errors, this.values);
+
+    findRecursively(errors, (value, path) => {
+      const field = _.get(this.fields, path);
+      if (!field) return;
+      field.$setValidState(value);
+    });
 
     // if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
     //

@@ -333,6 +333,13 @@ module.exports = class Field {
       calculateDirty(this.value, this.savedValue));
   }
 
+  $setValidState(invalidMsg) {
+    this._storage.setFieldState(this._pathToField, {
+      valid: _.isUndefined(invalidMsg),
+      invalidMsg,
+    });
+  }
+
 
   _setDisabled(value) {
     if (!_.isBoolean(value)) throw new Error(`Bad type of disabled value`);
