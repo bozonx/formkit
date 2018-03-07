@@ -8,11 +8,10 @@
     "node": ">=9.x"
   },
   "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
-  "main": "dist/formkit.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "mocha",
-    "build": "yarn test && yarn run build-node && yarn run build-web && yarn run build-web-min",
-    "build-node": "NODE_ENV=production node_modules/.bin/webpack-cli --progress --config ./webpack.node.config.js",
+    "build": "yarn test && yarn run build-web && yarn run build-web-min",
     "build-web": "NODE_ENV=production node_modules/.bin/webpack-cli --progress --config ./webpack.web.config.js",
     "build-web-min": "NODE_ENV=production node_modules/.bin/webpack-cli -p --progress --config ./webpack.web-min.config.js",
     "cov": "./node_modules/.bin/istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
