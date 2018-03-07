@@ -48,11 +48,13 @@ module.exports = class FieldStorage {
    * @param newState
    */
   setFieldState(pathToField, newState) {
+    // TODO: review стратегию обновления
     let field = _.get(this._storage.$store().fieldsState, pathToField);
     if (_.isUndefined(field)) {
       field = {};
       _.set(this._storage.$store().fieldsState, pathToField, field);
     }
+    // TODO: review
     extendDeep(field, newState);
   }
 

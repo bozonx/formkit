@@ -3,24 +3,28 @@
 const _ = require('lodash');
 
 
-module.exports = {
-  extendDeep(willExtend, newValues) {
-    _.each(newValues, (value, name) => {
-      if (_.isPlainObject(value)) {
-        // create container if it isn't exist
-        if (!_.isPlainObject(willExtend[name])) {
-          willExtend[name] = {};
-        }
-        // run recursively
-        this.extendDeep(willExtend[name], value);
+// TODO: зачем????
+const extendDeep = function (willExtend, newValues) {
+  _.each(newValues, (value, name) => {
+    if (_.isPlainObject(value)) {
+      // create container if it isn't exist
+      if (!_.isPlainObject(willExtend[name])) {
+        willExtend[name] = {};
       }
-      else {
-        willExtend[name] = value;
-      }
-    });
+      // run recursively
+      extendDeep(willExtend[name], value);
+    }
+    else {
+      willExtend[name] = value;
+    }
+  });
 
-    return willExtend;
-  },
+  return willExtend;
+};
+
+
+module.exports = {
+  extendDeep,
 
   findInFieldRecursively(rootObject, cb) {
     const recursive = (obj) => _.find(obj, (item) => {

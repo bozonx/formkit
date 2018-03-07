@@ -208,6 +208,7 @@ module.exports = class Form {
    * @param newValues
    */
   setValues(newValues) {
+    // TODO: fix - неполучится устанавливать plain object values
     findRecursively(newValues, (value, path) => {
       const field = _.get(this.fields, path);
       if (!field || !(field instanceof Field)) return;
@@ -222,11 +223,16 @@ module.exports = class Form {
    * @param newValues
    */
   setSavedValues(newValues) {
-    findRecursively(newValues, (value, path) => {
-      const field = _.get(this.fields, path);
-      if (!field || !(field instanceof Field)) return;
+    // TODO: какая туту стратегия - полностью заменяем или обновляем???
+    findRecursively(this.fields, (field, path) => {
+      const value = _.get(newValues, path);
       field.setSavedValue(value);
     });
+    // findRecursively(newValues, (value, path) => {
+    //   const field = _.get(this.fields, path);
+    //   if (!field || !(field instanceof Field)) return;
+    //   field.setSavedValue(value);
+    // });
   }
 
   /**
@@ -254,8 +260,8 @@ module.exports = class Form {
 
     this._validateCb(errors, values);
 
-    findRecursively(this.fields, (value, path) => {
-      const field = _.get(this.fields, path);
+    findRecursively(this.fields, (field, path) => {
+      //const field = _.get(this.fields, path);
       if (!field || !(field instanceof Field)) return;
 
       const errorMsg = _.get(errors, path);
