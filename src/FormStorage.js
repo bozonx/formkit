@@ -10,11 +10,11 @@ module.exports = class Storage {
   /**
    * Get all the values of form's fields.
    */
-  getFormValues() {
+  getValues() {
     return this._storage.$store().values;
   }
 
-  getFormSavedValues() {
+  getSavedValues() {
     const savedValues = {};
 
     findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field, path) => {
@@ -27,7 +27,7 @@ module.exports = class Storage {
   /**
    * Returns true if form or one or more of its field is saving.
    */
-  getFormSaving() {
+  isSaving() {
     if (this._storage.$store().formState.saving) return true;
 
     return !!findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field) => {
@@ -35,7 +35,7 @@ module.exports = class Storage {
     });
   }
 
-  getFormValid() {
+  isValid() {
     let valid = true;
 
     findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field) => {
@@ -49,10 +49,11 @@ module.exports = class Storage {
     return valid;
   }
 
-  getFormState(stateName) {
+  getState(stateName) {
     return _.cloneDeep(_.get(this._storage.$store().formState, stateName));
   }
 
+  // TODO: rename to getUnsavedValues
   getFormUnsavedValues() {
     const unsavedValues = {};
 

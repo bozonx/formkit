@@ -27,22 +27,22 @@ module.exports = class Form {
     return this._fields;
   }
   get values() {
-    return this._formStorage.getFormValues();
+    return this._formStorage.getValues();
   }
   get savedValues() {
-    return this._formStorage.getFormSavedValues();
+    return this._formStorage.getSavedValues();
   }
   get dirty() {
-    return this._formStorage.getFormState('dirty');
+    return this._formStorage.getState('dirty');
   }
   get touched() {
-    return this._formStorage.getFormState('touched');
+    return this._formStorage.getState('touched');
   }
   get saving() {
-    return this._formStorage.getFormSaving();
+    return this._formStorage.isSaving();
   }
   get submitting() {
-    return this._formStorage.getFormState('submitting');
+    return this._formStorage.getState('submitting');
   }
 
   /**
@@ -53,7 +53,7 @@ module.exports = class Form {
     return this.valid && !this.submitting;
   }
   get valid() {
-    return this._formStorage.getFormValid();
+    return this._formStorage.isValid();
   }
   get config() {
     return this._config;
@@ -139,13 +139,13 @@ module.exports = class Form {
     // disallow submit invalid form
     if (!this.valid) return Promise.reject(new Error(`The form is invalid`));
     // do nothing if form is submitting at the moment
-    if (this._formStorage.getFormState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
+    if (this._formStorage.getState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
 
     if (!this._config.allowSubmitUnchangedForm) {
-      if (!this._formStorage.getFormState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
+      if (!this._formStorage.getState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
     }
 
-    const values = _.clone(this._formStorage.getFormValues());
+    const values = _.clone(this._formStorage.getValues());
 
     return this._events.riseFormSubmit(values);
   }

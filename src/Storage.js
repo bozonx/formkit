@@ -19,7 +19,9 @@ module.exports = class Storage {
     return this._store;
   }
 
-
+  getWholeStorageState() {
+    return _.cloneDeep(this._store);
+  }
 
 
 
@@ -53,10 +55,6 @@ module.exports = class Storage {
   initFieldState(pathToField) {
     // TODO: review
     this.setFieldState(pathToField, this._generateNewFieldState(pathToField));
-  }
-
-  getWholeStorageState() {
-    return _.cloneDeep(this._store);
   }
 
   /**
