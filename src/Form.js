@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const Storage = require('./Storage');
+const FormStorage = require('./FormStorage');
 const Events = require('./Events');
 const State = require('./State');
 const Field = require('./Field');
@@ -12,6 +13,7 @@ module.exports = class Form {
     this._fields = {};
     this._validateCb = null;
     this._storage = new Storage();
+    this._formStorage = new FormStorage(this._storage);
     this._state = new State(this, this._storage);
     this._events = new Events(this, this._storage, this._state);
 
@@ -25,22 +27,22 @@ module.exports = class Form {
     return this._fields;
   }
   get values() {
-    return this._storage.getFormValues();
+    return this._formStorage.getFormValues();
   }
   get savedValues() {
-    return this._storage.getFormSavedValues();
+    return this._formStorage.getFormSavedValues();
   }
   get dirty() {
-    return this._storage.getFormState('dirty');
+    return this._formStorage.getFormState('dirty');
   }
   get touched() {
-    return this._storage.getFormState('touched');
+    return this._formStorage.getFormState('touched');
   }
   get saving() {
-    return this._storage.getFormSaving();
+    return this._formStorage.getFormSaving();
   }
   get submitting() {
-    return this._storage.getFormState('submitting');
+    return this._formStorage.getFormState('submitting');
   }
 
   /**
@@ -51,13 +53,13 @@ module.exports = class Form {
     return this.valid && !this.submitting;
   }
   get valid() {
-    return this._storage.getFormValid();
+    return this._formStorage.getFormValid();
   }
   get config() {
     return this._config;
   }
   get unsavedValues() {
-    return this._storage.getFormUnsavedValues();
+    return this._formStorage.getFormUnsavedValues();
   }
 
   /**
@@ -137,13 +139,13 @@ module.exports = class Form {
     // disallow submit invalid form
     if (!this.valid) return Promise.reject(new Error(`The form is invalid`));
     // do nothing if form is submitting at the moment
-    if (this._storage.getFormState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
+    if (this._formStorage.getFormState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
 
     if (!this._config.allowSubmitUnchangedForm) {
-      if (!this._storage.getFormState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
+      if (!this._formStorage.getFormState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
     }
 
-    const values = _.clone(this._storage.getFormValues());
+    const values = _.clone(this._formStorage.getFormValues());
 
     return this._events.riseFormSubmit(values);
   }

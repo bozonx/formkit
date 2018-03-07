@@ -15,54 +15,48 @@ module.exports = class Storage {
     };
   }
 
+  $store() {
+    return this._store;
+  }
+
+
+
+
+
+  // TODO: review
+  /**
+   * Set form's state. Only primitive, not container or array
+   * @param stateName
+   * @param newValue
+   */
+  setFormState(stateName, newValue) {
+    _.set(this._store.formState, stateName, newValue);
+  }
+  // TODO: remove
+  getFormUnsavedValues() {
+    const unsavedValues = {};
+
+    findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
+      const curValue = _.get(this._store.values, path);
+      if (field.savedValue !== curValue) {
+        _.set(unsavedValues, path, curValue);
+      }
+    });
+
+    return unsavedValues;
+  }
+
+
+
+
+
   initFieldState(pathToField) {
+    // TODO: review
     this.setFieldState(pathToField, this._generateNewFieldState(pathToField));
   }
 
   getWholeStorageState() {
     return _.cloneDeep(this._store);
-  }
-
-  /**
-   * Get all the values of form's fields.
-   */
-  getFormValues() {
-    return this._store.values;
-  }
-
-  getFormSavedValues() {
-    const savedValues = {};
-
-    findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
-      _.set(savedValues, path, field.savedValue);
-    });
-
-    return savedValues;
-  }
-
-  /**
-   * Returns true if form or one or more of its field is saving.
-   */
-  getFormSaving() {
-    if (this._store.formState.saving) return true;
-
-    return !!findFieldLikeStructureRecursively(this._store.fieldsState, (field) => {
-      if (field.saving) return true;
-    });
-  }
-
-  getFormValid() {
-    let valid = true;
-
-    findFieldLikeStructureRecursively(this._store.fieldsState, (field) => {
-      if (!field.valid) {
-        valid = false;
-
-        return true;
-      }
-    });
-
-    return valid;
   }
 
   /**
@@ -72,10 +66,6 @@ module.exports = class Storage {
    */
   getValue(pathToField) {
     return _.cloneDeep(_.get(this._store.values, pathToField));
-  }
-
-  getFormState(stateName) {
-    return _.cloneDeep(_.get(this._store.formState, stateName));
   }
 
   getFieldState(pathToField, stateName) {
@@ -93,14 +83,7 @@ module.exports = class Storage {
     _.set(this._store.values, pathToField, newValue);
   }
 
-  /**
-   * Set form's state. Only primitive, not container or array
-   * @param stateName
-   * @param newValue
-   */
-  setFormState(stateName, newValue) {
-    _.set(this._store.formState, stateName, newValue);
-  }
+
 
 
   /**
@@ -119,20 +102,6 @@ module.exports = class Storage {
 
   findFieldStateRecursively(root, cb) {
     return findFieldLikeStructureRecursively(this._store[root], cb);
-  }
-
-
-  getFormUnsavedValues() {
-    const unsavedValues = {};
-
-    findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
-      const curValue = _.get(this._store.values, path);
-      if (field.savedValue !== curValue) {
-        _.set(unsavedValues, path, curValue);
-      }
-    });
-
-    return unsavedValues;
   }
 
   isFieldUnsaved(pathToField) {

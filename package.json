@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "eventemitter3": "^3.0.1",
+    "immutable": "^3.8.2",
     "lodash": "^4.17.5"
   },
   "devDependencies": {
