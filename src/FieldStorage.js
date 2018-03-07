@@ -12,7 +12,7 @@ module.exports = class FieldStorage {
     this.setFieldState(pathToField, this._generateNewFieldState(pathToField));
   }
 
-  // TODO: check
+  // TODO: used in events
   /**
    * get current value
    * @param pathToField
@@ -26,20 +26,22 @@ module.exports = class FieldStorage {
     return _.cloneDeep(_.get(this._storage.$store().fieldsState, `${pathToField}.${stateName}`));
   }
 
+  isFieldUnsaved(pathToField) {
+    return _.get(this._storage.$store().fieldsState, pathToField).savedValue !== _.get(this._storage.$store().values, pathToField);
+  }
+
+  // TODO: used in events
   setAllSavedValues(submittedValues) {
     findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field, path) => {
       field.savedValue = _.get(submittedValues, path);
     });
   }
 
-
   setValue(pathToField, newValue) {
     _.set(this._storage.$store().values, pathToField, newValue);
   }
 
-
-
-
+  // TODO: remove from storage and rename
   /**
    * Set field's state.
    * @param pathToField
@@ -54,14 +56,10 @@ module.exports = class FieldStorage {
     extendDeep(field, newState);
   }
 
+  // TODO: remove from storage and rename
   findFieldStateRecursively(root, cb) {
     return findFieldLikeStructureRecursively(this._storage.$store()[root], cb);
   }
-
-  isFieldUnsaved(pathToField) {
-    return _.get(this._storage.$store().fieldsState, pathToField).savedValue !== _.get(this._storage.$store().values, pathToField);
-  }
-
 
   _generateNewFieldState() {
     return {

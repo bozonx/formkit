@@ -52,11 +52,8 @@ module.exports = class Storage {
 
 
 
-  initFieldState(pathToField) {
-    // TODO: review
-    this.setFieldState(pathToField, this._generateNewFieldState(pathToField));
-  }
 
+  // TODO: used in events
   /**
    * get current value
    * @param pathToField
@@ -66,18 +63,12 @@ module.exports = class Storage {
     return _.cloneDeep(_.get(this._store.values, pathToField));
   }
 
+  // TODO: used in events
   setAllSavedValues(submittedValues) {
     findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
       field.savedValue = _.get(submittedValues, path);
     });
   }
-
-
-  setValue(pathToField, newValue) {
-    _.set(this._store.values, pathToField, newValue);
-  }
-
-
 
 
   /**
@@ -98,32 +89,14 @@ module.exports = class Storage {
     return findFieldLikeStructureRecursively(this._store[root], cb);
   }
 
-  isFieldUnsaved(pathToField) {
-    return _.get(this._store.fieldsState, pathToField).savedValue !== _.get(this._store.values, pathToField);
-  }
 
-
+  // TODO: move to form storage
   _generateNewFormState() {
     return {
       dirty: false,
       touched: false,
       submitting: false,
       saving: false,
-    };
-  }
-
-  _generateNewFieldState() {
-    return {
-      dirty: false,
-      touched: false,
-      valid: true,
-      invalidMsg: undefined,
-      validCombined: true,
-      saving: false,
-      disabled: false,
-      focused: false,
-      defaultValue: undefined,
-      savedValue: undefined,
     };
   }
 

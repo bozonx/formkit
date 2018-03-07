@@ -36,8 +36,6 @@ module.exports = class Field {
 
     this._setDefaultAndInitialValue(params.defaultValue, params.initial);
 
-    //if (params.validate) this.setValidateCb(params.validate);
-
     if (!_.isUndefined(this.value)) {
       this._events.riseSilentChangeEvent(this._pathToField, undefined);
     }
@@ -206,6 +204,7 @@ module.exports = class Field {
   handleBlur() {
     this._fieldStorage.setFieldState(this._pathToField, { focused: false });
     // start save immediately
+    // TODO: use save
     this._addSavingInQueue(true);
   }
 
@@ -250,45 +249,6 @@ module.exports = class Field {
     this._events.setFieldCallback(this._pathToField, 'save', cb);
   }
 
-  // /**
-  //  * It updates "valid" and "invalidMsg" states using field's validate rule.
-  //  * It runs a validate callback which must return:
-  //  * * valid: true
-  //  * * invalid: not empty string or false
-  //  * @returns {boolean|string|undefined}
-  //  *   * true/false - valid/invalid
-  //  *   * string it is an error message, means invalid
-  //  *   * undefined - hasn't done a validation because the field doesn't have a validate callback.
-  //  */
-  // validate() {
-  //
-  //
-  //   // TODO: remake
-  //
-  //   // if (!this._validateCallback) return;
-  //   //
-  //   // let cbReturn = this._validateCallback({ value: this.value, formValues: this.form.values });
-  //   //
-  //   //
-  //   // // TODO: review
-  //   // //if (_.isUndefined(cbReturn)) throw new Error(`Validate callback returns an undefined, what does it mean?`);
-  //   // if (_.isUndefined(cbReturn)) {
-  //   //   cbReturn = true;
-  //   // }
-  //   //
-  //   //
-  //   // if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
-  //   //
-  //   // const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
-  //   //
-  //   // this._storage.setFieldState(this._pathToField, {
-  //   //   valid,
-  //   //   invalidMsg,
-  //   // });
-  //   //
-  //   // return result;
-  // }
-
   /**
    * Start field save immediately.
    * @return {Promise}
@@ -329,10 +289,16 @@ module.exports = class Field {
    * Recalculate dirty state.
    */
   $recalcDirty() {
-    this._state.setFieldAndFormDirty(this._pathToField,
-      calculateDirty(this.value, this.savedValue));
+    this._state.setFieldAndFormDirty(
+      this._pathToField,
+      calculateDirty(this.value, this.savedValue)
+    );
   }
 
+  /**
+   * It calls from form after validating.
+   * @param {string|undefined} invalidMsg - invalid message of undefined
+   */
   $setValidState(invalidMsg) {
     this._fieldStorage.setFieldState(this._pathToField, {
       valid: _.isUndefined(invalidMsg),
@@ -342,7 +308,7 @@ module.exports = class Field {
 
 
   _setDisabled(value) {
-    if (!_.isBoolean(value)) throw new Error(`Bad type of disabled value`);
+    if (!_.isBoolean(value)) throw new Error(`Disabled has to be boolean`);
     this._fieldStorage.setFieldState(this._pathToField, { disabled: value });
   }
 
