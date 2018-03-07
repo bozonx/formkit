@@ -1,3 +1,5 @@
+const _ = require('lodash');
+const EventEmitter = require('eventemitter3');
 const DebouncedCall = require('./DebouncedCall');
 const { isPromise, findInFieldRecursively } = require('./helpers');
 
@@ -7,7 +9,9 @@ const { isPromise, findInFieldRecursively } = require('./helpers');
  * @class
  */
 module.exports = class Events {
-  constructor(form, eventEmitter, storage, state) {
+  constructor(form, storage, state) {
+    const eventEmitter = new EventEmitter();
+
     this._form = form;
     this._eventEmitter = eventEmitter;
     this._storage = storage;

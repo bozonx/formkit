@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const EventEmitter = require('eventemitter3');
 const Form = require('./Form');
 const configDefaults = require('./configDefaults');
 
@@ -12,10 +11,9 @@ module.exports = {
     _.extend(globalConfig, config);
   },
   newForm: (config) => {
-    const newConfig = _.defaults(_.clone(config), globalConfig);
+    const newConfig = _.defaultsDeep(_.clone(config), globalConfig);
 
-    const eventEmitter = new EventEmitter();
-    const newForm = new Form(newConfig, eventEmitter);
+    const newForm = new Form(newConfig);
 
     // init plugins which has a "afterNewFormCreated" method
     _.each(plugins, (plugin) => plugin.afterNewFormCreated && plugin.afterNewFormCreated(newForm));

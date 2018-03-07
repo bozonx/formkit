@@ -7,13 +7,13 @@ const { findInFieldRecursively, findRecursively } = require('./helpers');
 
 
 module.exports = class Form {
-  constructor(config, eventEmitter) {
+  constructor(config) {
     this._config = config;
     this._fields = {};
     this._validateCb = null;
     this._storage = new Storage();
     this._state = new State(this, this._storage);
-    this._events = new Events(this, eventEmitter, this._storage, this._state);
+    this._events = new Events(this, this._storage, this._state);
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.save = this.save.bind(this);
