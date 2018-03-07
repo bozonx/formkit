@@ -3,7 +3,7 @@ const Storage = require('./Storage');
 const Events = require('./Events');
 const State = require('./State');
 const Field = require('./Field');
-const { findInFieldRecursively, findRecursively, parseValidateCbReturn } = require('./helpers');
+const { findInFieldRecursively, findRecursively } = require('./helpers');
 
 
 module.exports = class Form {
@@ -233,9 +233,12 @@ module.exports = class Form {
     if (!this._validateCb) return;
 
     const errors = {};
+    const values = {};
 
     // add sub structures for easy access to error
-    findRecursively(this.fields, (value, path) => {
+    findRecursively(this.fields, (field, path) => {
+      _.set(values, path, field.value);
+
       const split = path.split('.');
       if (split.length < 2) return;
 
@@ -245,54 +248,21 @@ module.exports = class Form {
       _.set(errors, basePath, {});
     });
 
-    this._validateCb(errors, this.values);
+    this._validateCb(errors, values);
 
-    findRecursively(errors, (value, path) => {
+    findRecursively(this.fields, (value, path) => {
       const field = _.get(this.fields, path);
       if (!field || !(field instanceof Field)) return;
-      field.$setValidState(value);
+
+      const errorMsg = _.get(errors, path);
+      field.$setValidState(errorMsg);
     });
 
-    // if (cbReturn === '') throw new Error(`Validate callback returns an empty string, what does it mean?`);
-    //
-    // const { valid, invalidMsg, result } = parseValidateCbReturn(cbReturn);
-    //
-    // this._storage.setFieldState(this._pathToField, {
-    //   valid,
-    //   invalidMsg,
-    // });
-    //
-    // return result;
   }
-
-  // setValidators(validators) {
-  //
-  //   // TODO: review
-  //
-  //   if (!_.isPlainObject(validators)) throw new Error(`ERROR: setValidators: Bad type of config`);
-  //
-  //   const recursively = (container, fields) => {
-  //     _.each(container, (item, name) => {
-  //       if (_.isFunction(item)) {
-  //         fields[name].setValidateCb(item);
-  //       }
-  //       else if (_.isPlainObject(item)) {
-  //         // go deeper
-  //         recursively(item, fields[name]);
-  //       }
-  //       else {
-  //         throw new Error(`ERROR: setValidators: Bad type of config`);
-  //       }
-  //     });
-  //   };
-  //
-  //   recursively(validators, this.fields);
-  // }
 
   $getWholeStorageState() {
     return this._storage.getWholeStorageState();
   }
-
 
   /**
    * Initialize a field.
