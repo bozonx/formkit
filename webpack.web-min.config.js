@@ -6,7 +6,7 @@ const commonConf = require('./webpack.common.config');
 
 module.exports = merge(commonConf, {
   output: {
-    filename: 'formkit-web.min.js',
+    filename: 'formkit.min.js',
     libraryTarget: 'window',
   },
   devtool: 'source-map',
