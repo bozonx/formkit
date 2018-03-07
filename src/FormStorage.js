@@ -2,7 +2,7 @@ const _ = require('lodash');
 const { findFieldLikeStructureRecursively } = require('./helpers');
 
 
-module.exports = class Storage {
+module.exports = class FormStorage {
   constructor(storage) {
     this._storage = storage;
   }

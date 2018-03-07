@@ -4,10 +4,10 @@ const { calculateDirty, getFieldName } = require('./helpers');
 
 
 module.exports = class Field {
-  constructor(pathToField, params, { form, events, storage, state }) {
+  constructor(pathToField, params, { form, fieldStorage, events, storage, state }) {
     this._form = form;
     this._events = events;
-    this._storage = storage;
+    this._fieldStorage = fieldStorage;
     this._state = state;
     // TODO: may be move to events?
     this._debouncedCall = new DebouncedCall(this._form.config.debounceTime);
@@ -29,7 +29,7 @@ module.exports = class Field {
   _init(params) {
     // TODO: review
     // init state
-    this._storage.initFieldState(this._pathToField);
+    this._fieldStorage.initFieldState(this._pathToField);
 
     if (!_.isUndefined(params.disabled)) this._setDisabled(params.disabled);
     if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
@@ -47,7 +47,7 @@ module.exports = class Field {
     return this._form;
   }
   get savedValue() {
-    return this._storage.getFieldState(this._pathToField, 'savedValue');
+    return this._fieldStorage.getState(this._pathToField, 'savedValue');
   }
 
   /**
@@ -55,7 +55,7 @@ module.exports = class Field {
    * @return {*}
    */
   get value() {
-    return this._storage.getValue(this._pathToField);
+    return this._fieldStorage.getValue(this._pathToField);
   }
   get name() {
     return this._fieldName;
@@ -64,16 +64,16 @@ module.exports = class Field {
     return this._pathToField;
   }
   get dirty() {
-    return this._storage.getFieldState(this._pathToField, 'dirty');
+    return this._fieldStorage.getState(this._pathToField, 'dirty');
   }
   get touched() {
-    return this._storage.getFieldState(this._pathToField, 'touched');
+    return this._fieldStorage.getState(this._pathToField, 'touched');
   }
   get valid() {
-    return this._storage.getFieldState(this._pathToField, 'valid');
+    return this._fieldStorage.getState(this._pathToField, 'valid');
   }
   get invalidMsg() {
-    return this._storage.getFieldState(this._pathToField, 'invalidMsg');
+    return this._fieldStorage.getState(this._pathToField, 'invalidMsg');
   }
 
   // TODO: ??????
@@ -86,16 +86,16 @@ module.exports = class Field {
   }
 
   get saving() {
-    return this._storage.getFieldState(this._pathToField, 'saving');
+    return this._fieldStorage.getState(this._pathToField, 'saving');
   }
   get focused() {
-    return this._storage.getFieldState(this._pathToField, 'focused');
+    return this._fieldStorage.getState(this._pathToField, 'focused');
   }
   get disabled() {
-    return this._storage.getFieldState(this._pathToField, 'disabled');
+    return this._fieldStorage.getState(this._pathToField, 'disabled');
   }
   get defaultValue() {
-    return this._storage.getFieldState(this._pathToField, 'defaultValue');
+    return this._fieldStorage.getState(this._pathToField, 'defaultValue');
   }
   get debounceTime() {
     return this._debouncedCall.delay;
@@ -130,7 +130,7 @@ module.exports = class Field {
    */
   setSavedValue(newSavedValue) {
     // set saved value
-    this._storage.setFieldState(this._pathToField, { savedValue: newSavedValue });
+    this._fieldStorage.setFieldState(this._pathToField, { savedValue: newSavedValue });
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
@@ -197,14 +197,14 @@ module.exports = class Field {
    * Set field's "focused" prop to true.
    */
   handleFocusIn() {
-    this._storage.setFieldState(this._pathToField, { focused: true });
+    this._fieldStorage.setFieldState(this._pathToField, { focused: true });
   }
 
   /**
    * Set field's "focused" prop to false.
    */
   handleBlur() {
-    this._storage.setFieldState(this._pathToField, { focused: false });
+    this._fieldStorage.setFieldState(this._pathToField, { focused: false });
     // start save immediately
     this._addSavingInQueue(true);
   }
@@ -334,7 +334,7 @@ module.exports = class Field {
   }
 
   $setValidState(invalidMsg) {
-    this._storage.setFieldState(this._pathToField, {
+    this._fieldStorage.setFieldState(this._pathToField, {
       valid: _.isUndefined(invalidMsg),
       invalidMsg,
     });
@@ -343,7 +343,7 @@ module.exports = class Field {
 
   _setDisabled(value) {
     if (!_.isBoolean(value)) throw new Error(`Bad type of disabled value`);
-    this._storage.setFieldState(this._pathToField, { disabled: value });
+    this._fieldStorage.setFieldState(this._pathToField, { disabled: value });
   }
 
   /**
@@ -362,7 +362,7 @@ module.exports = class Field {
     // don't save invalid value
     if (!this.valid) return Promise.reject(new Error('Field is invalid'));
     // save only value which was modified.
-    if (!this._storage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
+    if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
     // rise a field's save handlers, callback and switch saving state
     const fieldPromise = this._debouncedCall.exec(() => this._events.$startSaving(
@@ -383,7 +383,7 @@ module.exports = class Field {
     // TODO: may be move to _state?
 
     // set to outer value layer
-    this._storage.setValue(this._pathToField, newValue);
+    this._fieldStorage.setValue(this._pathToField, newValue);
     this.$recalcDirty();
     this.form.validate();
   }
@@ -401,7 +401,7 @@ module.exports = class Field {
 
     let currentValue;
     if (!_.isUndefined(defaultValue)) {
-      this._storage.setFieldState(this._pathToField, { defaultValue });
+      this._fieldStorage.setFieldState(this._pathToField, { defaultValue });
       // set default value to current value
       currentValue = defaultValue;
     }

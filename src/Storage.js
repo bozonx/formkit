@@ -66,10 +66,6 @@ module.exports = class Storage {
     return _.cloneDeep(_.get(this._store.values, pathToField));
   }
 
-  getFieldState(pathToField, stateName) {
-    return _.cloneDeep(_.get(this._store.fieldsState, `${pathToField}.${stateName}`));
-  }
-
   setAllSavedValues(submittedValues) {
     findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
       field.savedValue = _.get(submittedValues, path);

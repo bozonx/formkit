@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Storage = require('./Storage');
 const FormStorage = require('./FormStorage');
+const FieldStorage = require('./FieldStorage');
 const Events = require('./Events');
 const State = require('./State');
 const Field = require('./Field');
@@ -14,6 +15,7 @@ module.exports = class Form {
     this._validateCb = null;
     this._storage = new Storage();
     this._formStorage = new FormStorage(this._storage);
+    this._fieldStorage = new FieldStorage(this._storage);
     this._state = new State(this, this._storage);
     this._events = new Events(this, this._storage, this._state);
 
@@ -283,6 +285,7 @@ module.exports = class Form {
       form: this,
       events: this._events,
       storage: this._storage,
+      fieldStorage: this._fieldStorage,
       state: this._state,
     });
     _.set(this.fields, pathToField, newField);
