@@ -28,7 +28,7 @@ module.exports = class Field {
   _init(params) {
     // TODO: review
     // init state
-    this._fieldStorage.initFieldState(this._pathToField);
+    this._fieldStorage.initState(this._pathToField);
 
     if (!_.isUndefined(params.disabled)) this._setDisabled(params.disabled);
     if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
@@ -127,7 +127,7 @@ module.exports = class Field {
    */
   setSavedValue(newSavedValue) {
     // set saved value
-    this._fieldStorage.setFieldState(this._pathToField, { savedValue: newSavedValue });
+    this._fieldStorage.setState(this._pathToField, { savedValue: newSavedValue });
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
@@ -194,14 +194,14 @@ module.exports = class Field {
    * Set field's "focused" prop to true.
    */
   handleFocusIn() {
-    this._fieldStorage.setFieldState(this._pathToField, { focused: true });
+    this._fieldStorage.setState(this._pathToField, { focused: true });
   }
 
   /**
    * Set field's "focused" prop to false.
    */
   handleBlur() {
-    this._fieldStorage.setFieldState(this._pathToField, { focused: false });
+    this._fieldStorage.setState(this._pathToField, { focused: false });
     // start save immediately
     // TODO: use save
     this._addSavingInQueue(true);
@@ -299,7 +299,7 @@ module.exports = class Field {
    * @param {string|undefined} invalidMsg - invalid message of undefined
    */
   $setValidState(invalidMsg) {
-    this._fieldStorage.setFieldState(this._pathToField, {
+    this._fieldStorage.setState(this._pathToField, {
       valid: _.isUndefined(invalidMsg),
       invalidMsg,
     });
@@ -308,7 +308,7 @@ module.exports = class Field {
 
   _setDisabled(value) {
     if (!_.isBoolean(value)) throw new Error(`Disabled has to be boolean`);
-    this._fieldStorage.setFieldState(this._pathToField, { disabled: value });
+    this._fieldStorage.setState(this._pathToField, { disabled: value });
   }
 
   /**
@@ -353,13 +353,13 @@ module.exports = class Field {
     const saveCb = this._fieldStorage.getCallBack('save');
     const saveEnd = (err) => {
       // set saving: false
-      this._fieldStorage.setMeta(this._pathToField, 'isSaving', false);
+      this._fieldStorage.setState(this._pathToField, 'isSaving', false);
       // rise saveEnd
       this._fieldStorage.emit(this._pathToField, 'saveEnd', err);
     };
 
     // set saving: true
-    this._fieldStorage.setMeta(this._pathToField, 'isSaving', true);
+    this._fieldStorage.setState(this._pathToField, 'isSaving', true);
     // rise saveStart event
     this._fieldStorage.emit(this._pathToField, 'saveStart', data);
 
@@ -406,7 +406,7 @@ module.exports = class Field {
 
     let currentValue;
     if (!_.isUndefined(defaultValue)) {
-      this._fieldStorage.setFieldState(this._pathToField, { defaultValue });
+      this._fieldStorage.setState(this._pathToField, { defaultValue });
       // set default value to current value
       currentValue = defaultValue;
     }

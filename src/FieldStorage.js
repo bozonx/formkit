@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { extendDeep, findFieldLikeStructureRecursively } = require('./helpers');
+const { findFieldLikeStructureRecursively } = require('./helpers');
 
 
 module.exports = class FieldStorage {
@@ -7,19 +7,36 @@ module.exports = class FieldStorage {
     this._storage = storage;
   }
 
-
-  setFieldSavingState(pathToField, value) {
-    this._storage.setFieldState(pathToField, { saving: value });
+  initState(pathToField) {
+    _.set(this._storage.$store().fieldsState, pathToField, this._storage.generateNewFieldState());
   }
 
+  /**
+   * Set state value to field.
+   * Field has to be initialized previously.
+   * It rises an "anyChange" event of field
+   * @param pathToField
+   * @param partlyState
+   */
+  setState(pathToField, partlyState) {
+    this._storage.setFieldState(pathToField, partlyState);
+    // TODO: rise field anyChange
+    // TODO: rise form anyChange
+  }
+
+  getCallBack(cbName) {
+    // TODO:
+  }
+
+  // TODO: !!!!!!! не нужно
   setFieldAndFormTouched(pathToField) {
-    this._storage.setFieldState(pathToField, { touched: true });
+    this._storage.setState(pathToField, { touched: true });
     this._storage.setFormState('touched', true);
   }
 
   setFieldAndFormDirty(pathToField, newDirtyValue) {
     // set to field
-    this._storage.setFieldState(pathToField, { dirty: newDirtyValue });
+    this._storage.setState(pathToField, { dirty: newDirtyValue });
 
     // set to form
     if (newDirtyValue) {
@@ -120,14 +137,7 @@ module.exports = class FieldStorage {
     this._fieldsCallbacks[pathToField][eventName] = cb;
   }
 
-  setMeta(pathToField, eventName) {
-    // TODO: set meta
-    // TODO: rise anyChange
-  }
 
-  getCallBack(cbName) {
-    // TODO:
-  }
 
   /**
    * It rises a "stateChange" event.
@@ -145,10 +155,6 @@ module.exports = class FieldStorage {
 
 
 
-  initFieldState(pathToField) {
-    // TODO: review
-    this.setFieldState(pathToField, this._generateNewFieldState(pathToField));
-  }
 
   /**
    * get current value
@@ -178,40 +184,8 @@ module.exports = class FieldStorage {
   }
 
   // TODO: rename
-  /**
-   * Set field's state.
-   * @param pathToField
-   * @param newState
-   */
-  setFieldState(pathToField, newState) {
-    // TODO: review стратегию обновления
-    let field = _.get(this._storage.$store().fieldsState, pathToField);
-    if (_.isUndefined(field)) {
-      field = {};
-      _.set(this._storage.$store().fieldsState, pathToField, field);
-    }
-    // TODO: review
-    extendDeep(field, newState);
-  }
-
-  // TODO: rename
   findFieldStateRecursively(root, cb) {
     return findFieldLikeStructureRecursively(this._storage.$store()[root], cb);
-  }
-
-  _generateNewFieldState() {
-    return {
-      dirty: false,
-      touched: false,
-      valid: true,
-      invalidMsg: undefined,
-      validCombined: true,
-      saving: false,
-      disabled: false,
-      focused: false,
-      defaultValue: undefined,
-      savedValue: undefined,
-    };
   }
 
 };
