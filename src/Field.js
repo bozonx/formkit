@@ -22,6 +22,7 @@ module.exports = class Field {
     this.save = this.save.bind(this);
     this.clear = this.clear.bind(this);
     this.reset = this.reset.bind(this);
+    this._startSaving = this._startSaving.bind(this);
   }
 
   _init(params) {
@@ -320,35 +321,45 @@ module.exports = class Field {
    * @return {Promise}
    */
   _addSavingInQueue(force) {
-
-    // TODO: review
-
     // don't save invalid value
+    // TODO: review
     if (!this.valid) return Promise.reject(new Error('Field is invalid'));
     // save only value which was modified.
+    // TODO: review
     if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
-    // rise a field's save handlers, callback and switch saving state
-    const fieldPromise = this._debouncedCall.exec(() => this._startSaving(), force);
+    // do save after debounce
+    const fieldPromise = this._debouncedCall.exec(this._startSaving, force);
 
     // rise form's save handler
-    this._fieldStorage.riseFormDebouncedSave(force);
+    this._form.$startDebounceSave(force);
 
     return fieldPromise;
   }
 
+  /**
+   * Do field saving process.
+   * * set "isSaving" state to true
+   * * rise "saveStart" event
+   * * call "save" callback. If it returns a promise - wait for it
+   * and after saving ends:
+   * * set "isSaving" state to false
+   * * rise "saveEnd" event
+   * @return {Promise|undefined} - if "save" callback returns promise this method returns it.
+   * @private
+   */
   _startSaving() {
     const data = this.value;
     const saveCb = this._fieldStorage.getCallBack('save');
     const saveEnd = (err) => {
       // set saving: false
-      this._fieldStorage.setMeta(this._pathToField, 'save', false);
+      this._fieldStorage.setMeta(this._pathToField, 'isSaving', false);
       // rise saveEnd
       this._fieldStorage.emit(this._pathToField, 'saveEnd', err);
     };
 
     // set saving: true
-    this._fieldStorage.setMeta(this._pathToField, 'save', true);
+    this._fieldStorage.setMeta(this._pathToField, 'isSaving', true);
     // rise saveStart event
     this._fieldStorage.emit(this._pathToField, 'saveStart', data);
 
@@ -370,6 +381,7 @@ module.exports = class Field {
     // or if there isn't a save callback
     saveEnd();
   }
+
 
   _setValueDirtyValidate(newValue) {
 

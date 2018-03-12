@@ -270,6 +270,10 @@ module.exports = class Form {
     return this._storage.getWholeStorageState();
   }
 
+  $startDebounceSave(force) {
+    // TODO: !!!!!! see riseFormDebouncedSave
+  }
+
   /**
    * Initialize a field.
    * @param pathToField
