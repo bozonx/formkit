@@ -2,22 +2,18 @@ const _ = require('lodash');
 const Storage = require('./Storage');
 const FormStorage = require('./FormStorage');
 const FieldStorage = require('./FieldStorage');
-const Events = require('./Events');
-const State = require('./State');
 const Field = require('./Field');
 const { findInFieldRecursively, findRecursively } = require('./helpers');
 
 
 module.exports = class Form {
   constructor(config) {
+    this._storage = new Storage();
     this._config = config;
     this._fields = {};
     this._validateCb = null;
-    this._storage = new Storage();
     this._formStorage = new FormStorage(this._storage);
     this._fieldStorage = new FieldStorage(this._storage);
-    this._state = new State(this, this._storage);
-    this._events = new Events(this, this._storage, this._state);
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.save = this.save.bind(this);
@@ -113,23 +109,23 @@ module.exports = class Form {
    * @param cb
    */
   on(eventName, cb) {
-    this._events.addFormListener(eventName, cb);
+    this._formStorage.on(eventName, cb);
   }
 
   /**
    * Add only one callback of 'change' event. It usefull for use as handler of component.
-   * @param {function} cb
+   * @param {function} handler
    */
-  onChange(cb) {
-    this._events.setFormCallback('change', cb);
+  onChange(handler) {
+    this._formStorage.addCallback('change', handler);
   }
 
-  onSave(cb) {
-    this._events.setFormCallback('save', cb);
+  onSave(handler) {
+    this._formStorage.addCallback('save', handler);
   }
 
-  onSubmit(cb) {
-    this._events.setFormCallback('submit', cb);
+  onSubmit(handler) {
+    this._formStorage.addCallback('submit', handler);
   }
 
 
@@ -149,7 +145,7 @@ module.exports = class Form {
 
     const values = _.clone(this._formStorage.getValues());
 
-    return this._events.riseFormSubmit(values);
+    return this._formStorage.riseFormSubmit(values);
   }
 
   /**
@@ -159,7 +155,7 @@ module.exports = class Form {
   save() {
     if (!this.valid) return Promise.reject(new Error('Form is invalid'));
 
-    return this._events.riseFormDebouncedSave(true);
+    return this._formStorage.riseFormDebouncedSave(true);
   }
 
   /**
@@ -181,7 +177,7 @@ module.exports = class Form {
    */
   cancelSaving() {
     // TODO: test
-    this._events.cancelFormSaving();
+    this._formStorage.cancelSaving();
   }
 
   /**
@@ -200,7 +196,7 @@ module.exports = class Form {
    * Saving immediately
    */
   flushSaving() {
-    this._events.flushFormSaving();
+    this._formStorage.flushSaving();
   }
 
   /**
@@ -289,10 +285,7 @@ module.exports = class Form {
     // create new one
     const newField = new Field(pathToField, params, {
       form: this,
-      events: this._events,
-      storage: this._storage,
       fieldStorage: this._fieldStorage,
-      state: this._state,
     });
     _.set(this.fields, pathToField, newField);
   }

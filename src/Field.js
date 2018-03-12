@@ -4,11 +4,9 @@ const { calculateDirty, getFieldName } = require('./helpers');
 
 
 module.exports = class Field {
-  constructor(pathToField, params, { form, fieldStorage, events, storage, state }) {
+  constructor(pathToField, params, { form, fieldStorage }) {
     this._form = form;
-    this._events = events;
     this._fieldStorage = fieldStorage;
-    this._state = state;
     // TODO: may be move to events?
     this._debouncedCall = new DebouncedCall(this._form.config.debounceTime);
 
@@ -118,7 +116,7 @@ module.exports = class Field {
 
     // rise silent change events if value and old value are different
     if (!_.isEqual(oldValue, newValue)) {
-      this._events.riseSilentChangeEvent(this._pathToField, oldValue);
+      this._fieldStorage.riseSilentChangeEvent(this._pathToField, oldValue);
     }
   }
 
@@ -139,7 +137,7 @@ module.exports = class Field {
 
   setDisabled(value) {
     this._setDisabled(value);
-    this._events.riseAnyChange(this._pathToField);
+    this._fieldStorage.riseAnyChange(this._pathToField);
   }
 
   setDebounceTime(delay) {
@@ -177,7 +175,7 @@ module.exports = class Field {
     if (isChanged) {
       // set touched to true
       // TODO: do not combine actions
-      if (!this.touched) this._state.setFieldAndFormTouched(this._pathToField);
+      if (!this.touched) this._fieldStorage.setFieldAndFormTouched(this._pathToField);
       // set value, dirty state and validate
       this._setValueDirtyValidate(newValue);
     }
@@ -186,7 +184,7 @@ module.exports = class Field {
     if (!this._form.config.allowSaveUnmodifiedField && !isChanged) return;
 
     // rise change by user event handlers and callbacks of form and field
-    this._events.riseUserChangeEvent(this._pathToField, oldValue, newValue);
+    this._fieldStorage.riseUserChangeEvent(this._pathToField, oldValue, newValue);
     // start save with debounced delay
     this._addSavingInQueue(false);
   }
@@ -231,14 +229,14 @@ module.exports = class Field {
    * @param cb
    */
   on(eventName, cb) {
-    this._events.addFieldListener(this._pathToField, eventName, cb);
+    this._fieldStorage.addFieldListener(this._pathToField, eventName, cb);
   }
 
   /**
    * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
-    this._events.setFieldCallback(this._pathToField, 'change', cb);
+    this._fieldStorage.setFieldCallback(this._pathToField, 'change', cb);
   }
 
   /**
@@ -246,7 +244,7 @@ module.exports = class Field {
    * @param cb
    */
   onSave(cb) {
-    this._events.setFieldCallback(this._pathToField, 'save', cb);
+    this._fieldStorage.setFieldCallback(this._pathToField, 'save', cb);
   }
 
   /**
@@ -289,7 +287,7 @@ module.exports = class Field {
    * Recalculate dirty state.
    */
   $recalcDirty() {
-    this._state.setFieldAndFormDirty(
+    this._fieldStorage.setFieldAndFormDirty(
       this._pathToField,
       calculateDirty(this.value, this.savedValue)
     );
@@ -331,15 +329,15 @@ module.exports = class Field {
     if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
     // rise a field's save handlers, callback and switch saving state
-    const fieldPromise = this._debouncedCall.exec(() => this._events.$startSaving(
+    const fieldPromise = this._debouncedCall.exec(() => this._fieldStorage.$startSaving(
       this.value,
-      this._events.getFieldCallback(this._pathToField, 'save'),
-      (...p) => this._state.setFieldSavingState(this._pathToField, ...p),
-      (...p) => this._events.riseFieldEvent(this._pathToField, ...p)
+      this._fieldStorage.getFieldCallback(this._pathToField, 'save'),
+      (...p) => this._fieldStorage.setFieldSavingState(this._pathToField, ...p),
+      (...p) => this._fieldStorage.riseFieldEvent(this._pathToField, ...p)
     ), force);
 
     // rise form's save handler
-    this._events.riseFormDebouncedSave(force);
+    this._fieldStorage.riseFormDebouncedSave(force);
 
     return fieldPromise;
   }
