@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const DebouncedCall = require('./DebouncedCall');
-const { calculateDirty, getFieldName } = require('./helpers');
+const { calculateDirty, getFieldName, isPromise } = require('./helpers');
 
 
 module.exports = class Field {
@@ -329,17 +329,46 @@ module.exports = class Field {
     if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
 
     // rise a field's save handlers, callback and switch saving state
-    const fieldPromise = this._debouncedCall.exec(() => this._fieldStorage.$startSaving(
-      this.value,
-      this._fieldStorage.getFieldCallback(this._pathToField, 'save'),
-      (...p) => this._fieldStorage.setFieldSavingState(this._pathToField, ...p),
-      (...p) => this._fieldStorage.riseFieldEvent(this._pathToField, ...p)
-    ), force);
+    const fieldPromise = this._debouncedCall.exec(() => this._startSaving(), force);
 
     // rise form's save handler
     this._fieldStorage.riseFormDebouncedSave(force);
 
     return fieldPromise;
+  }
+
+  _startSaving() {
+    const data = this.value;
+    const saveCb = this._fieldStorage.getCallBack('save');
+    const saveEnd = (err) => {
+      // set saving: false
+      this._fieldStorage.setMeta(this._pathToField, 'save', false);
+      // rise saveEnd
+      this._fieldStorage.emit(this._pathToField, 'saveEnd', err);
+    };
+
+    // set saving: true
+    this._fieldStorage.setMeta(this._pathToField, 'save', true);
+    // rise saveStart event
+    this._fieldStorage.emit(this._pathToField, 'saveStart', data);
+
+    if (saveCb) {
+      // run save callback
+      const cbPromise = saveCb(data);
+      if (isPromise(cbPromise)) {
+        return cbPromise
+          .then(() => saveEnd())
+          .catch((error) => {
+            saveEnd({ error });
+
+            return Promise.reject(error);
+          });
+      }
+    }
+
+    // if save callback hasn't returned a promise
+    // or if there isn't a save callback
+    saveEnd();
   }
 
   _setValueDirtyValidate(newValue) {

@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
-const { findFieldLikeStructureRecursively } = require('./helpers');
+const { findFieldLikeStructureRecursively, isPromise, findInFieldRecursively } = require('./helpers');
 
 
 module.exports = class FormStorage {

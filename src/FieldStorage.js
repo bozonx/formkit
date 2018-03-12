@@ -120,42 +120,14 @@ module.exports = class FieldStorage {
     this._fieldsCallbacks[pathToField][eventName] = cb;
   }
 
-
-
-  $startSaving(data, saveCb, setSavingState, riseEvent) {
-    // set saving: true
-    setSavingState(true);
-    // rise saveStart event
-    riseEvent('saveStart', data);
-
-    const saveEnd = () => {
-      // set saving: false
-      setSavingState(false);
-      // rise saveEnd
-      riseEvent('saveEnd');
-    };
-
-    if (saveCb) {
-      // run save callback
-      const cbPromise = saveCb(data);
-      if (isPromise(cbPromise)) {
-        return cbPromise.then(() => saveEnd(), (error) => {
-          setSavingState(false);
-          riseEvent('saveEnd', { error });
-
-          return Promise.reject(error);
-        });
-      }
-
-      // if save callback hasn't returned a promise
-      saveEnd();
-    }
-    else {
-      // if there isn't save callback
-      saveEnd();
-    }
+  setMeta(pathToField, eventName) {
+    // TODO: set meta
+    // TODO: rise anyChange
   }
 
+  getCallBack(cbName) {
+    // TODO:
+  }
 
   /**
    * It rises a "stateChange" event.
