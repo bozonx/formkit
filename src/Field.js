@@ -76,16 +76,6 @@ module.exports = class Field {
   get invalidMsg() {
     return this._fieldStorage.getState(this._pathToField, 'invalidMsg');
   }
-
-  // TODO: ??????
-  get validCombo() {
-    if (this.valid) return true;
-
-    if (this.invalidMsg) return this.invalidMsg;
-
-    return false;
-  }
-
   get saving() {
     return this._fieldStorage.getState(this._pathToField, 'saving');
   }
@@ -107,7 +97,7 @@ module.exports = class Field {
    * It does:
    * * It set a new value to self instance and to storage
    * * It updates "dirty" and "valid" states.
-   * * It rises anyChange event for field and whole form.
+   * * It rises storageChange event.
    *
    * It doesn't:
    * * It doesn't rise onChange callback (for user's events).
@@ -115,23 +105,25 @@ module.exports = class Field {
    * @param newValue
    */
   setValue(newValue) {
-    const oldValue = _.cloneDeep(this.value);
+    //const oldValue = _.cloneDeep(this.value);
 
     this._setValueProcess(newValue);
 
     // rise silent change events if value and old value are different
-    if (!_.isEqual(oldValue, newValue)) {
-      this._fieldStorage.riseSilentChangeEvent(this._pathToField, oldValue);
-    }
+    // if (!_.isEqual(oldValue, newValue)) {
+    //   this._fieldStorage.riseSilentChangeEvent(this._pathToField, oldValue);
+    // }
   }
 
   /**
-   * Set previously saved value. Usually it is saved on server value.
+   * Set previously saved value. Usually it sets after server data has loading.
    * @param {*} newSavedValue
    */
   setSavedValue(newSavedValue) {
     // set saved value
     this._fieldStorage.setState(this._pathToField, { savedValue: newSavedValue });
+
+    // TODO: лучше устанавливать в любом случае, а вот очищать state level только если поле не под фокусом
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
@@ -141,8 +133,8 @@ module.exports = class Field {
   }
 
   setDisabled(value) {
-    this._setDisabled(value);
-    this._fieldStorage.riseAnyChange(this._pathToField);
+    if (!_.isBoolean(value)) throw new Error(`Disabled has to be boolean`);
+    this._fieldStorage.setState(this._pathToField, { disabled: value });
   }
 
   setDebounceTime(delay) {
@@ -309,13 +301,6 @@ module.exports = class Field {
     });
   }
 
-
-  _setDisabled(value) {
-    // TODO: reform
-    if (!_.isBoolean(value)) throw new Error(`Disabled has to be boolean`);
-    this._fieldStorage.setState(this._pathToField, { disabled: value });
-  }
-
   /**
    * Start saving field and form in they have a save handlers.
    * It will reset saving in progress before start saving.
@@ -391,6 +376,7 @@ module.exports = class Field {
   _setValueProcess(newValue) {
     // set top value layer
     this._fieldStorage.setValue(this._pathToField, newValue);
+    // TODO: будет поднято 2 storageChange события
     this.$recalcDirty();
     this.form.validate();
   }

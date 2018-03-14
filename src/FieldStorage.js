@@ -25,12 +25,12 @@ module.exports = class FieldStorage {
    */
   setState(pathToField, partlyState) {
     this._storage.setFieldState(pathToField, partlyState);
-    // TODO: rise storageChange
+    // TODO: rise storageChange - только если значение изменилось
   }
 
   setValue(pathToField, newValue) {
     this._storage.setValue(pathToField, newValue);
-    // TODO: rise storageChange
+    // TODO: rise storageChange - только если значение изменилось
   }
 
   getCallBack(cbName) {
@@ -81,6 +81,7 @@ module.exports = class FieldStorage {
    * @param {*} oldValue
    */
   riseSilentChangeEvent(pathToField, oldValue) {
+    // TODO: remove
     const eventData = {
       fieldName: pathToField,
       oldValue,
@@ -155,6 +156,7 @@ module.exports = class FieldStorage {
    * @private
    */
   riseAnyChange(pathToField) {
+    // TODO: make private
     this.riseFieldEvent(pathToField, 'anyChange');
     this._riseFormEvent('anyChange');
   }
