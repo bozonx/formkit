@@ -9,11 +9,12 @@ module.exports = class Field {
     this._fieldStorage = fieldStorage;
     // TODO: may be move to events?
     this._debouncedCall = new DebouncedCall(this._form.config.debounceTime);
+    if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
 
     this._pathToField = pathToField;
     this._fieldName = getFieldName(pathToField);
 
-    this._init(params);
+    this._initState(params);
 
     this.handleChange = this.handleChange.bind(this);
     this.handleFocusIn = this.handleFocusIn.bind(this);
@@ -25,18 +26,21 @@ module.exports = class Field {
     this._startSaving = this._startSaving.bind(this);
   }
 
-  _init(params) {
-    // TODO: review
+  _initState(params) {
+    const initialState = {
+      disabled: params.disabled,
+      defaultValue: params.defaultValue,
+    };
+    // set initial value otherwise default value
+    const newValue = (_.isUndefined(params.initial)) ? params.defaultValue : params.initial;
+
     // init state
-    this._fieldStorage.initState(this._pathToField);
+    this._fieldStorage.initState(this._pathToField, initialState);
 
-    if (!_.isUndefined(params.disabled)) this._setDisabled(params.disabled);
-    if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
-
-    this._setDefaultAndInitialValue(params.defaultValue, params.initial);
-
-    if (!_.isUndefined(this.value)) {
-      this._events.riseSilentChangeEvent(this._pathToField, undefined);
+    if (!_.isUndefined(newValue)) {
+      // set top value layer
+      this._fieldStorage.setValue(this._pathToField, newValue);
+      this.form.validate();
     }
   }
 
@@ -113,7 +117,7 @@ module.exports = class Field {
   setValue(newValue) {
     const oldValue = _.cloneDeep(this.value);
 
-    this._setValueDirtyValidate(newValue);
+    this._setValueProcess(newValue);
 
     // rise silent change events if value and old value are different
     if (!_.isEqual(oldValue, newValue)) {
@@ -178,7 +182,7 @@ module.exports = class Field {
       // TODO: do not combine actions
       if (!this.touched) this._fieldStorage.setFieldAndFormTouched(this._pathToField);
       // set value, dirty state and validate
-      this._setValueDirtyValidate(newValue);
+      this._setValueProcess(newValue);
     }
 
     // rise change event and save only changed value
@@ -307,6 +311,7 @@ module.exports = class Field {
 
 
   _setDisabled(value) {
+    // TODO: reform
     if (!_.isBoolean(value)) throw new Error(`Disabled has to be boolean`);
     this._fieldStorage.setState(this._pathToField, { disabled: value });
   }
@@ -383,36 +388,12 @@ module.exports = class Field {
   }
 
 
-  _setValueDirtyValidate(newValue) {
-
-    // TODO: may be move to _state?
-
-    // set to outer value layer
+  _setValueProcess(newValue) {
+    // set top value layer
     this._fieldStorage.setValue(this._pathToField, newValue);
     this.$recalcDirty();
     this.form.validate();
   }
 
-
-  /**
-   * Set default and initial values. Initial has more priority.
-   * @param {*} defaultValue
-   * @param {*} initial
-   * @private
-   */
-  _setDefaultAndInitialValue(defaultValue, initial) {
-
-    // TODO: review
-
-    let currentValue;
-    if (!_.isUndefined(defaultValue)) {
-      this._fieldStorage.setState(this._pathToField, { defaultValue });
-      // set default value to current value
-      currentValue = defaultValue;
-    }
-    // initial has more priority
-    if (!_.isUndefined(initial)) currentValue = initial;
-    if (!_.isUndefined(currentValue)) this._setValueDirtyValidate(currentValue);
-  }
 
 };

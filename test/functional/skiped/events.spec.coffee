@@ -1,7 +1,7 @@
-formkit = require('../../src/index')
+formkit = require('../../../src/index')
 
 
-describe 'Functional. Events.', ->
+describe.skip 'Functional. Events.', ->
   describe 'change.', ->
     beforeEach () ->
       this.form = formkit.newForm()

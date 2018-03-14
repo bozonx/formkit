@@ -7,8 +7,13 @@ module.exports = class FieldStorage {
     this._storage = storage;
   }
 
-  initState(pathToField) {
-    _.set(this._storage.$store().fieldsState, pathToField, this._storage.generateNewFieldState());
+  initState(pathToField, initialState) {
+    const newState = {
+      ...this._storage.generateNewFieldState(),
+      ...initialState,
+    };
+
+    _.set(this._storage.$store().fieldsState, pathToField, newState);
   }
 
   /**
@@ -20,8 +25,12 @@ module.exports = class FieldStorage {
    */
   setState(pathToField, partlyState) {
     this._storage.setFieldState(pathToField, partlyState);
-    // TODO: rise field anyChange
-    // TODO: rise form anyChange
+    // TODO: rise storageChange
+  }
+
+  setValue(pathToField, newValue) {
+    this._storage.setValue(pathToField, newValue);
+    // TODO: rise storageChange
   }
 
   getCallBack(cbName) {
@@ -56,11 +65,11 @@ module.exports = class FieldStorage {
 
 
   addFieldListener(pathToField, eventName, cb) {
-    this._eventEmitter.addListener(`field.${pathToField}.${eventName}`, cb);
+    this._storage.events.addListener(`field.${pathToField}.${eventName}`, cb);
   }
 
   riseFieldEvent(pathToField, eventName, data) {
-    this._eventEmitter.emit(`field.${pathToField}.${eventName}`, data);
+    this._storage.events.emit(`field.${pathToField}.${eventName}`, data);
   }
 
 
@@ -76,6 +85,7 @@ module.exports = class FieldStorage {
       fieldName: pathToField,
       oldValue,
       value: this.getValue(pathToField),
+      type: 'silentChange',
     };
 
     // Rise events
@@ -162,11 +172,11 @@ module.exports = class FieldStorage {
    * @return {*}
    */
   getValue(pathToField) {
-    return _.cloneDeep(_.get(this._storage.$store().values, pathToField));
+    return _.get(this._storage.$store().values, pathToField).toJS();
   }
 
   getState(pathToField, stateName) {
-    return _.cloneDeep(_.get(this._storage.$store().fieldsState, `${pathToField}.${stateName}`));
+    return _.get(this._storage.$store().fieldsState, `${pathToField}.${stateName}`).toJS();
   }
 
   isFieldUnsaved(pathToField) {
@@ -179,9 +189,7 @@ module.exports = class FieldStorage {
     });
   }
 
-  setValue(pathToField, newValue) {
-    _.set(this._storage.$store().values, pathToField, newValue);
-  }
+
 
   // TODO: rename
   findFieldStateRecursively(root, cb) {

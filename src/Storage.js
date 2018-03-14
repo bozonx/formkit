@@ -32,13 +32,16 @@ module.exports = class Storage {
    * @param partlyState
    */
   setFieldState(pathToField, partlyState) {
-    // TODO: use merge
     const newState = new Map({
       ..._.get(this._store.fieldsState, pathToField).toJS(),
       ...partlyState,
     });
 
     _.set(this._store.fieldsState, pathToField, newState);
+  }
+
+  setValue(pathToField, newValue) {
+    this._store.values = this._store.values.setIn(pathToField.split('.'), newValue);
   }
 
   generateNewFieldState() {
