@@ -146,23 +146,20 @@ module.exports = class Field {
 
 
   /**
-   * It's an onChange handler. It must be placed to input onChange attribute.
-   * It sets a new user's value and start saving.
+   * It's an onChange handler. It has to be placed to input's onChange attribute.
+   * It sets a new value made by user and start saving.
    * It does:
    * * don't do anything if field is disabled
    * * don't save if value isn't changed
    * * update value
    * * update "touched" and "dirty" states
-   * * validate
+   * * validate form
    * * Rise a "change" events for field and form
    * * Run an onChange callback if it assigned.
    * * Start saving
    * @param {*} newValue
    */
   handleChange(newValue) {
-
-    // TODO: review
-
     // don't do anything if disabled
     if (this.disabled) return;
 
@@ -171,8 +168,10 @@ module.exports = class Field {
 
     if (isChanged) {
       // set touched to true
-      // TODO: do not combine actions
-      if (!this.touched) this._fieldStorage.setFieldAndFormTouched(this._pathToField);
+      if (!this.touched) {
+        this._fieldStorage.setState(this._pathToField, { touched: true });
+        this._fieldStorage.setFormState('touched', true);
+      }
       // set value, dirty state and validate
       this._setValueProcess(newValue);
     }
@@ -181,10 +180,45 @@ module.exports = class Field {
     if (!this._form.config.allowSaveUnmodifiedField && !isChanged) return;
 
     // rise change by user event handlers and callbacks of form and field
-    this._fieldStorage.riseUserChangeEvent(this._pathToField, oldValue, newValue);
+    this._riseUserChangeEvent(this._pathToField, oldValue, newValue);
     // start save with debounced delay
     this._addSavingInQueue(false);
   }
+
+
+  /**
+   * It calls form field on value changed by user
+   * It rises a "change" event.
+   * It rises only if value changed by user.
+   * @param {string} pathToField
+   * @param {*} oldValue
+   * @param {*} newValue
+   */
+  _riseUserChangeEvent(pathToField, oldValue, newValue) {
+    // TODO: review
+
+    const eventData = {
+      fieldName: pathToField,
+      oldValue,
+      value: newValue,
+    };
+
+    // run field's cb
+    if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField].change) {
+      this._fieldsCallbacks[pathToField].change(eventData);
+    }
+    // run forms's cb
+    if (this._formCallbacks.change) {
+      this._formCallbacks.change({ [pathToField]: newValue });
+    }
+
+    // Rise events field's change handler
+    this.riseFieldEvent(pathToField, 'change', eventData);
+    // run form's change handler
+    this._riseFormEvent('change', { [pathToField]: newValue });
+    this.riseAnyChange(pathToField);
+  }
+
 
   /**
    * Set field's "focused" prop to true.

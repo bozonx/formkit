@@ -37,12 +37,6 @@ module.exports = class FieldStorage {
     // TODO:
   }
 
-  // TODO: !!!!!!! не нужно
-  setFieldAndFormTouched(pathToField) {
-    this._storage.setState(pathToField, { touched: true });
-    this._storage.setFormState('touched', true);
-  }
-
   setFieldAndFormDirty(pathToField, newDirtyValue) {
     // set to field
     this._storage.setState(pathToField, { dirty: newDirtyValue });
@@ -92,37 +86,6 @@ module.exports = class FieldStorage {
     // Rise events
     this.riseFieldEvent(pathToField, 'silentChange', eventData);
     this._riseFormEvent('silentChange', eventData);
-    this.riseAnyChange(pathToField);
-  }
-
-  /**
-   * It calls form field on value changed by user
-   * It rises a "change" event.
-   * It rises only if value changed by user.
-   * @param {string} pathToField
-   * @param {*} oldValue
-   * @param {*} newValue
-   */
-  riseUserChangeEvent(pathToField, oldValue, newValue) {
-    const eventData = {
-      fieldName: pathToField,
-      oldValue,
-      value: newValue,
-    };
-
-    // run field's cb
-    if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField].change) {
-      this._fieldsCallbacks[pathToField].change(eventData);
-    }
-    // run forms's cb
-    if (this._formCallbacks.change) {
-      this._formCallbacks.change({ [pathToField]: newValue });
-    }
-
-    // Rise events field's change handler
-    this.riseFieldEvent(pathToField, 'change', eventData);
-    // run form's change handler
-    this._riseFormEvent('change', { [pathToField]: newValue });
     this.riseAnyChange(pathToField);
   }
 
