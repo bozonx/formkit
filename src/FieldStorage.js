@@ -16,6 +16,21 @@ module.exports = class FieldStorage {
     _.set(this._storage.$store().fieldsState, pathToField, newState);
   }
 
+
+  /**
+   * get current value
+   * @param pathToField
+   * @return {*}
+   */
+  getValue(pathToField) {
+    return this._storage.getValue(pathToField);
+  }
+
+  getState(pathToField, stateName) {
+    return this._storage.getState(pathToField, stateName);
+  }
+
+
   /**
    * Set state value to field.
    * Field has to be initialized previously.
@@ -33,30 +48,11 @@ module.exports = class FieldStorage {
     // TODO: rise storageChange - только если значение изменилось
   }
 
-  getCallBack(cbName) {
-    // TODO:
+  getCallBack(pathToField, eventName) {
+    if (!this._fieldsCallbacks[pathToField]) return;
+
+    return this._fieldsCallbacks[pathToField][eventName];
   }
-
-  setFieldAndFormDirty(pathToField, newDirtyValue) {
-    // set to field
-    this._storage.setState(pathToField, { dirty: newDirtyValue });
-
-    // set to form
-    if (newDirtyValue) {
-      // if field is dirty it means the form is dirty too
-      this._storage.setFormState('dirty', true);
-    }
-    else {
-      // if field not dirty - calculate form's dirty state
-      // search for other dirty values in other fields
-      const hasAnyDirty = this._storage.findFieldStateRecursively('fieldsState', (field) => {
-        if (field.dirty) return true;
-      });
-
-      this._storage.setFormState('dirty', !!hasAnyDirty);
-    }
-  }
-
 
   addFieldListener(pathToField, eventName, cb) {
     this._storage.events.addListener(`field.${pathToField}.${eventName}`, cb);
@@ -67,34 +63,30 @@ module.exports = class FieldStorage {
   }
 
 
-  /**
-   * It calls from field on silent value change (after outer value setting).
-   * It means - it calls onlu on value changes by machine.
-   * It rises a "silentChange" and "anyChange" events.
-   * @param {string} pathToField
-   * @param {*} oldValue
-   */
-  riseSilentChangeEvent(pathToField, oldValue) {
-    // TODO: remove
-    const eventData = {
-      fieldName: pathToField,
-      oldValue,
-      value: this.getValue(pathToField),
-      type: 'silentChange',
-    };
+  // /**
+  //  * It calls from field on silent value change (after outer value setting).
+  //  * It means - it calls onlu on value changes by machine.
+  //  * It rises a "silentChange" and "anyChange" events.
+  //  * @param {string} pathToField
+  //  * @param {*} oldValue
+  //  */
+  // riseSilentChangeEvent(pathToField, oldValue) {
+  //   // TODO: remove
+  //   const eventData = {
+  //     fieldName: pathToField,
+  //     oldValue,
+  //     value: this.getValue(pathToField),
+  //     type: 'silentChange',
+  //   };
+  //
+  //   // Rise events
+  //   this.riseFieldEvent(pathToField, 'silentChange', eventData);
+  //   this._riseFormEvent('silentChange', eventData);
+  //   this.riseAnyChange(pathToField);
+  // }
 
-    // Rise events
-    this.riseFieldEvent(pathToField, 'silentChange', eventData);
-    this._riseFormEvent('silentChange', eventData);
-    this.riseAnyChange(pathToField);
-  }
 
 
-  getFieldCallback(pathToField, eventName) {
-    if (!this._fieldsCallbacks[pathToField]) return;
-
-    return this._fieldsCallbacks[pathToField][eventName];
-  }
 
   // setFormCallback(eventName, cb) {
   //   this._formCallbacks[eventName] = cb;
@@ -118,8 +110,7 @@ module.exports = class FieldStorage {
    * It rises on any change of value, initialValue or any state.
    * @private
    */
-  riseAnyChange(pathToField) {
-    // TODO: make private
+  _riseAnyChange(pathToField) {
     this.riseFieldEvent(pathToField, 'anyChange');
     this._riseFormEvent('anyChange');
   }
@@ -130,19 +121,6 @@ module.exports = class FieldStorage {
 
 
 
-
-  /**
-   * get current value
-   * @param pathToField
-   * @return {*}
-   */
-  getValue(pathToField) {
-    return _.get(this._storage.$store().values, pathToField).toJS();
-  }
-
-  getState(pathToField, stateName) {
-    return _.get(this._storage.$store().fieldsState, `${pathToField}.${stateName}`).toJS();
-  }
 
   isFieldUnsaved(pathToField) {
     return _.get(this._storage.$store().fieldsState, pathToField).savedValue !== _.get(this._storage.$store().values, pathToField);
@@ -160,5 +138,29 @@ module.exports = class FieldStorage {
   findFieldStateRecursively(root, cb) {
     return findFieldLikeStructureRecursively(this._storage.$store()[root], cb);
   }
+
+
+  setFieldAndFormDirty(pathToField, newDirtyValue) {
+    // TODO: review
+    // set to field
+    this._storage.setState(pathToField, { dirty: newDirtyValue });
+
+    // set to form
+    if (newDirtyValue) {
+      // if field is dirty it means the form is dirty too
+      this._storage.setFormState('dirty', true);
+    }
+    else {
+      // if field not dirty - calculate form's dirty state
+      // search for other dirty values in other fields
+      const hasAnyDirty = this._storage.findFieldStateRecursively('fieldsState', (field) => {
+        if (field.dirty) return true;
+      });
+
+      this._storage.setFormState('dirty', !!hasAnyDirty);
+    }
+  }
+
+
 
 };

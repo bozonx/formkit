@@ -374,7 +374,7 @@ module.exports = class Field {
    */
   _startSaving() {
     const data = this.value;
-    const saveCb = this._fieldStorage.getCallBack('save');
+    const saveCb = this._fieldStorage.getCallBack(this._pathToField, 'save');
     const saveEnd = (err) => {
       // set saving: false
       this._fieldStorage.setState(this._pathToField, 'isSaving', false);
