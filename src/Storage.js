@@ -25,7 +25,15 @@ module.exports = class Storage {
     return _.cloneDeep(this._store);
   }
 
-  getState(pathToField, stateName) {
+  getWholeFieldState(pathToField) {
+    const fieldState = _.get(this._store.fieldsState, pathToField);
+
+    if (!fieldState) return;
+
+    return fieldState.toJS();
+  }
+
+  getFieldState(pathToField, stateName) {
     const fieldState = _.get(this._store.fieldsState, pathToField);
 
     if (!fieldState) return;

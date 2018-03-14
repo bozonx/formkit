@@ -274,6 +274,10 @@ module.exports = class Form {
     // TODO: !!!!!! see riseFormDebouncedSave
   }
 
+  $getHandler(handlerName) {
+    // TODO: get srom formStorage
+  }
+
   /**
    * Initialize a field.
    * @param pathToField

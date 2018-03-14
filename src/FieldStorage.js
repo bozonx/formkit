@@ -5,6 +5,8 @@ const { findFieldLikeStructureRecursively } = require('./helpers');
 module.exports = class FieldStorage {
   constructor(storage) {
     this._storage = storage;
+    // handlers of onChange and onSave of fields
+    this._handlers = {};
   }
 
   initState(pathToField, initialState) {
@@ -16,7 +18,6 @@ module.exports = class FieldStorage {
     _.set(this._storage.$store().fieldsState, pathToField, newState);
   }
 
-
   /**
    * get current value
    * @param pathToField
@@ -27,9 +28,8 @@ module.exports = class FieldStorage {
   }
 
   getState(pathToField, stateName) {
-    return this._storage.getState(pathToField, stateName);
+    return this._storage.getFieldState(pathToField, stateName);
   }
-
 
   /**
    * Set state value to field.
@@ -39,26 +39,62 @@ module.exports = class FieldStorage {
    * @param partlyState
    */
   setState(pathToField, partlyState) {
+    const oldState = this._storage.getWholeFieldState(pathToField);
+
     this._storage.setFieldState(pathToField, partlyState);
-    // TODO: rise storageChange - только если значение изменилось
+
+    if (!_.isEqual(oldState, this._storage.getWholeFieldState(pathToField))) {
+      const data = {
+        field: pathToField,
+        state: partlyState,
+        oldState,
+        event: 'storage',
+        action: 'update',
+        type: 'state',
+      };
+
+      this.emit(pathToField, 'storage', data);
+    }
   }
 
   setValue(pathToField, newValue) {
+    const oldValue = this.getValue(pathToField);
+
     this._storage.setValue(pathToField, newValue);
-    // TODO: rise storageChange - только если значение изменилось
+
+    if (!_.isEqual(oldValue, this.getValue(pathToField))) {
+      const data = {
+        field: pathToField,
+        value: newValue,
+        oldValue,
+        event: 'storage',
+        action: 'replace',
+        type: 'value',
+      };
+
+      this.emit(pathToField, 'storage', data);
+    }
   }
 
-  getCallBack(pathToField, eventName) {
-    if (!this._fieldsCallbacks[pathToField]) return;
+  getHandler(pathToField, handlerName) {
+    if (!this._handlers[pathToField]) return;
 
-    return this._fieldsCallbacks[pathToField][eventName];
+    return this._handlers[pathToField][handlerName];
   }
 
-  addFieldListener(pathToField, eventName, cb) {
-    this._storage.events.addListener(`field.${pathToField}.${eventName}`, cb);
+  setHandler(pathToField, handlerName, handler) {
+    if (!this._handlers[pathToField]) {
+      this._handlers[pathToField] = {};
+    }
+
+    this._handlers[pathToField][handlerName] = handler;
   }
 
-  riseFieldEvent(pathToField, eventName, data) {
+  on(pathToField, eventName, cb) {
+    this._storage.events.on(`field.${pathToField}.${eventName}`, cb);
+  }
+
+  emit(pathToField, eventName, data) {
     this._storage.events.emit(`field.${pathToField}.${eventName}`, data);
   }
 
@@ -92,32 +128,19 @@ module.exports = class FieldStorage {
   //   this._formCallbacks[eventName] = cb;
   // }
 
-  setFieldCallback(pathToField, eventName, cb) {
-    if (!this._fieldsCallbacks[pathToField]) {
-      this._fieldsCallbacks[pathToField] = {
-        change: null,
-        save: null,
-      };
-    }
-
-    this._fieldsCallbacks[pathToField][eventName] = cb;
-  }
-
-
-
-  /**
-   * It rises a "stateChange" event.
-   * It rises on any change of value, initialValue or any state.
-   * @private
-   */
-  _riseAnyChange(pathToField) {
-    this.riseFieldEvent(pathToField, 'anyChange');
-    this._riseFormEvent('anyChange');
-  }
-
-  _riseFormEvent(eventName, data) {
-    this._eventEmitter.emit(`form.${eventName}`, data);
-  }
+  // /**
+  //  * It rises a "stateChange" event.
+  //  * It rises on any change of value, initialValue or any state.
+  //  * @private
+  //  */
+  // _riseAnyChange(pathToField) {
+  //   this.emit(pathToField, 'anyChange');
+  //   this._riseFormEvent('anyChange');
+  // }
+  //
+  // _riseFormEvent(eventName, data) {
+  //   this._eventEmitter.emit(`form.${eventName}`, data);
+  // }
 
 
 

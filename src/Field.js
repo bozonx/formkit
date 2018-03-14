@@ -172,6 +172,8 @@ module.exports = class Field {
         this._fieldStorage.setState(this._pathToField, { touched: true });
         this._fieldStorage.setFormState('touched', true);
       }
+
+      // TODO: может установить значение как можно скорее, потом все остальное?
       // set value, dirty state and validate
       this._setValueProcess(newValue);
     }
@@ -185,39 +187,6 @@ module.exports = class Field {
     this._addSavingInQueue(false);
   }
 
-
-  /**
-   * It calls form field on value changed by user
-   * It rises a "change" event.
-   * It rises only if value changed by user.
-   * @param {string} pathToField
-   * @param {*} oldValue
-   * @param {*} newValue
-   */
-  _riseUserChangeEvent(pathToField, oldValue, newValue) {
-    // TODO: review
-
-    const eventData = {
-      fieldName: pathToField,
-      oldValue,
-      value: newValue,
-    };
-
-    // run field's cb
-    if (this._fieldsCallbacks[pathToField] && this._fieldsCallbacks[pathToField].change) {
-      this._fieldsCallbacks[pathToField].change(eventData);
-    }
-    // run forms's cb
-    if (this._formCallbacks.change) {
-      this._formCallbacks.change({ [pathToField]: newValue });
-    }
-
-    // Rise events field's change handler
-    this.riseFieldEvent(pathToField, 'change', eventData);
-    // run form's change handler
-    this._riseFormEvent('change', { [pathToField]: newValue });
-    this.riseAnyChange(pathToField);
-  }
 
 
   /**
@@ -260,14 +229,14 @@ module.exports = class Field {
    * @param cb
    */
   on(eventName, cb) {
-    this._fieldStorage.addFieldListener(this._pathToField, eventName, cb);
+    this._fieldStorage.on(this._pathToField, eventName, cb);
   }
 
   /**
    * It rises a callback on field's value changes which has made by user
    */
   onChange(cb) {
-    this._fieldStorage.setFieldCallback(this._pathToField, 'change', cb);
+    this._fieldStorage.setHandler(this._pathToField, 'onChange', cb);
   }
 
   /**
@@ -275,7 +244,7 @@ module.exports = class Field {
    * @param cb
    */
   onSave(cb) {
-    this._fieldStorage.setFieldCallback(this._pathToField, 'save', cb);
+    this._fieldStorage.setHandler(this._pathToField, 'onSave', cb);
   }
 
   /**
@@ -374,7 +343,7 @@ module.exports = class Field {
    */
   _startSaving() {
     const data = this.value;
-    const saveCb = this._fieldStorage.getCallBack(this._pathToField, 'save');
+    const saveCb = this._fieldStorage.getHandler(this._pathToField, 'onSave');
     const saveEnd = (err) => {
       // set saving: false
       this._fieldStorage.setState(this._pathToField, 'isSaving', false);
@@ -404,6 +373,37 @@ module.exports = class Field {
     // if save callback hasn't returned a promise
     // or if there isn't a save callback
     saveEnd();
+  }
+
+
+  /**
+   * It calls form field on value changed by user
+   * It rises a "change" event.
+   * It rises only if value changed by user.
+   * @param {string} pathToField
+   * @param {*} oldValue
+   * @param {*} newValue
+   */
+  _riseUserChangeEvent(pathToField, oldValue, newValue) {
+    const eventData = {
+      fieldName: pathToField,
+      oldValue,
+      value: newValue,
+      event: 'change',
+    };
+
+    // call field's onChange handler
+    const fieldOnChangeHandler = this._fieldStorage.getHandler(pathToField, 'onChange');
+    if (fieldOnChangeHandler) fieldOnChangeHandler(eventData);
+    // call forms's onChange handler
+    const formOnChangeHandler = this._form.$getHandler('onChange');
+    if (formOnChangeHandler) formOnChangeHandler({ [pathToField]: newValue });
+
+    // Rise events field's change handler
+    this._fieldStorage.emit(pathToField, 'change', eventData);
+    // run form's change handler
+    // TODO: !!!!
+    this._riseFormEvent('change', { [pathToField]: newValue });
   }
 
 
