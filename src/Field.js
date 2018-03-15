@@ -26,24 +26,6 @@ module.exports = class Field {
     this._startSaving = this._startSaving.bind(this);
   }
 
-  _initState(params) {
-    const initialState = {
-      disabled: params.disabled,
-      defaultValue: params.defaultValue,
-    };
-    // set initial value otherwise default value
-    const newValue = (_.isUndefined(params.initial)) ? params.defaultValue : params.initial;
-
-    // init state
-    this._fieldStorage.initState(this._pathToField, initialState);
-
-    if (!_.isUndefined(newValue)) {
-      // set top value layer
-      this._fieldStorage.setValue(this._pathToField, newValue);
-      this.form.validate();
-    }
-  }
-
   get form() {
     return this._form;
   }
@@ -291,16 +273,6 @@ module.exports = class Field {
   }
 
   /**
-   * Recalculate dirty state.
-   */
-  $recalcDirty() {
-    this._fieldStorage.setFieldAndFormDirty(
-      this._pathToField,
-      calculateDirty(this.value, this.savedValue)
-    );
-  }
-
-  /**
    * It calls from form after validating.
    * @param {string|undefined} invalidMsg - invalid message of undefined
    */
@@ -309,6 +281,41 @@ module.exports = class Field {
       valid: _.isUndefined(invalidMsg),
       invalidMsg,
     });
+  }
+
+  /**
+   * Recalculate dirty state.
+   */
+  $recalcDirty() {
+    // TODO: review
+    this._fieldStorage.setFieldAndFormDirty(
+      this._pathToField,
+      calculateDirty(this.value, this.savedValue)
+    );
+  }
+
+
+  /**
+   * Init field state.
+   * @param {object} params - params which was passed to form init.
+   * @private
+   */
+  _initState(params) {
+    const initialState = {
+      disabled: params.disabled,
+      defaultValue: params.defaultValue,
+    };
+    // set initial value otherwise default value
+    const newValue = (_.isUndefined(params.initial)) ? params.defaultValue : params.initial;
+
+    // init state
+    this._fieldStorage.initState(this._pathToField, initialState);
+
+    if (!_.isUndefined(newValue)) {
+      // set top value layer
+      this._fieldStorage.setValue(this._pathToField, newValue);
+      this.form.validate();
+    }
   }
 
   /**
@@ -411,7 +418,6 @@ module.exports = class Field {
     // run form's change handler
     this._form.$emit('change', { [pathToField]: newValue });
   }
-
 
   _setValueProcess(newValue) {
     // set top value layer

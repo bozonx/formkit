@@ -1,142 +1,142 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 
 describe 'Functional. Value, saved value, default value.', ->
   beforeEach () ->
-    this.form = formHelper.newForm()
-    this.form.init(['name'])
+    @form = formkit.newForm()
+    @form.init(['name'])
 
   it "set new value to field. savedValue == undefined and value has new value", ->
-    this.form.fields.name.handleChange('newValue')
+    @form.fields.name.handleChange('newValue')
 
-    assert.equal(this.form.fields.name.value, 'newValue')
-    assert.isUndefined(this.form.fields.name.savedValue)
+    assert.equal(@form.fields.name.value, 'newValue')
+    assert.isUndefined(@form.fields.name.savedValue)
 
-    assert.equal(this.form._fieldStorage.getValue('name'), 'newValue')
-    assert.isUndefined(this.form._fieldStorage.getState('name', 'savedValue'))
+    assert.equal(@form._fieldStorage.getValue('name'), 'newValue')
+    assert.isUndefined(@form._fieldStorage.getState('name', 'savedValue'))
 
   it "set initial value", ->
-    this.form = formHelper.newForm()
-    this.form.init({name: {initial: 'initValue'}})
+    @form = formkit.newForm()
+    @form.init({name: {initial: 'initValue'}})
 
-    assert.equal(this.form.fields.name.value, 'initValue')
-    assert.isUndefined(this.form.fields.name.savedValue)
+    assert.equal(@form.fields.name.value, 'initValue')
+    assert.isUndefined(@form.fields.name.savedValue)
 
-    assert.equal(this.form._fieldStorage.getValue('name'), 'initValue')
-    assert.isUndefined(this.form._fieldStorage.getState('name', 'savedValue'))
+    assert.equal(@form._fieldStorage.getValue('name'), 'initValue')
+    assert.isUndefined(@form._fieldStorage.getState('name', 'savedValue'))
 
   it "set new saved value", ->
-    this.form.fields.name.handleChange('newValue')
-    this.form.fields.name.setSavedValue('newSavedValue')
+    @form.fields.name.handleChange('newValue')
+    @form.fields.name.setSavedValue('newSavedValue')
 
-    assert.deepEqual(this.form.values, {name: 'newSavedValue'})
-    assert.equal(this.form.fields.name.value, 'newSavedValue')
-    assert.equal(this.form.fields.name.savedValue, 'newSavedValue')
+    assert.deepEqual(@form.values, {name: 'newSavedValue'})
+    assert.equal(@form.fields.name.value, 'newSavedValue')
+    assert.equal(@form.fields.name.savedValue, 'newSavedValue')
 
-    assert.equal(this.form._fieldStorage.getValue('name'), 'newSavedValue')
-    assert.equal(this.form._fieldStorage.getState('name', 'savedValue'), 'newSavedValue')
+    assert.equal(@form._fieldStorage.getValue('name'), 'newSavedValue')
+    assert.equal(@form._fieldStorage.getState('name', 'savedValue'), 'newSavedValue')
 
   it "set new values to whole form (machine update)", ->
-    this.form.fields.name.handleChange('newValue')
-    this.form.setSavedValues({name: 'newSavedValue'})
+    @form.fields.name.handleChange('newValue')
+    @form.setSavedValues({name: 'newSavedValue'})
 
-    assert.deepEqual(this.form.values, {name: 'newSavedValue'})
-    assert.equal(this.form.fields.name.value, 'newSavedValue')
-    assert.equal(this.form.fields.name.savedValue, 'newSavedValue')
+    assert.deepEqual(@form.values, {name: 'newSavedValue'})
+    assert.equal(@form.fields.name.value, 'newSavedValue')
+    assert.equal(@form.fields.name.savedValue, 'newSavedValue')
 
-    assert.equal(this.form._fieldStorage.getValue('name'), 'newSavedValue')
-    assert.equal(this.form._fieldStorage.getState('name', 'savedValue'), 'newSavedValue')
+    assert.equal(@form._fieldStorage.getValue('name'), 'newSavedValue')
+    assert.equal(@form._fieldStorage.getState('name', 'savedValue'), 'newSavedValue')
 
   it "clear user input of field", ->
-    this.form.fields.name.setSavedValue('savedValue')
-    this.form.fields.name.handleChange('userValue')
-    this.form.setValidateCb((errors) -> errors.name = 'bad value')
-    this.form.fields.name.clear()
+    @form.fields.name.setSavedValue('savedValue')
+    @form.fields.name.handleChange('userValue')
+    @form.setValidateCb((errors) -> errors.name = 'bad value')
+    @form.fields.name.clear()
 
-    assert.equal(this.form.fields.name.value, 'savedValue')
-    assert.isFalse(this.form.fields.name.dirty)
-    assert.isFalse(this.form.fields.name.valid)
-    assert.equal(this.form.fields.name.invalidMsg, 'bad value')
+    assert.equal(@form.fields.name.value, 'savedValue')
+    assert.isFalse(@form.fields.name.dirty)
+    assert.isFalse(@form.fields.name.valid)
+    assert.equal(@form.fields.name.invalidMsg, 'bad value')
 
   it "clear user input of form", ->
-    this.form.fields.name.setSavedValue('savedValue')
-    this.form.fields.name.handleChange('userValue')
-    this.form.setValidateCb((errors) -> errors.name = 'bad value')
-    this.form.clear()
+    @form.fields.name.setSavedValue('savedValue')
+    @form.fields.name.handleChange('userValue')
+    @form.setValidateCb((errors) -> errors.name = 'bad value')
+    @form.clear()
 
-    assert.equal(this.form.fields.name.value, 'savedValue')
-    assert.isFalse(this.form.fields.name.dirty)
-    assert.isFalse(this.form.fields.name.valid)
-    assert.equal(this.form.fields.name.invalidMsg, 'bad value')
+    assert.equal(@form.fields.name.value, 'savedValue')
+    assert.isFalse(@form.fields.name.dirty)
+    assert.isFalse(@form.fields.name.valid)
+    assert.equal(@form.fields.name.invalidMsg, 'bad value')
 
   it "set defaultValue on init", ->
-    this.form = formHelper.newForm()
-    this.form.init({name: {defaultValue: 'default value'}})
+    @form = formkit.newForm()
+    @form.init({name: {defaultValue: 'default value'}})
 
-    assert.deepEqual(this.form.values, {name: 'default value'})
-    assert.equal(this.form.fields.name.value, 'default value')
-    assert.equal(this.form.fields.name.defaultValue, 'default value')
-    assert.isUndefined(this.form.fields.name.savedValue)
+    assert.deepEqual(@form.values, {name: 'default value'})
+    assert.equal(@form.fields.name.value, 'default value')
+    assert.equal(@form.fields.name.defaultValue, 'default value')
+    assert.isUndefined(@form.fields.name.savedValue)
 
   it "initial value has more priority", ->
-    this.form = formHelper.newForm()
-    this.form.init({name: {
+    @form = formkit.newForm()
+    @form.init({name: {
       defaultValue: 'default value',
       initial: 'initial value',
     }})
 
-    assert.equal(this.form.fields.name.value, 'initial value')
+    assert.equal(@form.fields.name.value, 'initial value')
 
   it "reset field to defaultValue", ->
-    this.form = formHelper.newForm()
-    this.form.init({name: {defaultValue: 'default value'}})
+    @form = formkit.newForm()
+    @form.init({name: {defaultValue: 'default value'}})
 
-    this.form.fields.name.handleChange('userValue')
-    this.form.fields.name.reset();
+    @form.fields.name.handleChange('userValue')
+    @form.fields.name.reset();
 
-    assert.deepEqual(this.form.values, {name: 'default value'})
-    assert.equal(this.form.fields.name.value, 'default value')
-    assert.equal(this.form.fields.name.defaultValue, 'default value')
-    assert.isUndefined(this.form.fields.name.savedValue)
-    assert.isTrue(this.form.fields.name.touched)
+    assert.deepEqual(@form.values, {name: 'default value'})
+    assert.equal(@form.fields.name.value, 'default value')
+    assert.equal(@form.fields.name.defaultValue, 'default value')
+    assert.isUndefined(@form.fields.name.savedValue)
+    assert.isTrue(@form.fields.name.touched)
     # saved value = undefined and value = "default value" - dirty = true
-    assert.isTrue(this.form.fields.name.dirty)
+    assert.isTrue(@form.fields.name.dirty)
 
   it "reset form", ->
-    this.form = formHelper.newForm()
-    this.form.init({name: {defaultValue: 'default value'}})
+    @form = formkit.newForm()
+    @form.init({name: {defaultValue: 'default value'}})
 
-    this.form.fields.name.handleChange('userValue')
-    this.form.reset();
+    @form.fields.name.handleChange('userValue')
+    @form.reset();
 
-    assert.deepEqual(this.form.values, {name: 'default value'})
-    assert.equal(this.form.fields.name.value, 'default value')
-    assert.equal(this.form.fields.name.defaultValue, 'default value')
-    assert.isUndefined(this.form.fields.name.savedValue)
-    assert.isTrue(this.form.fields.name.touched)
+    assert.deepEqual(@form.values, {name: 'default value'})
+    assert.equal(@form.fields.name.value, 'default value')
+    assert.equal(@form.fields.name.defaultValue, 'default value')
+    assert.isUndefined(@form.fields.name.savedValue)
+    assert.isTrue(@form.fields.name.touched)
     # saved value = undefined and value = "default value" - dirty = true
-    assert.isTrue(this.form.fields.name.dirty)
+    assert.isTrue(@form.fields.name.dirty)
 
   it "form.setValues", ->
-    this.form = formHelper.newForm()
-    this.form.init(['parent.child'])
+    @form = formkit.newForm()
+    @form.init(['parent.child'])
 
-    this.form.setValues({
+    @form.setValues({
       parent: { child: 'newValue' }
     })
 
-    assert.deepEqual(this.form.values, {
+    assert.deepEqual(@form.values, {
       parent: { child: 'newValue' }
     })
 
   it "form.setSavedValues", ->
-    this.form = formHelper.newForm()
-    this.form.init(['parent.child'])
+    @form = formkit.newForm()
+    @form.init(['parent.child'])
 
-    this.form.setSavedValues({
+    @form.setSavedValues({
       parent: { child: 'newValue' }
     })
 
-    assert.deepEqual(this.form.savedValues, {
+    assert.deepEqual(@form.savedValues, {
       parent: { child: 'newValue' }
     })

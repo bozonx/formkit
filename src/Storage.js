@@ -52,8 +52,10 @@ module.exports = class Storage {
    * @param partlyState
    */
   setFieldState(pathToField, partlyState) {
+    const prevState = _.get(this._store.fieldsState, pathToField);
+
     const newState = new Map({
-      ..._.get(this._store.fieldsState, pathToField).toJS(),
+      ...prevState && prevState.toJS(),
       ...partlyState,
     });
 
@@ -66,17 +68,16 @@ module.exports = class Storage {
 
   generateNewFieldState() {
     return {
+      defaultValue: undefined,
       dirty: false,
+      disabled: false,
       touched: false,
+      invalidMsg: undefined,
+      savedValue: undefined,
+      saving: false,
+      focused: false,
       // TODO: нет смысла сохранять
       valid: true,
-      invalidMsg: undefined,
-      validCombined: true,
-      saving: false,
-      disabled: false,
-      focused: false,
-      defaultValue: undefined,
-      savedValue: undefined,
     };
   }
 

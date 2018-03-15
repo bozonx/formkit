@@ -289,17 +289,17 @@ module.exports = class Form {
   /**
    * Initialize a field.
    * @param pathToField
-   * @param {object} params - { initial, defaultValue, disabled, validate, debounceTime }
+   * @param {object} fieldParams - { initial, defaultValue, disabled, validate, debounceTime }
    * @private
    */
-  _initField(pathToField, params) {
+  _initField(pathToField, fieldParams) {
     if (!pathToField) throw new Error(`You must pass a field's name or path!`);
     // Try to get existent field
     const existentField = _.get(this.fields, pathToField);
     if (existentField) throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
 
     // create new one
-    const newField = new Field(pathToField, params, {
+    const newField = new Field(pathToField, fieldParams, {
       form: this,
       fieldStorage: this._fieldStorage,
     });

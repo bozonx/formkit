@@ -15,7 +15,7 @@ module.exports = class FieldStorage {
       ...initialState,
     };
 
-    _.set(this._storage.$store().fieldsState, pathToField, newState);
+    this._storage.setFieldState(pathToField, newState);
   }
 
   /**
