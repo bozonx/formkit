@@ -87,14 +87,7 @@ module.exports = class Field {
    * @param newValue
    */
   setValue(newValue) {
-    //const oldValue = _.cloneDeep(this.value);
-
     this._setValueProcess(newValue);
-
-    // rise silent change events if value and old value are different
-    // if (!_.isEqual(oldValue, newValue)) {
-    //   this._fieldStorage.riseSilentChangeEvent(this._pathToField, oldValue);
-    // }
   }
 
   /**

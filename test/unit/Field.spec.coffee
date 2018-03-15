@@ -2,7 +2,7 @@ formkit = require('../../src/index')
 Field = require('../../src/Field')
 
 
-describe.only 'Unit. Field.', ->
+describe 'Unit. Field.', ->
   beforeEach () ->
     @pathToField = 'testField'
     @form = formkit.newForm()
@@ -12,6 +12,7 @@ describe.only 'Unit. Field.', ->
     storageChangeHandler = sinon.spy()
     @form.validate = sinon.spy()
     @form._fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
+    @form._storage._store.fieldsState[@pathToField] = undefined
     field = new Field(@pathToField, {}, { form: @form, fieldStorage: @form._fieldStorage })
 
     assert.deepEqual(@form._storage.getWholeFieldState(@pathToField), {
@@ -29,8 +30,6 @@ describe.only 'Unit. Field.', ->
 
     assert.isUndefined(field.value)
     sinon.assert.notCalled(@form.validate)
-
-    # TODO: доделать
     sinon.assert.calledOnce(storageChangeHandler)
 
   it "_initState with initial params", ->
@@ -38,6 +37,7 @@ describe.only 'Unit. Field.', ->
     @form.validate = sinon.spy()
     @form._fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
     params = { disabled: true, defaultValue: 5, initial: 7 }
+    @form._storage._store.fieldsState[@pathToField] = undefined
     field = new Field(@pathToField, params, { form: @form, fieldStorage: @form._fieldStorage })
 
     assert.deepEqual(@form._storage.getWholeFieldState(@pathToField), {
@@ -57,11 +57,25 @@ describe.only 'Unit. Field.', ->
     sinon.assert.calledOnce(@form.validate)
     sinon.assert.calledTwice(storageChangeHandler)
 
-    # TODO: доделать
-
-#    sinon.assert.calledWith storageChangeHandler, {
-#
-#    }
+    sinon.assert.calledWith storageChangeHandler, {
+      action: "update",
+      event: "storage",
+      field: "testField",
+      oldState: undefined,
+      state: {
+        defaultValue: 5,
+        dirty: false,
+        disabled: true,
+        focused: false,
+        initial: 7,
+        invalidMsg: undefined,
+        savedValue: undefined,
+        saving: false,
+        touched: false,
+        valid: true
+      },
+      type: "state"
+    }
     sinon.assert.calledWith storageChangeHandler, {
       action: 'replace',
       event: 'storage',
