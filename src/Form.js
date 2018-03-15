@@ -266,6 +266,10 @@ module.exports = class Form {
 
   }
 
+  setState(newState) {
+    // TODO: !!!!
+  }
+
   $getWholeStorageState() {
     return this._storage.getWholeStorageState();
   }
@@ -276,6 +280,10 @@ module.exports = class Form {
 
   $getHandler(handlerName) {
     // TODO: get srom formStorage
+  }
+
+  $emit(eventName, data) {
+    // TODO: call formStorage.emit
   }
 
   /**

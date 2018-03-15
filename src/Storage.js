@@ -68,6 +68,7 @@ module.exports = class Storage {
     return {
       dirty: false,
       touched: false,
+      // TODO: нет смысла сохранять
       valid: true,
       invalidMsg: undefined,
       validCombined: true,
@@ -79,7 +80,6 @@ module.exports = class Storage {
     };
   }
 
-  // TODO: move to form storage
   _generateNewFormState() {
     return {
       dirty: false,

@@ -167,15 +167,14 @@ module.exports = class Field {
     const isChanged = !_.isEqual(oldValue, newValue);
 
     if (isChanged) {
+      // set value, dirty state and validate
+      this._setValueProcess(newValue);
+
       // set touched to true
       if (!this.touched) {
         this._fieldStorage.setState(this._pathToField, { touched: true });
-        this._fieldStorage.setFormState('touched', true);
+        this._form.setState({ touched: true });
       }
-
-      // TODO: может установить значение как можно скорее, потом все остальное?
-      // set value, dirty state and validate
-      this._setValueProcess(newValue);
     }
 
     // rise change event and save only changed value
@@ -184,10 +183,8 @@ module.exports = class Field {
     // rise change by user event handlers and callbacks of form and field
     this._riseUserChangeEvent(this._pathToField, oldValue, newValue);
     // start save with debounced delay
-    this._addSavingInQueue(false);
+    this._addSavingToQueue(false);
   }
-
-
 
   /**
    * Set field's "focused" prop to true.
@@ -202,8 +199,7 @@ module.exports = class Field {
   handleBlur() {
     this._fieldStorage.setState(this._pathToField, { focused: false });
     // start save immediately
-    // TODO: use save
-    this._addSavingInQueue(true);
+    this.save();
   }
 
   /**
@@ -233,32 +229,43 @@ module.exports = class Field {
   }
 
   /**
-   * It rises a callback on field's value changes which has made by user
+   * It rises a callback on field's value changes which has made by user.
+   * @param {function} handler - callback. You can set only one callback per field.
    */
-  onChange(cb) {
-    this._fieldStorage.setHandler(this._pathToField, 'onChange', cb);
+  onChange(handler) {
+    this._fieldStorage.setHandler(this._pathToField, 'onChange', handler);
   }
 
   /**
    * It rises with debounce delay on start saving.
-   * @param cb
+   * @param {function} handler - callback. If it returns a promise - saving process will wait for it.
+   *                             You can set only one callback per field.
    */
-  onSave(cb) {
-    this._fieldStorage.setHandler(this._pathToField, 'onSave', cb);
+  onSave(handler) {
+    this._fieldStorage.setHandler(this._pathToField, 'onSave', handler);
   }
 
   /**
-   * Start field save immediately.
+   * Start saving of field's value immediately.
    * @return {Promise}
    */
   save() {
-    return this._addSavingInQueue(true);
+    return this._addSavingToQueue(true);
   }
 
   /**
-   * Clear value(user input) and set saved value to current value.
+   * Clear value(user input) and set initial value.
    */
   clear() {
+    // TODO: test
+    this.setValue(this._fieldStorage.getState(this._pathToField, 'initial'));
+  }
+
+  /**
+   * set saved value to current value.
+   */
+  revert() {
+    // TODO: test
     this.setValue(this.savedValue);
   }
 
@@ -313,7 +320,7 @@ module.exports = class Field {
    * @private
    * @return {Promise}
    */
-  _addSavingInQueue(force) {
+  _addSavingToQueue(force) {
     // don't save invalid value
     // TODO: review
     if (!this.valid) return Promise.reject(new Error('Field is invalid'));
@@ -402,8 +409,7 @@ module.exports = class Field {
     // Rise events field's change handler
     this._fieldStorage.emit(pathToField, 'change', eventData);
     // run form's change handler
-    // TODO: !!!!
-    this._riseFormEvent('change', { [pathToField]: newValue });
+    this._form.$emit('change', { [pathToField]: newValue });
   }
 
 
@@ -414,6 +420,5 @@ module.exports = class Field {
     this.$recalcDirty();
     this.form.validate();
   }
-
 
 };

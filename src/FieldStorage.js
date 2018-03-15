@@ -170,6 +170,7 @@ module.exports = class FieldStorage {
 
     // set to form
     if (newDirtyValue) {
+      // TODO: review
       // if field is dirty it means the form is dirty too
       this._storage.setFormState('dirty', true);
     }
@@ -179,11 +180,9 @@ module.exports = class FieldStorage {
       const hasAnyDirty = this._storage.findFieldStateRecursively('fieldsState', (field) => {
         if (field.dirty) return true;
       });
-
+      // TODO: review
       this._storage.setFormState('dirty', !!hasAnyDirty);
     }
   }
-
-
 
 };
