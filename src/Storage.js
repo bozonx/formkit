@@ -13,7 +13,7 @@ module.exports = class Storage {
     this._store = {
       formState: this._generateNewFormState(),
       fieldsState: {},
-      values: {},
+      values: new Map(),
     };
   }
 
@@ -42,7 +42,7 @@ module.exports = class Storage {
   }
 
   getValue(pathToField) {
-    return this._store.values.getIn(pathToField.split('.')).toJS();
+    return this._store.values.getIn(pathToField.split('.'));
   }
 
   /**
@@ -71,6 +71,7 @@ module.exports = class Storage {
       defaultValue: undefined,
       dirty: false,
       disabled: false,
+      initial: undefined,
       touched: false,
       invalidMsg: undefined,
       savedValue: undefined,

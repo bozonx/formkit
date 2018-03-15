@@ -15,7 +15,8 @@ module.exports = class FieldStorage {
       ...initialState,
     };
 
-    this._storage.setFieldState(pathToField, newState);
+    //this._storage.setFieldState(pathToField, newState);
+    this.setState(pathToField, newState);
   }
 
   /**
@@ -43,18 +44,18 @@ module.exports = class FieldStorage {
 
     this._storage.setFieldState(pathToField, partlyState);
 
-    if (!_.isEqual(oldState, this._storage.getWholeFieldState(pathToField))) {
-      const data = {
-        field: pathToField,
-        state: partlyState,
-        oldState,
-        event: 'storage',
-        action: 'update',
-        type: 'state',
-      };
+    if (_.isEqual(oldState, this._storage.getWholeFieldState(pathToField))) return;
 
-      this.emit(pathToField, 'storage', data);
-    }
+    const data = {
+      field: pathToField,
+      state: partlyState,
+      oldState,
+      event: 'storage',
+      action: 'update',
+      type: 'state',
+    };
+
+    this.emit(pathToField, 'storage', data);
   }
 
   setValue(pathToField, newValue) {

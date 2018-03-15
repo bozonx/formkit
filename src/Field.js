@@ -304,6 +304,7 @@ module.exports = class Field {
     const initialState = {
       disabled: params.disabled,
       defaultValue: params.defaultValue,
+      initial: params.initial,
     };
     // set initial value otherwise default value
     const newValue = (_.isUndefined(params.initial)) ? params.defaultValue : params.initial;
@@ -312,7 +313,6 @@ module.exports = class Field {
     this._fieldStorage.initState(this._pathToField, initialState);
 
     if (!_.isUndefined(newValue)) {
-      // set top value layer
       this._fieldStorage.setValue(this._pathToField, newValue);
       this.form.validate();
     }
