@@ -34,6 +34,10 @@ module.exports = class Storage {
     return this._store.values.toJS();
   }
 
+  setFormState(stateName, value) {
+    this._store.formState = this._store.formState.set(stateName, value);
+  }
+
   eachField(cb) {
     findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
       cb(field, path);

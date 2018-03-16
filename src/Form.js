@@ -101,9 +101,8 @@ module.exports = class Form {
 
   /**
    * Add one or more handlers on form's event:
-   * * change
-   * * silentChange
-   * * anyChange
+   * * change - changes made by user
+   * * storage - changes of storage
    * * saveStart
    * * saveEnd
    * * submitStart

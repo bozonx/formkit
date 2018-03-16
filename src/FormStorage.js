@@ -58,12 +58,16 @@ module.exports = class FormStorage {
     return invalidMessages;
   }
 
-
-
-
-  setFormSavingState(value) {
-    this._storage.setFormState('saving', value);
+  /**
+   * Set form's state.
+   * @param {string} stateName - param name
+   * @param {*} newValue - new value
+   */
+  setState(stateName, newValue) {
+    this._storage.setFormState(stateName, newValue);
   }
+
+
 
   /**
    * Add one or more handlers on form's event:
@@ -94,11 +98,11 @@ module.exports = class FormStorage {
 
 
   riseFormSubmit(values) {
-    this._storage.setFormState('submitting', true);
+    this.setState('submitting', true);
     this._riseFormEvent('submitStart', values);
 
     const afterSubmitSuccess = () => {
-      this._storage.setFormState('submitting', false);
+      this.setState('submitting', false);
       if (this._form.config.allowUpdateSavedValuesAfterSubmit) {
         this._storage.setAllSavedValues(values);
         // update all the dirty states
@@ -120,7 +124,7 @@ module.exports = class FormStorage {
 
           return data;
         }, (error) => {
-          this._storage.setFormState('submitting', false);
+          this.setState('submitting', false);
           this._riseFormEvent('submitEnd', { error });
 
           return Promise.reject(error);
@@ -144,7 +148,7 @@ module.exports = class FormStorage {
       this._storage.getUnsavedValues(),
       // TODO: review
       this._formCallbacks.save,
-      (...p) => this._state.setFormSavingState(...p),
+      (...p) => this.setState('saving', ...p),
       (...p) => this._riseFormEvent(...p),
     ), force);
   }
@@ -188,13 +192,5 @@ module.exports = class FormStorage {
 
 
 
-  /**
-   * Set form's state. Only primitive, not container or array
-   * @param stateName
-   * @param newValue
-   */
-  setFormState(stateName, newValue) {
-    _.set(this._storage.$store().formState, stateName, newValue);
-  }
 
 };
