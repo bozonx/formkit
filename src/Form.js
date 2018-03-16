@@ -3,7 +3,7 @@ const Storage = require('./Storage');
 const FormStorage = require('./FormStorage');
 const FieldStorage = require('./FieldStorage');
 const Field = require('./Field');
-const { findInFieldRecursively, findRecursively } = require('./helpers');
+const { findInFieldRecursively, findRecursively, isPromise } = require('./helpers');
 
 
 module.exports = class Form {
@@ -116,39 +116,101 @@ module.exports = class Form {
 
   /**
    * Add only one callback of 'change' event. It usefull for use as handler of component.
-   * @param {function} handler
+   * @param {function} handler - your handler
    */
   onChange(handler) {
-    this._formStorage.addCallback('change', handler);
+    this._formStorage.setHandler('change', handler);
   }
 
   onSave(handler) {
-    this._formStorage.addCallback('save', handler);
+    this._formStorage.setHandler('save', handler);
   }
 
   onSubmit(handler) {
-    this._formStorage.addCallback('submit', handler);
+    this._formStorage.setHandler('submit', handler);
   }
 
 
   /**
-   * It can be placed ad a handler of <form> element on onSubmit attribute.
-   * @return {Promise}
+   * It can be placed as a handler of <form> element on onSubmit attribute.
+   * @return {Promise} - wait for submit has finished
    */
   handleSubmit() {
     // disallow submit invalid form
+    // TODO: review - why reject ???
     if (!this.valid) return Promise.reject(new Error(`The form is invalid`));
     // do nothing if form is submitting at the moment
+    // TODO: review - why reject ???
     if (this._formStorage.getState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
 
     if (!this._config.allowSubmitUnchangedForm) {
+      // TODO: review - why reject ???
       if (!this._formStorage.getState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
     }
 
-    const values = _.clone(this._formStorage.getValues());
-
-    return this._formStorage.riseFormSubmit(values);
+    return this._runSubmitProcess();
   }
+
+
+  _runSubmitProcess() {
+    const values = this._formStorage.getValues();
+
+    this.$setState({ submitting: true });
+    this._formStorage.emit('submitStart', values);
+
+    if (!this._formStorage.getHandler('submit')) {
+      // if there isn't a submit callback, just finish submit process
+      this._afterSubmitSuccess(values);
+
+      return Promise.resolve(values);
+    }
+
+    // run submit callback
+    return this._runSubmitHandler(values);
+  }
+
+  _runSubmitHandler(values) {
+    const returnedValue = this._formStorage.getHandler('submit')(values);
+
+    // if cb returns a promise - wait for its fulfilling
+    if (isPromise(returnedValue)) {
+      return returnedValue
+        .then((data) => {
+          this._afterSubmitSuccess(values);
+
+          return data;
+        })
+        .catch((error) => {
+          this.setState({ submitting: false });
+          this._formStorage.emit('submitEnd', { error });
+
+          return Promise.reject(error);
+        });
+    }
+    else {
+      // else if cb returns any other types - don't wait and finish submit process
+      this._afterSubmitSuccess(values);
+
+      return Promise.resolve(values);
+    }
+  }
+
+  _afterSubmitSuccess(values) {
+    this.$setState({ submitting: false });
+
+    if (this.config.allowUpdateSavedValuesAfterSubmit) {
+      // TODO: review
+      this._storage.setAllSavedValues(values);
+      // update all the dirty states
+      // TODO: review
+      findInFieldRecursively(this.fields, (field) => {
+        field.$recalcDirty();
+      });
+    }
+
+    this._formStorage.emit('submitEnd');
+  }
+
 
   /**
    * Start form save immediately.
@@ -268,8 +330,8 @@ module.exports = class Form {
 
   }
 
-  setState(newState) {
-    // TODO: !!!!
+  $setState(partlyState) {
+    this._formStorage.setState(partlyState);
   }
 
   $getWholeStorageState() {

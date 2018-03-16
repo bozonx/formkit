@@ -5,6 +5,8 @@ const { findFieldLikeStructureRecursively, isPromise, findInFieldRecursively } =
 module.exports = class FormStorage {
   constructor(storage) {
     this._storage = storage;
+    // handlers of onChange, onSubmit and onSave of form
+    this._handlers = {};
   }
 
   getState(stateName) {
@@ -60,20 +62,39 @@ module.exports = class FormStorage {
 
   /**
    * Set form's state.
-   * @param {string} stateName - param name
-   * @param {*} newValue - new value
+   * @param {object} partlyState - new partly state
    */
-  setState(stateName, newValue) {
-    this._storage.setFormState(stateName, newValue);
+  setState(partlyState) {
+    const oldState = this._storage.getWholeFormState();
+
+    this._storage.setFieldState(partlyState);
+
+    if (_.isEqual(oldState, this._storage.getWholeFormState())) return;
+
+    const data = {
+      target: 'form',
+      state: partlyState,
+      oldState,
+      event: 'storage',
+      action: 'update',
+      type: 'state',
+    };
+
+    this.emit('storage', data);
   }
 
+  getHandler(handlerName) {
+    return this._handlers[handlerName];
+  }
 
+  setHandler(handlerName, handler) {
+    this._handlers[handlerName] = handler;
+  }
 
   /**
    * Add one or more handlers on form's event:
-   * * change
-   * * silentChange
-   * * anyChange
+   * * change - changes made by user
+   * * storage - changes of storage
    * * saveStart
    * * saveEnd
    * * submitStart
@@ -82,65 +103,25 @@ module.exports = class FormStorage {
    * @param cb
    */
   on(eventName, cb) {
-    this._eventEmitter.addListener(`form.${eventName}`, cb);
+    // TODO: наверное префикс то не нужен!?
+    this._storage.events.on(`form.${eventName}`, cb);
+  }
+
+  emit(eventName, data) {
+    // TODO: наверное префикс то не нужен!?
+    this._storage.events.emit(`form.${eventName}`, data);
   }
 
 
-  /**
-   * Add listener of form events
-   * @param {string} formEvent - events: change, save, submit
-   * @param {function} handler - event handler
-   */
-  addCallback(formEvent, handler) {
-    // TODO: remove prpevious listeners, ну или может реально использовать колбэки
-    this._events.on(formEvent, handler);
-  }
 
 
-  riseFormSubmit(values) {
-    this.setState('submitting', true);
-    this._riseFormEvent('submitStart', values);
 
-    const afterSubmitSuccess = () => {
-      this.setState('submitting', false);
-      if (this._form.config.allowUpdateSavedValuesAfterSubmit) {
-        this._storage.setAllSavedValues(values);
-        // update all the dirty states
-        findInFieldRecursively(this._form.fields, (field) => {
-          field.$recalcDirty();
-        });
-      }
-      this._riseFormEvent('submitEnd');
-    };
 
-    if (this._formCallbacks.submit) {
-      // run submit callback
-      const returnedValue = this._formCallbacks.submit(values);
 
-      // if cb returns a promise - wait for its fulfilling
-      if (isPromise(returnedValue)) {
-        return returnedValue.then((data) => {
-          afterSubmitSuccess();
-
-          return data;
-        }, (error) => {
-          this.setState('submitting', false);
-          this._riseFormEvent('submitEnd', { error });
-
-          return Promise.reject(error);
-        });
-      }
-      else {
-        // else if cb returns any other types - don't wait and finish submit process
-        afterSubmitSuccess();
-
-        return Promise.resolve(values);
-      }
-    }
-    // else if there isn't a submit callback, just finish submit process
-    afterSubmitSuccess();
-
-    return Promise.resolve(values);
+  setAllSavedValues(submittedValues) {
+    findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field, path) => {
+      field.savedValue = _.get(submittedValues, path);
+    });
   }
 
   riseFormDebouncedSave(force) {
@@ -148,6 +129,7 @@ module.exports = class FormStorage {
       this._storage.getUnsavedValues(),
       // TODO: review
       this._formCallbacks.save,
+      // TODO: setState неправильно используется
       (...p) => this.setState('saving', ...p),
       (...p) => this._riseFormEvent(...p),
     ), force);
@@ -161,9 +143,6 @@ module.exports = class FormStorage {
   flushSaving() {
     this._formSaveDebouncedCall.flush();
   }
-
-
-
 
   /**
    * Returns true if form or one or more of its field is saving.
@@ -189,8 +168,5 @@ module.exports = class FormStorage {
 
     return valid;
   }
-
-
-
 
 };

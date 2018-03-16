@@ -138,6 +138,7 @@ module.exports = class Field {
     // don't do anything if disabled
     if (this.disabled) return;
 
+    // TODO: clone не нужен так как значение должно быть immutable
     const oldValue = _.cloneDeep(this.value);
     const isChanged = !_.isEqual(oldValue, newValue);
 
@@ -148,7 +149,7 @@ module.exports = class Field {
       // set touched to true
       if (!this.touched) {
         this._fieldStorage.setState(this._pathToField, { touched: true });
-        this._form.setState({ touched: true });
+        this._form.$setState({ touched: true });
       }
     }
 
@@ -353,13 +354,13 @@ module.exports = class Field {
     const saveCb = this._fieldStorage.getHandler(this._pathToField, 'onSave');
     const saveEnd = (err) => {
       // set saving: false
-      this._fieldStorage.setState(this._pathToField, 'isSaving', false);
+      this._fieldStorage.setState(this._pathToField, { isSaving: false });
       // rise saveEnd
       this._fieldStorage.emit(this._pathToField, 'saveEnd', err);
     };
 
     // set saving: true
-    this._fieldStorage.setState(this._pathToField, 'isSaving', true);
+    this._fieldStorage.setState(this._pathToField, { isSaving: true });
     // rise saveStart event
     this._fieldStorage.emit(this._pathToField, 'saveStart', data);
 

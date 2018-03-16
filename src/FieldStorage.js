@@ -46,6 +46,7 @@ module.exports = class FieldStorage {
     if (_.isEqual(oldState, this._storage.getWholeFieldState(pathToField))) return;
 
     const data = {
+      target: 'filed',
       field: pathToField,
       state: partlyState,
       oldState,
@@ -54,6 +55,7 @@ module.exports = class FieldStorage {
       type: 'state',
     };
 
+    // TODO: поднимать общее событие, не на на pathToField
     this.emit(pathToField, 'storage', data);
   }
 
@@ -64,6 +66,7 @@ module.exports = class FieldStorage {
 
     if (!_.isEqual(oldValue, this.getValue(pathToField))) {
       const data = {
+        target: 'filed',
         field: pathToField,
         value: newValue,
         oldValue,
@@ -72,6 +75,7 @@ module.exports = class FieldStorage {
         type: 'value',
       };
 
+      // TODO: поднимать общее событие, не на на pathToField
       this.emit(pathToField, 'storage', data);
     }
   }
@@ -148,14 +152,6 @@ module.exports = class FieldStorage {
   isFieldUnsaved(pathToField) {
     return _.get(this._storage.$store().fieldsState, pathToField).savedValue !== _.get(this._storage.$store().values, pathToField);
   }
-
-  setAllSavedValues(submittedValues) {
-    findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field, path) => {
-      field.savedValue = _.get(submittedValues, path);
-    });
-  }
-
-
 
   // TODO: rename
   findFieldStateRecursively(root, cb) {

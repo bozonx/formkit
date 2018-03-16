@@ -26,6 +26,10 @@ module.exports = class Storage {
     return _.cloneDeep(this._store);
   }
 
+  getWholeFormState() {
+    return this._store.formState.toJS();
+  }
+
   getFormState(stateName) {
     return this._store.formState.get(stateName);
   }
@@ -34,8 +38,13 @@ module.exports = class Storage {
     return this._store.values.toJS();
   }
 
-  setFormState(stateName, value) {
-    this._store.formState = this._store.formState.set(stateName, value);
+  setFormState(partlyState) {
+    const prevState = this.getWholeFormState();
+
+    this._store.formState = new Map({
+      ...prevState,
+      ...partlyState,
+    });
   }
 
   eachField(cb) {
@@ -71,10 +80,10 @@ module.exports = class Storage {
    * @param partlyState
    */
   setFieldState(pathToField, partlyState) {
-    const prevState = _.get(this._store.fieldsState, pathToField);
+    const prevState = this.getWholeFieldState(pathToField);
 
     const newState = new Map({
-      ...prevState && prevState.toJS(),
+      ...prevState,
       ...partlyState,
     });
 
