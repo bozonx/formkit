@@ -34,16 +34,11 @@ module.exports = class Storage {
     return this._store.values.toJS();
   }
 
-  getFormSavedValues() {
-    const savedValues = {};
-
-    findFieldLikeStructureRecursively(this._storag.fieldsState, (field, path) => {
-      _.set(savedValues, path, field.get(savedValue));
+  eachField(cb) {
+    findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
+      cb(field, path);
     });
-
-    return savedValues;
   }
-
 
   getWholeFieldState(pathToField) {
     const fieldState = _.get(this._store.fieldsState, pathToField);

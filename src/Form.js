@@ -66,22 +66,15 @@ module.exports = class Form {
   }
 
   get unsavedValues() {
-    return this._formStorage.getFormUnsavedValues();
+    return this._formStorage.getUnsavedValues();
   }
 
   /**
-   * Get all messages of invalid fields
-   * @return {Array} like [{path: "path.to.field", message: "msg"}, ...]
+   * Get all the messages of invalid fields
+   * @return {Array} - like [{path: "path.to.field", message: "msg"}, ...]
    */
   get invalidMessages() {
-    const invalidMessages = [];
-    findInFieldRecursively(this.fields, (field) => {
-      if (!field.valid && field.invalidMsg) {
-        invalidMessages.push({ path: field.path, message: field.invalidMsg });
-      }
-    });
-
-    return invalidMessages;
+    return this._formStorage.getInvalidMessages();
   }
 
   /**
@@ -98,10 +91,11 @@ module.exports = class Form {
       _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
     }
     else if (_.isPlainObject(initialFields)) {
+      // TODO: может надо рекурсивно???
       _.each(initialFields, (params, pathToField) => this._initField(pathToField, params || {}));
     }
     else {
-      throw new Error(`Bad type of field's param`);
+      throw new Error(`Bad type of fields param`);
     }
   }
 
@@ -297,21 +291,18 @@ module.exports = class Form {
 
   /**
    * Initialize a field.
-   * @param pathToField
+   * @param {string} pathToField
    * @param {object} fieldParams - { initial, defaultValue, disabled, validate, debounceTime }
    * @private
    */
   _initField(pathToField, fieldParams) {
-    if (!pathToField) throw new Error(`You must pass a field's name or path!`);
+    if (!pathToField) throw new Error(`You have to pass a field's name or path!`);
     // Try to get existent field
     const existentField = _.get(this.fields, pathToField);
     if (existentField) throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
 
     // create new one
-    const newField = new Field(pathToField, fieldParams, {
-      form: this,
-      fieldStorage: this._fieldStorage,
-    });
+    const newField = new Field(pathToField, fieldParams, this, this._fieldStorage);
     _.set(this.fields, pathToField, newField);
   }
 

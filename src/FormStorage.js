@@ -19,11 +19,44 @@ module.exports = class FormStorage {
   }
 
   getSavedValues() {
-    return this._storage.getFormSavedValues();
+    const savedValues = {};
+
+    this._storage.eachField((field, path) => {
+      _.set(savedValues, path, field.get('savedValue'));
+    });
+
+    return savedValues;
   }
 
+  getUnsavedValues() {
+    const unsavedValues = {};
 
+    const values = this.getValues();
 
+    this._storage.eachField((field, path) => {
+      const curValue = _.get(values, path);
+      if (field.get('savedValue') !== curValue) {
+        _.set(unsavedValues, path, curValue);
+      }
+    });
+
+    return unsavedValues;
+  }
+
+  getInvalidMessages() {
+    const invalidMessages = [];
+
+    this._storage.eachField((field) => {
+      if (!field.get('valid') && field.get('invalidMsg')) {
+        invalidMessages.push({
+          path: field.get('path'),
+          message: field.get('invalidMsg'),
+        });
+      }
+    });
+
+    return invalidMessages;
+  }
 
 
 
@@ -108,7 +141,7 @@ module.exports = class FormStorage {
 
   riseFormDebouncedSave(force) {
     return this._formSaveDebouncedCall.exec(() => this.$startSaving(
-      this._storage.getFormUnsavedValues(),
+      this._storage.getUnsavedValues(),
       // TODO: review
       this._formCallbacks.save,
       (...p) => this._state.setFormSavingState(...p),
@@ -154,20 +187,6 @@ module.exports = class FormStorage {
   }
 
 
-
-  // TODO: rename to getUnsavedValues
-  getFormUnsavedValues() {
-    const unsavedValues = {};
-
-    findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field, path) => {
-      const curValue = _.get(this._storage.$store().values, path);
-      if (field.savedValue !== curValue) {
-        _.set(unsavedValues, path, curValue);
-      }
-    });
-
-    return unsavedValues;
-  }
 
   /**
    * Set form's state. Only primitive, not container or array

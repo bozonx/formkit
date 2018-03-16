@@ -4,7 +4,7 @@ const { calculateDirty, getFieldName, isPromise } = require('./helpers');
 
 
 module.exports = class Field {
-  constructor(pathToField, params, { form, fieldStorage }) {
+  constructor(pathToField, params, form, fieldStorage) {
     this._form = form;
     this._fieldStorage = fieldStorage;
     // TODO: may be move to events?
