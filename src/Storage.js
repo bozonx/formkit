@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
 const { Map } = require('immutable');
+const { findFieldLikeStructureRecursively } = require('./helpers');
 
 
 module.exports = class Storage {
@@ -11,7 +12,7 @@ module.exports = class Storage {
 
   init() {
     this._store = {
-      formState: this._generateNewFormState(),
+      formState: new Map(this._generateNewFormState()),
       fieldsState: {},
       values: new Map(),
     };
@@ -24,6 +25,25 @@ module.exports = class Storage {
   getWholeStorageState() {
     return _.cloneDeep(this._store);
   }
+
+  getFormState(stateName) {
+    return this._store.formState.get(stateName);
+  }
+
+  getFormValues() {
+    return this._store.values.toJS();
+  }
+
+  getFormSavedValues() {
+    const savedValues = {};
+
+    findFieldLikeStructureRecursively(this._storag.fieldsState, (field, path) => {
+      _.set(savedValues, path, field.get(savedValue));
+    });
+
+    return savedValues;
+  }
+
 
   getWholeFieldState(pathToField) {
     const fieldState = _.get(this._store.fieldsState, pathToField);

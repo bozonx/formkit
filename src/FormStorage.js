@@ -7,6 +7,27 @@ module.exports = class FormStorage {
     this._storage = storage;
   }
 
+  getState(stateName) {
+    return this._storage.getFormState(stateName);
+  }
+
+  /**
+   * Get all the values of form's fields.
+   */
+  getValues() {
+    return this._storage.getFormValues();
+  }
+
+  getSavedValues() {
+    return this._storage.getFormSavedValues();
+  }
+
+
+
+
+
+
+
   setFormSavingState(value) {
     this._storage.setFormState('saving', value);
   }
@@ -105,22 +126,7 @@ module.exports = class FormStorage {
   }
 
 
-  /**
-   * Get all the values of form's fields.
-   */
-  getValues() {
-    return this._storage.$store().values;
-  }
 
-  getSavedValues() {
-    const savedValues = {};
-
-    findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field, path) => {
-      _.set(savedValues, path, field.savedValue);
-    });
-
-    return savedValues;
-  }
 
   /**
    * Returns true if form or one or more of its field is saving.
@@ -147,9 +153,7 @@ module.exports = class FormStorage {
     return valid;
   }
 
-  getState(stateName) {
-    return _.cloneDeep(_.get(this._storage.$store().formState, stateName));
-  }
+
 
   // TODO: rename to getUnsavedValues
   getFormUnsavedValues() {

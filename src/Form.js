@@ -8,12 +8,12 @@ const { findInFieldRecursively, findRecursively } = require('./helpers');
 
 module.exports = class Form {
   constructor(config) {
-    this._storage = new Storage();
     this._config = config;
-    this._fields = {};
-    this._validateCb = null;
+    this._storage = new Storage();
     this._formStorage = new FormStorage(this._storage);
     this._fieldStorage = new FieldStorage(this._storage);
+    this._fields = {};
+    this._validateCb = null;
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.save = this.save.bind(this);
@@ -24,38 +24,47 @@ module.exports = class Form {
   get fields() {
     return this._fields;
   }
+
   get values() {
     return this._formStorage.getValues();
   }
+
   get savedValues() {
     return this._formStorage.getSavedValues();
   }
+
   get dirty() {
     return this._formStorage.getState('dirty');
   }
+
   get touched() {
     return this._formStorage.getState('touched');
   }
+
   get saving() {
     return this._formStorage.isSaving();
   }
+
   get submitting() {
     return this._formStorage.getState('submitting');
   }
 
   /**
    * allow/disallow submit. It helpful to use as "disabled" button's attribute.
-   * @return {*}
+   * @return {boolean} - true if allows to submit.
    */
   get submitable() {
     return this.valid && !this.submitting;
   }
+
   get valid() {
     return this._formStorage.isValid();
   }
+
   get config() {
     return this._config;
   }
+
   get unsavedValues() {
     return this._formStorage.getFormUnsavedValues();
   }
