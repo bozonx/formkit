@@ -409,6 +409,9 @@ module.exports = class Form {
   }
 
   _riseFormDebouncedSave(force) {
+
+    // TODO: !!!!! зачем это у формы, если save относится к fiel??
+
     // TODO: что за $startSaving ???
     return this._formSaveDebouncedCall.exec(() => this.$startSaving(
       this._storage.getUnsavedValues(),
@@ -418,6 +421,44 @@ module.exports = class Form {
       (...p) => this.setState('saving', ...p),
       (...p) => this._riseFormEvent(...p),
     ), force);
+  }
+
+
+  $startSaving(data, saveCb, setSavingState, riseEvent) {
+
+    // TODO: !!!!! review
+
+    // set saving: true
+    setSavingState(true);
+    // rise saveStart event
+    riseEvent('saveStart', data);
+
+    const saveEnd = () => {
+      // set saving: false
+      setSavingState(false);
+      // rise saveEnd
+      riseEvent('saveEnd');
+    };
+
+    if (saveCb) {
+      // run save callback
+      const cbPromise = saveCb(data);
+      if (isPromise(cbPromise)) {
+        return cbPromise.then(() => saveEnd(), (error) => {
+          setSavingState(false);
+          riseEvent('saveEnd', { error });
+
+          return Promise.reject(error);
+        });
+      }
+
+      // if save callback hasn't returned a promise
+      saveEnd();
+    }
+    else {
+      // if there isn't save callback
+      saveEnd();
+    }
   }
 
 };
