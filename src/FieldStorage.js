@@ -153,32 +153,4 @@ module.exports = class FieldStorage {
     return _.get(this._storage.$store().fieldsState, pathToField).savedValue !== _.get(this._storage.$store().values, pathToField);
   }
 
-  // TODO: rename
-  findFieldStateRecursively(root, cb) {
-    return findFieldLikeStructureRecursively(this._storage.$store()[root], cb);
-  }
-
-
-  setFieldAndFormDirty(pathToField, newDirtyValue) {
-    // TODO: review
-    // set to field
-    this._storage.setState(pathToField, { dirty: newDirtyValue });
-
-    // set to form
-    if (newDirtyValue) {
-      // TODO: review
-      // if field is dirty it means the form is dirty too
-      this._storage.setFormState('dirty', true);
-    }
-    else {
-      // if field not dirty - calculate form's dirty state
-      // search for other dirty values in other fields
-      const hasAnyDirty = this._storage.findFieldStateRecursively('fieldsState', (field) => {
-        if (field.dirty) return true;
-      });
-      // TODO: review
-      this._storage.setFormState('dirty', !!hasAnyDirty);
-    }
-  }
-
 };

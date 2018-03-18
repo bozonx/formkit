@@ -113,8 +113,7 @@ module.exports = {
     let newDirtyValue;
 
     // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
-    if ((value === '' || _.isNil(value))
-      && (savedValue === '' || _.isNil(savedValue))) {
+    if ((value === '' || _.isNil(value)) && (savedValue === '' || _.isNil(savedValue))) {
       newDirtyValue = false;
     }
     else {

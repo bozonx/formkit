@@ -87,7 +87,11 @@ module.exports = class Field {
    * @param newValue
    */
   setValue(newValue) {
-    this._setValueProcess(newValue);
+    // set top value layer
+    this._fieldStorage.setValue(this._pathToField, newValue);
+    this.$recalcDirty();
+    this._form.$recalcDirty();
+    this.form.validate();
   }
 
   /**
@@ -144,7 +148,7 @@ module.exports = class Field {
 
     if (isChanged) {
       // set value, dirty state and validate
-      this._setValueProcess(newValue);
+      this.setValue(newValue);
 
       // set touched to true
       if (!this.touched) {
@@ -281,13 +285,11 @@ module.exports = class Field {
    * Recalculate dirty state.
    */
   $recalcDirty() {
-    // TODO: review
-    this._fieldStorage.setFieldAndFormDirty(
-      this._pathToField,
-      calculateDirty(this.value, this.savedValue)
-    );
-  }
+    const newDirtyValue =  calculateDirty(this.value, this.savedValue);
 
+    // set to field
+    this._fieldStorage.setState(this._pathToField, { dirty: newDirtyValue });
+  }
 
   /**
    * Init field state.
@@ -411,14 +413,6 @@ module.exports = class Field {
     this._fieldStorage.emit(pathToField, 'change', eventData);
     // run form's change handler
     this._form.$emit('change', { [pathToField]: newValue });
-  }
-
-  _setValueProcess(newValue) {
-    // set top value layer
-    this._fieldStorage.setValue(this._pathToField, newValue);
-    // TODO: будет поднято 2 storageChange события
-    this.$recalcDirty();
-    this.form.validate();
   }
 
 };

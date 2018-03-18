@@ -49,7 +49,7 @@ module.exports = class Storage {
 
   eachField(cb) {
     findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
-      cb(field, path);
+      return cb(field, path);
     });
   }
 

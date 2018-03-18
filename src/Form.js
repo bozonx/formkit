@@ -151,66 +151,16 @@ module.exports = class Form {
     return this._runSubmitProcess();
   }
 
-
-  _runSubmitProcess() {
-    const values = this._formStorage.getValues();
-
-    this.$setState({ submitting: true });
-    this._formStorage.emit('submitStart', values);
-
-    if (!this._formStorage.getHandler('submit')) {
-      // if there isn't a submit callback, just finish submit process
-      this._afterSubmitSuccess(values);
-
-      return Promise.resolve(values);
-    }
-
-    // run submit callback
-    return this._runSubmitHandler(values);
+  /**
+   * Recalculate dirty state.
+   */
+  $recalcDirty() {
+    // search for dirty values in fields
+    const hasAnyDirty = findInFieldRecursively(this.fields, (field) => {
+      if (field.dirty) return true;
+    });
+    this._formStorage.setState({ dirty: !!hasAnyDirty });
   }
-
-  _runSubmitHandler(values) {
-    const returnedValue = this._formStorage.getHandler('submit')(values);
-
-    // if cb returns a promise - wait for its fulfilling
-    if (isPromise(returnedValue)) {
-      return returnedValue
-        .then((data) => {
-          this._afterSubmitSuccess(values);
-
-          return data;
-        })
-        .catch((error) => {
-          this.setState({ submitting: false });
-          this._formStorage.emit('submitEnd', { error });
-
-          return Promise.reject(error);
-        });
-    }
-    else {
-      // else if cb returns any other types - don't wait and finish submit process
-      this._afterSubmitSuccess(values);
-
-      return Promise.resolve(values);
-    }
-  }
-
-  _afterSubmitSuccess(values) {
-    this.$setState({ submitting: false });
-
-    if (this.config.allowUpdateSavedValuesAfterSubmit) {
-      // TODO: review
-      this._storage.setAllSavedValues(values);
-      // update all the dirty states
-      // TODO: review
-      findInFieldRecursively(this.fields, (field) => {
-        field.$recalcDirty();
-      });
-    }
-
-    this._formStorage.emit('submitEnd');
-  }
-
 
   /**
    * Start form save immediately.
@@ -348,6 +298,68 @@ module.exports = class Form {
 
   $emit(eventName, data) {
     // TODO: call formStorage.emit
+  }
+
+
+  _runSubmitProcess() {
+    const values = this._formStorage.getValues();
+
+    this.$setState({ submitting: true });
+    this._formStorage.emit('submitStart', values);
+
+    if (!this._formStorage.getHandler('submit')) {
+      // if there isn't a submit callback, just finish submit process
+      this._afterSubmitSuccess(values);
+
+      return Promise.resolve(values);
+    }
+
+    // run submit callback
+    return this._runSubmitHandler(values);
+  }
+
+  _runSubmitHandler(values) {
+    const returnedValue = this._formStorage.getHandler('submit')(values);
+
+    // if cb returns a promise - wait for its fulfilling
+    if (isPromise(returnedValue)) {
+      return returnedValue
+        .then((data) => {
+          this._afterSubmitSuccess(values);
+
+          return data;
+        })
+        .catch((error) => {
+          this.setState({ submitting: false });
+          this._formStorage.emit('submitEnd', { error });
+
+          return Promise.reject(error);
+        });
+    }
+    else {
+      // else if cb returns any other types - don't wait and finish submit process
+      this._afterSubmitSuccess(values);
+
+      return Promise.resolve(values);
+    }
+  }
+
+  _afterSubmitSuccess(values) {
+    this.$setState({ submitting: false });
+
+    if (this.config.allowUpdateSavedValuesAfterSubmit) {
+      // TODO: review
+      this._storage.setAllSavedValues(values);
+      // update all the dirty states
+      // TODO: review
+      findInFieldRecursively(this.fields, (field) => {
+        field.$recalcDirty();
+      });
+    }
+    // recalc dirty state of form
+    this.$recalcDirty();
+
+    this._formStorage.emit('submitEnd');
   }
 
   /**
