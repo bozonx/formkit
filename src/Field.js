@@ -343,11 +343,11 @@ module.exports = class Field {
 
   /**
    * Do field saving process.
-   * * set "isSaving" state to true
+   * * set "saving" state to true
    * * rise "saveStart" event
    * * call "save" callback. If it returns a promise - wait for it
    * and after saving ends:
-   * * set "isSaving" state to false
+   * * set "saving" state to false
    * * rise "saveEnd" event
    * @return {Promise|undefined} - if "save" callback returns promise this method returns it.
    * @private
@@ -357,13 +357,13 @@ module.exports = class Field {
     const saveCb = this._fieldStorage.getHandler(this._pathToField, 'onSave');
     const saveEnd = (err) => {
       // set saving: false
-      this._fieldStorage.setState(this._pathToField, { isSaving: false });
+      this._fieldStorage.setState(this._pathToField, { saving: false });
       // rise saveEnd
       this._fieldStorage.emit(this._pathToField, 'saveEnd', err);
     };
 
     // set saving: true
-    this._fieldStorage.setState(this._pathToField, { isSaving: true });
+    this._fieldStorage.setState(this._pathToField, { saving: true });
     // rise saveStart event
     this._fieldStorage.emit(this._pathToField, 'saveStart', data);
 

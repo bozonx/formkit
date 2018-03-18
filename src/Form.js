@@ -3,6 +3,7 @@ const Storage = require('./Storage');
 const FormStorage = require('./FormStorage');
 const FieldStorage = require('./FieldStorage');
 const Field = require('./Field');
+const DebouncedCall = require('./DebouncedCall');
 const { findInFieldRecursively, findRecursively, isPromise } = require('./helpers');
 
 
@@ -14,6 +15,7 @@ module.exports = class Form {
     this._fieldStorage = new FieldStorage(this._storage);
     this._fields = {};
     this._validateCb = null;
+    this._formSaveDebouncedCall = new DebouncedCall(this._config.debounceTime);
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.save = this.save.bind(this);
@@ -41,8 +43,16 @@ module.exports = class Form {
     return this._formStorage.getState('touched');
   }
 
+  /**
+   * Returns true if form or one or more of its field is saving.
+   */
   get saving() {
-    return this._formStorage.isSaving();
+    // TODO: reveiw
+    if (this._storage.$store().formState.saving) return true;
+
+    return !!findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field) => {
+      if (field.saving) return true;
+    });
   }
 
   get submitting() {
@@ -58,7 +68,18 @@ module.exports = class Form {
   }
 
   get valid() {
-    return this._formStorage.isValid();
+    // TODO: reveiw
+    let valid = true;
+
+    findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field) => {
+      if (!field.valid) {
+        valid = false;
+
+        return true;
+      }
+    });
+
+    return valid;
   }
 
   get config() {
@@ -167,9 +188,10 @@ module.exports = class Form {
    * @return {Promise}
    */
   save() {
+    // TODO: review - why reject ???
     if (!this.valid) return Promise.reject(new Error('Form is invalid'));
 
-    return this._formStorage.riseFormDebouncedSave(true);
+    return this._riseFormDebouncedSave(true);
   }
 
   /**
@@ -191,7 +213,7 @@ module.exports = class Form {
    */
   cancelSaving() {
     // TODO: test
-    this._formStorage.cancelSaving();
+    this._formSaveDebouncedCall.cancel();
   }
 
   /**
@@ -210,7 +232,7 @@ module.exports = class Form {
    * Saving immediately
    */
   flushSaving() {
-    this._formStorage.flushSaving();
+    this._formSaveDebouncedCall.flush();
   }
 
   /**
@@ -378,5 +400,18 @@ module.exports = class Form {
     const newField = new Field(pathToField, fieldParams, this, this._fieldStorage);
     _.set(this.fields, pathToField, newField);
   }
+
+  _riseFormDebouncedSave(force) {
+    // TODO: что за $startSaving ???
+    return this._formSaveDebouncedCall.exec(() => this.$startSaving(
+      this._storage.getUnsavedValues(),
+      // TODO: review
+      this._formCallbacks.save,
+      // TODO: setState неправильно используется
+      (...p) => this.setState('saving', ...p),
+      (...p) => this._riseFormEvent(...p),
+    ), force);
+  }
+
 
 };
