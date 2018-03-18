@@ -47,12 +47,9 @@ module.exports = class Form {
    * Returns true if form or one or more of its field is saving.
    */
   get saving() {
-    // TODO: reveiw
-    if (this._storage.$store().formState.saving) return true;
+    return this._formStorage.getState('saving');
 
-    return !!findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field) => {
-      if (field.saving) return true;
-    });
+    // TODO: test - saving у формы должен проставляться при сохранении поля
   }
 
   get submitting() {
@@ -68,18 +65,8 @@ module.exports = class Form {
   }
 
   get valid() {
-    // TODO: reveiw
-    let valid = true;
-
-    findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field) => {
-      if (!field.valid) {
-        valid = false;
-
-        return true;
-      }
-    });
-
-    return valid;
+    return this._formStorage.getState('valid');
+    // TODO: test - valid у формы должен проставляться при валидации
   }
 
   get config() {
