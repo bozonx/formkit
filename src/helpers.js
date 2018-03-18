@@ -55,6 +55,7 @@ module.exports = {
    * @param cb
    */
   findFieldLikeStructureRecursively(rootObject, cb) {
+    // TODO: reveiw
     const isContainer = (item) => {
       let container = true;
       _.find(item, (field) => {
@@ -91,19 +92,35 @@ module.exports = {
    *       }
    *     }
    * @param rootObject
-   * @param cb
+   * @param {function} cb - callback like (items, pathToItem) => {}.
+   *                        If it returns false it means don't go deeper.
    */
   findRecursively(rootObject, cb) {
+    // TODO: test
     const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
       const itemPath = _.trim(`${rootPath}.${name}`, '.');
 
-      if (_.isPlainObject(item)) {
+      const cbResult = cb(item, itemPath);
+      if (_.isUndefined(cbResult)) {
+        // go deeper
         return recursive(item, itemPath);
       }
-      else {
-        // it's field
-        return cb(item, itemPath);
+      else if (cbResult === false) {
+        // don't go deeper
+        return undefined;
       }
+      else {
+        // found - stop search
+        return cbResult;
+      }
+
+      // if (_.isPlainObject(item)) {
+      //   return recursive(item, itemPath);
+      // }
+      // else {
+      //   // it's field
+      //   return cb(item, itemPath);
+      // }
     });
 
     return recursive(rootObject, '');

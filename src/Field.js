@@ -407,8 +407,7 @@ module.exports = class Field {
     const fieldOnChangeHandler = this._fieldStorage.getHandler(pathToField, 'onChange');
     if (fieldOnChangeHandler) fieldOnChangeHandler(eventData);
     // call forms's onChange handler
-    const formOnChangeHandler = this._form.$getHandler('onChange');
-    if (formOnChangeHandler) formOnChangeHandler({ [pathToField]: newValue });
+    this._form.$callHandler('onChange', { [pathToField]: newValue });
 
     // Rise events field's change handler
     this._fieldStorage.emit(pathToField, 'change', eventData);

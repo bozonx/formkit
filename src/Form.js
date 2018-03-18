@@ -182,17 +182,24 @@ module.exports = class Form {
   }
 
   /**
-   * Roll back to previously saved values.
+   * Roll back to initial values for all the fields.
    */
   clear() {
     findInFieldRecursively(this.fields, (field) => field.clear());
   }
 
   /**
-   * Reset values to default values.
+   * Reset values to default values for all the fields.
    */
   reset() {
     findInFieldRecursively(this.fields, (field) => field.reset());
+  }
+
+  /**
+   * Roll back to previously saved values for all the fields.
+   */
+  revert() {
+    findInFieldRecursively(this.fields, (field) => field.revert());
   }
 
   /**
@@ -204,18 +211,6 @@ module.exports = class Form {
   }
 
   /**
-   * Cancel submitting
-   */
-  cancelSubmitting() {
-    // TODO: add and test
-  }
-
-  setValidateCb(cb) {
-    this._validateCb = cb;
-    this.validate();
-  }
-
-  /**
    * Saving immediately
    */
   flushSaving() {
@@ -223,35 +218,60 @@ module.exports = class Form {
   }
 
   /**
-   * Set form's values without rise a "change event"
-   * @param newValues
+   * Cancel submitting
+   */
+  cancelSubmitting() {
+    // TODO: add and test
+  }
+
+  /**
+   * Set callback wich will be called on each validating request.
+   * @param {function} cb - callback like (errors, values) => {...}
+   */
+  setValidateCb(cb) {
+    this._validateCb = cb;
+    this.validate();
+  }
+
+  /**
+   * Set form's values without rising a "change event"
+   * @param {object} newValues - fields values.
+   *                             You can set values all the fields or just to a part of fields.
    */
   setValues(newValues) {
-    // TODO: fix - неполучится устанавливать plain object values
+    // TODO: test plain object values
+    if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
+
     findRecursively(newValues, (value, path) => {
       const field = _.get(this.fields, path);
+      // if it is'n a field - go deeper
       if (!field || !(field instanceof Field)) return;
+      // else means it's field - set value and don't go deeper
       field.setValue(value);
+
+      return false;
     });
   }
 
   /**
-   * Set values to "saved" level and update current values.
+   * Set values to "saved" level and clear current values.
    * It usually runs after saving has successfully done.
    * It needs if you want to rollback user changes to previously saved values.
    * @param newValues
    */
   setSavedValues(newValues) {
-    // TODO: какая туту стратегия - полностью заменяем или обновляем???
-    findRecursively(this.fields, (field, path) => {
-      const value = _.get(newValues, path);
+    // TODO: test plain object values
+    if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
+
+    findRecursively(newValues, (value, path) => {
+      const field = _.get(this.fields, path);
+      // if it is'n a field - go deeper
+      if (!field || !(field instanceof Field)) return;
+      // else means it's field - set value and don't go deeper
       field.setSavedValue(value);
+
+      return false;
     });
-    // findRecursively(newValues, (value, path) => {
-    //   const field = _.get(this.fields, path);
-    //   if (!field || !(field instanceof Field)) return;
-    //   field.setSavedValue(value);
-    // });
   }
 
   /**
@@ -264,12 +284,13 @@ module.exports = class Form {
     const errors = {};
     const values = {};
 
-    // add sub structures for easy access to error
-    findRecursively(this.fields, (field, path) => {
+    // add sub structures to "errors" for easy access to error
+    findInFieldRecursively(this.fields, (field, path) => {
       _.set(values, path, field.value);
 
       const split = path.split('.');
-      if (split.length < 2) return;
+      const minPathItems = 2;
+      if (split.length < minPathItems) return;
 
       split.pop();
       const basePath = split.join();
@@ -277,36 +298,35 @@ module.exports = class Form {
       _.set(errors, basePath, {});
     });
 
+    // do validate
     this._validateCb(errors, values);
 
-    findRecursively(this.fields, (field, path) => {
-      //const field = _.get(this.fields, path);
-      if (!field || !(field instanceof Field)) return;
-
+    // set valid state to all the fields
+    findInFieldRecursively(this.fields, (field, path) => {
       const errorMsg = _.get(errors, path);
       field.$setValidState(errorMsg);
     });
-
-  }
-
-  $setState(partlyState) {
-    this._formStorage.setState(partlyState);
   }
 
   $getWholeStorageState() {
     return this._storage.getWholeStorageState();
   }
 
+  $setState(partlyState) {
+    this._formStorage.setState(partlyState);
+  }
+
   $startDebounceSave(force) {
     // TODO: !!!!!! see riseFormDebouncedSave
   }
 
-  $getHandler(handlerName) {
-    // TODO: get srom formStorage
+  $callHandler(handlerName, data) {
+    const formOnChangeHandler = this._formStorage.getHandler(handlerName);
+    if (formOnChangeHandler) formOnChangeHandler(data);
   }
 
   $emit(eventName, data) {
-    // TODO: call formStorage.emit
+    this._formStorage.emit(eventName, data);
   }
 
 
@@ -399,6 +419,5 @@ module.exports = class Form {
       (...p) => this._riseFormEvent(...p),
     ), force);
   }
-
 
 };
