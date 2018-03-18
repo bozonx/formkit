@@ -348,11 +348,11 @@ module.exports = class Form {
     this.$setState({ submitting: false });
 
     if (this.config.allowUpdateSavedValuesAfterSubmit) {
-      // TODO: review
-      this._storage.setAllSavedValues(values);
-      // update all the dirty states
-      // TODO: review
-      findInFieldRecursively(this.fields, (field) => {
+      // TODO: много поднимется событий sotrage change !!!
+      // TODO: test
+      findInFieldRecursively(this.fields, (field, pathToField) => {
+        // set value to saved value layer and clear top layer
+        field.setValue( _.get(values, pathToField) );
         field.$recalcDirty();
       });
     }

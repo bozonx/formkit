@@ -118,11 +118,6 @@ module.exports = class FormStorage {
 
 
 
-  setAllSavedValues(submittedValues) {
-    findFieldLikeStructureRecursively(this._storage.$store().fieldsState, (field, path) => {
-      field.savedValue = _.get(submittedValues, path);
-    });
-  }
 
   riseFormDebouncedSave(force) {
     return this._formSaveDebouncedCall.exec(() => this.$startSaving(

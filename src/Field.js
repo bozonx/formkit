@@ -107,6 +107,7 @@ module.exports = class Field {
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
     if (this._form.config.allowFocusedFieldUpdating || (!this._form.config.allowFocusedFieldUpdating && !this.focused)) {
+      // TODO: может лучше удалить верхний уровень???
       this.setValue(newSavedValue);
     }
   }
