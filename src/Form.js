@@ -16,6 +16,8 @@ module.exports = class Form {
     this._fields = {};
     this._validateCb = null;
     this._formSaveDebouncedCall = new DebouncedCall(this._config.debounceTime);
+    // handlers of onChange, onSubmit and onSave of form
+    this._handlers = {};
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.save = this.save.bind(this);
@@ -127,15 +129,15 @@ module.exports = class Form {
    * @param {function} handler - your handler
    */
   onChange(handler) {
-    this._formStorage.setHandler('change', handler);
+    this._handlers.change = handler;
   }
 
   onSave(handler) {
-    this._formStorage.setHandler('save', handler);
+    this._handlers.save = handler;
   }
 
   onSubmit(handler) {
-    this._formStorage.setHandler('submit', handler);
+    this._handlers.submit = handler;
   }
 
 
@@ -321,7 +323,8 @@ module.exports = class Form {
   }
 
   $callHandler(handlerName, data) {
-    const formOnChangeHandler = this._formStorage.getHandler(handlerName);
+    const formOnChangeHandler = this._handlers[handlerName];
+
     if (formOnChangeHandler) formOnChangeHandler(data);
   }
 
@@ -336,7 +339,7 @@ module.exports = class Form {
     this.$setState({ submitting: true });
     this._formStorage.emit('submitStart', values);
 
-    if (!this._formStorage.getHandler('submit')) {
+    if (!this._handlers['submit']) {
       // if there isn't a submit callback, just finish submit process
       this._afterSubmitSuccess(values);
 
@@ -348,7 +351,7 @@ module.exports = class Form {
   }
 
   _runSubmitHandler(values) {
-    const returnedValue = this._formStorage.getHandler('submit')(values);
+    const returnedValue = this._handlers.submit(values);
 
     // if cb returns a promise - wait for its fulfilling
     if (isPromise(returnedValue)) {

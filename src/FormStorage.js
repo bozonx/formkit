@@ -4,8 +4,6 @@ const _ = require('lodash');
 module.exports = class FormStorage {
   constructor(storage) {
     this._storage = storage;
-    // handlers of onChange, onSubmit and onSave of form
-    this._handlers = {};
   }
 
   getState(stateName) {
@@ -81,15 +79,6 @@ module.exports = class FormStorage {
     };
 
     this.emit('storage', data);
-  }
-
-  // TODO: test
-  getHandler(handlerName) {
-    return this._handlers[handlerName];
-  }
-
-  setHandler(handlerName, handler) {
-    this._handlers[handlerName] = handler;
   }
 
   /**
