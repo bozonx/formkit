@@ -103,6 +103,10 @@ module.exports = class FieldStorage {
     this._storage.events.emit(`field.${pathToField}.${eventName}`, data);
   }
 
+  off(pathToField, eventName, cb) {
+    this._storage.events.off(`field.${pathToField}.${eventName}`, cb);
+  }
+
   // TODO: test
   isFieldUnsaved(pathToField) {
     return _.get(this._storage.$store().fieldsState, pathToField).savedValue !== _.get(this._storage.$store().values, pathToField);

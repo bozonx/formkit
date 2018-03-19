@@ -32,7 +32,7 @@ module.exports = {
 
       if (_.isPlainObject(item)) {
         // it's a container
-        return recursive(item);
+        return recursive(item, itemPath);
       }
       else if (_.isObject(item)) {
         // it's a field
