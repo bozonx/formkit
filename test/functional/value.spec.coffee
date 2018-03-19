@@ -1,7 +1,7 @@
 formkit = require('../../src/index')
 
 
-describe 'Functional. Value, saved value, default value.', ->
+describe.only 'Functional. Value, saved value, default value.', ->
   beforeEach () ->
     @form = formkit.newForm()
     @form.init(['name'])
@@ -12,29 +12,20 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.equal(@form.fields.name.value, 'newValue')
     assert.isUndefined(@form.fields.name.savedValue)
 
-    assert.equal(@form._fieldStorage.getValue('name'), 'newValue')
-    assert.isUndefined(@form._fieldStorage.getState('name', 'savedValue'))
-
   it "set initial value", ->
     @form = formkit.newForm()
-    @form.init({name: {initial: 'initValue'}})
+    @form.init({ name: { initial: 'initValue' } })
 
     assert.equal(@form.fields.name.value, 'initValue')
     assert.isUndefined(@form.fields.name.savedValue)
-
-    assert.equal(@form._fieldStorage.getValue('name'), 'initValue')
-    assert.isUndefined(@form._fieldStorage.getState('name', 'savedValue'))
 
   it "set new saved value", ->
     @form.fields.name.handleChange('newValue')
     @form.fields.name.setSavedValue('newSavedValue')
 
-    assert.deepEqual(@form.values, {name: 'newSavedValue'})
+    assert.deepEqual(@form.values, { name: 'newSavedValue' })
     assert.equal(@form.fields.name.value, 'newSavedValue')
     assert.equal(@form.fields.name.savedValue, 'newSavedValue')
-
-    assert.equal(@form._fieldStorage.getValue('name'), 'newSavedValue')
-    assert.equal(@form._fieldStorage.getState('name', 'savedValue'), 'newSavedValue')
 
   it "set new values to whole form (machine update)", ->
     @form.fields.name.handleChange('newValue')
@@ -44,25 +35,22 @@ describe 'Functional. Value, saved value, default value.', ->
     assert.equal(@form.fields.name.value, 'newSavedValue')
     assert.equal(@form.fields.name.savedValue, 'newSavedValue')
 
-    assert.equal(@form._fieldStorage.getValue('name'), 'newSavedValue')
-    assert.equal(@form._fieldStorage.getState('name', 'savedValue'), 'newSavedValue')
-
-  it "clear user input of field", ->
+  it "revert user input of field", ->
     @form.fields.name.setSavedValue('savedValue')
     @form.fields.name.handleChange('userValue')
     @form.setValidateCb((errors) -> errors.name = 'bad value')
-    @form.fields.name.clear()
+    @form.fields.name.revert()
 
     assert.equal(@form.fields.name.value, 'savedValue')
     assert.isFalse(@form.fields.name.dirty)
     assert.isFalse(@form.fields.name.valid)
     assert.equal(@form.fields.name.invalidMsg, 'bad value')
 
-  it "clear user input of form", ->
+  it "revert user input of form", ->
     @form.fields.name.setSavedValue('savedValue')
     @form.fields.name.handleChange('userValue')
     @form.setValidateCb((errors) -> errors.name = 'bad value')
-    @form.clear()
+    @form.revert()
 
     assert.equal(@form.fields.name.value, 'savedValue')
     assert.isFalse(@form.fields.name.dirty)
