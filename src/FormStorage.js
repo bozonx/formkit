@@ -23,11 +23,25 @@ module.exports = class FormStorage {
     const savedValues = {};
 
     this._storage.eachField((field, path) => {
-      console.log(111111111 , field, field.get, path)
       _.set(savedValues, path, field.get('savedValue'));
     });
 
     return savedValues;
+  }
+
+  getInvalidMessages() {
+    const invalidMessages = [];
+
+    this._storage.eachField((field, path) => {
+      if (!field.get('valid') && field.get('invalidMsg')) {
+        invalidMessages.push({
+          path,
+          message: field.get('invalidMsg'),
+        });
+      }
+    });
+
+    return invalidMessages;
   }
 
   getUnsavedValues() {
@@ -44,22 +58,6 @@ module.exports = class FormStorage {
     });
 
     return unsavedValues;
-  }
-
-  getInvalidMessages() {
-    // TODO: test
-    const invalidMessages = [];
-
-    this._storage.eachField((field) => {
-      if (!field.get('valid') && field.get('invalidMsg')) {
-        invalidMessages.push({
-          path: field.get('path'),
-          message: field.get('invalidMsg'),
-        });
-      }
-    });
-
-    return invalidMessages;
   }
 
   /**

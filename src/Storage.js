@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
 const { Map } = require('immutable');
-const { findFieldLikeStructureRecursively } = require('./helpers');
+const { findRecursively } = require('./helpers');
 
 
 module.exports = class Storage {
@@ -45,8 +45,12 @@ module.exports = class Storage {
   }
 
   eachField(cb) {
-    findFieldLikeStructureRecursively(this._store.fieldsState, (field, path) => {
-      return cb(field, path);
+    findRecursively(this._store.fieldsState, (field, path) => {
+      if (!field || !(field instanceof Map)) return;
+
+      cb(field, path);
+
+      return false;
     });
   }
 

@@ -96,7 +96,6 @@ module.exports = {
    *                        If it returns false it means don't go deeper.
    */
   findRecursively(rootObject, cb) {
-    // TODO: test
     const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
       const itemPath = _.trim(`${rootPath}.${name}`, '.');
 
@@ -113,20 +112,13 @@ module.exports = {
         // found - stop search
         return cbResult;
       }
-
-      // if (_.isPlainObject(item)) {
-      //   return recursive(item, itemPath);
-      // }
-      // else {
-      //   // it's field
-      //   return cb(item, itemPath);
-      // }
     });
 
     return recursive(rootObject, '');
   },
 
   calculateDirty(value, savedValue) {
+    // TODO: test
     let newDirtyValue;
 
     // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
@@ -142,6 +134,7 @@ module.exports = {
   },
 
   getFieldName(pathToField) {
+    // TODO: test
     const split = pathToField.split('.');
     const onlyOneItem = 1;
 
@@ -150,28 +143,28 @@ module.exports = {
     return _.last(split);
   },
 
-  parseValidateCbReturn(cbReturn) {
-    const invalidMsg = (_.isString(cbReturn) && cbReturn !== '') ? cbReturn : undefined;
-    let result;
-    if (cbReturn === true) {
-      result = true;
-    }
-    else if (invalidMsg) {
-      result = invalidMsg;
-    }
-    else {
-      result = false;
-    }
-
-    return {
-      valid: cbReturn === true,
-      invalidMsg,
-      result,
-    };
-  },
-
   isPromise(unknown) {
     return _.isObject(unknown) && unknown.then;
   },
 
 };
+
+// parseValidateCbReturn(cbReturn) {
+//   const invalidMsg = (_.isString(cbReturn) && cbReturn !== '') ? cbReturn : undefined;
+//   let result;
+//   if (cbReturn === true) {
+//     result = true;
+//   }
+//   else if (invalidMsg) {
+//     result = invalidMsg;
+//   }
+//   else {
+//     result = false;
+//   }
+//
+//   return {
+//     valid: cbReturn === true,
+//     invalidMsg,
+//     result,
+//   };
+// },

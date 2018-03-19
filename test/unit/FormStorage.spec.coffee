@@ -46,7 +46,16 @@ describe.only 'Unit. FieldStorage.', ->
     assert.deepEqual(@formStorage.getSavedValues(), {
       path: {
         to: {
-          field: 'newValue'
+          field: 'value'
         }
       }
     })
+
+  it "getInvalidMessages", ->
+    @storage.setFieldState('field', { invalidMsg: 'value' })
+    assert.deepEqual(@formStorage.getInvalidMessages(), [
+      {
+        path: 'field'
+        message: 'value'
+      }
+    ])
