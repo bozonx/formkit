@@ -23,6 +23,7 @@ module.exports = class FormStorage {
     const savedValues = {};
 
     this._storage.eachField((field, path) => {
+      console.log(111111111 , field, field.get, path)
       _.set(savedValues, path, field.get('savedValue'));
     });
 
@@ -30,6 +31,7 @@ module.exports = class FormStorage {
   }
 
   getUnsavedValues() {
+    // TODO: test
     const unsavedValues = {};
 
     const values = this.getValues();
@@ -45,6 +47,7 @@ module.exports = class FormStorage {
   }
 
   getInvalidMessages() {
+    // TODO: test
     const invalidMessages = [];
 
     this._storage.eachField((field) => {
@@ -66,7 +69,7 @@ module.exports = class FormStorage {
   setState(partlyState) {
     const oldState = this._storage.getWholeFormState();
 
-    this._storage.setFieldState(partlyState);
+    this._storage.setFormState(partlyState);
 
     if (_.isEqual(oldState, this._storage.getWholeFormState())) return;
 
@@ -82,6 +85,7 @@ module.exports = class FormStorage {
     this.emit('storage', data);
   }
 
+  // TODO: test
   getHandler(handlerName) {
     return this._handlers[handlerName];
   }
@@ -109,6 +113,11 @@ module.exports = class FormStorage {
   emit(eventName, data) {
     // TODO: наверное префикс то не нужен!?
     this._storage.events.emit(`form.${eventName}`, data);
+  }
+
+  off(eventName, cb) {
+    // TODO: наверное префикс то не нужен!?
+    this._storage.events.off(`form.${eventName}`, cb);
   }
 
 };
