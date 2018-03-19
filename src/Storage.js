@@ -67,7 +67,7 @@ module.exports = class Storage {
 
     if (!fieldState) return;
 
-    return fieldState.getIn(stateName.split('.')).toJS();
+    return fieldState.getIn(stateName.split('.'));
   }
 
   getValue(pathToField) {

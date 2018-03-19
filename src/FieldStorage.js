@@ -23,6 +23,7 @@ module.exports = class FieldStorage {
    * @return {*}
    */
   getValue(pathToField) {
+    // TODO: test
     return this._storage.getValue(pathToField);
   }
 
@@ -79,6 +80,7 @@ module.exports = class FieldStorage {
     }
   }
 
+  // TODO: test
   getHandler(pathToField, handlerName) {
     if (!this._handlers[pathToField]) return;
 
@@ -101,53 +103,7 @@ module.exports = class FieldStorage {
     this._storage.events.emit(`field.${pathToField}.${eventName}`, data);
   }
 
-
-  // /**
-  //  * It calls from field on silent value change (after outer value setting).
-  //  * It means - it calls onlu on value changes by machine.
-  //  * It rises a "silentChange" and "anyChange" events.
-  //  * @param {string} pathToField
-  //  * @param {*} oldValue
-  //  */
-  // riseSilentChangeEvent(pathToField, oldValue) {
-  //   // TODO: remove
-  //   const eventData = {
-  //     fieldName: pathToField,
-  //     oldValue,
-  //     value: this.getValue(pathToField),
-  //     type: 'silentChange',
-  //   };
-  //
-  //   // Rise events
-  //   this.riseFieldEvent(pathToField, 'silentChange', eventData);
-  //   this._riseFormEvent('silentChange', eventData);
-  //   this.riseAnyChange(pathToField);
-  // }
-
-
-
-
-  // setFormCallback(eventName, cb) {
-  //   this._formCallbacks[eventName] = cb;
-  // }
-
-  // /**
-  //  * It rises a "stateChange" event.
-  //  * It rises on any change of value, initialValue or any state.
-  //  * @private
-  //  */
-  // _riseAnyChange(pathToField) {
-  //   this.emit(pathToField, 'anyChange');
-  //   this._riseFormEvent('anyChange');
-  // }
-  //
-  // _riseFormEvent(eventName, data) {
-  //   this._eventEmitter.emit(`form.${eventName}`, data);
-  // }
-
-
-
-
+  // TODO: test
   isFieldUnsaved(pathToField) {
     return _.get(this._storage.$store().fieldsState, pathToField).savedValue !== _.get(this._storage.$store().values, pathToField);
   }

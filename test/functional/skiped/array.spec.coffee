@@ -1,7 +1,7 @@
-formHelper = require('../../src/index')
+formHelper = require('../../../src/index')
 
 
-describe 'Functional. Array.', ->
+describe.skip 'Functional. Array.', ->
   beforeEach () ->
     this.form = formHelper.newForm()
     this.form.init(['name'])
