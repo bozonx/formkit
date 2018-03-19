@@ -2,7 +2,7 @@ formkit = require('../../src/index')
 Field = require('../../src/Field')
 
 
-describe 'Unit. Field.', ->
+describe.only 'Unit. Field.', ->
   beforeEach () ->
     @pathToField = 'testField'
     @form = formkit.newForm()
@@ -13,7 +13,7 @@ describe 'Unit. Field.', ->
     @form.validate = sinon.spy()
     @form._fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
     @form._storage._store.fieldsState[@pathToField] = undefined
-    field = new Field(@pathToField, {}, { form: @form, fieldStorage: @form._fieldStorage })
+    field = new Field(@pathToField, {}, @form, @form._fieldStorage)
 
     assert.deepEqual(@form._storage.getWholeFieldState(@pathToField), {
       defaultValue: undefined
@@ -38,7 +38,7 @@ describe 'Unit. Field.', ->
     @form._fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
     params = { disabled: true, defaultValue: 5, initial: 7 }
     @form._storage._store.fieldsState[@pathToField] = undefined
-    field = new Field(@pathToField, params, { form: @form, fieldStorage: @form._fieldStorage })
+    field = new Field(@pathToField, params, @form, @form._fieldStorage)
 
     assert.deepEqual(@form._storage.getWholeFieldState(@pathToField), {
       defaultValue: 5
@@ -75,6 +75,7 @@ describe 'Unit. Field.', ->
         valid: true
       },
       type: "state"
+      target: "field"
     }
     sinon.assert.calledWith storageChangeHandler, {
       action: 'replace',
@@ -83,4 +84,5 @@ describe 'Unit. Field.', ->
       oldValue: undefined,
       type: 'value',
       value: 7
+      target: "field"
     }

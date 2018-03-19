@@ -45,7 +45,7 @@ module.exports = class FieldStorage {
     if (_.isEqual(oldState, this._storage.getWholeFieldState(pathToField))) return;
 
     const data = {
-      target: 'filed',
+      target: 'field',
       field: pathToField,
       state: partlyState,
       oldState,
@@ -65,7 +65,7 @@ module.exports = class FieldStorage {
 
     if (!_.isEqual(oldValue, this.getValue(pathToField))) {
       const data = {
-        target: 'filed',
+        target: 'field',
         field: pathToField,
         value: newValue,
         oldValue,

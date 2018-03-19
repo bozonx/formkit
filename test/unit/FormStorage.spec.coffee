@@ -2,7 +2,7 @@ Storage = require('../../src/Storage')
 FormStorage = require('../../src/FormStorage')
 
 
-describe.only 'Unit. FieldStorage.', ->
+describe 'Unit. FieldStorage.', ->
   beforeEach () ->
     @storage = new Storage()
     @formStorage = new FormStorage(@storage)
