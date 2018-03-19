@@ -298,11 +298,11 @@ module.exports = class Field {
    * @private
    */
   _initState(params) {
-    const initialState = {
+    const initialState = _.omitBy({
       disabled: params.disabled,
       defaultValue: params.defaultValue,
       initial: params.initial,
-    };
+    }, _.isUndefined);
     // set initial value otherwise default value
     const newValue = (_.isUndefined(params.initial)) ? params.defaultValue : params.initial;
 

@@ -1,7 +1,7 @@
 formkit = require('../../src/index')
 
 
-describe.only 'Functional. Value, saved value, default value.', ->
+describe 'Functional. Value, saved value, default value.', ->
   beforeEach () ->
     @form = formkit.newForm()
     @form.init(['name'])
