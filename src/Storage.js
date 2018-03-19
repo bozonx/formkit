@@ -7,10 +7,7 @@ const { findFieldLikeStructureRecursively } = require('./helpers');
 module.exports = class Storage {
   constructor() {
     this.events = new EventEmitter();
-    this.init();
-  }
 
-  init() {
     this._store = {
       formState: new Map(this._generateNewFormState()),
       fieldsState: {},
