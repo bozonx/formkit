@@ -26,57 +26,16 @@ const extendDeep = function (willExtend, newValues) {
 module.exports = {
   extendDeep,
 
-  findInFieldRecursively(rootObject, cb) {
-    const recursive = (obj) => _.find(obj, (item) => {
+  findFieldRecursively(rootObject, cb) {
+    const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
+      const itemPath = _.trim(`${rootPath}.${name}`, '.');
+
       if (_.isPlainObject(item)) {
         // it's a container
         return recursive(item);
       }
       else if (_.isObject(item)) {
         // it's a field
-        return cb(item);
-      }
-    });
-
-    return recursive(rootObject);
-  },
-
-  /**
-   * It works with structure like this:
-   *     {
-   *       parent: {
-   *         // this will be pass to callback: cb({fieldProp: 'value'}, 'parent.field')
-   *         field: {
-   *           fieldProp: 'value'
-   *         }
-   *       }
-   *     }
-   * @param rootObject
-   * @param cb
-   */
-  findFieldLikeStructureRecursively(rootObject, cb) {
-    // TODO: reveiw
-    const isContainer = (item) => {
-      let container = true;
-      _.find(item, (field) => {
-        if (!_.isPlainObject(field)) {
-          container = false;
-
-          return true;
-        }
-      });
-
-      return container;
-    };
-
-    const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
-      const itemPath = _.trim(`${rootPath}.${name}`, '.');
-
-      if (_.isPlainObject(item) && isContainer(item)) {
-        return recursive(item, itemPath);
-      }
-      else {
-        // it's field
         return cb(item, itemPath);
       }
     });
@@ -148,6 +107,49 @@ module.exports = {
   },
 
 };
+
+
+// /**
+//  * It works with structure like this:
+//  *     {
+//  *       parent: {
+//  *         // this will be pass to callback: cb({fieldProp: 'value'}, 'parent.field')
+//  *         field: {
+//  *           fieldProp: 'value'
+//  *         }
+//  *       }
+//  *     }
+//  * @param rootObject
+//  * @param cb
+//  */
+// findFieldLikeStructureRecursively(rootObject, cb) {
+//   const isContainer = (item) => {
+//     let container = true;
+//     _.find(item, (field) => {
+//       if (!_.isPlainObject(field)) {
+//         container = false;
+//
+//         return true;
+//       }
+//     });
+//
+//     return container;
+//   };
+//
+//   const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
+//     const itemPath = _.trim(`${rootPath}.${name}`, '.');
+//
+//     if (_.isPlainObject(item) && isContainer(item)) {
+//       return recursive(item, itemPath);
+//     }
+//     else {
+//       // it's field
+//       return cb(item, itemPath);
+//     }
+//   });
+//
+//   return recursive(rootObject, '');
+// },
 
 // parseValidateCbReturn(cbReturn) {
 //   const invalidMsg = (_.isString(cbReturn) && cbReturn !== '') ? cbReturn : undefined;

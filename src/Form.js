@@ -4,7 +4,7 @@ const FormStorage = require('./FormStorage');
 const FieldStorage = require('./FieldStorage');
 const Field = require('./Field');
 const DebouncedCall = require('./DebouncedCall');
-const { findInFieldRecursively, findRecursively, isPromise } = require('./helpers');
+const { findFieldRecursively, findRecursively, isPromise } = require('./helpers');
 
 
 module.exports = class Form {
@@ -166,7 +166,7 @@ module.exports = class Form {
    */
   $recalcDirty() {
     // search for dirty values in fields
-    const hasAnyDirty = findInFieldRecursively(this.fields, (field) => {
+    const hasAnyDirty = findFieldRecursively(this.fields, (field) => {
       if (field.dirty) return true;
     });
     this._formStorage.setState({ dirty: !!hasAnyDirty });
@@ -187,21 +187,21 @@ module.exports = class Form {
    * Roll back to initial values for all the fields.
    */
   clear() {
-    findInFieldRecursively(this.fields, (field) => field.clear());
+    findFieldRecursively(this.fields, (field) => field.clear());
   }
 
   /**
    * Reset values to default values for all the fields.
    */
   reset() {
-    findInFieldRecursively(this.fields, (field) => field.reset());
+    findFieldRecursively(this.fields, (field) => field.reset());
   }
 
   /**
    * Roll back to previously saved values for all the fields.
    */
   revert() {
-    findInFieldRecursively(this.fields, (field) => field.revert());
+    findFieldRecursively(this.fields, (field) => field.revert());
   }
 
   /**
@@ -287,7 +287,7 @@ module.exports = class Form {
     const values = {};
 
     // add sub structures to "errors" for easy access to error
-    findInFieldRecursively(this.fields, (field, path) => {
+    findFieldRecursively(this.fields, (field, path) => {
       _.set(values, path, field.value);
 
       const split = path.split('.');
@@ -304,7 +304,7 @@ module.exports = class Form {
     this._validateCb(errors, values);
 
     // set valid state to all the fields
-    findInFieldRecursively(this.fields, (field, path) => {
+    findFieldRecursively(this.fields, (field, path) => {
       const errorMsg = _.get(errors, path);
       field.$setValidState(errorMsg);
     });
@@ -382,7 +382,7 @@ module.exports = class Form {
     if (this.config.allowUpdateSavedValuesAfterSubmit) {
       // TODO: много поднимется событий sotrage change !!!
       // TODO: test
-      findInFieldRecursively(this.fields, (field, pathToField) => {
+      findFieldRecursively(this.fields, (field, pathToField) => {
         // set value to saved value layer and clear top layer
         field.setValue( _.get(values, pathToField) );
         field.$recalcDirty();

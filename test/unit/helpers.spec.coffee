@@ -2,6 +2,23 @@ helpers = require('../../src/helpers')
 
 
 describe 'Unit. helpers.', ->
+  it "findFieldRecursively", ->
+    class Field
+      constructor: ->
+
+    field = new Field()
+    obj = {
+      parent: {
+        field: field
+      }
+    }
+    cb = sinon.spy()
+
+    helpers.findFieldRecursively(obj, cb)
+
+    sinon.assert.calledOnce(cb)
+    sinon.assert.calledWith(cb, field, 'parent.field')
+
   describe "findRecursively", ->
     it "deep.", ->
       cb = sinon.spy()
