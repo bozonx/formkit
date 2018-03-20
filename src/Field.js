@@ -13,6 +13,10 @@ module.exports = class Field {
 
     this._pathToField = pathToField;
     this._fieldName = getFieldName(pathToField);
+    this._handlers = {
+      onChange: undefined,
+      onSave: undefined,
+    };
 
     this._initState(params);
 
@@ -214,7 +218,7 @@ module.exports = class Field {
    * @param {function} handler - callback. You can set only one callback per field.
    */
   onChange(handler) {
-    this._fieldStorage.setHandler(this._pathToField, 'onChange', handler);
+    this._handlers.onChange = handler;
   }
 
   /**
@@ -223,7 +227,7 @@ module.exports = class Field {
    *                             You can set only one callback per field.
    */
   onSave(handler) {
-    this._fieldStorage.setHandler(this._pathToField, 'onSave', handler);
+    this._handlers.onSave = handler;
   }
 
   /**
@@ -354,7 +358,7 @@ module.exports = class Field {
    */
   _startSaving() {
     const data = this.value;
-    const saveCb = this._fieldStorage.getHandler(this._pathToField, 'onSave');
+    const saveCb = this._handlers.onSave;
     const saveEnd = (err) => {
       // set saving: false
       this._fieldStorage.setState(this._pathToField, { saving: false });
@@ -404,7 +408,7 @@ module.exports = class Field {
     };
 
     // call field's onChange handler
-    const fieldOnChangeHandler = this._fieldStorage.getHandler(pathToField, 'onChange');
+    const fieldOnChangeHandler = this._handlers.onChange;
     if (fieldOnChangeHandler) fieldOnChangeHandler(eventData);
     // call forms's onChange handler
     this._form.$callHandler('onChange', { [pathToField]: newValue });

@@ -4,8 +4,6 @@ const _ = require('lodash');
 module.exports = class FieldStorage {
   constructor(storage) {
     this._storage = storage;
-    // handlers of onChange and onSave of fields
-    this._handlers = {};
   }
 
   initState(pathToField, initialState) {
@@ -78,21 +76,6 @@ module.exports = class FieldStorage {
       // TODO: поднимать общее событие, не на на pathToField
       this.emit(pathToField, 'storage', data);
     }
-  }
-
-  // TODO: test
-  getHandler(pathToField, handlerName) {
-    if (!this._handlers[pathToField]) return;
-
-    return this._handlers[pathToField][handlerName];
-  }
-
-  setHandler(pathToField, handlerName, handler) {
-    if (!this._handlers[pathToField]) {
-      this._handlers[pathToField] = {};
-    }
-
-    this._handlers[pathToField][handlerName] = handler;
   }
 
   on(pathToField, eventName, cb) {

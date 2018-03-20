@@ -16,8 +16,11 @@ module.exports = class Form {
     this._fields = {};
     this._validateCb = null;
     this._formSaveDebouncedCall = new DebouncedCall(this._config.debounceTime);
-    // handlers of onChange, onSubmit and onSave of form
-    this._handlers = {};
+    this._handlers = {
+      onChange: undefined,
+      onSave: undefined,
+      onSubmit: undefined,
+    };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.save = this.save.bind(this);
