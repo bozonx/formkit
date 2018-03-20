@@ -71,7 +71,6 @@ module.exports = class Form {
 
   get valid() {
     return this._formStorage.getState('valid');
-    // TODO: test - valid у формы должен проставляться при валидации
   }
 
   get config() {
@@ -305,6 +304,7 @@ module.exports = class Form {
 
     const errors = {};
     const values = {};
+    let isFormValid = true;
 
     // add sub structures to "errors" for easy access to error
     findFieldRecursively(this.fields, (field, path) => {
@@ -326,8 +326,12 @@ module.exports = class Form {
     // set valid state to all the fields
     findFieldRecursively(this.fields, (field, path) => {
       const errorMsg = _.get(errors, path);
+      if (isFormValid) isFormValid = !errorMsg;
+
       field.$setValidState(errorMsg);
     });
+
+    this._formStorage.setState({ valid: isFormValid });
   }
 
   $getWholeStorageState() {

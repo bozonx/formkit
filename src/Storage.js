@@ -106,7 +106,7 @@ module.exports = class Storage {
       savedValue: undefined,
       saving: false,
       focused: false,
-      // TODO: нет смысла сохранять
+      // TODO: нет смысла сохранять - use invalidMsg
       valid: true,
     };
   }
@@ -117,6 +117,7 @@ module.exports = class Storage {
       touched: false,
       submitting: false,
       saving: false,
+      valid: true,
     };
   }
 
