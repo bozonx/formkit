@@ -132,15 +132,15 @@ module.exports = class Form {
    * @param {function} handler - your handler
    */
   onChange(handler) {
-    this._handlers.change = handler;
+    this._handlers.onChange = handler;
   }
 
   onSave(handler) {
-    this._handlers.save = handler;
+    this._handlers.onSave = handler;
   }
 
   onSubmit(handler) {
-    this._handlers.submit = handler;
+    this._handlers.onSubmit = handler;
   }
 
 
@@ -342,7 +342,7 @@ module.exports = class Form {
     this.$setState({ submitting: true });
     this._formStorage.emit('submitStart', values);
 
-    if (!this._handlers['submit']) {
+    if (!this._handlers.onSubmit) {
       // if there isn't a submit callback, just finish submit process
       this._afterSubmitSuccess(values);
 
@@ -354,7 +354,7 @@ module.exports = class Form {
   }
 
   _runSubmitHandler(values) {
-    const returnedValue = this._handlers.submit(values);
+    const returnedValue = this._handlers.onSubmit(values);
 
     // if cb returns a promise - wait for its fulfilling
     if (isPromise(returnedValue)) {
