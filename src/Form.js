@@ -65,8 +65,8 @@ module.exports = class Form {
    * allow/disallow submit. It helpful to use as "disabled" button's attribute.
    * @return {boolean} - true if allows to submit.
    */
-  get submitable() {
-    return this.valid && !this.submitting;
+  get submittable() {
+    return !this.canSubmit();
   }
 
   get valid() {
@@ -89,6 +89,7 @@ module.exports = class Form {
   get invalidMessages() {
     return this._formStorage.getInvalidMessages();
   }
+
 
   /**
    * It calls from outer app's code to init form.
@@ -143,25 +144,41 @@ module.exports = class Form {
     this._handlers.onSubmit = handler;
   }
 
+  /**
+   * Check for ability to form submit.
+   * @return {string|undefined} - returns undefined if it's OK else returns a reason.
+   */
+  canSubmit() {
+    // disallow submit invalid form
+    if (!this.valid) return `The form is invalid`;
+    // do nothing if form is submitting at the moment
+    if (this.submitting) return `The form is submitting now.`;
+
+    if (!this._config.allowSubmitUnchangedForm) {
+      if (!this.dirty) return `The form hasn't changed`;
+    }
+  }
 
   /**
    * It can be placed as a handler of <form> element on onSubmit attribute.
+   * Please check ability of submission of form by calling `form.canSubmit()` or use submittable param
    * @return {Promise} - wait for submit has finished
    */
   handleSubmit() {
-    // disallow submit invalid form
-    // TODO: review - why reject ???
-    if (!this.valid) return Promise.reject(new Error(`The form is invalid`));
-    // do nothing if form is submitting at the moment
-    // TODO: review - why reject ???
-    if (this._formStorage.getState('submitting')) return Promise.reject(new Error(`The form is submitting now.`));
+    const values = this._formStorage.getValues();
 
-    if (!this._config.allowSubmitUnchangedForm) {
-      // TODO: review - why reject ???
-      if (!this._formStorage.getState('dirty')) return Promise.reject(new Error(`The form hasn't changed`));
+    this.$setState({ submitting: true });
+    this._formStorage.emit('submitStart', values);
+
+    if (!this._handlers.onSubmit) {
+      // if there isn't a submit callback, just finish submit process
+      this._afterSubmitSuccess(values);
+
+      return Promise.resolve(values);
     }
 
-    return this._runSubmitProcess();
+    // run submit callback
+    return this._runSubmitHandler(values);
   }
 
   /**
@@ -335,23 +352,6 @@ module.exports = class Form {
     this._formStorage.emit(eventName, data);
   }
 
-
-  _runSubmitProcess() {
-    const values = this._formStorage.getValues();
-
-    this.$setState({ submitting: true });
-    this._formStorage.emit('submitStart', values);
-
-    if (!this._handlers.onSubmit) {
-      // if there isn't a submit callback, just finish submit process
-      this._afterSubmitSuccess(values);
-
-      return Promise.resolve(values);
-    }
-
-    // run submit callback
-    return this._runSubmitHandler(values);
-  }
 
   _runSubmitHandler(values) {
     const returnedValue = this._handlers.onSubmit(values);
