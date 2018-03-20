@@ -93,7 +93,7 @@ module.exports = class FormStorage {
    * @param cb
    */
   on(eventName, cb) {
-    // TODO: наверное префикс то не нужен!?
+    // TODO: наверное префикс то не нужен!? - тогда не поймаешь storage событие
     this._storage.events.on(`form.${eventName}`, cb);
   }
 

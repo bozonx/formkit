@@ -149,12 +149,12 @@ module.exports = class Form {
    */
   canSubmit() {
     // disallow submit invalid form
-    if (!this.valid) return `The form is invalid`;
+    if (!this.valid) return `The form is invalid.`;
     // do nothing if form is submitting at the moment
     if (this.submitting) return `The form is submitting now.`;
 
     if (!this._config.allowSubmitUnchangedForm) {
-      if (!this.dirty) return `The form hasn't changed`;
+      if (!this.dirty) return `The form hasn't changed.`;
     }
   }
 
@@ -369,7 +369,7 @@ module.exports = class Form {
           return data;
         })
         .catch((error) => {
-          this.setState({ submitting: false });
+          this.$setState({ submitting: false });
           this._formStorage.emit('submitEnd', { error });
 
           return Promise.reject(error);
@@ -396,6 +396,7 @@ module.exports = class Form {
       });
     }
     // recalc dirty state of form
+    // TODO: ??? why???
     this.$recalcDirty();
 
     this._formStorage.emit('submitEnd');
@@ -428,7 +429,7 @@ module.exports = class Form {
       // TODO: review
       this._formCallbacks.save,
       // TODO: setState неправильно используется
-      (...p) => this.setState('saving', ...p),
+      (...p) => this.$setState('saving', ...p),
       (...p) => this._riseFormEvent(...p),
     ), force);
   }

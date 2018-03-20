@@ -1,7 +1,7 @@
 formHelper = require('../../src/index')
 
 
-describe.only 'Functional. Validate.', ->
+describe 'Functional. Validate.', ->
   beforeEach () ->
     @form = formHelper.newForm()
 
