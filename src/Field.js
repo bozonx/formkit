@@ -64,6 +64,9 @@ module.exports = class Field {
   get saving() {
     return this._fieldStorage.getState(this._pathToField, 'saving');
   }
+  get savable() {
+    return !this.canSave();
+  }
   get focused() {
     return this._fieldStorage.getState(this._pathToField, 'focused');
   }
@@ -75,6 +78,20 @@ module.exports = class Field {
   }
   get debounceTime() {
     return this._debouncedCall.delay;
+  }
+
+  /**
+   * Check for field can be saved.
+   * @return {string|undefined} - undefined means it can. Otherwise it returns a reason.
+   */
+  canSave() {
+    // don't save invalid value
+    if (!this.valid) return 'Field is invalid';
+
+    // save only value which was modified.
+    if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) {
+      return `Value hasn't modified`;
+    }
   }
 
   /**
@@ -346,27 +363,29 @@ module.exports = class Field {
   }
 
   /**
-   * Start saving field and form in they have a save handlers.
-   * It will reset saving in progress before start saving.
-   * @param {boolean} force
+   * Start saving field and form if they have a corresponding handlers.
+   * @param {boolean} isImmediately
    *   * if true it will save immediately.
    *   * if false it will save with dobounce delay
    * @private
    * @return {Promise}
    */
-  _addSavingToQueue(force) {
-    // don't save invalid value
-    // TODO: review
-    if (!this.valid) return Promise.reject(new Error('Field is invalid'));
-    // save only value which was modified.
-    // TODO: review
-    if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) return Promise.reject(new Error(`Value hasn't modified`));
+  _addSavingToQueue(isImmediately) {
+
+    // TODO: проверить логику - должно либо встать в очередь либо отменить текущее сохранение
+    /*
+     * If "force" param is true it will cancel current saving process before start a new one.
+     * If "force" param is false it add this saving process to queue.
+     */
+
+    // do nothing if field isn't savable
+    if (!this.savable) return Promise.resolve();
 
     // do save after debounce
-    const fieldPromise = this._debouncedCall.exec(this._startSaving, force);
+    const fieldPromise = this._debouncedCall.exec(this._startSaving, isImmediately);
 
     // rise form's save handler
-    this._form.$startDebounceSave(force);
+    this._form.$startDebounceSave(isImmediately);
 
     return fieldPromise;
   }
