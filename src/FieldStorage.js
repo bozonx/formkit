@@ -17,7 +17,7 @@ module.exports = class FieldStorage {
 
   /**
    * get current value
-   * @param pathToField
+   * @param {string} pathToField - path to your field
    * @return {*}
    */
   getValue(pathToField) {
@@ -33,7 +33,7 @@ module.exports = class FieldStorage {
    * Set state value to field.
    * Field has to be initialized previously.
    * It rises an "anyChange" event of field
-   * @param pathToField
+   * @param {string} pathToField - path to your field
    * @param partlyState
    */
   setState(pathToField, partlyState) {
@@ -90,9 +90,16 @@ module.exports = class FieldStorage {
     this._storage.events.off(`field.${pathToField}.${eventName}`, cb);
   }
 
-  // TODO: test
+  /**
+   * Field means unsaved if its value not equal to previously saved value.
+   * @param {string} pathToField - path to your field
+   * @return {boolean} - true if field unsaved
+   */
   isFieldUnsaved(pathToField) {
-    return _.get(this._storage.$store().fieldsState, pathToField).savedValue !== _.get(this._storage.$store().values, pathToField);
+    // TODO: test
+    const savedValue = this.getState(pathToField, 'savedValue');
+
+    return savedValue !== this.getValue(pathToField);
   }
 
 };

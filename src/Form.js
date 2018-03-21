@@ -15,7 +15,7 @@ module.exports = class Form {
     this._fieldStorage = new FieldStorage(this._storage);
     this._fields = {};
     this._validateCb = null;
-    this._formSaveDebouncedCall = new DebouncedCall(this._config.debounceTime);
+    this._saveDebouncedCall = new DebouncedCall(this._config.debounceTime);
     this._handlers = {
       onChange: undefined,
       onSave: undefined,
@@ -26,6 +26,7 @@ module.exports = class Form {
     this.save = this.save.bind(this);
     this.clear = this.clear.bind(this);
     this.reset = this.reset.bind(this);
+    /this._doSave = this._doSave.bind(this);
   }
 
   get fields() {
@@ -238,14 +239,14 @@ module.exports = class Form {
    */
   cancelSaving() {
     // TODO: test
-    this._formSaveDebouncedCall.cancel();
+    this._saveDebouncedCall.cancel();
   }
 
   /**
    * Saving immediately
    */
   flushSaving() {
-    this._formSaveDebouncedCall.flush();
+    this._saveDebouncedCall.flush();
   }
 
   /**
@@ -352,8 +353,8 @@ module.exports = class Form {
     this._formStorage.setState(partlyState);
   }
 
-  $startDebounceSave(force) {
-    // TODO: !!!!!! see riseFormDebouncedSave
+  $startDebounceSave(isImmediately) {
+    this._riseFormDebouncedSave(isImmediately);
   }
 
   $callHandler(handlerName, data) {
@@ -366,59 +367,54 @@ module.exports = class Form {
     this._formStorage.emit(eventName, data);
   }
 
-  $startSaving(data, saveCb, setSavingState, riseEvent) {
 
-    // TODO: !!!!! review
-
-    // set saving: true
-    setSavingState(true);
-    // rise saveStart event
-    riseEvent('saveStart', data);
-
-    const saveEnd = () => {
-      // set saving: false
-      setSavingState(false);
-      // rise saveEnd
-      riseEvent('saveEnd');
-    };
-
-    if (saveCb) {
-      // run save callback
-      const cbPromise = saveCb(data);
-      if (isPromise(cbPromise)) {
-        return cbPromise.then(() => saveEnd(), (error) => {
-          setSavingState(false);
-          riseEvent('saveEnd', { error });
-
-          return Promise.reject(error);
-        });
-      }
-
-      // if save callback hasn't returned a promise
-      saveEnd();
-    }
-    else {
-      // if there isn't save callback
-      saveEnd();
-    }
+  _riseFormDebouncedSave(isImmediately) {
+    return this._saveDebouncedCall.exec(this._doSave, isImmediately);
   }
-
-  _riseFormDebouncedSave(force) {
-
-    // TODO: !!!!! зачем это у формы, если save относится к fiel??
-
-    // TODO: что за $startSaving ???
-    return this._formSaveDebouncedCall.exec(() => this.$startSaving(
-      this._storage.getUnsavedValues(),
-      // TODO: review
-      this._formCallbacks.save,
-      // TODO: setState неправильно используется
-      (...p) => this.$setState('saving', ...p),
-      (...p) => this._riseFormEvent(...p),
-    ), force);
-  }
-
-
+  //
+  // _doSave(data, saveCb, setSavingState, riseEvent) {
+  //
+  //   // this._storage.getUnsavedValues(),
+  //   //   // TODO: review
+  //   //   this._formCallbacks.save,
+  //   //   // TODO: setState неправильно используется
+  //   //   (...p) => this.$setState('saving', ...p),
+  //   //   (...p) => this._riseFormEvent(...p),
+  //
+  //   // TODO: !!!!! review
+  //
+  //   // set saving: true
+  //   this.$setState({ saving: true });
+  //   // rise saveStart event
+  //   riseEvent('saveStart', data);
+  //
+  //   const saveEnd = () => {
+  //     // set saving: false
+  //     this.$setState({ saving: false });
+  //     // rise saveEnd
+  //     riseEvent('saveEnd');
+  //   };
+  //
+  //   if (saveCb) {
+  //     // run save callback
+  //     const cbPromise = saveCb(data);
+  //     if (isPromise(cbPromise)) {
+  //       return cbPromise.then(() => saveEnd(), (error) => {
+  //         this.$setState({ saving: false });
+  //         riseEvent('saveEnd', { error });
+  //
+  //         return Promise.reject(error);
+  //       });
+  //     }
+  //
+  //     // if save callback hasn't returned a promise
+  //     saveEnd();
+  //   }
+  //   else {
+  //     // if there isn't save callback
+  //     saveEnd();
+  //   }
+  // }
 
   _runSubmitHandler(values) {
     const returnedValue = this._handlers.onSubmit(values);

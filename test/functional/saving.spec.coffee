@@ -1,48 +1,43 @@
 formHelper = require('../../src/index')
 
 
-describe.only 'Functional. saving.', ->
+describe 'Functional. saving.', ->
   describe 'field saving.', ->
     beforeEach () ->
       @form = formHelper.newForm()
       @form.init([ 'name' ])
+      @field = @form.fields.name
       @saveHandler = sinon.spy();
 
     it 'save debounced after value had changed', ->
-      @form.onSave(@formSaveHandler)
-      @form.fields.name.onSave(@saveHandler)
+      @field.onSave(@saveHandler)
+      @field.handleChange('newValue')
+      # reset debounce
+      @field.flushSaving()
 
-      @form.fields.name.handleChange('newValue')
-      @form.fields.name._debouncedCall.flush()
+      assert.isFalse(@field.saving)
 
-      assert.isFalse(@form.fields.name.saving)
+      sinon.assert.calledOnce(@saveHandler)
+      sinon.assert.calledWith(@saveHandler, 'newValue')
 
-      expect(@saveHandler).to.have.been.calledOnce
-      expect(@saveHandler).to.have.been.calledWith('newValue')
+    it 'after change and pressing enter, value has to save immediately
+             and only the last save callback will be called', ->
+      @field.onSave(@saveHandler)
+      @field.handleChange('newValue')
+      @field.handlePressEnter()
+      # it isn't really need but any way
+      @field.flushSaving()
 
-    it 'after change and pressing enter, value must save immediately and only last sase callback will be called', ->
-      @form.fields.name.onSave(@saveHandler)
-      @form.fields.name.handleChange('newValue')
-      @form.fields.name.handlePressEnter()
-
-      @form.fields.name._debouncedCall.flush()
-
-      expect(@saveHandler).to.have.been.calledOnce
-      expect(@saveHandler).to.have.been.calledWith('newValue')
+      sinon.assert.calledOnce(@saveHandler)
+      sinon.assert.calledWith(@saveHandler, 'newValue')
 
     it "don't save invalid value", ->
       @form.setValidateCb((errors) -> errors.name = 'bad value')
-      @form.fields.name.onSave(@saveHandler)
-      @form.fields.name.handleChange('newValue')
-      @form.fields.name._debouncedCall.flush()
+      @field.onSave(@saveHandler)
+      @field.handleChange('newValue')
+      @field.flushSaving()
 
-      expect(@saveHandler).to.have.not.been.called
-
-    it 'after change value must save debounced', ->
-      @form.onSave(@formSaveHandler)
-      @form.fields.name.onSave(@saveHandler)
-      @form.fields.name.handleChange('newValue')
-      @form.fields.name._debouncedCall.flush()
+      sinon.assert.notCalled(@saveHandler)
 
     it "save callback returns a promise", ->
       startSaveHandler = sinon.spy()
@@ -51,26 +46,25 @@ describe.only 'Functional. saving.', ->
       saveHandler = () =>
         return new Promise (resolve) =>
           handlerResolve = resolve
-      @form.fields.name.onSave(saveHandler)
-      @form.fields.name.on('saveStart', startSaveHandler)
-      @form.fields.name.on('saveEnd', endSaveHandler)
+      @field.onSave(saveHandler)
+      @field.on('saveStart', startSaveHandler)
+      @field.on('saveEnd', endSaveHandler)
 
       # change field's data
-      #@form.fields.name.handleChange('newValue')
-      @form.fields.name.setValue('newValue')
+      @field.setValue('newValue')
       # saving is false because the save cb is waiting for running
-      assert.isFalse(@form.fields.name.saving)
+      assert.isFalse(@field.saving)
       # start saving by hands - it cancel previous save cb
-      savePromise = @form.fields.name.save()
+      savePromise = @field.save()
       # saving is true after saving has started
-      assert.isTrue(@form.fields.name.saving)
+      assert.isTrue(@field.saving)
       # resolve the save promise
       handlerResolve()
 
       savePromise.then () =>
-        assert.isFalse(@form.fields.name.saving)
-        expect(startSaveHandler).to.have.been.calledOnce
-        expect(endSaveHandler).to.have.been.calledOnce
+        assert.isFalse(@field.saving)
+        sinon.assert.calledOnce(startSaveHandler)
+        sinon.assert.calledOnce(endSaveHandler)
 
 
   describe 'whole form saving.', ->

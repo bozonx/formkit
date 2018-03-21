@@ -390,7 +390,7 @@ module.exports = class Field {
     const fieldPromise = this._debouncedCall.exec(this._doSave, isImmediately);
 
     // rise form's save handler
-    //this._form.$startDebounceSave(isImmediately);
+    this._form.$startDebounceSave(isImmediately);
 
     return fieldPromise;
   }
