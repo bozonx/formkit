@@ -3,7 +3,6 @@ const Storage = require('./Storage');
 const FormStorage = require('./FormStorage');
 const FieldStorage = require('./FieldStorage');
 const Field = require('./Field');
-const DebouncedCall = require('./DebouncedCall');
 const { findFieldRecursively, findRecursively, isPromise } = require('./helpers');
 
 
@@ -15,18 +14,14 @@ module.exports = class Form {
     this._fieldStorage = new FieldStorage(this._storage);
     this._fields = {};
     this._validateCb = null;
-    this._saveDebouncedCall = new DebouncedCall(this._config.debounceTime);
     this._handlers = {
       onChange: undefined,
-      onSave: undefined,
       onSubmit: undefined,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.save = this.save.bind(this);
     this.clear = this.clear.bind(this);
     this.reset = this.reset.bind(this);
-    /this._doSave = this._doSave.bind(this);
   }
 
   get fields() {
@@ -136,20 +131,8 @@ module.exports = class Form {
     this._handlers.onChange = handler;
   }
 
-  onSave(handler) {
-    this._handlers.onSave = handler;
-  }
-
   onSubmit(handler) {
     this._handlers.onSubmit = handler;
-  }
-
-  /**
-   * Check for ability to save form.
-   * @return {string|undefined} - returns undefined if it's OK else returns a reason.
-   */
-  canSave() {
-    if (!this.valid) return 'Form is invalid';
   }
 
   /**
@@ -201,19 +184,6 @@ module.exports = class Form {
   }
 
   /**
-   * Start form save immediately.
-   * @return {Promise}
-   */
-  save() {
-
-    // TODO: review - why save form ???
-
-    if (!this.savable) return Promise.resolve();
-
-    return this._riseFormDebouncedSave(true);
-  }
-
-  /**
    * Roll back to initial values for all the fields.
    */
   clear() {
@@ -232,21 +202,6 @@ module.exports = class Form {
    */
   revert() {
     findFieldRecursively(this.fields, (field) => field.revert());
-  }
-
-  /**
-   * Cancel saving
-   */
-  cancelSaving() {
-    // TODO: test
-    this._saveDebouncedCall.cancel();
-  }
-
-  /**
-   * Saving immediately
-   */
-  flushSaving() {
-    this._saveDebouncedCall.flush();
   }
 
   /**
@@ -353,10 +308,6 @@ module.exports = class Form {
     this._formStorage.setState(partlyState);
   }
 
-  $startDebounceSave(isImmediately) {
-    this._riseFormDebouncedSave(isImmediately);
-  }
-
   $callHandler(handlerName, data) {
     const formOnChangeHandler = this._handlers[handlerName];
 
@@ -366,55 +317,6 @@ module.exports = class Form {
   $emit(eventName, data) {
     this._formStorage.emit(eventName, data);
   }
-
-
-  _riseFormDebouncedSave(isImmediately) {
-    return this._saveDebouncedCall.exec(this._doSave, isImmediately);
-  }
-  //
-  // _doSave(data, saveCb, setSavingState, riseEvent) {
-  //
-  //   // this._storage.getUnsavedValues(),
-  //   //   // TODO: review
-  //   //   this._formCallbacks.save,
-  //   //   // TODO: setState неправильно используется
-  //   //   (...p) => this.$setState('saving', ...p),
-  //   //   (...p) => this._riseFormEvent(...p),
-  //
-  //   // TODO: !!!!! review
-  //
-  //   // set saving: true
-  //   this.$setState({ saving: true });
-  //   // rise saveStart event
-  //   riseEvent('saveStart', data);
-  //
-  //   const saveEnd = () => {
-  //     // set saving: false
-  //     this.$setState({ saving: false });
-  //     // rise saveEnd
-  //     riseEvent('saveEnd');
-  //   };
-  //
-  //   if (saveCb) {
-  //     // run save callback
-  //     const cbPromise = saveCb(data);
-  //     if (isPromise(cbPromise)) {
-  //       return cbPromise.then(() => saveEnd(), (error) => {
-  //         this.$setState({ saving: false });
-  //         riseEvent('saveEnd', { error });
-  //
-  //         return Promise.reject(error);
-  //       });
-  //     }
-  //
-  //     // if save callback hasn't returned a promise
-  //     saveEnd();
-  //   }
-  //   else {
-  //     // if there isn't save callback
-  //     saveEnd();
-  //   }
-  // }
 
   _runSubmitHandler(values) {
     const returnedValue = this._handlers.onSubmit(values);

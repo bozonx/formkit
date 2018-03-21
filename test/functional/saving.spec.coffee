@@ -40,79 +40,38 @@ describe 'Functional. saving.', ->
       sinon.assert.notCalled(@saveHandler)
 
     it "save callback returns a promise", ->
-      startSaveHandler = sinon.spy()
-      endSaveHandler = sinon.spy()
+      formStartSaveHandler = sinon.spy()
+      formEndSaveHandler = sinon.spy()
+      fieldStartSaveHandler = sinon.spy()
+      fieldEndSaveHandler = sinon.spy()
       handlerResolve = null
       saveHandler = () =>
         return new Promise (resolve) =>
           handlerResolve = resolve
       @field.onSave(saveHandler)
-      @field.on('saveStart', startSaveHandler)
-      @field.on('saveEnd', endSaveHandler)
+      @form.on('saveStart', formStartSaveHandler)
+      @form.on('saveEnd', formEndSaveHandler)
+      @field.on('saveStart', fieldStartSaveHandler)
+      @field.on('saveEnd', fieldEndSaveHandler)
 
       # change field's data
       @field.setValue('newValue')
       # saving is false because the save cb is waiting for running
+      assert.isFalse(@form.saving)
       assert.isFalse(@field.saving)
       # start saving by hands - it cancel previous save cb
       savePromise = @field.save()
       # saving is true after saving has started
+      assert.isTrue(@form.saving)
       assert.isTrue(@field.saving)
+      sinon.assert.calledOnce(formStartSaveHandler)
+      sinon.assert.calledOnce(fieldStartSaveHandler)
+
       # resolve the save promise
       handlerResolve()
 
       savePromise.then () =>
-        assert.isFalse(@field.saving)
-        sinon.assert.calledOnce(startSaveHandler)
-        sinon.assert.calledOnce(endSaveHandler)
-
-
-  describe 'whole form saving.', ->
-    beforeEach () ->
-      @form = formHelper.newForm()
-      @form.init(['param1', 'param2', 'param3'])
-      @formSaveHandler = sinon.spy();
-
-    it 'save param1 and param3', ->
-      @form.onSave(@formSaveHandler)
-
-      @form.fields.param1.handleChange('newValue1')
-      @form.fields.param3.handleChange('newValue3')
-
-      @form.fields.param1._debouncedCall.flush()
-      @form.fields.param3._debouncedCall.flush()
-
-      @form._events.flushFormSaving()
-
-      expect(@formSaveHandler).to.have.been.calledOnce
-      expect(@formSaveHandler).to.have.been.calledWith({
-        param1: 'newValue1',
-        param3: 'newValue3',
-      })
-
-    it "save callback returns a promise", ->
-      startSaveHandler = sinon.spy()
-      endSaveHandler = sinon.spy()
-      handlerResolve = null
-      saveHandler = () =>
-        return new Promise (resolve) =>
-          handlerResolve = resolve
-      @form.onSave(saveHandler)
-      @form.on('saveStart', startSaveHandler)
-      @form.on('saveEnd', endSaveHandler)
-
-      @form.fields.param1.handleChange('newValue')
-
-      assert.isFalse(@form.saving)
-
-      @form.fields.param1.cancelSaving()
-      savePromise = @form.save()
-
-      assert.isTrue(@form.saving)
-
-      handlerResolve()
-
-      savePromise.then () =>
         assert.isFalse(@form.saving)
-        expect(startSaveHandler).to.have.been.calledOnce
-        expect(endSaveHandler).to.have.been.calledOnce
+        assert.isFalse(@field.saving)
+        sinon.assert.calledOnce(formEndSaveHandler)
+        sinon.assert.calledOnce(fieldEndSaveHandler)
