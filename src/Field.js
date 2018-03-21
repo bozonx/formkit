@@ -7,7 +7,6 @@ module.exports = class Field {
   constructor(pathToField, params, form, fieldStorage) {
     this._form = form;
     this._fieldStorage = fieldStorage;
-    // TODO: may be move to events?
     this._debouncedCall = new DebouncedCall(this._form.config.debounceTime);
     if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
 
@@ -128,7 +127,6 @@ module.exports = class Field {
     this._debouncedCall.delay = toNumber;
   }
 
-
   /**
    * It's an onChange handler. It has to be placed to input's onChange attribute.
    * It sets a new value made by user and start saving.
@@ -147,8 +145,8 @@ module.exports = class Field {
     // don't do anything if disabled
     if (this.disabled) return;
 
-    // TODO: clone не нужен так как значение должно быть immutable
-    const oldValue = _.cloneDeep(this.value);
+    // value is immutable
+    const oldValue = this.value;
     const isChanged = !_.isEqual(oldValue, newValue);
 
     if (isChanged) {
@@ -320,6 +318,34 @@ module.exports = class Field {
   }
 
   /**
+   * It calls form field on value changed by user
+   * It rises a "change" event.
+   * It rises only if value changed by user.
+   * @param {string} pathToField
+   * @param {*} oldValue
+   * @param {*} newValue
+   */
+  _riseUserChangeEvent(pathToField, oldValue, newValue) {
+    const eventData = {
+      fieldName: pathToField,
+      oldValue,
+      value: newValue,
+      event: 'change',
+    };
+
+    // call field's onChange handler
+    const fieldOnChangeHandler = this._handlers.onChange;
+    if (fieldOnChangeHandler) fieldOnChangeHandler(eventData);
+    // call forms's onChange handler
+    this._form.$callHandler('onChange', { [pathToField]: newValue });
+
+    // Rise events field's change handler
+    this._fieldStorage.emit(pathToField, 'change', eventData);
+    // run form's change handler
+    this._form.$emit('change', { [pathToField]: newValue });
+  }
+
+  /**
    * Start saving field and form in they have a save handlers.
    * It will reset saving in progress before start saving.
    * @param {boolean} force
@@ -388,35 +414,6 @@ module.exports = class Field {
     // if save callback hasn't returned a promise
     // or if there isn't a save callback
     saveEnd();
-  }
-
-
-  /**
-   * It calls form field on value changed by user
-   * It rises a "change" event.
-   * It rises only if value changed by user.
-   * @param {string} pathToField
-   * @param {*} oldValue
-   * @param {*} newValue
-   */
-  _riseUserChangeEvent(pathToField, oldValue, newValue) {
-    const eventData = {
-      fieldName: pathToField,
-      oldValue,
-      value: newValue,
-      event: 'change',
-    };
-
-    // call field's onChange handler
-    const fieldOnChangeHandler = this._handlers.onChange;
-    if (fieldOnChangeHandler) fieldOnChangeHandler(eventData);
-    // call forms's onChange handler
-    this._form.$callHandler('onChange', { [pathToField]: newValue });
-
-    // Rise events field's change handler
-    this._fieldStorage.emit(pathToField, 'change', eventData);
-    // run form's change handler
-    this._form.$emit('change', { [pathToField]: newValue });
   }
 
 };
