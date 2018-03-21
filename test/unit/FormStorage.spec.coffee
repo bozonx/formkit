@@ -2,7 +2,7 @@ Storage = require('../../src/Storage')
 FormStorage = require('../../src/FormStorage')
 
 
-describe 'Unit. FieldStorage.', ->
+describe.only 'Unit. FormStorage.', ->
   beforeEach () ->
     @storage = new Storage()
     @formStorage = new FormStorage(@storage)
@@ -14,7 +14,7 @@ describe 'Unit. FieldStorage.', ->
     assert.isTrue(@formStorage.getState('dirty'))
     assert.isTrue(@formStorage.getState('touched'))
     assert.isTrue(@formStorage.getState('submitting'))
-    assert.isFalse(@formStorage.getState('saving'))
+    assert.isTrue(@formStorage.getState('valid'))
 
   it "storage change event", ->
     changeHandler = sinon.spy()
@@ -25,7 +25,7 @@ describe 'Unit. FieldStorage.', ->
     sinon.assert.calledWith(changeHandler, {
       action: "update",
       event: "storage",
-      oldState: { dirty: false, saving: false, submitting: false, touched: false },
+      oldState: { dirty: false, valid: true, submitting: false, touched: false },
       state: { submitting: true },
       target: "form",
       type: "state"

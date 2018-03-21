@@ -59,8 +59,10 @@ describe 'Functional. saving.', ->
       # saving is false because the save cb is waiting for running
       assert.isFalse(@form.saving)
       assert.isFalse(@field.saving)
+
       # start saving by hands - it cancel previous save cb
       savePromise = @field.save()
+
       # saving is true after saving has started
       assert.isTrue(@form.saving)
       assert.isTrue(@field.saving)

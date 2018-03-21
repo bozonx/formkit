@@ -116,7 +116,6 @@ module.exports = class Storage {
       dirty: false,
       touched: false,
       submitting: false,
-      saving: false,
       valid: true,
     };
   }

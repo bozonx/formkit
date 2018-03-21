@@ -48,9 +48,9 @@ module.exports = class Form {
    * Returns true if form or one or more of its field is saving.
    */
   get saving() {
-    return this._formStorage.getState('saving');
-
-    // TODO: test - saving у формы должен проставляться при сохранении поля
+    return Boolean(findFieldRecursively(this._fields, (field) => {
+      return field.saving;
+    }));
   }
 
   get submitting() {
