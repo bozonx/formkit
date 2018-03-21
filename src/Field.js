@@ -26,7 +26,8 @@ module.exports = class Field {
     this.save = this.save.bind(this);
     this.clear = this.clear.bind(this);
     this.reset = this.reset.bind(this);
-    this._startSaving = this._startSaving.bind(this);
+    this._doSave = this._doSave.bind(this);
+    this._afterSaveEnd = this._afterSaveEnd.bind(this);
   }
 
   get form() {
@@ -120,7 +121,7 @@ module.exports = class Field {
    */
   setSavedValue(newSavedValue) {
     // set saved value
-    this._fieldStorage.setState(this._pathToField, { savedValue: newSavedValue });
+    this._setState({ savedValue: newSavedValue });
 
     // TODO: лучше устанавливать в любом случае, а вот очищать state level только если поле не под фокусом
 
@@ -134,7 +135,7 @@ module.exports = class Field {
 
   setDisabled(value) {
     if (!_.isBoolean(value)) throw new Error(`Disabled has to be boolean`);
-    this._fieldStorage.setState(this._pathToField, { disabled: value });
+    this._setState({ disabled: value });
   }
 
   setDebounceTime(delay) {
@@ -172,7 +173,7 @@ module.exports = class Field {
 
       // set touched to true
       if (!this.touched) {
-        this._fieldStorage.setState(this._pathToField, { touched: true });
+        this._setState({ touched: true });
         this._form.$setState({ touched: true });
       }
     }
@@ -190,14 +191,14 @@ module.exports = class Field {
    * Set field's "focused" prop to true.
    */
   handleFocusIn() {
-    this._fieldStorage.setState(this._pathToField, { focused: true });
+    this._setState({ focused: true });
   }
 
   /**
    * Set field's "focused" prop to false.
    */
   handleBlur() {
-    this._fieldStorage.setState(this._pathToField, { focused: false });
+    this._setState({ focused: false });
     // start save immediately
     this.save();
   }
@@ -295,7 +296,7 @@ module.exports = class Field {
    * @param {string|undefined} invalidMsg - invalid message of undefined
    */
   $setValidState(invalidMsg) {
-    this._fieldStorage.setState(this._pathToField, {
+    this._setState({
       valid: _.isUndefined(invalidMsg),
       invalidMsg,
     });
@@ -308,7 +309,11 @@ module.exports = class Field {
     const newDirtyValue =  calculateDirty(this.value, this.savedValue);
 
     // set to field
-    this._fieldStorage.setState(this._pathToField, { dirty: newDirtyValue });
+    this._setState({ dirty: newDirtyValue });
+  }
+
+  _setState(partlyState) {
+    this._fieldStorage.setState(this._pathToField, partlyState);
   }
 
   /**
@@ -366,9 +371,9 @@ module.exports = class Field {
    * Start saving field and form if they have a corresponding handlers.
    * @param {boolean} isImmediately
    *   * if true it will save immediately.
-   *   * if false it will save with dobounce delay
+   *   * if false it will save with debounce delay
    * @private
-   * @return {Promise}
+   * @return {Promise} - promise of saving process or just resolve if field isn't savable.
    */
   _addSavingToQueue(isImmediately) {
 
@@ -382,10 +387,10 @@ module.exports = class Field {
     if (!this.savable) return Promise.resolve();
 
     // do save after debounce
-    const fieldPromise = this._debouncedCall.exec(this._startSaving, isImmediately);
+    const fieldPromise = this._debouncedCall.exec(this._doSave, isImmediately);
 
     // rise form's save handler
-    this._form.$startDebounceSave(isImmediately);
+    //this._form.$startDebounceSave(isImmediately);
 
     return fieldPromise;
   }
@@ -401,29 +406,24 @@ module.exports = class Field {
    * @return {Promise|undefined} - if "save" callback returns promise this method returns it.
    * @private
    */
-  _startSaving() {
+  _doSave() {
+    // value is immutable
     const data = this.value;
-    const saveCb = this._handlers.onSave;
-    const saveEnd = (err) => {
-      // set saving: false
-      this._fieldStorage.setState(this._pathToField, { saving: false });
-      // rise saveEnd
-      this._fieldStorage.emit(this._pathToField, 'saveEnd', err);
-    };
 
     // set saving: true
-    this._fieldStorage.setState(this._pathToField, { saving: true });
+    this._setState({ saving: true });
     // rise saveStart event
     this._fieldStorage.emit(this._pathToField, 'saveStart', data);
 
-    if (saveCb) {
+    if (this._handlers.onSave) {
       // run save callback
-      const cbPromise = saveCb(data);
+      const cbPromise = this._handlers.onSave(data);
+
       if (isPromise(cbPromise)) {
         return cbPromise
-          .then(() => saveEnd())
+          .then(this._afterSaveEnd)
           .catch((error) => {
-            saveEnd({ error });
+            this._afterSaveEnd({ error });
 
             return Promise.reject(error);
           });
@@ -432,7 +432,14 @@ module.exports = class Field {
 
     // if save callback hasn't returned a promise
     // or if there isn't a save callback
-    saveEnd();
+    this._afterSaveEnd();
+  }
+
+  _afterSaveEnd(err) {
+    // set saving: false
+    this._setState({ saving: false });
+    // rise saveEnd
+    this._fieldStorage.emit(this._pathToField, 'saveEnd', err);
   }
 
 };

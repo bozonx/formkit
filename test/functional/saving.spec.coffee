@@ -8,7 +8,7 @@ describe.only 'Functional. saving.', ->
       @form.init([ 'name' ])
       @saveHandler = sinon.spy();
 
-    it 'save debounced after change value', ->
+    it 'save debounced after value had changed', ->
       @form.onSave(@formSaveHandler)
       @form.fields.name.onSave(@saveHandler)
 

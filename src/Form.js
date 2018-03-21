@@ -144,6 +144,14 @@ module.exports = class Form {
   }
 
   /**
+   * Check for ability to save form.
+   * @return {string|undefined} - returns undefined if it's OK else returns a reason.
+   */
+  canSave() {
+    if (!this.valid) return 'Form is invalid';
+  }
+
+  /**
    * Check for ability to form submit.
    * @return {string|undefined} - returns undefined if it's OK else returns a reason.
    */
@@ -196,8 +204,10 @@ module.exports = class Form {
    * @return {Promise}
    */
   save() {
-    // TODO: review - why reject ???
-    if (!this.valid) return Promise.reject(new Error('Form is invalid'));
+
+    // TODO: review - why save form ???
+
+    if (!this.savable) return Promise.resolve();
 
     return this._riseFormDebouncedSave(true);
   }
@@ -356,6 +366,59 @@ module.exports = class Form {
     this._formStorage.emit(eventName, data);
   }
 
+  $startSaving(data, saveCb, setSavingState, riseEvent) {
+
+    // TODO: !!!!! review
+
+    // set saving: true
+    setSavingState(true);
+    // rise saveStart event
+    riseEvent('saveStart', data);
+
+    const saveEnd = () => {
+      // set saving: false
+      setSavingState(false);
+      // rise saveEnd
+      riseEvent('saveEnd');
+    };
+
+    if (saveCb) {
+      // run save callback
+      const cbPromise = saveCb(data);
+      if (isPromise(cbPromise)) {
+        return cbPromise.then(() => saveEnd(), (error) => {
+          setSavingState(false);
+          riseEvent('saveEnd', { error });
+
+          return Promise.reject(error);
+        });
+      }
+
+      // if save callback hasn't returned a promise
+      saveEnd();
+    }
+    else {
+      // if there isn't save callback
+      saveEnd();
+    }
+  }
+
+  _riseFormDebouncedSave(force) {
+
+    // TODO: !!!!! зачем это у формы, если save относится к fiel??
+
+    // TODO: что за $startSaving ???
+    return this._formSaveDebouncedCall.exec(() => this.$startSaving(
+      this._storage.getUnsavedValues(),
+      // TODO: review
+      this._formCallbacks.save,
+      // TODO: setState неправильно используется
+      (...p) => this.$setState('saving', ...p),
+      (...p) => this._riseFormEvent(...p),
+    ), force);
+  }
+
+
 
   _runSubmitHandler(values) {
     const returnedValue = this._handlers.onSubmit(values);
@@ -417,59 +480,6 @@ module.exports = class Form {
     // create new one
     const newField = new Field(pathToField, fieldParams, this, this._fieldStorage);
     _.set(this.fields, pathToField, newField);
-  }
-
-  _riseFormDebouncedSave(force) {
-
-    // TODO: !!!!! зачем это у формы, если save относится к fiel??
-
-    // TODO: что за $startSaving ???
-    return this._formSaveDebouncedCall.exec(() => this.$startSaving(
-      this._storage.getUnsavedValues(),
-      // TODO: review
-      this._formCallbacks.save,
-      // TODO: setState неправильно используется
-      (...p) => this.$setState('saving', ...p),
-      (...p) => this._riseFormEvent(...p),
-    ), force);
-  }
-
-
-  $startSaving(data, saveCb, setSavingState, riseEvent) {
-
-    // TODO: !!!!! review
-
-    // set saving: true
-    setSavingState(true);
-    // rise saveStart event
-    riseEvent('saveStart', data);
-
-    const saveEnd = () => {
-      // set saving: false
-      setSavingState(false);
-      // rise saveEnd
-      riseEvent('saveEnd');
-    };
-
-    if (saveCb) {
-      // run save callback
-      const cbPromise = saveCb(data);
-      if (isPromise(cbPromise)) {
-        return cbPromise.then(() => saveEnd(), (error) => {
-          setSavingState(false);
-          riseEvent('saveEnd', { error });
-
-          return Promise.reject(error);
-        });
-      }
-
-      // if save callback hasn't returned a promise
-      saveEnd();
-    }
-    else {
-      // if there isn't save callback
-      saveEnd();
-    }
   }
 
 };
