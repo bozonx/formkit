@@ -173,17 +173,6 @@ module.exports = class Form {
   }
 
   /**
-   * Recalculate dirty state.
-   */
-  $recalcDirty() {
-    // search for dirty values in fields
-    const hasAnyDirty = findFieldRecursively(this.fields, (field) => {
-      if (field.dirty) return true;
-    });
-    this._formStorage.setState({ dirty: !!hasAnyDirty });
-  }
-
-  /**
    * Roll back to initial values for all the fields.
    */
   clear() {
@@ -306,6 +295,17 @@ module.exports = class Form {
 
   $setState(partlyState) {
     this._formStorage.setState(partlyState);
+  }
+
+  /**
+   * Recalculate dirty state.
+   */
+  $recalcDirty() {
+    // search for dirty values in fields
+    const hasAnyDirty = findFieldRecursively(this.fields, (field) => {
+      if (field.dirty) return true;
+    });
+    this._formStorage.setState({ dirty: !!hasAnyDirty });
   }
 
   $callHandler(handlerName, data) {
