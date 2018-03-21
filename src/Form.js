@@ -45,7 +45,7 @@ module.exports = class Form {
   }
 
   /**
-   * Returns true if form or one or more of its field is saving.
+   * Returns true if one or more fields are saving.
    */
   get saving() {
     return Boolean(findFieldRecursively(this._fields, (field) => {

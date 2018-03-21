@@ -1,7 +1,7 @@
 formHelper = require('../../src/index')
 
 
-describe.only 'Functional. onChange and handleChange.', ->
+describe 'Functional. onChange and handleChange.', ->
   beforeEach () ->
     @form = formHelper.newForm()
     @form.init(['name'])

@@ -1,7 +1,7 @@
 formHelper = require('../../src/index')
 
 
-describe 'Functional. Submit.', ->
+describe.only 'Functional. Submit.', ->
   beforeEach () ->
     @form = formHelper.newForm()
     @form.init(['name'])

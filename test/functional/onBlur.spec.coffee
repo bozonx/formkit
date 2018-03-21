@@ -3,31 +3,27 @@ formHelper = require('../../src/index')
 
 describe 'Functional. onBlur.', ->
   beforeEach () ->
-    this.form = formHelper.newForm()
-    this.form.init(['name'])
+    @form = formHelper.newForm()
+    @form.init(['name'])
 
-    this.fieldOnSaveHandler = sinon.spy();
-    this.formOnSaveHandler = sinon.spy();
+    @fieldOnSaveHandler = sinon.spy();
 
-    this.form.fields.name.onSave(this.fieldOnSaveHandler);
-    this.form.onSave(this.formOnSaveHandler);
+    @form.fields.name.onSave(@fieldOnSaveHandler);
 
   it "run handle blur if there is no one delayed callback", ->
-    this.form.fields.name.setValue('newValue')
+    @form.fields.name.setValue('newValue')
 
-    assert.isFalse(this.form.fields.name._debouncedCall.getDelayed())
-    this.form.fields.name.handleBlur()
-    assert.isFalse(this.form.fields.name._debouncedCall.getDelayed())
+    assert.isFalse(@form.fields.name._debouncedCall.getDelayed())
+    @form.fields.name.handleBlur()
+    assert.isFalse(@form.fields.name._debouncedCall.getDelayed())
 
-    expect(this.fieldOnSaveHandler).to.have.been.calledOnce
-    expect(this.formOnSaveHandler).to.have.been.calledOnce
+    expect(@fieldOnSaveHandler).to.have.been.calledOnce
 
   it "run handle blur if saving in progress", ->
-    this.form.fields.name.handleChange('newValue')
-    assert.isTrue(this.form.fields.name._debouncedCall.getDelayed())
-    this.form.fields.name.handleBlur()
+    @form.fields.name.handleChange('newValue')
+    assert.isTrue(@form.fields.name._debouncedCall.getDelayed())
+    @form.fields.name.handleBlur()
 
-    assert.isFalse(this.form.fields.name._debouncedCall.getDelayed())
+    assert.isFalse(@form.fields.name._debouncedCall.getDelayed())
 
-    expect(this.fieldOnSaveHandler).to.have.been.calledOnce
-    expect(this.formOnSaveHandler).to.have.been.calledOnce
+    expect(@fieldOnSaveHandler).to.have.been.calledOnce

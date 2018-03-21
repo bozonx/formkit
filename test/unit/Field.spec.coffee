@@ -18,7 +18,7 @@ describe 'Unit. Field.', ->
     assert.deepEqual(@form._storage.getWholeFieldState(@pathToField), {
       defaultValue: undefined
       dirty: false
-      disabled: undefined
+      disabled: false
       initial: undefined
       focused: false
       invalidMsg: undefined
