@@ -1,73 +1,86 @@
 formHelper = require('../../src/index')
 
 
-describe 'Functional. onChange and handleChange.', ->
+describe.only 'Functional. onChange and handleChange.', ->
   beforeEach () ->
-    this.form = formHelper.newForm()
-    this.form.init(['name'])
+    @form = formHelper.newForm()
+    @form.init(['name'])
+    @field = @form.fields.name
 
-    this.fieldOnChangeHandler = sinon.spy();
-    this.formOnChangeHandler = sinon.spy();
-    this.fieldOnSaveHandler = sinon.spy();
-    this.formOnSaveHandler = sinon.spy();
+    @fieldOnChangeHandler = sinon.spy();
+    @formOnChangeHandler = sinon.spy();
+    @fieldOnSaveHandler = sinon.spy();
+    @formOnSaveHandler = sinon.spy();
 
-    this.form.fields.name.onChange(this.fieldOnChangeHandler);
-    this.form.onChange(this.formOnChangeHandler);
-    this.form.fields.name.onSave(this.fieldOnSaveHandler);
-    this.form.onSave(this.formOnSaveHandler);
+    @field.onChange(@fieldOnChangeHandler);
+    @form.onChange(@formOnChangeHandler);
+    @field.onSave(@fieldOnSaveHandler);
+    @form.on('saveEnd', @formOnSaveHandler);
 
   it "call after setValue", ->
-    this.form.fields.name.handleChange('userValue')
-    expect(this.fieldOnChangeHandler).to.have.been.calledOnce
-    expect(this.fieldOnChangeHandler).to.have.been.calledWith({ fieldName: "name", oldValue: undefined, value: "userValue" })
+    @field.handleChange('userValue')
+    @field.flushSaving();
 
-    expect(this.formOnChangeHandler).to.have.been.calledOnce
-    expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'userValue'})
+    sinon.assert.calledOnce(@fieldOnChangeHandler)
+    sinon.assert.calledWith(@fieldOnChangeHandler, {
+      event: 'change'
+      fieldName: "name"
+      oldValue: undefined
+      value: "userValue"
+    })
+
+    sinon.assert.calledOnce(@formOnChangeHandler)
+    sinon.assert.calledWith(@formOnChangeHandler, {name: 'userValue'})
 
   it "don't call after machine update", ->
-    this.form.fields.name.setValue('machineValue')
-    expect(this.fieldOnChangeHandler).to.not.have.been.called
+    @field.setValue('machineValue')
 
-    expect(this.formOnChangeHandler).to.not.have.been.called
+    sinon.assert.notCalled(@fieldOnChangeHandler)
+    sinon.assert.notCalled(@formOnChangeHandler)
 
   it "it doesn't rise events on set initial values", ->
-    this.form.fields.name.setValue('initialValue')
-    expect(this.fieldOnChangeHandler).to.not.have.been.called
+    @field.setValue('initialValue')
 
-    expect(this.formOnChangeHandler).to.not.have.been.called
+    sinon.assert.notCalled(@fieldOnChangeHandler)
+    sinon.assert.notCalled(@formOnChangeHandler)
 
-  it "call after uncahnged value if this.form.config.allowSaveUnmodifiedField = true", ->
-    this.form.config.allowSaveUnmodifiedField = true;
-    this.form.fields.name.handleChange('userValue')
-    this.form.fields.name.handleChange('userValue')
+  it "call after uncahnged value if @form.config.allowSaveUnmodifiedField = true", ->
+    @form.config.allowSaveUnmodifiedField = true;
+    @field.handleChange('userValue')
+    @field.handleChange('userValue')
 
-    this.form.fields.name.flushSaving();
-    this.form.flushSaving();
+    @field.flushSaving();
 
-    expect(this.fieldOnChangeHandler).to.have.been.calledTwice
-    expect(this.formOnChangeHandler).to.have.been.calledTwice
-    expect(this.fieldOnSaveHandler).to.have.been.calledOnce
-    expect(this.formOnSaveHandler).to.have.been.calledOnce
+    sinon.assert.calledTwice(@fieldOnChangeHandler)
+    sinon.assert.calledTwice(@formOnChangeHandler)
+    sinon.assert.calledOnce(@fieldOnSaveHandler)
+    sinon.assert.calledOnce(@formOnSaveHandler)
 
-  it "dont call after uncahnged value if this.form.config.allowSaveUnmodifiedField = false", ->
-    this.form.config.allowSaveUnmodifiedField = false;
-    this.form.fields.name.handleChange('userValue')
-    this.form.fields.name.handleChange('userValue')
+  it "dont call after uncahnged value if @form.config.allowSaveUnmodifiedField = false", ->
+    @form.config.allowSaveUnmodifiedField = false;
+    @field.handleChange('userValue')
+    @field.handleChange('userValue')
 
-    this.form.fields.name.flushSaving();
-    this.form.flushSaving();
+    @field.flushSaving();
 
-    expect(this.fieldOnChangeHandler).to.have.been.calledOnce
-    expect(this.fieldOnChangeHandler).to.have.been.calledWith({ fieldName: "name", oldValue: undefined, value: "userValue" })
+    sinon.assert.calledOnce(@fieldOnChangeHandler)
+    sinon.assert.calledWith(@fieldOnChangeHandler, {
+      event: 'change'
+      fieldName: "name"
+      oldValue: undefined
+      value: "userValue"
+    })
 
-    expect(this.formOnChangeHandler).to.have.been.calledOnce
-    expect(this.formOnChangeHandler).to.have.been.calledWith({name: 'userValue'})
+    sinon.assert.calledOnce(@formOnChangeHandler)
+    sinon.assert.calledWith(@formOnChangeHandler, {name: 'userValue'})
 
-    expect(this.fieldOnSaveHandler).to.have.been.calledOnce
-    expect(this.formOnSaveHandler).to.have.been.calledOnce
+    sinon.assert.calledOnce(@fieldOnSaveHandler)
+    sinon.assert.calledOnce(@formOnSaveHandler)
 
   it "don't do anything if disabled", ->
-    this.form.fields.name.handleChange('oldValue')
-    this.form.fields.name.setDisabled(true)
-    this.form.fields.name.handleChange('newValue')
-    assert.equal(this.form.fields.name.value, 'oldValue')
+    @field.handleChange('oldValue')
+    @field.setDisabled(true)
+    @field.handleChange('newValue')
+    @field.flushSaving();
+
+    assert.equal(@field.value, 'oldValue')

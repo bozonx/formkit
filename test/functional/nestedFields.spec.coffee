@@ -1,7 +1,7 @@
 formHelper = require('../../src/index')
 
 
-describe.only 'Functional. nestedFields.', ->
+describe 'Functional. nestedFields.', ->
   beforeEach () ->
     @form = formHelper.newForm()
     @form.init([ 'nested.name' ])
