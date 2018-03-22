@@ -176,9 +176,10 @@ module.exports = class Field {
     const isChanged = !_.isEqual(oldValue, newValue);
 
     if (isChanged) {
-      // set editedValue, dirty state and validate
+      // set editedValue, dirty state and validate and rise storage event
       this.setValue(newValue);
 
+      // TODO: поднимет ещё одно storage event
       // set touched to true
       if (!this.touched) {
         this._setState({ touched: true });
@@ -349,6 +350,7 @@ module.exports = class Field {
 
     if (!_.isUndefined(newValue)) {
       // set to edited layer
+      // TODO: установить вместе с остальным стейтом - иначе поднимется ещё одно событие
       this._fieldStorage.setState(this._pathToField, { editedValue: newValue });
       this.form.validate();
     }
@@ -419,6 +421,8 @@ module.exports = class Field {
   _doSave() {
     // value is immutable
     const data = this.value;
+
+    // TODO: можно добавить ещё editedValues
 
     // set saving: true
     this._setState({ saving: true });

@@ -102,15 +102,15 @@ module.exports = class Storage {
       defaultValue: undefined,
       dirty: false,
       disabled: false,
-      initial: undefined,
-      touched: false,
-      invalidMsg: undefined,
-      // bottom layer
-      savedValue: undefined,
       // top layer
       editedValue: undefined,
-      saving: false,
       focused: false,
+      initial: undefined,
+      invalidMsg: undefined,
+      touched: false,
+      // bottom layer
+      savedValue: undefined,
+      saving: false,
       // TODO: нет смысла сохранять - use invalidMsg
       valid: true,
     };

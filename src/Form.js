@@ -77,15 +77,6 @@ module.exports = class Form {
   }
 
   get editedValues() {
-    // const editedValues = {};
-    //
-    // findFieldRecursively(this.fields, (field, path) => {
-    //   if (_.isUndefined(field.editedValue)) return;
-    //   _.set(editedValues, path, field.editedValue);
-    // });
-    //
-    // return editedValues;
-
     return this._formStorage.getEditedValues();
   }
 
@@ -109,10 +100,12 @@ module.exports = class Form {
     this._validateCb = validateCb;
 
     if (_.isArray(initialFields)) {
+      // TODO: вызовится много обработчиков storage event
       _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
     }
     else if (_.isPlainObject(initialFields)) {
       // TODO: может надо рекурсивно???
+      // TODO: вызовится много обработчиков storage event
       _.each(initialFields, (params, pathToField) => this._initField(pathToField, params || {}));
     }
     else {
@@ -199,6 +192,7 @@ module.exports = class Form {
    * Roll back to initial values for all the fields.
    */
   clear() {
+    // TODO: вызовится много обработчиков storage event
     findFieldRecursively(this.fields, (field) => field.clear());
   }
 
@@ -206,6 +200,7 @@ module.exports = class Form {
    * Reset values to default values for all the fields.
    */
   reset() {
+    // TODO: вызовится много обработчиков storage event
     findFieldRecursively(this.fields, (field) => field.reset());
   }
 
@@ -213,6 +208,7 @@ module.exports = class Form {
    * Roll back to previously saved values for all the fields.
    */
   revert() {
+    // TODO: вызовится много обработчиков storage event
     findFieldRecursively(this.fields, (field) => field.revert());
   }
 
@@ -239,6 +235,7 @@ module.exports = class Form {
    */
   setValues(newValues) {
     // TODO: test plain object values
+    // TODO: вызовится много обработчиков storage event
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
     findRecursively(newValues, (value, path) => {
@@ -261,6 +258,7 @@ module.exports = class Form {
    */
   setSavedValues(newValues) {
     // TODO: test plain object values
+    // TODO: вызовится много обработчиков storage event
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
     findRecursively(newValues, (value, path) => {
@@ -283,13 +281,11 @@ module.exports = class Form {
     if (!this._validateCb) return;
 
     const errors = {};
-    const values = {};
+    const values = this.values;
     let isFormValid = true;
 
     // add sub structures to "errors" for easy access to error
     findFieldRecursively(this.fields, (field, path) => {
-      _.set(values, path, field.value);
-
       const split = path.split('.');
       const minPathItems = 2;
       if (split.length < minPathItems) return;
