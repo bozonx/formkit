@@ -180,7 +180,7 @@ module.exports = class Form {
     }
 
     // run submit callback
-    return this._runSubmitHandler(values);
+    return this._runSubmitHandler(values, editedValues);
   }
 
   /**
@@ -329,8 +329,8 @@ module.exports = class Form {
     this._formStorage.emit(eventName, data);
   }
 
-  _runSubmitHandler(values) {
-    const returnedValue = this._handlers.onSubmit(values);
+  _runSubmitHandler(values, editedValues) {
+    const returnedValue = this._handlers.onSubmit({ values, editedValues });
 
     // if cb returns a promise - wait for its fulfilling
     if (isPromise(returnedValue)) {

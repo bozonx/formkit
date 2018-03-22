@@ -1,34 +1,52 @@
 formHelper = require('../../src/index')
 
 
-describe.only 'Functional. Submit.', ->
+describe 'Functional. Submit.', ->
   beforeEach () ->
     @form = formHelper.newForm()
     @form.init(['name'])
 
   it 'simple submit', ->
     submitHandler = sinon.spy();
+    submitStartHandler = sinon.spy();
+    submitEndHandler = sinon.spy();
     @form.onSubmit(submitHandler)
+    @form.on('submitStart', submitStartHandler)
+    @form.on('submitEnd', submitEndHandler)
 
     @form.fields.name.handleChange('newValue')
     @form.handleSubmit()
+
     sinon.assert.calledOnce(submitHandler)
-    sinon.assert.calledWith(submitHandler, { name: 'newValue' })
+    sinon.assert.calledWith(submitHandler, {
+      values: { name: 'newValue' }
+      editedValues: { name: 'newValue' }
+    })
+    sinon.assert.calledOnce(submitStartHandler)
+    sinon.assert.calledWith(submitStartHandler, {
+      values: { name: 'newValue' }
+      editedValues: { name: 'newValue' }
+    })
+    sinon.assert.calledOnce(submitEndHandler)
     assert.isFalse(@form.submitting)
 
   it 'submitting with promise', ->
+    submitEndHandler = sinon.spy();
     submitHandler = () ->
       return new Promise (resolve) =>
         resolve()
     @form.onSubmit(submitHandler)
+    @form.on('submitEnd', submitEndHandler)
 
     @form.fields.name.handleChange('newValue')
-
     handleSubmitReturn = @form.handleSubmit()
+
     assert.isTrue(@form.submitting)
+    sinon.assert.notCalled(submitEndHandler)
 
     handleSubmitReturn.then () =>
       assert.isFalse(@form.submitting)
+      sinon.assert.calledOnce(submitEndHandler)
 
   it 'rejected promise', ->
     submitHandler = ->
@@ -46,7 +64,7 @@ describe.only 'Functional. Submit.', ->
       .catch =>
         assert.isFalse(@form.submitting)
 
-  it "run submit without submit callback", ->
+  it.only "run submit without submit callback", ->
     @form.fields.name.handleChange('newValue')
 
     assert.deepEqual(@form.editedValues, { name: 'newValue' })
