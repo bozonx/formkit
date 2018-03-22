@@ -76,25 +76,22 @@ module.exports = {
     return recursive(rootObject, '');
   },
 
-  calculateDirty(value, savedValue) {
-    // TODO: use editedValue
-    // TODO: test
+  calculateDirty(editedValue, savedValue) {
     let newDirtyValue;
 
     // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
-    if ((value === '' || _.isNil(value)) && (savedValue === '' || _.isNil(savedValue))) {
+    if ((editedValue === '' || _.isNil(editedValue)) && (savedValue === '' || _.isNil(savedValue))) {
       newDirtyValue = false;
     }
     else {
-      // just compare current value and saved value
-      newDirtyValue = value !== savedValue;
+      // just compare current editedValue and saved value
+      newDirtyValue = editedValue !== savedValue;
     }
 
     return newDirtyValue;
   },
 
   getFieldName(pathToField) {
-    // TODO: test
     const split = pathToField.split('.');
     const onlyOneItem = 1;
 

@@ -19,6 +19,47 @@ describe 'Unit. helpers.', ->
     sinon.assert.calledOnce(cb)
     sinon.assert.calledWith(cb, field, 'parent.field')
 
+  it 'extendDeep.', ->
+    willExtend = {
+      a: 1,
+      c: 1,
+      d: {
+        d1: 11,
+        d3: 11,
+      },
+    }
+    newValues = {
+      a: 2,
+      b: 2,
+      d: {
+        d1: 22,
+        d2: 22,
+      },
+      e: {
+        e1: 22,
+      },
+    }
+
+    result = {
+      a: 2,
+      b: 2,
+      c: 1,
+      d: {
+        d1: 22,
+        d2: 22,
+        d3: 11,
+      },
+      e: {
+        e1: 22,
+      },
+    }
+
+    commandResult = helpers.extendDeep(willExtend, newValues)
+
+    assert.deepEqual(commandResult, result)
+    assert.deepEqual(willExtend, result)
+    assert.deepEqual(newValues, newValues)
+
   describe "findRecursively", ->
     it "deep.", ->
       cb = sinon.spy()
@@ -67,43 +108,17 @@ describe 'Unit. helpers.', ->
 
       sinon.assert.calledTwice(cb)
 
-  it 'extendDeep.', ->
-    willExtend = {
-      a: 1,
-      c: 1,
-      d: {
-        d1: 11,
-        d3: 11,
-      },
-    }
-    newValues = {
-      a: 2,
-      b: 2,
-      d: {
-        d1: 22,
-        d2: 22,
-      },
-      e: {
-        e1: 22,
-      },
-    }
+  it "calculateDirty", ->
+    assert.isTrue( helpers.calculateDirty('newValue', 'oldValue') )
+    assert.isTrue( helpers.calculateDirty('newValue', undefined) )
+    assert.isTrue( helpers.calculateDirty(undefined, 'oldValue') )
 
-    result = {
-      a: 2,
-      b: 2,
-      c: 1,
-      d: {
-        d1: 22,
-        d2: 22,
-        d3: 11,
-      },
-      e: {
-        e1: 22,
-      },
-    }
+    assert.isFalse( helpers.calculateDirty('value', 'value') )
+    assert.isFalse( helpers.calculateDirty(undefined, undefined) )
 
-    commandResult = helpers.extendDeep(willExtend, newValues)
+    assert.isFalse( helpers.calculateDirty(undefined, null) )
+    assert.isFalse( helpers.calculateDirty(undefined, '') )
 
-    assert.deepEqual(commandResult, result)
-    assert.deepEqual(willExtend, result)
-    assert.deepEqual(newValues, newValues)
+  it "getFieldName", ->
+    assert.equal( helpers.getFieldName('path.to.field'), 'field')
+    assert.equal( helpers.getFieldName('field'), 'field')

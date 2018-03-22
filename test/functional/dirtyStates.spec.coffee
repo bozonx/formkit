@@ -1,7 +1,7 @@
 formHelper = require('../../src/index')
 
 
-describe.only 'Functional. Dirty and touched states.', ->
+describe 'Functional. Dirty and touched states.', ->
   beforeEach () ->
     @form = formHelper.newForm()
     @form.init(['name'])
@@ -27,7 +27,8 @@ describe.only 'Functional. Dirty and touched states.', ->
     assert.isTrue(@form.dirty)
     assert.isTrue(@form.touched)
 
-  it.only 'set savedValue after user input', ->
+  # TODO: fix
+  it 'set savedValue after user input', ->
     @field.handleChange('newValue')
     @field.flushSaving()
     @field.setSavedValue('savedValue')

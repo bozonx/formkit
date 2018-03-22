@@ -112,9 +112,11 @@ module.exports = class Field {
    */
   setValue(newValue) {
     // set top value layer
-    // TODO: установить значений и dirty silently а только потом поднять одно событие
-    this._fieldStorage.setState(this._pathToField, { editedValue: newValue });
-    this.$recalcDirty();
+    // TODO: событие storage поднимать отдельно, после установки значений
+    this._fieldStorage.setState(this._pathToField, {
+      editedValue: newValue,
+      dirty: calculateDirty(newValue, this.savedValue),
+    });
     this.form.validate();
   }
 
@@ -123,6 +125,9 @@ module.exports = class Field {
    * @param {*} newSavedValue
    */
   setSavedValue(newSavedValue) {
+
+    // TODO: test
+
     const newState = {
       savedValue: newSavedValue,
       editedValue: this.editedValue,
@@ -137,7 +142,6 @@ module.exports = class Field {
 
     newState.dirty = calculateDirty(newState.editedValue, newState.savedValue);
 
-    // TODO: test
     this._setState(newState);
   }
 
@@ -314,17 +318,6 @@ module.exports = class Field {
       valid: _.isUndefined(invalidMsg),
       invalidMsg,
     });
-  }
-
-  /**
-   * Recalculate dirty state.
-   */
-  $recalcDirty() {
-    // TODO: review
-    const newDirtyValue =  calculateDirty(this.value, this.savedValue);
-
-    // set to field
-    this._setState({ dirty: newDirtyValue });
   }
 
   _setState(partlyState) {
