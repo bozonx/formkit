@@ -111,8 +111,8 @@ describe 'Unit. helpers.', ->
   it "calculateDirty", ->
     assert.isTrue( helpers.calculateDirty('newValue', 'oldValue') )
     assert.isTrue( helpers.calculateDirty('newValue', undefined) )
-    assert.isTrue( helpers.calculateDirty(undefined, 'oldValue') )
 
+    assert.isFalse( helpers.calculateDirty(undefined, 'oldValue') )
     assert.isFalse( helpers.calculateDirty('value', 'value') )
     assert.isFalse( helpers.calculateDirty(undefined, undefined) )
 

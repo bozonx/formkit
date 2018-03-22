@@ -79,6 +79,9 @@ module.exports = {
   calculateDirty(editedValue, savedValue) {
     let newDirtyValue;
 
+    // if edited value don't specified - it means field isn't dirty
+    if (_.isUndefined(editedValue)) return false;
+
     // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
     if ((editedValue === '' || _.isNil(editedValue)) && (savedValue === '' || _.isNil(savedValue))) {
       newDirtyValue = false;

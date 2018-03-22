@@ -111,17 +111,17 @@ module.exports = class Storage {
     };
   }
 
-  _updateCombinedValue(pathToField, savedValue, editedValue) {
-    const value = _.isUndefined(editedValue) ? savedValue : editedValue;
-    this._store.values = this._store.values.setIn(pathToField.split('.'), value);
-  }
-
   _generateNewFormState() {
     return {
       touched: false,
       submitting: false,
       valid: true,
     };
+  }
+
+  _updateCombinedValue(pathToField, savedValue, editedValue) {
+    const value = _.isUndefined(editedValue) ? savedValue : editedValue;
+    this._store.values = this._store.values.setIn(pathToField.split('.'), value);
   }
 
 };

@@ -15,7 +15,6 @@ describe 'Functional. Validate.', ->
     @form.fields.parent.subParam.handleChange('newValue')
 
     sinon.assert.calledWith(validateCb, { parent: {} }, {
-      topParam: undefined,
       parent: {
         subParam: 'newValue'
       }

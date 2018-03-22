@@ -8,7 +8,7 @@ describe 'Unit. Field.', ->
     @form = formkit.newForm()
     @form.init(['testField'])
 
-  it "_initState without params", ->
+  it.only "_initState without params", ->
     storageChangeHandler = sinon.spy()
     @form.validate = sinon.spy()
     @form._fieldStorage.on(@pathToField, 'storage', storageChangeHandler)

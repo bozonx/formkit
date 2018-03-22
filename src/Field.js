@@ -111,6 +111,9 @@ module.exports = class Field {
    * @param newValue
    */
   setValue(newValue) {
+
+    // TODO: test
+
     // set top value layer
     // TODO: событие storage поднимать отдельно, после установки значений
     this._fieldStorage.setState(this._pathToField, {

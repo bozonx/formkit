@@ -27,7 +27,6 @@ describe 'Functional. Dirty and touched states.', ->
     assert.isTrue(@form.dirty)
     assert.isTrue(@form.touched)
 
-  # TODO: fix
   it 'set savedValue after user input', ->
     @field.handleChange('newValue')
     @field.flushSaving()
