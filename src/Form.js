@@ -29,7 +29,7 @@ module.exports = class Form {
   }
 
   get values() {
-    return this._formStorage.getValues();
+    return this._formStorage.getCombinedValues();
   }
 
   get savedValues() {
@@ -77,6 +77,15 @@ module.exports = class Form {
   }
 
   get editedValues() {
+    // const editedValues = {};
+    //
+    // findFieldRecursively(this.fields, (field, path) => {
+    //   if (_.isUndefined(field.editedValue)) return;
+    //   _.set(editedValues, path, field.editedValue);
+    // });
+    //
+    // return editedValues;
+
     return this._formStorage.getEditedValues();
   }
 
@@ -224,8 +233,8 @@ module.exports = class Form {
   }
 
   /**
-   * Set form's values without rising a "change event"
-   * @param {object} newValues - fields values.
+   * Set form's values silently without rising a "change" event
+   * @param {object} newValues - fields' values.
    *                             You can set values all the fields or just to a part of fields.
    */
   setValues(newValues) {
@@ -237,6 +246,7 @@ module.exports = class Form {
       // if it is'n a field - go deeper
       if (!field || !(field instanceof Field)) return;
       // else means it's field - set value and don't go deeper
+      // set value to edited layer
       field.setValue(value);
 
       return false;
@@ -258,6 +268,7 @@ module.exports = class Form {
       // if it is'n a field - go deeper
       if (!field || !(field instanceof Field)) return;
       // else means it's field - set value and don't go deeper
+      // set value to saved layer
       field.setSavedValue(value);
 
       return false;

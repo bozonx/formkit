@@ -20,8 +20,18 @@ module.exports = class FieldStorage {
    * @param {string} pathToField - path to your field
    * @return {*}
    */
-  getValue(pathToField) {
+  getCombinedValue(pathToField) {
     // TODO: test
+    return this._storage.getValue(pathToField);
+  }
+
+  /**
+   * get current value
+   * @param {string} pathToField - path to your field
+   * @return {*}
+   */
+  getValue(pathToField) {
+    // TODO: не нужно
     return this._storage.getValue(pathToField);
   }
 
@@ -53,7 +63,7 @@ module.exports = class FieldStorage {
       type: 'state',
     };
 
-    // TODO: поднимать общее событие ещё  и не на на pathToField
+    // TODO: поднимать общее событие ещё  и не на pathToField
     this.emit(pathToField, 'storage', data);
   }
 
@@ -62,8 +72,10 @@ module.exports = class FieldStorage {
   }
 
   setValue(pathToField, newValue) {
+    // TODO: review - use getCombinedValue
     const oldValue = this.getValue(pathToField);
 
+    // TODO: reveiw
     this._storage.setValue(pathToField, newValue);
 
     if (!_.isEqual(oldValue, this.getValue(pathToField))) {
@@ -103,6 +115,7 @@ module.exports = class FieldStorage {
     // TODO: test
     const savedValue = this.getState(pathToField, 'savedValue');
 
+    // TODO: review - use getCombinedValue
     return savedValue !== this.getValue(pathToField);
   }
 

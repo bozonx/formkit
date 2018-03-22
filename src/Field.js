@@ -36,13 +36,16 @@ module.exports = class Field {
   get savedValue() {
     return this._fieldStorage.getState(this._pathToField, 'savedValue');
   }
+  get editedValue() {
+    return this._fieldStorage.getState(this._pathToField, 'editedValue');
+  }
 
   /**
    * Current value
    * @return {*}
    */
   get value() {
-    return this._fieldStorage.getValue(this._pathToField);
+    return this._fieldStorage.getCombinedValue(this._pathToField);
   }
   get name() {
     return this._fieldName;
@@ -109,7 +112,8 @@ module.exports = class Field {
    */
   setValue(newValue) {
     // set top value layer
-    this._fieldStorage.setValue(this._pathToField, newValue);
+    // TODO: установить значений и dirty silently а только потом поднять одно событие
+    this._fieldStorage.setState(this._pathToField, { editedValue: newValue });
     this.$recalcDirty();
     this.form.validate();
   }
@@ -119,6 +123,7 @@ module.exports = class Field {
    * @param {*} newSavedValue
    */
   setSavedValue(newSavedValue) {
+    // TODO: test
     // set saved value
     this._setState({ savedValue: newSavedValue });
 
@@ -128,8 +133,12 @@ module.exports = class Field {
     // of course if it allows in config.
     if (this._form.config.allowFocusedFieldUpdating || (!this._form.config.allowFocusedFieldUpdating && !this.focused)) {
       // TODO: может лучше удалить верхний уровень???
-      this.setValue(newSavedValue);
+      //this.setValue(newSavedValue);
+
+      this._setState({ editedValue: undefined });
     }
+
+    // TODO: событе поднять отдельно чтобы не дублировалось
   }
 
   setDisabled(value) {
@@ -167,7 +176,7 @@ module.exports = class Field {
     const isChanged = !_.isEqual(oldValue, newValue);
 
     if (isChanged) {
-      // set value, dirty state and validate
+      // set editedValue, dirty state and validate
       this.setValue(newValue);
 
       // set touched to true
@@ -262,7 +271,8 @@ module.exports = class Field {
    */
   clear() {
     // TODO: test
-    this.setValue(this._fieldStorage.getState(this._pathToField, 'initial'));
+    const initial = this._fieldStorage.getState(this._pathToField, 'initial');
+    this.setValue(initial);
   }
 
   /**
@@ -309,6 +319,7 @@ module.exports = class Field {
    * Recalculate dirty state.
    */
   $recalcDirty() {
+    // TODO: review
     const newDirtyValue =  calculateDirty(this.value, this.savedValue);
 
     // set to field
@@ -337,7 +348,8 @@ module.exports = class Field {
     this._fieldStorage.initState(this._pathToField, initialState);
 
     if (!_.isUndefined(newValue)) {
-      this._fieldStorage.setValue(this._pathToField, newValue);
+      // set to edited layer
+      this._fieldStorage.setState(this._pathToField, { editedValue: newValue });
       this.form.validate();
     }
   }

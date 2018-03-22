@@ -93,6 +93,7 @@ module.exports = class Storage {
   }
 
   setValue(pathToField, newValue) {
+    // TODO: не нужно наверное уже
     this._store.values = this._store.values.setIn(pathToField.split('.'), newValue);
   }
 
@@ -104,7 +105,10 @@ module.exports = class Storage {
       initial: undefined,
       touched: false,
       invalidMsg: undefined,
+      // bottom layer
       savedValue: undefined,
+      // top layer
+      editedValue: undefined,
       saving: false,
       focused: false,
       // TODO: нет смысла сохранять - use invalidMsg

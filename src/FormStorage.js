@@ -11,9 +11,18 @@ module.exports = class FormStorage {
   }
 
   /**
+   * Get all the combined values of form's fields.
+   */
+  getCombinedValues() {
+    // TODO: review
+    return this._storage.getFormValues();
+  }
+
+  /**
    * Get all the values of form's fields.
    */
   getValues() {
+    // TODO: не нужно
     return this._storage.getFormValues();
   }
 
@@ -46,13 +55,9 @@ module.exports = class FormStorage {
     // TODO: test
     const editedValues = {};
 
-    const values = this.getValues();
-
     this._storage.eachField((field, path) => {
-      const curValue = _.get(values, path);
-      if (field.get('savedValue') !== curValue) {
-        _.set(editedValues, path, curValue);
-      }
+      if (_.isUndefined(field.get('editedValue'))) return;
+      _.set(editedValues, path, field.get('editedValue'));
     });
 
     return editedValues;
