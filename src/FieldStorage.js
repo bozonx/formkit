@@ -21,18 +21,7 @@ module.exports = class FieldStorage {
    * @return {*}
    */
   getCombinedValue(pathToField) {
-    // TODO: test
-    return this._storage.getValue(pathToField);
-  }
-
-  /**
-   * get current value
-   * @param {string} pathToField - path to your field
-   * @return {*}
-   */
-  getValue(pathToField) {
-    // TODO: не нужно
-    return this._storage.getValue(pathToField);
+    return this._storage.getCombinedValue(pathToField);
   }
 
   getState(pathToField, stateName) {
@@ -63,35 +52,12 @@ module.exports = class FieldStorage {
       type: 'state',
     };
 
-    // TODO: поднимать общее событие ещё  и не на pathToField
+    // TODO: поднимать общее событие ещё  и не на pathToField а общее
     this.emit(pathToField, 'storage', data);
   }
 
   setStateSilent(pathToField, partlyState) {
     this._storage.setFieldState(pathToField, partlyState);
-  }
-
-  setValue(pathToField, newValue) {
-    // TODO: review - use getCombinedValue
-    const oldValue = this.getValue(pathToField);
-
-    // TODO: reveiw
-    this._storage.setValue(pathToField, newValue);
-
-    if (!_.isEqual(oldValue, this.getValue(pathToField))) {
-      const data = {
-        target: 'field',
-        field: pathToField,
-        value: newValue,
-        oldValue,
-        event: 'storage',
-        action: 'replace',
-        type: 'value',
-      };
-
-      // TODO: поднимать общее событие, не на на pathToField
-      this.emit(pathToField, 'storage', data);
-    }
   }
 
   on(pathToField, eventName, cb) {

@@ -71,7 +71,7 @@ module.exports = class Storage {
     return fieldState.getIn(stateName.split('.'));
   }
 
-  getValue(pathToField) {
+  getCombinedValue(pathToField) {
     return this._store.values.getIn(pathToField.split('.'));
   }
 
@@ -92,10 +92,10 @@ module.exports = class Storage {
     _.set(this._store.fieldsState, pathToField, newState);
   }
 
-  setValue(pathToField, newValue) {
-    // TODO: не нужно наверное уже
-    this._store.values = this._store.values.setIn(pathToField.split('.'), newValue);
-  }
+  // setValue(pathToField, newValue) {
+  //   // TODO: не нужно наверное уже
+  //   this._store.values = this._store.values.setIn(pathToField.split('.'), newValue);
+  // }
 
   generateNewFieldState() {
     return {

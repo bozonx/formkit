@@ -75,7 +75,7 @@ describe 'Functional. Submit.', ->
     assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
-  it.only "check updated unsaved values", ->
+  it "check updated unsaved values", ->
     @form.fields.name.setSavedValue('savedValue')
     @form.fields.name.handleChange('newValue')
 
