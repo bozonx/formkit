@@ -357,26 +357,11 @@ module.exports = class Form {
   _afterSubmitSuccess(values) {
     this.$setState({ submitting: false });
 
-    // TODO: если значение изменилось после изменения формы - то стейт не сбрасываем
+    // TODO: много поднимется событий storage change !!!
 
-    // TODO: много поднимется событий sotrage change !!!
-
-    // clear top state if need
     findFieldRecursively(this.fields, (field, pathToField) => {
       const savedValue = _.get(values, pathToField);
-
-      // if value hasn't changed after submit was started - clear it
-      if (savedValue === field.value) {
-        this._fieldStorage.setStateSilent(pathToField, {
-          editedValue: undefined,
-        });
-      }
-      this._fieldStorage.setStateSilent(pathToField, {
-        savedValues: savedValue,
-      });
-
-
-      // TODO: лучше вызывать калькуляцию dirty
+      field.$setSavedValueAfterSubmit(savedValue);
     });
 
     this._formStorage.emit('submitEnd');

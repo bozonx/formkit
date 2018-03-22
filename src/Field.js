@@ -323,6 +323,24 @@ module.exports = class Field {
     });
   }
 
+  $setSavedValueAfterSubmit(savedValue) {
+
+    // TODO: review
+    // TODO: test
+
+    // if value hasn't changed after submit was started - clear it
+    if (savedValue === this.value) {
+      this._fieldStorage.setStateSilent(this._pathToField, {
+        editedValue: undefined,
+      });
+    }
+
+    this._fieldStorage.setStateSilent(this._pathToField, {
+      savedValues: savedValue,
+      dirty: calculateDirty(this.editedValue, savedValue),
+    });
+  }
+
   _setState(partlyState) {
     this._fieldStorage.setState(this._pathToField, partlyState);
   }

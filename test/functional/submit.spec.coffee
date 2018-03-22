@@ -65,7 +65,7 @@ describe 'Functional. Submit.', ->
       .catch =>
         assert.isFalse(@form.submitting)
 
-  it.only "run submit without submit callback", ->
+  it "run submit without submit callback", ->
     @field.handleChange('newValue')
     @field.flushSaving()
 
@@ -77,22 +77,23 @@ describe 'Functional. Submit.', ->
     assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
-  it "check updated unsaved values", ->
+  it.only "check values after submit - edited value moves to saved layer", ->
     @field.setSavedValue('savedValue')
-    @field.handleChange('newValue')
+    @field.handleChange('editedValue')
 
-    assert.deepEqual(@field.savedValue, 'savedValue')
+    assert.equal(@field.savedValue, 'savedValue')
+    assert.equal(@field.editedValue, 'editedValue')
     assert.deepEqual(@form.savedValues, { name: 'savedValue' })
+    assert.deepEqual(@form.editedValues, { name: 'editedValue' })
     assert.isTrue(@form.dirty)
 
     @form.handleSubmit()
 
     assert.equal(@form.submitting, false)
-    # TODO: должен сброситься верхний уровень и обновиться нижний
-    # TODO: должно сброситься после сабмита даже если не было установленно callback
-    # TODO: должно было установиться newValue даже если не было назначина submit handler
-    assert.equal(@field.savedValue, 'newValue')
-    assert.deepEqual(@form.savedValues, { name: 'newValue' })
+    assert.equal(@field.savedValue, 'editedValue')
+    assert.equal(@field.editedValue, undefined )
+    assert.deepEqual(@form.savedValues, { name: 'editedValue' })
+    assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
   describe "canSubmit()", ->
