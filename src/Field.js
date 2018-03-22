@@ -325,7 +325,7 @@ module.exports = class Field {
 
   $setSavedValueAfterSubmit(savedValue) {
 
-    // TODO: review
+    // TODO: review - должно так же работать и для save
     // TODO: test
 
     // if value hasn't changed after submit was started - clear it
@@ -336,7 +336,7 @@ module.exports = class Field {
     }
 
     this._fieldStorage.setStateSilent(this._pathToField, {
-      savedValues: savedValue,
+      savedValue,
       dirty: calculateDirty(this.editedValue, savedValue),
     });
   }

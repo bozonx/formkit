@@ -77,7 +77,7 @@ describe 'Functional. Submit.', ->
     assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
-  it.only "check values after submit - edited value moves to saved layer", ->
+  it "check values after submit - edited value moves to saved layer", ->
     @field.setSavedValue('savedValue')
     @field.handleChange('editedValue')
 
