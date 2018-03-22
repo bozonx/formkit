@@ -5,6 +5,7 @@ describe 'Functional. Submit.', ->
   beforeEach () ->
     @form = formHelper.newForm()
     @form.init(['name'])
+    @field = @form.fields.name
 
   it 'simple submit', ->
     submitHandler = sinon.spy();
@@ -14,7 +15,7 @@ describe 'Functional. Submit.', ->
     @form.on('submitStart', submitStartHandler)
     @form.on('submitEnd', submitEndHandler)
 
-    @form.fields.name.handleChange('newValue')
+    @field.handleChange('newValue')
     @form.handleSubmit()
 
     sinon.assert.calledOnce(submitHandler)
@@ -38,7 +39,7 @@ describe 'Functional. Submit.', ->
     @form.onSubmit(submitHandler)
     @form.on('submitEnd', submitEndHandler)
 
-    @form.fields.name.handleChange('newValue')
+    @field.handleChange('newValue')
     handleSubmitReturn = @form.handleSubmit()
 
     assert.isTrue(@form.submitting)
@@ -53,7 +54,7 @@ describe 'Functional. Submit.', ->
       new Promise (resolve, reject) =>
         reject(new Error('error'))
     @form.onSubmit(submitHandler)
-    @form.fields.name.handleChange('newValue')
+    @field.handleChange('newValue')
 
     handleSubmitReturn = @form.handleSubmit()
 
@@ -64,22 +65,23 @@ describe 'Functional. Submit.', ->
       .catch =>
         assert.isFalse(@form.submitting)
 
-  it "run submit without submit callback", ->
-    @form.fields.name.handleChange('newValue')
+  it.only "run submit without submit callback", ->
+    @field.handleChange('newValue')
+    @field.flushSaving()
 
     assert.deepEqual(@form.editedValues, { name: 'newValue' })
     assert.isTrue(@form.dirty)
     @form.handleSubmit()
 
-    assert.equal(@form.submitting, false)
+    assert.isFalse(@form.submitting)
     assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
   it "check updated unsaved values", ->
-    @form.fields.name.setSavedValue('savedValue')
-    @form.fields.name.handleChange('newValue')
+    @field.setSavedValue('savedValue')
+    @field.handleChange('newValue')
 
-    assert.deepEqual(@form.fields.name.savedValue, 'savedValue')
+    assert.deepEqual(@field.savedValue, 'savedValue')
     assert.deepEqual(@form.savedValues, { name: 'savedValue' })
     assert.isTrue(@form.dirty)
 
@@ -89,14 +91,14 @@ describe 'Functional. Submit.', ->
     # TODO: должен сброситься верхний уровень и обновиться нижний
     # TODO: должно сброситься после сабмита даже если не было установленно callback
     # TODO: должно было установиться newValue даже если не было назначина submit handler
-    assert.equal(@form.fields.name.savedValue, 'newValue')
+    assert.equal(@field.savedValue, 'newValue')
     assert.deepEqual(@form.savedValues, { name: 'newValue' })
     assert.isFalse(@form.dirty)
 
   describe "canSubmit()", ->
     it "don't submit while form is submitting at the moment.", ->
       @form.onSubmit(-> Promise.resolve())
-      @form.fields.name.handleChange('newValue')
+      @field.handleChange('newValue')
       @form.handleSubmit()
 
       assert.isTrue(@form.submitting)
@@ -105,7 +107,7 @@ describe 'Functional. Submit.', ->
     it "disallow submit invalid form", ->
       @form.onSubmit(sinon.spy())
       @form.setValidateCb((errors) -> errors.name = 'invalid' )
-      @form.fields.name.handleChange('newValue')
+      @field.handleChange('newValue')
 
       @form.handleSubmit()
 
@@ -121,7 +123,7 @@ describe 'Functional. Submit.', ->
     it "don't do another submit if data hasn't changed. config.allowSubmitUnchangedForm: false", ->
       @form.onSubmit(sinon.spy())
 
-      @form.fields.name.handleChange('newValue')
+      @field.handleChange('newValue')
       @form.handleSubmit()
 
       # TODO: dirty не сбросился после submit
@@ -132,7 +134,7 @@ describe 'Functional. Submit.', ->
       @form.onSubmit(sinon.spy())
       @form._config.allowSubmitUnchangedForm = true
 
-      @form.fields.name.handleChange('newValue')
+      @field.handleChange('newValue')
       @form.handleSubmit()
 
       assert.isUndefined(@form.canSubmit())

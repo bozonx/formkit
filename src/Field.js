@@ -333,6 +333,9 @@ module.exports = class Field {
    * @private
    */
   _initState(params) {
+
+    // TODO: review - уменьшить количество вызовов событий storage
+
     const initialState = _.omitBy({
       disabled: params.disabled,
       defaultValue: params.defaultValue,
