@@ -14,16 +14,19 @@ module.exports = class FormStorage {
    * Get all the combined values of form's fields.
    */
   getCombinedValues() {
-    // TODO: review
-    return this._storage.getFormValues();
+    return this._storage.getCombinedValues();
   }
 
-  /**
-   * Get all the values of form's fields.
-   */
-  getValues() {
-    // TODO: не нужно
-    return this._storage.getFormValues();
+  getEditedValues() {
+    const editedValues = {};
+
+    this._storage.eachField((field, path) => {
+      const editedValue = field.get('editedValue');
+      if (_.isUndefined(editedValue)) return;
+      _.set(editedValues, path, editedValue);
+    });
+
+    return editedValues;
   }
 
   getSavedValues() {
@@ -40,7 +43,9 @@ module.exports = class FormStorage {
     const invalidMessages = [];
 
     this._storage.eachField((field, path) => {
-      if (!field.get('valid') && field.get('invalidMsg')) {
+      const msg = field.get('invalidMsg');
+
+      if (msg) {
         invalidMessages.push({
           path,
           message: field.get('invalidMsg'),
@@ -49,18 +54,6 @@ module.exports = class FormStorage {
     });
 
     return invalidMessages;
-  }
-
-  getEditedValues() {
-    // TODO: test
-    const editedValues = {};
-
-    this._storage.eachField((field, path) => {
-      if (_.isUndefined(field.get('editedValue'))) return;
-      _.set(editedValues, path, field.get('editedValue'));
-    });
-
-    return editedValues;
   }
 
   /**

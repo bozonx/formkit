@@ -2,16 +2,16 @@ Storage = require('../../src/Storage')
 FormStorage = require('../../src/FormStorage')
 
 
-describe 'Unit. FormStorage.', ->
+describe.only 'Unit. FormStorage.', ->
   beforeEach () ->
     @storage = new Storage()
     @formStorage = new FormStorage(@storage)
 
   it "get and set form state", ->
-    @formStorage.setState({ dirty: true, touched: true })
+    @formStorage.setState({ editedValue: 1, touched: true })
     @formStorage.setState({ submitting: true })
 
-    assert.isTrue(@formStorage.getState('dirty'))
+    assert.equal(@formStorage.getState('editedValue'), 1)
     assert.isTrue(@formStorage.getState('touched'))
     assert.isTrue(@formStorage.getState('submitting'))
     assert.isTrue(@formStorage.getState('valid'))
@@ -23,20 +23,33 @@ describe 'Unit. FormStorage.', ->
 
     sinon.assert.calledOnce(changeHandler)
     sinon.assert.calledWith(changeHandler, {
-      action: "update",
-      event: "storage",
-      oldState: { dirty: false, valid: true, submitting: false, touched: false },
+      action: 'update',
+      event: 'storage',
+      oldState: { valid: true, submitting: false, touched: false },
       state: { submitting: true },
-      target: "form",
-      type: "state"
+      target: 'form',
+      type: 'state'
     })
 
   it "getValues", ->
-    @storage.setValue('path.to.field', 'newValue')
-    assert.deepEqual(@formStorage.getValues(), {
+    @storage.setFieldState('path.to.field', {
+      savedValue: 'saved'
+      editedValue: 'newValue'
+    })
+    assert.deepEqual(@formStorage.getCombinedValues(), {
       path: {
         to: {
           field: 'newValue'
+        }
+      }
+    })
+
+  it "getEditedValues", ->
+    @storage.setFieldState('path.to.field', { editedValue: 'value' })
+    assert.deepEqual(@formStorage.getEditedValues(), {
+      path: {
+        to: {
+          field: 'value'
         }
       }
     })

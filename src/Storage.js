@@ -28,7 +28,7 @@ module.exports = class Storage {
     return this._store.formState.get(stateName);
   }
 
-  getFormValues() {
+  getCombinedValues() {
     return this._store.values.toJS();
   }
 
