@@ -111,7 +111,6 @@ module.exports = class Field {
     // set top value layer
     this._fieldStorage.setValue(this._pathToField, newValue);
     this.$recalcDirty();
-    this._form.$recalcDirty();
     this.form.validate();
   }
 

@@ -37,7 +37,10 @@ module.exports = class Form {
   }
 
   get dirty() {
-    return this._formStorage.getState('dirty');
+    // search for dirty values in fields
+    return Boolean(findFieldRecursively(this.fields, (field) => {
+      return field.dirty;
+    }));
   }
 
   get touched() {
@@ -48,7 +51,7 @@ module.exports = class Form {
    * Returns true if one or more fields are saving.
    */
   get saving() {
-    return Boolean(findFieldRecursively(this._fields, (field) => {
+    return Boolean(findFieldRecursively(this.fields, (field) => {
       return field.saving;
     }));
   }
@@ -176,7 +179,7 @@ module.exports = class Form {
       // if there isn't a submit callback, just finish submit process
       this._afterSubmitSuccess(values);
 
-      return Promise.resolve(values);
+      return Promise.resolve();
     }
 
     // run submit callback
@@ -308,17 +311,6 @@ module.exports = class Form {
     this._formStorage.setState(partlyState);
   }
 
-  /**
-   * Recalculate dirty state.
-   */
-  $recalcDirty() {
-    // search for dirty values in fields
-    const hasAnyDirty = findFieldRecursively(this.fields, (field) => {
-      if (field.dirty) return true;
-    });
-    this._formStorage.setState({ dirty: !!hasAnyDirty });
-  }
-
   $callHandler(handlerName, data) {
     const formOnChangeHandler = this._handlers[handlerName];
 
@@ -330,9 +322,10 @@ module.exports = class Form {
   }
 
   _runSubmitHandler(values, editedValues) {
+    // get result of submit handler
     const returnedValue = this._handlers.onSubmit({ values, editedValues });
 
-    // if cb returns a promise - wait for its fulfilling
+    // if handler returns a promise - wait for its fulfilling
     if (isPromise(returnedValue)) {
       return returnedValue
         .then((data) => {
@@ -347,29 +340,36 @@ module.exports = class Form {
           return Promise.reject(error);
         });
     }
-    else {
-      // else if cb returns any other types - don't wait and finish submit process
-      this._afterSubmitSuccess(values);
 
-      return Promise.resolve(values);
-    }
+    // else if handler returns any other type - don't wait and finish submit process
+    this._afterSubmitSuccess(values);
+
+    return Promise.resolve();
   }
 
   _afterSubmitSuccess(values) {
     this.$setState({ submitting: false });
 
-    if (this.config.allowUpdateSavedValuesAfterSubmit) {
-      // TODO: много поднимется событий sotrage change !!!
-      // TODO: test
-      findFieldRecursively(this.fields, (field, pathToField) => {
-        // set value to saved value layer and clear top layer
-        field.setValue( _.get(values, pathToField) );
-        field.$recalcDirty();
+    // TODO: если значение изменилось после изменения формы - то стейт не сбрасываем
+
+    // TODO: много поднимется событий sotrage change !!!
+
+    // clear top state if need
+    findFieldRecursively(this.fields, (field, pathToField) => {
+      const savedValue = _.get(values, pathToField);
+
+      // if value hasn't changed after submit was started - clear it
+      if (savedValue === field.value) {
+        this._fieldStorage.setStateSilent(pathToField, {
+          editedValue: undefined,
+        });
+      }
+      this._fieldStorage.setStateSilent(pathToField, {
+        savedValues: savedValue,
       });
-    }
-    // recalc dirty state of form
-    // TODO: ??? why???
-    this.$recalcDirty();
+
+      // TODO: лучше вызывать калькуляцию dirty
+    });
 
     this._formStorage.emit('submitEnd');
   }

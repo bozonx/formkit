@@ -53,8 +53,12 @@ module.exports = class FieldStorage {
       type: 'state',
     };
 
-    // TODO: поднимать общее событие, не на на pathToField
+    // TODO: поднимать общее событие ещё  и не на на pathToField
     this.emit(pathToField, 'storage', data);
+  }
+
+  setStateSilent(pathToField, partlyState) {
+    this._storage.setFieldState(pathToField, partlyState);
   }
 
   setValue(pathToField, newValue) {

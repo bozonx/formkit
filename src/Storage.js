@@ -11,6 +11,7 @@ module.exports = class Storage {
     this._store = {
       formState: new Map(this._generateNewFormState()),
       fieldsState: {},
+      // combined saved and edited values
       values: new Map(),
     };
   }
@@ -113,7 +114,6 @@ module.exports = class Storage {
 
   _generateNewFormState() {
     return {
-      dirty: false,
       touched: false,
       submitting: false,
       valid: true,

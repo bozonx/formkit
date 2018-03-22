@@ -64,7 +64,7 @@ describe 'Functional. Submit.', ->
       .catch =>
         assert.isFalse(@form.submitting)
 
-  it.only "run submit without submit callback", ->
+  it "run submit without submit callback", ->
     @form.fields.name.handleChange('newValue')
 
     assert.deepEqual(@form.editedValues, { name: 'newValue' })
@@ -72,11 +72,10 @@ describe 'Functional. Submit.', ->
     @form.handleSubmit()
 
     assert.equal(@form.submitting, false)
-    # TODO: должно сброситься после сабмита даже если не было установленно callback
     assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
-  it "check updated unsaved values. config.allowUpdateSavedValuesAfterSubmit: true", ->
+  it.only "check updated unsaved values", ->
     @form.fields.name.setSavedValue('savedValue')
     @form.fields.name.handleChange('newValue')
 
@@ -87,26 +86,12 @@ describe 'Functional. Submit.', ->
     @form.handleSubmit()
 
     assert.equal(@form.submitting, false)
+    # TODO: должен сброситься верхний уровень и обновиться нижний
+    # TODO: должно сброситься после сабмита даже если не было установленно callback
     # TODO: должно было установиться newValue даже если не было назначина submit handler
     assert.equal(@form.fields.name.savedValue, 'newValue')
     assert.deepEqual(@form.savedValues, { name: 'newValue' })
     assert.isFalse(@form.dirty)
-
-  it "don't update saved values after submit. config.allowUpdateSavedValuesAfterSubmit: false", ->
-    @form.config.allowUpdateSavedValuesAfterSubmit = false
-    @form.fields.name.setSavedValue('savedValue')
-    @form.fields.name.handleChange('newValue')
-
-    assert.deepEqual(@form.fields.name.savedValue, 'savedValue')
-    assert.deepEqual(@form.savedValues, { name: 'savedValue' })
-    assert.isTrue(@form.dirty)
-
-    @form.handleSubmit()
-
-    assert.equal(@form.submitting, false)
-    assert.equal(@form.fields.name.savedValue, 'savedValue')
-    assert.deepEqual(@form.savedValues, { name: 'savedValue' })
-    assert.isTrue(@form.dirty)
 
   describe "canSubmit()", ->
     it "don't submit while form is submitting at the moment.", ->

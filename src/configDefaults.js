@@ -20,9 +20,4 @@ module.exports = {
    * Allow/disallow run submit even the form hasn't changed.
    */
   allowSubmitUnchangedForm: false,
-
-  /**
-   * Allow/disallow update `field.savedValue` after form submit
-   */
-  allowUpdateSavedValuesAfterSubmit: true,
 };
