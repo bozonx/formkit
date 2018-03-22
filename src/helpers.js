@@ -77,6 +77,7 @@ module.exports = {
   },
 
   calculateDirty(value, savedValue) {
+    // TODO: use editedValue
     // TODO: test
     let newDirtyValue;
 

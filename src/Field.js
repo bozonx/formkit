@@ -123,22 +123,22 @@ module.exports = class Field {
    * @param {*} newSavedValue
    */
   setSavedValue(newSavedValue) {
-    // TODO: test
-    // set saved value
-    this._setState({ savedValue: newSavedValue });
-
-    // TODO: лучше устанавливать в любом случае, а вот очищать state level только если поле не под фокусом
+    const newState = {
+      savedValue: newSavedValue,
+      editedValue: this.editedValue,
+    };
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
     if (this._form.config.allowFocusedFieldUpdating || (!this._form.config.allowFocusedFieldUpdating && !this.focused)) {
-      // TODO: может лучше удалить верхний уровень???
-      //this.setValue(newSavedValue);
-
-      this._setState({ editedValue: undefined });
+      // clear top level
+      newState.editedValue = undefined;
     }
 
-    // TODO: событе поднять отдельно чтобы не дублировалось
+    newState.dirty = calculateDirty(newState.editedValue, newState.savedValue);
+
+    // TODO: test
+    this._setState(newState);
   }
 
   setDisabled(value) {
