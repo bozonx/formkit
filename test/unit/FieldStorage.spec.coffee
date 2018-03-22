@@ -61,3 +61,15 @@ describe.only 'Unit. FieldStorage.', ->
     assert.equal(@fieldStorage.getState(@pathToField, 'savedValue'), 'saved')
     assert.equal(@fieldStorage.getState(@pathToField, 'editedValue'), 'edited')
     assert.equal(@fieldStorage.getCombinedValue(@pathToField), 'edited')
+
+  it "isFieldUnsaved", ->
+    @fieldStorage.setState(@pathToField, {
+      savedValue: 'saved'
+      editedValue: 'edited'
+    })
+
+    assert.isTrue(@fieldStorage.isFieldUnsaved(@pathToField))
+
+    @fieldStorage.setState(@pathToField, { savedValue: 'edited' })
+
+    assert.isFalse(@fieldStorage.isFieldUnsaved(@pathToField))

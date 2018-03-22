@@ -78,11 +78,10 @@ module.exports = class FieldStorage {
    * @return {boolean} - true if field unsaved
    */
   isFieldUnsaved(pathToField) {
-    // TODO: test
     const savedValue = this.getState(pathToField, 'savedValue');
+    const editedValue = this.getState(pathToField, 'editedValue');
 
-    // TODO: review - use getCombinedValue
-    return savedValue !== this.getValue(pathToField);
+    return savedValue !== editedValue;
   }
 
 };
