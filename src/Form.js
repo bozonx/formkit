@@ -73,8 +73,8 @@ module.exports = class Form {
     return this._config;
   }
 
-  get unsavedValues() {
-    return this._formStorage.getUnsavedValues();
+  get editedValues() {
+    return this._formStorage.getEditedValues();
   }
 
   /**
@@ -167,10 +167,10 @@ module.exports = class Form {
    * @return {Promise} - wait for submit has finished
    */
   handleSubmit() {
-    const values = this._formStorage.getValues();
+    const { values, editedValues } = this;
 
     this.$setState({ submitting: true });
-    this._formStorage.emit('submitStart', values);
+    this._formStorage.emit('submitStart', { values, editedValues });
 
     if (!this._handlers.onSubmit) {
       // if there isn't a submit callback, just finish submit process

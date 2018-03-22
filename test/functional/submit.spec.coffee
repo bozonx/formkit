@@ -49,13 +49,13 @@ describe.only 'Functional. Submit.', ->
   it "run submit without submit callback", ->
     @form.fields.name.handleChange('newValue')
 
-    assert.deepEqual(@form.unsavedValues, { name: 'newValue' })
+    assert.deepEqual(@form.editedValues, { name: 'newValue' })
     assert.isTrue(@form.dirty)
     @form.handleSubmit()
 
     assert.equal(@form.submitting, false)
     # TODO: должно сброситься после сабмита даже если не было установленно callback
-    assert.deepEqual(@form.unsavedValues, {})
+    assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
   it "check updated unsaved values. config.allowUpdateSavedValuesAfterSubmit: true", ->

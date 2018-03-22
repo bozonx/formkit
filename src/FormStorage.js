@@ -42,20 +42,20 @@ module.exports = class FormStorage {
     return invalidMessages;
   }
 
-  getUnsavedValues() {
+  getEditedValues() {
     // TODO: test
-    const unsavedValues = {};
+    const editedValues = {};
 
     const values = this.getValues();
 
     this._storage.eachField((field, path) => {
       const curValue = _.get(values, path);
       if (field.get('savedValue') !== curValue) {
-        _.set(unsavedValues, path, curValue);
+        _.set(editedValues, path, curValue);
       }
     });
 
-    return unsavedValues;
+    return editedValues;
   }
 
   /**
