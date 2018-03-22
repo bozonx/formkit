@@ -229,6 +229,10 @@ module.exports = class Field {
     this._fieldStorage.on(this._pathToField, eventName, cb);
   }
 
+  off(eventName, cb) {
+    this._fieldStorage.off(this._pathToField, eventName, cb);
+  }
+
   /**
    * It rises a callback on field's value changes which has made by user.
    * @param {function} handler - callback. You can set only one callback per field.

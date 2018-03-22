@@ -123,6 +123,10 @@ module.exports = class Form {
     this._formStorage.on(eventName, cb);
   }
 
+  off(eventName, cb) {
+    this._formStorage.off(eventName, cb);
+  }
+
   /**
    * Add only one callback of 'change' event. It usefull for use as handler of component.
    * @param {function} handler - your handler
@@ -133,6 +137,13 @@ module.exports = class Form {
 
   onSubmit(handler) {
     this._handlers.onSubmit = handler;
+  }
+
+  /**
+   * Clear storage and remove all the event handlers
+   */
+  destroy() {
+    this._formStorage.destroy();
   }
 
   /**

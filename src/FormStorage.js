@@ -83,7 +83,7 @@ module.exports = class FormStorage {
 
   /**
    * Add one or more handlers on form's event:
-   * * change - changes made by user
+   * * change - changes of any field made by user
    * * storage - changes of storage
    * * saveStart
    * * saveEnd
@@ -93,18 +93,19 @@ module.exports = class FormStorage {
    * @param cb
    */
   on(eventName, cb) {
-    // TODO: наверное префикс то не нужен!? - тогда не поймаешь storage событие
-    this._storage.events.on(`form.${eventName}`, cb);
+    this._storage.events.on(eventName, cb);
   }
 
   emit(eventName, data) {
-    // TODO: наверное префикс то не нужен!?
-    this._storage.events.emit(`form.${eventName}`, data);
+    this._storage.events.emit(eventName, data);
   }
 
   off(eventName, cb) {
-    // TODO: наверное префикс то не нужен!?
-    this._storage.events.off(`form.${eventName}`, cb);
+    this._storage.events.off(eventName, cb);
+  }
+
+  destroy() {
+    // TODO: DO IT !!!
   }
 
 };
