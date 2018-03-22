@@ -16,10 +16,6 @@ module.exports = class Storage {
     };
   }
 
-  $store() {
-    return this._store;
-  }
-
   getWholeStorageState() {
     return _.cloneDeep(this._store);
   }
@@ -90,12 +86,11 @@ module.exports = class Storage {
     });
 
     _.set(this._store.fieldsState, pathToField, newState);
-  }
 
-  // setValue(pathToField, newValue) {
-  //   // TODO: не нужно наверное уже
-  //   this._store.values = this._store.values.setIn(pathToField.split('.'), newValue);
-  // }
+    if (_.find(partlyState, (item, name) => _.includes([ 'savedValue', 'editedValue' ], name))) {
+      this._updateCombinedValue(pathToField, partlyState.savedValue, partlyState.editedValue);
+    }
+  }
 
   generateNewFieldState() {
     return {
@@ -114,6 +109,11 @@ module.exports = class Storage {
       // TODO: нет смысла сохранять - use invalidMsg
       valid: true,
     };
+  }
+
+  _updateCombinedValue(pathToField, savedValue, editedValue) {
+    const value = _.isUndefined(editedValue) ? savedValue : editedValue;
+    this._store.values = this._store.values.setIn(pathToField.split('.'), value);
   }
 
   _generateNewFormState() {
