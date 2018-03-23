@@ -1,5 +1,3 @@
-/* eslint func-style: off */
-
 const _ = require('lodash');
 
 
