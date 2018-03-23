@@ -80,14 +80,24 @@ module.exports = class Storage {
   setFieldState(pathToField, partlyState) {
     const prevState = this.getWholeFieldState(pathToField);
 
-    const newState = new Map({
+    const newState = {
       ...prevState,
       ...partlyState,
+    };
+
+    _.set(this._store.fieldsState, pathToField, new Map(newState));
+
+    let needToCombineValue;
+
+    _.find(partlyState, (item, name) => {
+      if (_.includes([ 'savedValue', 'editedValue' ], name)) {
+        needToCombineValue = true;
+
+        return true;
+      }
     });
 
-    _.set(this._store.fieldsState, pathToField, newState);
-
-    if (_.find(partlyState, (item, name) => _.includes([ 'savedValue', 'editedValue' ], name))) {
+    if (needToCombineValue) {
       this._updateCombinedValue(pathToField, partlyState.savedValue, partlyState.editedValue);
     }
   }
