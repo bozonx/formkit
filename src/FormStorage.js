@@ -47,7 +47,7 @@ module.exports = class FormStorage {
 
       if (msg) {
         invalidMessages.push({
-          path,
+          field: path,
           message: field.get('invalidMsg'),
         });
       }

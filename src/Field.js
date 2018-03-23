@@ -22,7 +22,7 @@ module.exports = class Field {
     this.handleChange = this.handleChange.bind(this);
     this.handleFocusIn = this.handleFocusIn.bind(this);
     this.handleBlur = this.handleBlur.bind(this);
-    this.handlePressEnter = this.handlePressEnter.bind(this);
+    this.handleEndEditing = this.handleEndEditing.bind(this);
     this.save = this.save.bind(this);
     this.clear = this.clear.bind(this);
     this.reset = this.reset.bind(this);
@@ -50,7 +50,7 @@ module.exports = class Field {
   get name() {
     return this._fieldName;
   }
-  get path() {
+  get fullName() {
     return this._pathToField;
   }
   get dirty() {
@@ -228,7 +228,7 @@ module.exports = class Field {
    * * cancel previous save in queue
    * * immediately starts save
    */
-  handlePressEnter() {
+  handleEndEditing() {
     if (this.disabled) return;
     // start save immediately
     this.save();

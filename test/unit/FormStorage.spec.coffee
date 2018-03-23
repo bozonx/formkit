@@ -67,7 +67,7 @@ describe 'Unit. FormStorage.', ->
     @storage.setFieldState('field', { invalidMsg: 'value' })
     assert.deepEqual(@formStorage.getInvalidMessages(), [
       {
-        path: 'field'
+        field: 'field'
         message: 'value'
       }
     ])

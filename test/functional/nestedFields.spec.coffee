@@ -8,7 +8,7 @@ describe 'Functional. nestedFields.', ->
 
   it 'initial values', ->
     assert.equal(@form.fields.nested.name.name, 'name')
-    assert.equal(@form.fields.nested.name.path, 'nested.name')
+    assert.equal(@form.fields.nested.name.fullName, 'nested.name')
     assert.isUndefined(@form.fields.nested.name.value)
     assert.isUndefined(@form.fields.nested.name.savedValue)
 
@@ -37,7 +37,7 @@ describe 'Functional. nestedFields.', ->
     assert.isFalse(@form.fields.nested.name.valid)
     assert.equal(@form.fields.nested.name.invalidMsg, 'errorMsg')
     assert.isFalse(@form.valid)
-    assert.deepEqual(@form.invalidMessages, [{ path: 'nested.name', message: 'errorMsg' }])
+    assert.deepEqual(@form.invalidMessages, [{ field: 'nested.name', message: 'errorMsg' }])
 
   it 'events', ->
     @fieldOnChangeHandler = sinon.spy()

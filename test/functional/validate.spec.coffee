@@ -33,7 +33,7 @@ describe 'Functional. Validate.', ->
     assert.deepEqual(@form.invalidMessages, [
       {
         message: 'error'
-        path: 'parent.subParam'
+        field: 'parent.subParam'
       }
     ])
 
@@ -67,4 +67,4 @@ describe 'Functional. Validate.', ->
     #assert.isFalse(@form.fields.name.valid)
     #assert.equal(@form.fields.name.invalidMsg, 'errorMsg')
     assert.isFalse(@form.valid)
-    assert.deepEqual(@form.invalidMessages, [{path: 'name', message: 'errorMsg'}])
+    assert.deepEqual(@form.invalidMessages, [{ field: 'name', message: 'errorMsg' }])

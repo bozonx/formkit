@@ -24,7 +24,7 @@ describe 'Functional. saving.', ->
              and only the last save callback will be called', ->
       @field.onSave(@saveHandler)
       @field.handleChange('newValue')
-      @field.handlePressEnter()
+      @field.handleEndEditing()
       # it isn't really need but any way
       @field.flushSaving()
 
