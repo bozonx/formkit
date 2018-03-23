@@ -36,6 +36,10 @@ module.exports = class Form {
     return this._formStorage.getSavedValues();
   }
 
+  get editedValues() {
+    return this._formStorage.getEditedValues();
+  }
+
   get dirty() {
     // search for dirty values in fields
     return Boolean(findFieldRecursively(this.fields, (field) => {
@@ -74,10 +78,6 @@ module.exports = class Form {
 
   get config() {
     return this._config;
-  }
-
-  get editedValues() {
-    return this._formStorage.getEditedValues();
   }
 
   /**
@@ -291,11 +291,15 @@ module.exports = class Form {
     if (!this._validateCb) return;
 
     const errors = {};
-    const values = this.values;
+    //const values = this.values;
+    const values = {};
     let isFormValid = true;
 
     // add sub structures to "errors" for easy access to error
     findFieldRecursively(this.fields, (field, path) => {
+      // TODO: не нужно будет если в values будут созданны вложенные структуры
+      _.set(values, path, field.value);
+
       const split = path.split('.');
       const minPathItems = 2;
       if (split.length < minPathItems) return;
