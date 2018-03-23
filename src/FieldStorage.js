@@ -28,6 +28,10 @@ module.exports = class FieldStorage {
     return this._storage.getFieldState(pathToField, stateName);
   }
 
+  getWholeState(pathToField) {
+    return this._storage.getWholeFieldState(pathToField);
+  }
+
   /**
    * Set state value to field.
    * Field has to be initialized previously.
@@ -36,11 +40,11 @@ module.exports = class FieldStorage {
    * @param partlyState
    */
   setState(pathToField, partlyState) {
-    const oldState = this._storage.getWholeFieldState(pathToField);
+    const oldState = this.getWholeState(pathToField);
 
     this._storage.setFieldState(pathToField, partlyState);
 
-    if (_.isEqual(oldState, this._storage.getWholeFieldState(pathToField))) return;
+    if (_.isEqual(oldState, this.getWholeState(pathToField))) return;
 
     const data = {
       target: 'field',
@@ -58,6 +62,30 @@ module.exports = class FieldStorage {
 
   setStateSilent(pathToField, partlyState) {
     this._storage.setFieldState(pathToField, partlyState);
+  }
+
+  emitStorageEvent(pathToField, action, newState, oldState) {
+    if (_.isEqual(oldState, newState)) return;
+
+    const fieldEventdata = {
+      field: pathToField,
+      target: 'field',
+      event: 'storage',
+      state: newState,
+      oldState,
+      action,
+    };
+    this.emit(pathToField, 'storage', fieldEventdata);
+
+    const formEventData = {
+      field: pathToField,
+      target: 'field',
+      event: 'storage',
+      state: newState,
+      oldState,
+      action,
+    };
+    this._storage.events.emit('storage', formEventData);
   }
 
   on(pathToField, eventName, cb) {

@@ -110,7 +110,6 @@ module.exports = class Form {
       throw new Error(`Bad type of fields param`);
     }
 
-    // TODO: не поднимать событие
     this.validate();
 
     this._formStorage.emitStorageEvent('init', this.values, undefined);
@@ -228,7 +227,12 @@ module.exports = class Form {
    */
   setValidateCb(cb) {
     this._validateCb = cb;
+    const oldState = this._formStorage.getWholeState();
+
     this.validate();
+
+    const newState = this._formStorage.getWholeState();
+    this._formStorage.emitStorageEvent('update', newState, oldState);
   }
 
   /**
@@ -281,6 +285,9 @@ module.exports = class Form {
    * @return {string|undefined} - valid if undefined or error message.
    */
   validate() {
+
+    // TODO: не поднимать событие
+
     if (!this._validateCb) return;
 
     const errors = {};
@@ -304,10 +311,13 @@ module.exports = class Form {
 
     // set valid state to all the fields
     findFieldRecursively(this.fields, (field, path) => {
-      const errorMsg = _.get(errors, path);
-      if (isFormValid) isFormValid = !errorMsg;
+      const invalidMsg = _.get(errors, path);
+      if (isFormValid) isFormValid = !invalidMsg;
 
-      field.$setValidState(errorMsg);
+      field.$setStateSilent({
+        valid: _.isUndefined(invalidMsg),
+        invalidMsg,
+      });
     });
 
     this._formStorage.setState({ valid: isFormValid });

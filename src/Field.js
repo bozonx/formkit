@@ -41,7 +41,7 @@ module.exports = class Field {
   }
 
   /**
-   * Current value
+   * Combined value
    * @return {*}
    */
   get value() {
@@ -111,16 +111,18 @@ module.exports = class Field {
    * @param newValue
    */
   setValue(newValue) {
-
-    // TODO: test
+    const oldState = this._fieldStorage.getWholeState(this._pathToField);
 
     // set top value layer
-    // TODO: событие storage поднимать отдельно, после установки значений
-    this._fieldStorage.setState(this._pathToField, {
+    this.$setStateSilent({
       editedValue: newValue,
       dirty: calculateDirty(newValue, this.savedValue),
     });
+
     this.form.validate();
+
+    const newState = this._fieldStorage.getWholeState(this._pathToField);
+    this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
   }
 
   /**
@@ -187,6 +189,7 @@ module.exports = class Field {
       this.setValue(newValue);
 
       // TODO: поднимет ещё одно storage event
+
       // set touched to true
       if (!this.touched) {
         this._setState({ touched: true });
@@ -287,7 +290,6 @@ module.exports = class Field {
    * set saved value to current value.
    */
   revert() {
-    // TODO: test
     this.setValue(this.savedValue);
   }
 
@@ -312,15 +314,8 @@ module.exports = class Field {
     this._debouncedCall.flush();
   }
 
-  /**
-   * It calls from form after validating.
-   * @param {string|undefined} invalidMsg - invalid message of undefined
-   */
-  $setValidState(invalidMsg) {
-    this._setState({
-      valid: _.isUndefined(invalidMsg),
-      invalidMsg,
-    });
+  $setStateSilent(newPartlyState) {
+    this._fieldStorage.setStateSilent(this._pathToField, newPartlyState);
   }
 
   $setSavedValueAfterSubmit(savedValue) {

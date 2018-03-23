@@ -7,6 +7,7 @@ describe 'Unit. Field.', ->
     @pathToField = 'testField'
     @form = formkit.newForm()
     @form.init(['testField'])
+    @field = @form.fields.testField
 
   it "_initState without params", ->
     storageChangeHandler = sinon.spy()
@@ -54,3 +55,92 @@ describe 'Unit. Field.', ->
 
     assert.equal(field.value, 7)
     sinon.assert.notCalled(storageChangeHandler)
+
+  it "setValue", ->
+    formStorageChangeHandler = sinon.spy()
+    fieldStorageChangeHandler = sinon.spy()
+    @field._form.on('storage', formStorageChangeHandler)
+    @field.on('storage', fieldStorageChangeHandler)
+    @field.setValue('editedValue')
+
+    assert.equal(@field.editedValue, 'editedValue')
+
+    sinon.assert.calledOnce(formStorageChangeHandler)
+    sinon.assert.calledOnce(fieldStorageChangeHandler)
+
+  it "setValue - don't rise if value hasn't changed", ->
+    formStorageChangeHandler = sinon.spy()
+    fieldStorageChangeHandler = sinon.spy()
+    @field._form.on('storage', formStorageChangeHandler)
+    @field.on('storage', fieldStorageChangeHandler)
+
+    @field.setValue('editedValue')
+    @field.setValue('editedValue')
+
+    sinon.assert.calledOnce(formStorageChangeHandler)
+    sinon.assert.calledWith(formStorageChangeHandler, {
+      action: 'update',
+      event: 'storage',
+      field: 'testField',
+      oldState: {
+        defaultValue: undefined,
+        dirty: false,
+        disabled: false,
+        editedValue: undefined,
+        focused: false,
+        initial: undefined,
+        invalidMsg: undefined,
+        savedValue: undefined,
+        saving: false,
+        touched: false,
+        valid: true
+      },
+      state: {
+        defaultValue: undefined,
+        dirty: true,
+        disabled: false,
+        editedValue: 'editedValue',
+        focused: false,
+        initial: undefined,
+        invalidMsg: undefined,
+        savedValue: undefined,
+        saving: false,
+        touched: false,
+        valid: true
+      },
+      target: 'field'
+    })
+
+    sinon.assert.calledOnce(fieldStorageChangeHandler)
+    sinon.assert.calledWith(fieldStorageChangeHandler, {
+      action: 'update',
+      event: 'storage',
+      field: 'testField',
+      oldState: {
+        defaultValue: undefined,
+        dirty: false,
+        disabled: false,
+        editedValue: undefined,
+        focused: false,
+        initial: undefined,
+        invalidMsg: undefined,
+        savedValue: undefined,
+        saving: false,
+        touched: false,
+        valid: true
+      },
+      state: {
+        defaultValue: undefined,
+        dirty: true,
+        disabled: false,
+        editedValue: 'editedValue',
+        focused: false,
+        initial: undefined,
+        invalidMsg: undefined,
+        savedValue: undefined,
+        saving: false,
+        touched: false,
+        valid: true
+      },
+      target: 'field'
+    })

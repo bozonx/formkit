@@ -56,12 +56,16 @@ module.exports = class FormStorage {
     return invalidMessages;
   }
 
+  getWholeState() {
+    return this._storage.getWholeFormState();
+  }
+
   /**
    * Set form's state.
    * @param {object} partlyState - new partly state
    */
   setState(partlyState) {
-    const oldState = this._storage.getWholeFormState();
+    const oldState = this.getWholeState();
 
     this._storage.setFormState(partlyState);
 
@@ -71,6 +75,8 @@ module.exports = class FormStorage {
   }
 
   emitStorageEvent(action, newState, oldState) {
+    if (_.isEqual(oldState, newState)) return;
+
     const data = {
       target: 'form',
       event: 'storage',
