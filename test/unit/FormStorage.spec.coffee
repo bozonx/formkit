@@ -28,7 +28,6 @@ describe 'Unit. FormStorage.', ->
       oldState: { valid: true, submitting: false, touched: false },
       state: { submitting: true },
       target: 'form',
-      type: 'state'
     })
 
   it "getValues", ->
