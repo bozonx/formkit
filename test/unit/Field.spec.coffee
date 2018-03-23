@@ -26,7 +26,6 @@ describe 'Unit. Field.', ->
       savedValue: undefined
       saving: false
       touched: false
-      valid: true
     })
 
     assert.isUndefined(field.value)
@@ -50,7 +49,6 @@ describe 'Unit. Field.', ->
       savedValue: undefined
       saving: false
       touched: false
-      valid: true
     })
 
     assert.equal(field.value, 7)
@@ -79,68 +77,64 @@ describe 'Unit. Field.', ->
 
     sinon.assert.calledOnce(formStorageChangeHandler)
     sinon.assert.calledWith(formStorageChangeHandler, {
-      action: 'update',
-      event: 'storage',
-      field: 'testField',
+      action: 'update'
+      event: 'storage'
+      field: 'testField'
       oldState: {
-        defaultValue: undefined,
-        dirty: false,
-        disabled: false,
-        editedValue: undefined,
-        focused: false,
-        initial: undefined,
-        invalidMsg: undefined,
-        savedValue: undefined,
-        saving: false,
-        touched: false,
-        valid: true
-      },
+        defaultValue: undefined
+        dirty: false
+        disabled: false
+        editedValue: undefined
+        focused: false
+        initial: undefined
+        invalidMsg: undefined
+        savedValue: undefined
+        saving: false
+        touched: false
+      }
       state: {
-        defaultValue: undefined,
-        dirty: true,
-        disabled: false,
-        editedValue: 'editedValue',
-        focused: false,
-        initial: undefined,
-        invalidMsg: undefined,
-        savedValue: undefined,
-        saving: false,
-        touched: false,
-        valid: true
-      },
+        defaultValue: undefined
+        dirty: true
+        disabled: false
+        editedValue: 'editedValue'
+        focused: false
+        initial: undefined
+        invalidMsg: undefined
+        savedValue: undefined
+        saving: false
+        touched: false
+      }
       target: 'field'
     })
 
     sinon.assert.calledOnce(fieldStorageChangeHandler)
     sinon.assert.calledWith(fieldStorageChangeHandler, {
-      action: 'update',
-      event: 'storage',
-      field: 'testField',
+      action: 'update'
+      event: 'storage'
+      field: 'testField'
       oldState: {
-        defaultValue: undefined,
-        dirty: false,
-        disabled: false,
-        editedValue: undefined,
-        focused: false,
-        initial: undefined,
-        invalidMsg: undefined,
-        savedValue: undefined,
-        saving: false,
-        touched: false,
-        valid: true
-      },
+        defaultValue: undefined
+        dirty: false
+        disabled: false
+        editedValue: undefined
+        focused: false
+        initial: undefined
+        invalidMsg: undefined
+        savedValue: undefined
+        saving: false
+        touched: false
+      }
       state: {
-        defaultValue: undefined,
-        dirty: true,
-        disabled: false,
-        editedValue: 'editedValue',
-        focused: false,
-        initial: undefined,
-        invalidMsg: undefined,
-        savedValue: undefined,
-        saving: false,
-        touched: false,
-        valid: true
-      },
+        defaultValue: undefined
+        dirty: true
+        disabled: false
+        editedValue: 'editedValue'
+        focused: false
+        initial: undefined
+        invalidMsg: undefined
+        savedValue: undefined
+        saving: false
+        touched: false
+      }
       target: 'field'
     })

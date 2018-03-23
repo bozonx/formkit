@@ -314,12 +314,10 @@ module.exports = class Form {
       const invalidMsg = _.get(errors, path);
       if (isFormValid) isFormValid = !invalidMsg;
 
-      field.$setStateSilent({
-        valid: _.isUndefined(invalidMsg),
-        invalidMsg,
-      });
+      field.$setStateSilent({ invalidMsg });
     });
 
+    // TODO: review - нужно ли сохранять или просто высчитывать?
     this._formStorage.setState({ valid: isFormValid });
   }
 

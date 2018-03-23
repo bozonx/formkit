@@ -60,7 +60,7 @@ module.exports = class Field {
     return this._fieldStorage.getState(this._pathToField, 'touched');
   }
   get valid() {
-    return this._fieldStorage.getState(this._pathToField, 'valid');
+    return !this._fieldStorage.getState(this._pathToField, 'invalidMsg');
   }
   get invalidMsg() {
     return this._fieldStorage.getState(this._pathToField, 'invalidMsg');
@@ -325,9 +325,7 @@ module.exports = class Field {
 
     // if value hasn't changed after submit was started - clear it
     if (savedValue === this.value) {
-      this._fieldStorage.setStateSilent(this._pathToField, {
-        editedValue: undefined,
-      });
+      this._fieldStorage.setStateSilent(this._pathToField, { editedValue: undefined });
     }
 
     this._fieldStorage.setStateSilent(this._pathToField, {

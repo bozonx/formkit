@@ -106,8 +106,6 @@ module.exports = class Storage {
       // bottom layer
       savedValue: undefined,
       saving: false,
-      // TODO: нет смысла сохранять - use invalidMsg
-      valid: true,
     };
   }
 
