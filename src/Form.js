@@ -315,7 +315,7 @@ module.exports = class Form {
 
     // set valid state to all the fields
     findFieldRecursively(this.fields, (field, path) => {
-      const invalidMsg = _.get(errors, path);
+      const invalidMsg = _.get(errors, path) || null;
       if (isFormValid) isFormValid = !invalidMsg;
 
       field.$setStateSilent({ invalidMsg });
