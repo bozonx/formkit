@@ -350,27 +350,19 @@ module.exports = class Field {
    * @param {object} params - params which was passed to form init.
    * @private
    */
-  _initState(params) {
-
-    // TODO: review - уменьшить количество вызовов событий storage
-
-    const initialState = _.omitBy({
-      disabled: params.disabled,
-      defaultValue: params.defaultValue,
-      initial: params.initial,
-    }, _.isUndefined);
+  _initState({ initial, disabled, defaultValue }) {
     // set initial value otherwise default value
-    const newValue = (_.isUndefined(params.initial)) ? params.defaultValue : params.initial;
+    const newValue = (_.isUndefined(initial)) ? defaultValue : initial;
+    const initialState = _.omitBy({
+      disabled,
+      defaultValue,
+      initial,
+      // set initial value to edited layer
+      editedValue: (_.isUndefined(newValue)) ? undefined : newValue,
+    }, _.isUndefined);
 
     // init state
     this._fieldStorage.initState(this._pathToField, initialState);
-
-    if (!_.isUndefined(newValue)) {
-      // set to edited layer
-      // TODO: установить вместе с остальным стейтом - иначе поднимется ещё одно событие
-      this._fieldStorage.setState(this._pathToField, { editedValue: newValue });
-      this.form.validate();
-    }
   }
 
   /**

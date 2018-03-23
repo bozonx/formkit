@@ -82,6 +82,10 @@ module.exports = class FormStorage {
     this.emit('storage', data);
   }
 
+  emitFormEvent(eventName, data) {
+    this.emit(eventName, data);
+  }
+
   /**
    * Add one or more handlers on form's event:
    * * change - changes of any field made by user

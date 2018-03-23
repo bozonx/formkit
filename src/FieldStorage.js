@@ -12,7 +12,7 @@ module.exports = class FieldStorage {
       ...initialState,
     };
 
-    this.setState(pathToField, newState);
+    this.setStateSilent(pathToField, newState);
   }
 
   /**

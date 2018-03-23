@@ -100,17 +100,20 @@ module.exports = class Form {
     this._validateCb = validateCb;
 
     if (_.isArray(initialFields)) {
-      // TODO: вызовится много обработчиков storage event
       _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
     }
     else if (_.isPlainObject(initialFields)) {
       // TODO: может надо рекурсивно???
-      // TODO: вызовится много обработчиков storage event
       _.each(initialFields, (params, pathToField) => this._initField(pathToField, params || {}));
     }
     else {
       throw new Error(`Bad type of fields param`);
     }
+
+    // TODO: не поднимать событие
+    this.validate();
+
+    this._formStorage.emitStorageEvent('init', this.values, undefined);
   }
 
   /**
