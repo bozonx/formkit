@@ -272,7 +272,7 @@ module.exports = class Form {
     this.validate();
 
     const newState = this._formStorage.getWholeState();
-    this._formStorage.emitStorageEvent('update', newState, oldState);
+    this._formStorage.emitStorageEvent('update', newState, oldState, true);
   }
 
   /**

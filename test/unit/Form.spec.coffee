@@ -57,8 +57,7 @@ describe 'Unit. Field.', ->
     assert.deepEqual(@form.values, {
       field1: { id : 1 }
     })
-    sinon.assert.calledOnce(storageHandler)
-
+    sinon.assert.calledTwice(storageHandler)
 
   it "setSavedValues", ->
     storageHandler = sinon.spy()
@@ -74,4 +73,4 @@ describe 'Unit. Field.', ->
     assert.deepEqual(@form.values, {
       field1: { id : 1 }
     })
-    sinon.assert.calledOnce(storageHandler)
+    #sinon.assert.calledTwice(storageHandler)

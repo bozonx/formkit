@@ -78,8 +78,8 @@ module.exports = class FormStorage {
     this._storage.setFormState(partlyState);
   }
 
-  emitStorageEvent(action, newState, oldState) {
-    if (_.isEqual(oldState, newState)) return;
+  emitStorageEvent(action, newState, oldState, force) {
+    if (!force && _.isEqual(oldState, newState)) return;
 
     const data = {
       target: 'form',
