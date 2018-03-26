@@ -103,8 +103,21 @@ module.exports = class Form {
       _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
     }
     else if (_.isPlainObject(initialFields)) {
-      // TODO: пройтись рекурсивно и с поддержкой указания вложенных полей строкой в имени
-      _.each(initialFields, (params, pathToField) => this._initField(pathToField, params || {}));
+      // read schema
+      findRecursively(initialFields, (item, path) => {
+        if (!_.isPlainObject(item)) return false;
+
+        // means field
+        if (_.isEmpty(item)
+          || !_.isUndefined(item.initial)
+          || !_.isUndefined(item.defaultValue)
+          || _.isBoolean(item.disabled) ) {
+          this._initField(path, item);
+
+          // don't go deeper
+          return false;
+        }
+      });
     }
     else {
       throw new Error(`Bad type of fields param`);

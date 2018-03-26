@@ -59,9 +59,11 @@ describe 'Functional. Value, saved value, default value.', ->
 
   it "set defaultValue on init", ->
     @form = formkit.newForm()
-    @form.init({name: {defaultValue: 'default value'}})
+    @form.init({
+      name: { defaultValue: 'default value' }
+    })
 
-    assert.deepEqual(@form.values, {name: 'default value'})
+    assert.deepEqual(@form.values, { name: 'default value' })
     assert.equal(@form.fields.name.value, 'default value')
     assert.equal(@form.fields.name.defaultValue, 'default value')
     assert.isUndefined(@form.fields.name.savedValue)
