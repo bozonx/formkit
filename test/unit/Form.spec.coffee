@@ -44,9 +44,9 @@ describe 'Unit. Field.', ->
     })
 
   it "setValues", ->
+    @form.init([ 'field1' ])
     storageHandler = sinon.spy()
     @form.on('storage', storageHandler)
-    @form.init([ 'field1' ])
 
     @form.setValues({
       field1: {
@@ -57,12 +57,12 @@ describe 'Unit. Field.', ->
     assert.deepEqual(@form.values, {
       field1: { id : 1 }
     })
-    sinon.assert.calledTwice(storageHandler)
+    sinon.assert.calledOnce(storageHandler)
 
   it "setSavedValues", ->
+    @form.init([ 'field1' ])
     storageHandler = sinon.spy()
     @form.on('storage', storageHandler)
-    @form.init([ 'field1' ])
 
     @form.setSavedValues({
       field1: {
@@ -73,4 +73,4 @@ describe 'Unit. Field.', ->
     assert.deepEqual(@form.values, {
       field1: { id : 1 }
     })
-    sinon.assert.calledTwice(storageHandler)
+    sinon.assert.calledOnce(storageHandler)

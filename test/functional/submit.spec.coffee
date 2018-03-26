@@ -96,6 +96,15 @@ describe 'Functional. Submit.', ->
     assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
+  it "_afterSubmitSuccess - check rised storage events", ->
+    storageHandler = sinon.spy()
+    @form.on('storage', storageHandler)
+
+    @form._afterSubmitSuccess({ name: 'newValue' })
+
+    assert.deepEqual(@form.values, { name: 'newValue' })
+    sinon.assert.calledOnce(storageHandler)
+
   describe "canSubmit()", ->
     it "don't submit while form is submitting at the moment.", ->
       @form.onSubmit(-> Promise.resolve())

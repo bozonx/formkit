@@ -388,14 +388,16 @@ module.exports = class Form {
 
   _afterSubmitSuccess(values) {
     this.$setState({ submitting: false });
-
-    // TODO: много поднимется событий storage change !!!
+    const oldState = this._formStorage.getWholeState();
 
     findFieldRecursively(this.fields, (field, pathToField) => {
       const savedValue = _.get(values, pathToField);
       field.$setSavedValueAfterSubmit(savedValue);
     });
 
+    this.validate();
+    const newState = this._formStorage.getWholeState();
+    this._formStorage.emitStorageEvent('update', newState, oldState, true);
     this._formStorage.emit('submitEnd');
   }
 
