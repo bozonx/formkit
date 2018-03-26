@@ -254,8 +254,8 @@ module.exports = class Form {
    *                             You can set values all the fields or just to a part of fields.
    */
   setValues(newValues) {
-    // TODO: test plain object values
-    // TODO: вызовится много обработчиков storage event
+    const oldState = this._formStorage.getWholeState();
+
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
     findRecursively(newValues, (value, path) => {
@@ -264,10 +264,15 @@ module.exports = class Form {
       if (!field || !(field instanceof Field)) return;
       // else means it's field - set value and don't go deeper
       // set value to edited layer
-      field.setValue(value);
+      field.$setEditedValue(value);
 
       return false;
     });
+
+    this.validate();
+
+    const newState = this._formStorage.getWholeState();
+    this._formStorage.emitStorageEvent('update', newState, oldState);
   }
 
   /**
@@ -277,8 +282,8 @@ module.exports = class Form {
    * @param newValues
    */
   setSavedValues(newValues) {
-    // TODO: test plain object values
     // TODO: вызовится много обработчиков storage event
+    // TODO: вызовится много раз validate
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
     findRecursively(newValues, (value, path) => {
@@ -334,7 +339,7 @@ module.exports = class Form {
       field.$setStateSilent({ invalidMsg });
     });
 
-    this._formStorage.setState({ valid: isFormValid });
+    this._formStorage.setStateSilent({ valid: isFormValid });
   }
 
   $getWholeStorageState() {

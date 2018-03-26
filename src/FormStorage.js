@@ -74,6 +74,10 @@ module.exports = class FormStorage {
     this.emitStorageEvent('update', partlyState, oldState);
   }
 
+  setStateSilent(partlyState) {
+    this._storage.setFormState(partlyState);
+  }
+
   emitStorageEvent(action, newState, oldState) {
     if (_.isEqual(oldState, newState)) return;
 
@@ -86,10 +90,6 @@ module.exports = class FormStorage {
     };
 
     this.emit('storage', data);
-  }
-
-  emitFormEvent(eventName, data) {
-    this.emit(eventName, data);
   }
 
   /**

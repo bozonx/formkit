@@ -113,16 +113,21 @@ module.exports = class Field {
   setValue(newValue) {
     const oldState = this._fieldStorage.getWholeState(this._pathToField);
 
+    this.$setEditedValue(newValue);
+
+    this.form.validate();
+
+    const newState = this._fieldStorage.getWholeState(this._pathToField);
+
+    this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
+  }
+
+  $setEditedValue(newValue) {
     // set top value layer
     this.$setStateSilent({
       editedValue: newValue,
       dirty: calculateDirty(newValue, this.savedValue),
     });
-
-    this.form.validate();
-
-    const newState = this._fieldStorage.getWholeState(this._pathToField);
-    this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
   }
 
   /**
