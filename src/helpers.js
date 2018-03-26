@@ -105,7 +105,13 @@ module.exports = {
   },
 
   parseValue(rawValue) {
-    if (rawValue === 'true') {
+    if (_.isUndefined(rawValue)) {
+      return;
+    }
+    if (_.isNull(rawValue)) {
+      return null;
+    }
+    else if (rawValue === 'true') {
       return true;
     }
     else if (rawValue === 'false') {
