@@ -23,6 +23,25 @@ const _ = require('lodash');
 module.exports = {
   // extendDeep,
 
+  isFieldSchema(comingSchema) {
+    let isSchema = false;
+    const filedParams = [
+      'initial',
+      'defaultValue',
+      'disabled',
+    ];
+
+    _.find(comingSchema, (value, name) => {
+      if (_.includes(filedParams, name)) {
+        isSchema = true;
+
+        return true;
+      }
+    });
+
+    return isSchema;
+  },
+
   findFieldRecursively(rootObject, cb) {
     const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
       const itemPath = _.trim(`${rootPath}.${name}`, '.');

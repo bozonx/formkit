@@ -34,12 +34,18 @@ describe 'Unit. Field.', ->
       parent: {
         field2: { initial: 1 }
       }
+      parent3: {
+        field3: { initial: undefined }
+      }
     })
 
     assert.deepEqual(@form.values, {
       field1: undefined
       parent: {
         field2: 1
+      }
+      parent3: {
+        field3: undefined
       }
     })
 

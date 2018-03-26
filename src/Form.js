@@ -3,7 +3,7 @@ const Storage = require('./Storage');
 const FormStorage = require('./FormStorage');
 const FieldStorage = require('./FieldStorage');
 const Field = require('./Field');
-const { findFieldRecursively, findRecursively, isPromise } = require('./helpers');
+const { findFieldRecursively, findRecursively, isPromise, isFieldSchema } = require('./helpers');
 
 
 module.exports = class Form {
@@ -104,23 +104,20 @@ module.exports = class Form {
     }
     else if (_.isPlainObject(initialFields)) {
       // read schema
-      // findRecursively(initialFields, (item, path) => {
-      //   if (!_.isPlainObject(item)) return false;
-      //
-      //   // means field
-      //   if (_.isEmpty(item)
-      //     || !_.isUndefined(item.initial)
-      //     || !_.isUndefined(item.defaultValue)
-      //     || _.isBoolean(item.disabled) ) {
-      //     this._initField(path, item);
-      //
-      //     // don't go deeper
-      //     return false;
-      //   }
-      // });
+      findRecursively(initialFields, (item, path) => {
+        if (!_.isPlainObject(item)) return false;
+
+        // means field
+        if (_.isEmpty(item) || isFieldSchema(item) ) {
+          this._initField(path, item);
+
+          // don't go deeper
+          return false;
+        }
+      });
 
       // TODO: fix it
-      _.each(initialFields, (params, pathToField) => this._initField(pathToField, params));
+      //_.each(initialFields, (params, pathToField) => this._initField(pathToField, params));
     }
     else {
       throw new Error(`Bad type of fields param`);
