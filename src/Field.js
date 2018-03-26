@@ -170,16 +170,17 @@ module.exports = class Field {
     const isChanged = !_.isEqual(oldValue, newValue);
 
     if (isChanged) {
-      // set editedValue, dirty state and validate and rise storage event
-      this.setValue(newValue);
-
-      // TODO: поднимет ещё одно storage event
+      // set editedValue and dirty state
+      this.$setEditedValue(newValue);
+      this.form.validate();
 
       // set touched to true
       if (!this.touched) {
-        this._setState({ touched: true });
-        this._form.$setState({ touched: true });
+        this.$setStateSilent({ touched: true });
+        this._form.$setStateSilent({ touched: true });
       }
+
+      // TODO: поднять storage event
     }
 
     // rise change event and save only changed value

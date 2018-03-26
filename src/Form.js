@@ -189,7 +189,7 @@ module.exports = class Form {
   handleSubmit() {
     const { values, editedValues } = this;
 
-    this.$setState({ submitting: true });
+    this._formStorage.setState({ submitting: true });
     this._formStorage.emit('submitStart', { values, editedValues });
 
     if (!this._handlers.onSubmit) {
@@ -342,8 +342,8 @@ module.exports = class Form {
     return this._storage.getWholeStorageState();
   }
 
-  $setState(partlyState) {
-    this._formStorage.setState(partlyState);
+  $setStateSilent(partlyState) {
+    this._formStorage.setStateSilent(partlyState);
   }
 
   $callHandler(handlerName, data) {
@@ -369,7 +369,7 @@ module.exports = class Form {
           return data;
         })
         .catch((error) => {
-          this.$setState({ submitting: false });
+          this._formStorage.setState({ submitting: false });
           this._formStorage.emit('submitEnd', { error });
 
           return Promise.reject(error);
@@ -383,7 +383,7 @@ module.exports = class Form {
   }
 
   _afterSubmitSuccess(values) {
-    this.$setState({ submitting: false });
+    this._formStorage.setState({ submitting: false });
     const oldState = this._formStorage.getWholeState();
 
     findFieldRecursively(this.fields, (field, pathToField) => {
