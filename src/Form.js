@@ -321,7 +321,6 @@ module.exports = class Form {
       field.$setStateSilent({ invalidMsg });
     });
 
-    // TODO: review - нужно ли сохранять или просто высчитывать?
     this._formStorage.setState({ valid: isFormValid });
   }
 
