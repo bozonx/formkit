@@ -46,18 +46,8 @@ module.exports = class FieldStorage {
 
     if (_.isEqual(oldState, this.getWholeState(pathToField))) return;
 
-    const data = {
-      target: 'field',
-      field: pathToField,
-      state: partlyState,
-      oldState,
-      event: 'storage',
-      action: 'update',
-      type: 'state',
-    };
-
-    // TODO: поднимать общее событие ещё  и не на pathToField а общее
-    this.emit(pathToField, 'storage', data);
+    const newState = this.getWholeState(pathToField);
+    this.emitStorageEvent(pathToField, 'update', newState, oldState);
   }
 
   setStateSilent(pathToField, partlyState) {

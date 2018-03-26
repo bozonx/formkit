@@ -127,8 +127,6 @@ describe 'Functional. Submit.', ->
       @field.handleChange('newValue')
       @form.handleSubmit()
 
-      # TODO: dirty не сбросился после submit
-
       assert.equal(@form.canSubmit(), 'The form hasn\'t changed.')
 
     it "don't do another submit if data hasn't changed. config.allowSubmitUnchangedForm: true", ->

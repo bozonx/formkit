@@ -306,9 +306,6 @@ module.exports = class Form {
    * @return {string|undefined} - valid if undefined or error message.
    */
   validate() {
-
-    // TODO: не поднимать событие
-
     if (!this._validateCb) return;
 
     const errors = {};
