@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const DebouncedCall = require('./DebouncedCall');
-const { calculateDirty, getFieldName, isPromise } = require('./helpers');
+const { calculateDirty, getFieldName, isPromise, parseValue } = require('./helpers');
 
 
 module.exports = class Field {
@@ -174,12 +174,13 @@ module.exports = class Field {
    * * Rise a "change" events for field and form
    * * Run an onChange callback if it assigned.
    * * Start saving
-   * @param {*} newValue
+   * @param {*} rawValue
    */
-  handleChange(newValue) {
+  handleChange(rawValue) {
     // don't do anything if disabled
     if (this.disabled) return;
 
+    const newValue = parseValue(rawValue);
     // value is immutable
     const oldValue = this.value;
     const isChanged = !_.isEqual(oldValue, newValue);
@@ -344,12 +345,15 @@ module.exports = class Field {
    * @private
    */
   _initState({ initial, disabled, defaultValue }) {
+    const parsedInitial = parseValue(initial);
+    const parsedDefaultValue = parseValue(defaultValue);
+
     // set initial value otherwise default value
-    const newValue = (_.isUndefined(initial)) ? defaultValue : initial;
+    const newValue = (_.isUndefined(parsedInitial)) ? parsedDefaultValue : parsedInitial;
     const initialState = _.omitBy({
       disabled,
-      defaultValue,
-      initial,
+      defaultValue: parsedDefaultValue,
+      initial: parsedInitial,
       // set initial value to edited layer
       editedValue: (_.isUndefined(newValue)) ? undefined : newValue,
     }, _.isUndefined);

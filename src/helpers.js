@@ -104,6 +104,37 @@ module.exports = {
     return _.isObject(unknown) && unknown.then;
   },
 
+  parseValue(rawValue) {
+    if (rawValue === 'true') {
+      return true;
+    }
+    else if (rawValue === 'false') {
+      return false;
+    }
+    else if (rawValue === 'null') {
+      return null;
+    }
+    else if (rawValue === 'NaN') {
+      return NaN;
+    }
+    else if (rawValue === '') {
+      return '';
+    }
+    else if (_.isBoolean(rawValue)) {
+      return rawValue;
+    }
+
+    const toNumber = _.toNumber(rawValue);
+
+    if (!_.isNaN(toNumber)) {
+      // it's number
+      return toNumber;
+    }
+
+    // string
+    return rawValue;
+  },
+
 };
 
 

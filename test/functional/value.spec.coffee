@@ -7,16 +7,16 @@ describe 'Functional. Value, saved value, default value.', ->
     @form.init(['name'])
 
   it "set new value to field. savedValue == undefined and value has new value", ->
-    @form.fields.name.handleChange('newValue')
+    @form.fields.name.handleChange('false')
 
-    assert.equal(@form.fields.name.value, 'newValue')
+    assert.equal(@form.fields.name.value, false)
     assert.isUndefined(@form.fields.name.savedValue)
 
   it "set initial value", ->
     @form = formkit.newForm()
-    @form.init({ name: { initial: 'initValue' } })
+    @form.init({ name: { initial: 'true' } })
 
-    assert.equal(@form.fields.name.value, 'initValue')
+    assert.equal(@form.fields.name.value, true)
     assert.isUndefined(@form.fields.name.savedValue)
 
   it "set new saved value", ->
@@ -60,12 +60,12 @@ describe 'Functional. Value, saved value, default value.', ->
   it "set defaultValue on init", ->
     @form = formkit.newForm()
     @form.init({
-      name: { defaultValue: 'default value' }
+      name: { defaultValue: 'false' }
     })
 
-    assert.deepEqual(@form.values, { name: 'default value' })
-    assert.equal(@form.fields.name.value, 'default value')
-    assert.equal(@form.fields.name.defaultValue, 'default value')
+    assert.deepEqual(@form.values, { name: false })
+    assert.equal(@form.fields.name.value, false)
+    assert.equal(@form.fields.name.defaultValue, false)
     assert.isUndefined(@form.fields.name.savedValue)
 
   it "initial value has more priority", ->
