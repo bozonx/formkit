@@ -114,20 +114,10 @@ module.exports = class Field {
     const oldState = this._fieldStorage.getWholeState(this._pathToField);
 
     this.$setEditedValue(newValue);
-
     this.form.validate();
 
     const newState = this._fieldStorage.getWholeState(this._pathToField);
-
     this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
-  }
-
-  $setEditedValue(newValue) {
-    // set top value layer
-    this.$setStateSilent({
-      editedValue: newValue,
-      dirty: calculateDirty(newValue, this.savedValue),
-    });
   }
 
   /**
@@ -135,24 +125,13 @@ module.exports = class Field {
    * @param {*} newSavedValue
    */
   setSavedValue(newSavedValue) {
+    const oldState = this._fieldStorage.getWholeState(this._pathToField);
 
-    // TODO: test
+    this.$setSavedValue(newSavedValue);
+    this.form.validate();
 
-    const newState = {
-      savedValue: newSavedValue,
-      editedValue: this.editedValue,
-    };
-
-    // update user input if field isn't on focus and set dirty to false.
-    // of course if it allows in config.
-    if (this._form.config.allowFocusedFieldUpdating || (!this._form.config.allowFocusedFieldUpdating && !this.focused)) {
-      // clear top level
-      newState.editedValue = undefined;
-    }
-
-    newState.dirty = calculateDirty(newState.editedValue, newState.savedValue);
-
-    this._setState(newState);
+    const newState = this._fieldStorage.getWholeState(this._pathToField);
+    this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
   }
 
   setDisabled(value) {
@@ -318,6 +297,32 @@ module.exports = class Field {
    */
   flushSaving() {
     this._debouncedCall.flush();
+  }
+
+  $setEditedValue(newValue) {
+    // set top value layer
+    this.$setStateSilent({
+      editedValue: newValue,
+      dirty: calculateDirty(newValue, this.savedValue),
+    });
+  }
+
+  $setSavedValue(newSavedValue) {
+    const newState = {
+      savedValue: newSavedValue,
+      editedValue: this.editedValue,
+    };
+
+    // update user input if field isn't on focus and set dirty to false.
+    // of course if it allows in config.
+    if (this._form.config.allowFocusedFieldUpdating || (!this._form.config.allowFocusedFieldUpdating && !this.focused)) {
+      // clear top level
+      newState.editedValue = undefined;
+    }
+
+    newState.dirty = calculateDirty(newState.editedValue, newState.savedValue);
+
+    this.$setStateSilent(newState);
   }
 
   $setStateSilent(newPartlyState) {

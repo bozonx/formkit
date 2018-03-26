@@ -73,4 +73,4 @@ describe 'Unit. Field.', ->
     assert.deepEqual(@form.values, {
       field1: { id : 1 }
     })
-    #sinon.assert.calledTwice(storageHandler)
+    sinon.assert.calledTwice(storageHandler)

@@ -270,7 +270,6 @@ module.exports = class Form {
     });
 
     this.validate();
-
     const newState = this._formStorage.getWholeState();
     this._formStorage.emitStorageEvent('update', newState, oldState, true);
   }
@@ -282,8 +281,8 @@ module.exports = class Form {
    * @param newValues
    */
   setSavedValues(newValues) {
-    // TODO: вызовится много обработчиков storage event
-    // TODO: вызовится много раз validate
+    const oldState = this._formStorage.getWholeState();
+
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
     findRecursively(newValues, (value, path) => {
@@ -292,10 +291,14 @@ module.exports = class Form {
       if (!field || !(field instanceof Field)) return;
       // else means it's field - set value and don't go deeper
       // set value to saved layer
-      field.setSavedValue(value);
+      field.$setSavedValue(value);
 
       return false;
     });
+
+    this.validate();
+    const newState = this._formStorage.getWholeState();
+    this._formStorage.emitStorageEvent('update', newState, oldState, true);
   }
 
   /**
