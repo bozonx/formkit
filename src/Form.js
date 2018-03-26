@@ -103,7 +103,7 @@ module.exports = class Form {
       _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
     }
     else if (_.isPlainObject(initialFields)) {
-      // TODO: может надо рекурсивно???
+      // TODO: пройтись рекурсивно и с поддержкой указания вложенных полей строкой в имени
       _.each(initialFields, (params, pathToField) => this._initField(pathToField, params || {}));
     }
     else {
@@ -291,14 +291,14 @@ module.exports = class Form {
     if (!this._validateCb) return;
 
     const errors = {};
-    //const values = this.values;
-    const values = {};
+    const values = this.values;
+    //const values = {};
     let isFormValid = true;
 
     // add sub structures to "errors" for easy access to error
     findFieldRecursively(this.fields, (field, path) => {
       // TODO: не нужно будет если в values будут созданны вложенные структуры
-      _.set(values, path, field.value);
+      //_.set(values, path, field.value);
 
       const split = path.split('.');
       const minPathItems = 2;
@@ -389,7 +389,7 @@ module.exports = class Form {
    * @private
    */
   _initField(pathToField, fieldParams) {
-    if (!pathToField) throw new Error(`You have to pass a field's name or path!`);
+    if (!pathToField) throw new Error(`You have to specify a field's name!`);
     // Try to get existent field
     const existentField = _.get(this.fields, pathToField);
     if (existentField) throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);

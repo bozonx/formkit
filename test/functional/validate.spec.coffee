@@ -8,15 +8,29 @@ describe 'Functional. Validate.', ->
   it 'params hierarchy', ->
     validateCb = sinon.spy()
     @form.init([
-      'topParam'
-      'parent.subParam'
+      'parent1.subParam1'
+      'parent2.subParam2'
     ], validateCb)
 
-    @form.fields.parent.subParam.handleChange('newValue')
+    @form.fields.parent1.subParam1.handleChange('newValue')
 
-    sinon.assert.calledWith(validateCb, { parent: {} }, {
-      parent: {
-        subParam: 'newValue'
+    sinon.assert.calledTwice(validateCb)
+    # init
+    sinon.assert.calledWith(validateCb.firstCall, { parent1: {}, parent2: {} }, {
+      parent1: {
+        subParam1: undefined
+      }
+      parent2: {
+        subParam2: undefined
+      }
+    })
+    # change
+    sinon.assert.calledWith(validateCb.secondCall, { parent1: {}, parent2: {} }, {
+      parent1: {
+        subParam1: 'newValue'
+      }
+      parent2: {
+        subParam2: undefined
       }
     })
 
@@ -55,7 +69,7 @@ describe 'Functional. Validate.', ->
     @form.fields.name.handleChange('newValue')
 
     assert.isTrue(@form.fields.name.valid)
-    assert.isUndefined(@form.fields.name.invalidMsg)
+    assert.isNull(@form.fields.name.invalidMsg)
     assert.isTrue(@form.valid)
     assert.deepEqual(@form.invalidMessages, [])
 

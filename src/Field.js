@@ -339,7 +339,7 @@ module.exports = class Field {
   }
 
   /**
-   * Init field state.
+   * Init field's state.
    * @param {object} params - params which was passed to form init.
    * @private
    */
