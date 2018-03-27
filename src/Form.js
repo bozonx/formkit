@@ -351,9 +351,9 @@ module.exports = class Form {
   }
 
   $callHandler(handlerName, data) {
-    const formOnChangeHandler = this._handlers[handlerName];
+    const handler = this._handlers[handlerName];
 
-    if (formOnChangeHandler) formOnChangeHandler(data);
+    if (handler) handler(data);
   }
 
   $emit(eventName, data) {
