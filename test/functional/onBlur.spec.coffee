@@ -1,9 +1,9 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 
 describe 'Functional. onBlur.', ->
   beforeEach () ->
-    @form = formHelper.newForm()
+    @form = formkit.newForm()
     @form.init(['name'])
 
     @fieldOnSaveHandler = sinon.spy();

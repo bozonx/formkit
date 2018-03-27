@@ -1,9 +1,9 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 
 describe 'Functional. containerValues.', ->
   beforeEach () ->
-    @form = formHelper.newForm()
+    @form = formkit.newForm()
     @form.init([ 'name' ])
 
   it 'Plain objects - set new shorter object - it has to replace', ->

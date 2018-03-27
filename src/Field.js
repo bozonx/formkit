@@ -225,8 +225,7 @@ module.exports = class Field {
   /**
    * Add one or more handlers on fields's event:
    * * change
-   * * silentChange
-   * * anyChange
+   * * storage
    * * saveStart
    * * saveEnd
    * @param eventName

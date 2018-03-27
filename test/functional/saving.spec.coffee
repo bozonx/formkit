@@ -1,10 +1,10 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 
 describe 'Functional. saving.', ->
   describe 'field saving.', ->
     beforeEach () ->
-      @form = formHelper.newForm()
+      @form = formkit.newForm()
       @form.init([ 'name' ])
       @field = @form.fields.name
       @saveHandler = sinon.spy();

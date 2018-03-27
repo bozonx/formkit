@@ -20,7 +20,7 @@ There is example of common usage without any frameworks.
     };
     
     // get new form instance
-    const form = formHelper.newForm();
+    const form = formkit.newForm();
     // initialize form fields
     form.init([
       'firstname',

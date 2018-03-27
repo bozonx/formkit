@@ -1,9 +1,9 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 
 describe 'Functional. Dirty and touched states.', ->
   beforeEach () ->
-    @form = formHelper.newForm()
+    @form = formkit.newForm()
     @form.init(['name'])
     @field = @form.fields.name
 

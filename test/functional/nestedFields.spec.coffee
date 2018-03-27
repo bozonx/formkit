@@ -1,9 +1,9 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 
 describe 'Functional. nestedFields.', ->
   beforeEach () ->
-    @form = formHelper.newForm()
+    @form = formkit.newForm()
     @form.init([ 'nested.name' ])
 
   it 'initial values', ->

@@ -1,9 +1,9 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 
 describe 'Functional. Validate.', ->
   beforeEach () ->
-    @form = formHelper.newForm()
+    @form = formkit.newForm()
 
   it 'params hierarchy', ->
     validateCb = sinon.spy()

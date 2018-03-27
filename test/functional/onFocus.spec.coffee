@@ -1,9 +1,9 @@
-formHelper = require('../../src/index')
+formkit = require('../../src/index')
 
 
 describe 'Functional. onFocus.', ->
   beforeEach () ->
-    this.form = formHelper.newForm()
+    this.form = formkit.newForm()
     this.form.init(['name'])
 
   it "update focus state", ->
