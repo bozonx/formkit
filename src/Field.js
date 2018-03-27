@@ -301,6 +301,10 @@ module.exports = class Field {
     this._debouncedCall.flush();
   }
 
+  $destroyHandlers() {
+    this._handlers = {};
+  }
+
   $setEditedValue(newValue) {
     // set top value layer
     this.$setStateSilent({

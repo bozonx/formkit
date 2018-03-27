@@ -161,6 +161,12 @@ module.exports = class Form {
    * Clear storage and remove all the event handlers
    */
   destroy() {
+    this._handlers = {};
+
+    findFieldRecursively(this.fields, (field) => {
+      return field.$destroyHandlers();
+    });
+
     this._formStorage.destroy();
   }
 
