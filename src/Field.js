@@ -27,7 +27,7 @@ module.exports = class Field {
     this.clear = this.clear.bind(this);
     this.reset = this.reset.bind(this);
     this._doSave = this._doSave.bind(this);
-    this._afterSaveEnd = this._afterSaveEnd.bind(this);
+    this._emitSaveEnd = this._emitSaveEnd.bind(this);
   }
 
   get form() {
@@ -439,23 +439,27 @@ module.exports = class Field {
     // value is immutable
     const data = this.value;
 
-    // TODO: можно добавить ещё editedValues
-
-    // set saving: true
-    this._setState({ saving: true });
-    // rise saveStart event
-    this._fieldStorage.emit(this._pathToField, 'saveStart', data);
-    this._form.$emit('saveStart', { path: this._pathToField, data });
-
     if (this._handlers.onSave) {
       // run save callback
       const cbPromise = this._handlers.onSave(data);
 
       if (isPromise(cbPromise)) {
+        // set saving to true and rise storage event
+        this._setState({ saving: true });
+        this._emitSaveStart();
+
         return cbPromise
-          .then(this._afterSaveEnd)
+          .then((result) => {
+            // set saving to false and rise storage event
+            this._setState({ saving: false });
+            this._emitSaveEnd(result);
+
+            return result;
+          })
           .catch((error) => {
-            this._afterSaveEnd({ error });
+            // set saving to false and rise storage event
+            this._setState({ saving: false });
+            this._emitSaveEnd({ error });
 
             return Promise.reject(error);
           });
@@ -464,15 +468,20 @@ module.exports = class Field {
 
     // if save callback hasn't returned a promise
     // or if there isn't a save callback
-    this._afterSaveEnd();
+
+    this.$setStateSilent({ saving: true });
+    this._emitSaveStart();
+    this.$setStateSilent({ saving: false });
+    this._emitSaveEnd();
   }
 
-  _afterSaveEnd(result) {
-    // set saving: false
-    this._setState({ saving: false });
-    // rise saveEnd
-    this._fieldStorage.emit(this._pathToField, 'saveEnd', result);
+  _emitSaveStart(data) {
+    this._fieldStorage.emit(this._pathToField, 'saveStart', data);
+    this._form.$emit('saveStart', { path: this._pathToField, data });
+  }
 
+  _emitSaveEnd(result) {
+    this._fieldStorage.emit(this._pathToField, 'saveEnd', result);
     this._form.$emit('saveEnd', {
       path: this._pathToField,
       result,
