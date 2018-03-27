@@ -388,7 +388,7 @@ module.exports = class Form {
 
     findFieldRecursively(this.fields, (field, pathToField) => {
       const savedValue = _.get(values, pathToField);
-      field.$setSavedValueAfterSubmit(savedValue);
+      field.$setValueAfterSave(savedValue);
     });
 
     this.validate();

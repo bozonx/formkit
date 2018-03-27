@@ -66,7 +66,7 @@ describe 'Functional. Submit.', ->
         assert.isFalse(@form.submitting)
 
   it "run submit without submit callback", ->
-    @field.handleChange('newValue')
+    @field.setValue('newValue')
     @field.flushSaving()
 
     assert.deepEqual(@form.editedValues, { name: 'newValue' })

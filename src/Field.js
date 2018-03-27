@@ -27,7 +27,7 @@ module.exports = class Field {
     this.clear = this.clear.bind(this);
     this.reset = this.reset.bind(this);
     this._doSave = this._doSave.bind(this);
-    this._emitSaveEnd = this._emitSaveEnd.bind(this);
+    this._afterSaveEnd = this._afterSaveEnd.bind(this);
   }
 
   get form() {
@@ -332,11 +332,7 @@ module.exports = class Field {
     this._fieldStorage.setStateSilent(this._pathToField, newPartlyState);
   }
 
-  $setSavedValueAfterSubmit(savedValue) {
-
-    // TODO: review - должно так же работать и для save
-    // TODO: test
-
+  $setValueAfterSave(savedValue) {
     // if value hasn't changed after submit was started - clear it
     if (savedValue === this.value) {
       this._fieldStorage.setStateSilent(this._pathToField, { editedValue: undefined });
@@ -439,11 +435,11 @@ module.exports = class Field {
    */
   _doSave() {
     // value is immutable
-    const data = this.value;
+    const valueToSave = this.value;
 
     if (this._handlers.onSave) {
       // run save callback
-      const cbPromise = this._handlers.onSave(data);
+      const cbPromise = this._handlers.onSave(valueToSave);
 
       if (isPromise(cbPromise)) {
         // set saving to true and rise storage event
@@ -454,14 +450,14 @@ module.exports = class Field {
           .then((result) => {
             // set saving to false and rise storage event
             this._setState({ saving: false });
-            this._emitSaveEnd(result);
+            this._afterSaveEnd(valueToSave, result);
 
             return result;
           })
           .catch((error) => {
             // set saving to false and rise storage event
             this._setState({ saving: false });
-            this._emitSaveEnd({ error });
+            this._afterSaveEnd(valueToSave, { error });
 
             return Promise.reject(error);
           });
@@ -474,7 +470,7 @@ module.exports = class Field {
     this.$setStateSilent({ saving: true });
     this._emitSaveStart();
     this.$setStateSilent({ saving: false });
-    this._emitSaveEnd();
+    this._afterSaveEnd(valueToSave);
   }
 
   _emitSaveStart(data) {
@@ -482,13 +478,15 @@ module.exports = class Field {
     this._form.$emit('saveStart', { path: this._pathToField, data });
   }
 
-  _emitSaveEnd(result) {
+  _afterSaveEnd(valueWhichSaved, result) {
     this._fieldStorage.emit(this._pathToField, 'saveEnd', result);
     this._form.$emit('saveEnd', {
       path: this._pathToField,
       result,
       isSuccess: !(result && result.error),
     });
+
+    this.$setValueAfterSave(valueWhichSaved);
   }
 
 };

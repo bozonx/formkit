@@ -12,16 +12,21 @@ describe 'Functional. saving.', ->
     it 'save debounced after value had changed', ->
       @field.onSave(@saveHandler)
       @field.handleChange('newValue')
+
+      assert.isUndefined(@field.savedValue)
+      assert.equal(@field.editedValue, 'newValue')
+
       # reset debounce
       @field.flushSaving()
 
       assert.isFalse(@field.saving)
-
       sinon.assert.calledOnce(@saveHandler)
       sinon.assert.calledWith(@saveHandler, 'newValue')
+      assert.equal(@field.savedValue, 'newValue')
+      assert.isUndefined(@field.editedValue)
 
     it 'after change and pressing enter, value has to save immediately
-             and only the last save callback will be called', ->
+        and only the last save callback will be called', ->
       @field.onSave(@saveHandler)
       @field.handleChange('newValue')
       @field.handleEndEditing()
