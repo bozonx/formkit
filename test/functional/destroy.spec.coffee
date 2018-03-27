@@ -29,10 +29,24 @@ describe 'Functional. destory.', ->
 
     @field.setValue('newValue')
 
-    # TODO: check storage
-    # TODO: check all the handler
+    assert.deepEqual(@form._storage.getCombinedValues(), { name: 'newValue' })
+    assert.equal(@form._storage.getListeners('change').length, 1)
+    assert.equal(@form._storage.getListeners('storage').length, 1)
+    assert.equal(@form._storage.getListeners('submitStart').length, 1)
+    assert.equal(@form._storage.getListeners('submitEnd').length, 1)
+    assert.equal(@form._storage.getListeners('field.name.change').length, 1)
+    assert.equal(@form._storage.getListeners('field.name.storage').length, 1)
+    assert.equal(@form._storage.getListeners('field.name.saveStart').length, 1)
+    assert.equal(@form._storage.getListeners('field.name.saveEnd').length, 1)
 
     @form.destroy()
 
-    # TODO: check storage
-    # TODO: check all the callbacks
+    assert.deepEqual(@form._storage._store, {})
+    assert.equal(@form._storage.getListeners('change').length, 0)
+    assert.equal(@form._storage.getListeners('storage').length, 0)
+    assert.equal(@form._storage.getListeners('submitStart').length, 0)
+    assert.equal(@form._storage.getListeners('submitEnd').length, 0)
+    assert.equal(@form._storage.getListeners('field.name.change').length, 0)
+    assert.equal(@form._storage.getListeners('field.name.storage').length, 0)
+    assert.equal(@form._storage.getListeners('field.name.saveStart').length, 0)
+    assert.equal(@form._storage.getListeners('field.name.saveEnd').length, 0)

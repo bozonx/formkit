@@ -116,8 +116,7 @@ module.exports = class FormStorage {
   }
 
   destroy() {
-    // TODO: clear storage
-    // TODO: remove listeners
+    this._storage.destroy();
   }
 
 };

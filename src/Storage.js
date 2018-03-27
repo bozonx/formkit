@@ -17,7 +17,17 @@ module.exports = class Storage {
   }
 
   getWholeStorageState() {
-    return _.cloneDeep(this._store);
+    const store = {
+      formState: this._store.formState.toJS(),
+      fieldsState: {},
+      values: this._store.values.toJS(),
+    };
+
+    this.eachField((field, path) => {
+      _.set(store.fieldsState, path, field.toJS());
+    });
+
+    return store;
   }
 
   getWholeFormState() {
@@ -30,6 +40,22 @@ module.exports = class Storage {
 
   getCombinedValues() {
     return this._store.values.toJS();
+  }
+
+  getListeners(name) {
+    return this.events.listeners(name);
+  }
+
+  destroy() {
+    this._store = {};
+    const eventNames = this.events.eventNames();
+
+    _.each(eventNames, (name) => {
+      // get handlers by name
+      _.each(this.getListeners(name), (handler) => {
+        this.events.off(name, handler);
+      });
+    });
   }
 
   setFormState(partlyState) {
