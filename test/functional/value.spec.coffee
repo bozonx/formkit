@@ -122,24 +122,28 @@ describe 'Functional. Value, saved value, default value.', ->
     it "revert user input of field", ->
       @field1.setSavedValue('savedValue')
       @field1.handleChange('userValue')
-      @form.setValidateCb((errors) -> errors.field1 = 'bad value')
+      @field1.on('storage', @handleFieldStorageChange)
+
       @field1.revert()
 
       assert.equal(@field1.value, 'savedValue')
       assert.isFalse(@field1.dirty)
-      assert.isFalse(@field1.valid)
-      assert.equal(@field1.invalidMsg, 'bad value')
+      sinon.assert.calledOnce(@handleFieldStorageChange)
 
     it "revert user input of form", ->
       @field1.setSavedValue('savedValue')
       @field1.handleChange('userValue')
-      @form.setValidateCb((errors) -> errors.field1 = 'bad value')
+      @field2.handleChange('userValue')
+      @form.on('storage', @handleFormStorageChange)
+
       @form.revert()
 
-      assert.equal(@field1.value, 'savedValue')
-      assert.isFalse(@field1.dirty)
-      assert.isFalse(@field1.valid)
-      assert.equal(@field1.invalidMsg, 'bad value')
+      assert.deepEqual(@form.values, {
+        field1: 'savedValue'
+        field2: undefined
+      })
+      # TODO: не понимается так как combined value не часть form state
+      #sinon.assert.calledOnce(@handleFormStorageChange)
 
     it "clear user input of field", ->
       @field1.$setStateSilent({ initial: 5 })
