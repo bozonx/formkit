@@ -377,15 +377,12 @@ module.exports = class Form {
   _afterSubmitSuccess(values) {
     this._setState({ submitting: false });
 
-    // TODO: зачем здесь force ???
-    const forceEmit = true;
-
     this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field, pathToField) => {
         const savedValue = _.get(values, pathToField);
         field.$setValueAfterSave(savedValue);
       });
-    }, forceEmit);
+    });
 
     this._formStorage.emit('submitEnd');
   }
@@ -413,20 +410,20 @@ module.exports = class Form {
     });
   }
 
-  _updateStateAndValidate(cbWhichChangesState, forceEmit) {
+  _updateStateAndValidate(cbWhichChangesState) {
     this._updateState(() => {
       if (cbWhichChangesState) cbWhichChangesState();
       this.validate();
-    }, forceEmit);
+    });
   }
 
-  _updateState(cbWhichChangesState, forceEmit) {
+  _updateState(cbWhichChangesState) {
     const oldState = this._formStorage.getWholeState();
 
     if (cbWhichChangesState) cbWhichChangesState();
 
     const newState = this._formStorage.getWholeState();
-    this._formStorage.emitStorageEvent('update', newState, oldState, forceEmit);
+    this._formStorage.emitStorageEvent('update', newState, oldState);
   }
 
 };
