@@ -57,6 +57,7 @@ module.exports = class FormStorage {
   }
 
   getWholeState() {
+    // TODO: наверное ещё и values возвращать
     return this._storage.getWholeFormState();
   }
 
@@ -65,6 +66,7 @@ module.exports = class FormStorage {
    * @param {object} partlyState - new partly state
    */
   setState(partlyState) {
+    // TODO: review
     const oldState = this.getWholeState();
 
     this._storage.setFormState(partlyState);

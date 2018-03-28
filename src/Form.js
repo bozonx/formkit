@@ -264,24 +264,29 @@ module.exports = class Form {
    *                             You can set values all the fields or just to a part of fields.
    */
   setValues(newValues) {
-    const oldState = this._formStorage.getWholeState();
+    //const oldState = this._formStorage.getWholeState();
 
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
-    findRecursively(newValues, (value, path) => {
-      const field = _.get(this.fields, path);
-      // if it is'n a field - go deeper
-      if (!field || !(field instanceof Field)) return;
-      // else means it's field - set value and don't go deeper
-      // set value to edited layer
-      field.$setEditedValueSilent(value);
+    // TODO: зачем здесь force ???
+    const forceEmit = true;
 
-      return false;
-    });
+    this._updateFormStateWithValidateAndEvent(() => {
+      findRecursively(newValues, (value, path) => {
+        const field = _.get(this.fields, path);
+        // if it is'n a field - go deeper
+        if (!field || !(field instanceof Field)) return;
+        // else means it's field - set value and don't go deeper
+        // set value to edited layer
+        field.$setEditedValueSilent(value);
 
-    this.validate();
-    const newState = this._formStorage.getWholeState();
-    this._formStorage.emitStorageEvent('update', newState, oldState, true);
+        return false;
+      });
+    }, forceEmit);
+
+    // this.validate();
+    // const newState = this._formStorage.getWholeState();
+    // this._formStorage.emitStorageEvent('update', newState, oldState, true);
   }
 
   /**
@@ -291,24 +296,30 @@ module.exports = class Form {
    * @param newValues
    */
   setSavedValues(newValues) {
-    const oldState = this._formStorage.getWholeState();
+    //const oldState = this._formStorage.getWholeState();
 
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
-    findRecursively(newValues, (value, path) => {
-      const field = _.get(this.fields, path);
-      // if it is'n a field - go deeper
-      if (!field || !(field instanceof Field)) return;
-      // else means it's field - set value and don't go deeper
-      // set value to saved layer
-      field.$setSavedValue(value);
+    // TODO: зачем здесь force ???
+    const forceEmit = true;
 
-      return false;
-    });
+    this._updateFormStateWithValidateAndEvent(() => {
+      findRecursively(newValues, (value, path) => {
+        const field = _.get(this.fields, path);
+        // if it is'n a field - go deeper
+        if (!field || !(field instanceof Field)) return;
+        // else means it's field - set value and don't go deeper
+        // set value to saved layer
+        field.$setSavedValue(value);
 
-    this.validate();
-    const newState = this._formStorage.getWholeState();
-    this._formStorage.emitStorageEvent('update', newState, oldState, true);
+        return false;
+      });
+
+    }, forceEmit);
+
+    // this.validate();
+    // const newState = this._formStorage.getWholeState();
+    // this._formStorage.emitStorageEvent('update', newState, oldState, true);
   }
 
   /**
@@ -394,6 +405,8 @@ module.exports = class Form {
 
   _afterSubmitSuccess(values) {
     this._formStorage.setState({ submitting: false });
+
+    // TODO: зачем здесь force ???
     const forceEmit = true;
 
     this._updateFormStateWithValidateAndEvent(() => {
