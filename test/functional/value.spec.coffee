@@ -90,34 +90,30 @@ describe 'Functional. Value, saved value, default value.', ->
       @field2 = @form.fields.field2
 
     it "reset field to defaultValue", ->
-      form = formkit.newForm()
-      form.init({name: {defaultValue: 'default value'}})
+      @field1.$setStateSilent({ defaultValue: 'default value' })
+      @field1.handleChange('value')
+      @field1.on('storage', @handleFieldStorageChange)
 
-      form.fields.name.handleChange('userValue')
-      form.fields.name.reset();
+      @field1.reset()
 
-      assert.deepEqual(form.values, {name: 'default value'})
-      assert.equal(form.fields.name.value, 'default value')
-      assert.equal(form.fields.name.defaultValue, 'default value')
-      assert.isUndefined(form.fields.name.savedValue)
-      assert.isTrue(form.fields.name.touched)
-      # saved value = undefined and value = "default value" - dirty = true
-      assert.isTrue(form.fields.name.dirty)
+      assert.equal(@field1.value, 'default value')
+      assert.isTrue(@field1.dirty)
+      sinon.assert.calledOnce(@handleFieldStorageChange)
 
     it "reset form", ->
-      form = formkit.newForm()
-      form.init({name: {defaultValue: 'default value'}})
+      @field1.$setStateSilent({ defaultValue: 5 })
+      @field1.handleChange('value')
+      @field2.handleChange('value')
+      @form.on('storage', @handleFormStorageChange)
 
-      form.fields.name.handleChange('userValue')
-      form.reset();
+      @form.reset()
 
-      assert.deepEqual(form.values, {name: 'default value'})
-      assert.equal(form.fields.name.value, 'default value')
-      assert.equal(form.fields.name.defaultValue, 'default value')
-      assert.isUndefined(form.fields.name.savedValue)
-      assert.isTrue(form.fields.name.touched)
-      # saved value = undefined and value = "default value" - dirty = true
-      assert.isTrue(form.fields.name.dirty)
+      assert.deepEqual(@form.values, {
+        field1: 5
+        field2: undefined
+      })
+      # TODO: не понимается так как combined value не часть form state
+      #sinon.assert.calledOnce(@handleFormStorageChange)
 
     it "revert user input of field", ->
       @field1.setSavedValue('savedValue')
