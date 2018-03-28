@@ -110,8 +110,9 @@ module.exports = class Field {
    * * It doesn't update "touched" state.
    * @param newValue
    */
-  setValue(newValue) {
+  setValue(rawValue) {
     this._updateStateAndValidate(() => {
+      const newValue = parseValue(rawValue);
       this.$setEditedValueSilent(newValue);
     });
   }
@@ -120,8 +121,9 @@ module.exports = class Field {
    * Set previously saved value. Usually it sets after server data has loading.
    * @param {*} newSavedValue
    */
-  setSavedValue(newSavedValue) {
+  setSavedValue(rawValue) {
     this._updateStateAndValidate(() => {
+      const newSavedValue = parseValue(rawValue);
       this.$setSavedValue(newSavedValue);
     });
   }
