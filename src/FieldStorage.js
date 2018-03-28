@@ -32,24 +32,6 @@ module.exports = class FieldStorage {
     return this._storage.getWholeFieldState(pathToField);
   }
 
-  /**
-   * Set state value to field.
-   * Field has to be initialized previously.
-   * It rises an "anyChange" event of field
-   * @param {string} pathToField - path to your field
-   * @param partlyState
-   */
-  setState(pathToField, partlyState) {
-    const oldState = this.getWholeState(pathToField);
-
-    this._storage.setFieldState(pathToField, partlyState);
-
-    if (_.isEqual(oldState, this.getWholeState(pathToField))) return;
-
-    const newState = this.getWholeState(pathToField);
-    this.emitStorageEvent(pathToField, 'update', newState, oldState);
-  }
-
   setStateSilent(pathToField, partlyState) {
     this._storage.setFieldState(pathToField, partlyState);
   }

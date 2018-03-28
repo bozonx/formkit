@@ -354,10 +354,6 @@ module.exports = class Field {
     });
   }
 
-  _setState(partlyState) {
-    this._fieldStorage.setState(this._pathToField, partlyState);
-  }
-
   /**
    * Init field's state.
    * @param {object} params - params which was passed to form init.
@@ -497,6 +493,12 @@ module.exports = class Field {
     });
 
     this.$setValueAfterSave(valueWhichSaved);
+  }
+
+  _setState(partlyState) {
+    this._updateState(() => {
+      this._fieldStorage.setStateSilent(this._pathToField, partlyState);
+    });
   }
 
   _updateStateAndValidate(cbWhichChangesState) {

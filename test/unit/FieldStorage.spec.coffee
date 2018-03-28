@@ -18,18 +18,15 @@ describe 'Unit. FieldStorage.', ->
     })
 
   it "get and set state", ->
-    handleChange = sinon.spy()
-    @fieldStorage.on(@pathToField, 'storage', handleChange)
-    @fieldStorage.setState(@pathToField, { dirty: true, touched: true })
-    @fieldStorage.setState(@pathToField, { saving: true })
+    @fieldStorage.setStateSilent(@pathToField, { dirty: true, touched: true })
+    @fieldStorage.setStateSilent(@pathToField, { saving: true })
 
     assert.isTrue(@fieldStorage.getState(@pathToField, 'dirty'))
     assert.isTrue(@fieldStorage.getState(@pathToField, 'touched'))
     assert.isTrue(@fieldStorage.getState(@pathToField, 'saving'))
-    sinon.assert.calledTwice(handleChange)
 
   it "get and set value", ->
-    @fieldStorage.setState(@pathToField, {
+    @fieldStorage.setStateSilent(@pathToField, {
       savedValue: 'saved'
       editedValue: 'edited'
     })
@@ -39,13 +36,28 @@ describe 'Unit. FieldStorage.', ->
     assert.equal(@fieldStorage.getCombinedValue(@pathToField), 'edited')
 
   it "isFieldUnsaved", ->
-    @fieldStorage.setState(@pathToField, {
+    @fieldStorage.setStateSilent(@pathToField, {
       savedValue: 'saved'
       editedValue: 'edited'
     })
 
     assert.isTrue(@fieldStorage.isFieldUnsaved(@pathToField))
 
-    @fieldStorage.setState(@pathToField, { savedValue: 'edited' })
+    @fieldStorage.setStateSilent(@pathToField, { savedValue: 'edited' })
 
     assert.isFalse(@fieldStorage.isFieldUnsaved(@pathToField))
+
+  it "emitStorageEvent", ->
+    handleChange = sinon.spy()
+    @fieldStorage.on(@pathToField, 'storage', handleChange)
+
+    @fieldStorage.emitStorageEvent(@pathToField, 'update', 'newState', 'oldState')
+
+    sinon.assert.calledWith(handleChange, {
+      action: "update",
+      event: "storage",
+      field: "path.to.field",
+      oldState: "oldState",
+      state: "newState",
+      target: "field"
+    })
