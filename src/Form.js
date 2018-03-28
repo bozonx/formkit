@@ -256,9 +256,6 @@ module.exports = class Form {
   setValues(newValues) {
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
-    // TODO: зачем здесь force ???
-    const forceEmit = true;
-
     this._updateStateAndValidate(() => {
       findRecursively(newValues, (value, path) => {
         const field = _.get(this.fields, path);
@@ -270,7 +267,7 @@ module.exports = class Form {
 
         return false;
       });
-    }, forceEmit);
+    });
   }
 
   /**
@@ -281,9 +278,6 @@ module.exports = class Form {
    */
   setSavedValues(newValues) {
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
-
-    // TODO: зачем здесь force ???
-    const forceEmit = true;
 
     this._updateStateAndValidate(() => {
       findRecursively(newValues, (value, path) => {
@@ -296,8 +290,7 @@ module.exports = class Form {
 
         return false;
       });
-
-    }, forceEmit);
+    });
   }
 
   /**
