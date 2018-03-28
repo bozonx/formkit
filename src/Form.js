@@ -115,9 +115,6 @@ module.exports = class Form {
           return false;
         }
       });
-
-      // TODO: fix it
-      //_.each(initialFields, (params, pathToField) => this._initField(pathToField, params));
     }
     else {
       throw new Error(`Bad type of fields param`);
@@ -211,24 +208,30 @@ module.exports = class Form {
    * Roll back to initial values for all the fields.
    */
   clear() {
-    // TODO: вызовится много обработчиков storage event
-    findFieldRecursively(this.fields, (field) => field.clear());
-  }
-
-  /**
-   * Reset values to default values for all the fields.
-   */
-  reset() {
-    // TODO: вызовится много обработчиков storage event
-    findFieldRecursively(this.fields, (field) => field.reset());
+    this._updateStateWithEvent(() => {
+      findFieldRecursively(this.fields, (field) => {
+        const initial = this._fieldStorage.getState(field.fullName, 'initial');
+        field.$setEditedValueSilent(initial);
+      });
+    });
   }
 
   /**
    * Roll back to previously saved values for all the fields.
    */
   revert() {
-    // TODO: вызовится много обработчиков storage event
-    findFieldRecursively(this.fields, (field) => field.revert());
+    this._updateStateWithEvent(() => {
+      findFieldRecursively(this.fields, (field) => field.$setEditedValueSilent(field.savedValue));
+    });
+  }
+
+  /**
+   * Reset values to default values for all the fields.
+   */
+  reset() {
+    this._updateStateWithEvent(() => {
+      findFieldRecursively(this.fields, (field) => field.$setEditedValueSilent(field.defaultValue));
+    });
   }
 
   /**
@@ -268,7 +271,7 @@ module.exports = class Form {
       if (!field || !(field instanceof Field)) return;
       // else means it's field - set value and don't go deeper
       // set value to edited layer
-      field.$setEditedValue(value);
+      field.$setEditedValueSilent(value);
 
       return false;
     });
@@ -388,16 +391,15 @@ module.exports = class Form {
 
   _afterSubmitSuccess(values) {
     this._formStorage.setState({ submitting: false });
-    const oldState = this._formStorage.getWholeState();
+    const forceEmit = true;
 
-    findFieldRecursively(this.fields, (field, pathToField) => {
-      const savedValue = _.get(values, pathToField);
-      field.$setValueAfterSave(savedValue);
-    });
+    this._updateStateWithEvent(() => {
+      findFieldRecursively(this.fields, (field, pathToField) => {
+        const savedValue = _.get(values, pathToField);
+        field.$setValueAfterSave(savedValue);
+      });
+    }, forceEmit);
 
-    this.validate();
-    const newState = this._formStorage.getWholeState();
-    this._formStorage.emitStorageEvent('update', newState, oldState, true);
     this._formStorage.emit('submitEnd');
   }
 
@@ -416,6 +418,16 @@ module.exports = class Form {
     // create new one
     const newField = new Field(pathToField, fieldParams, this, this._fieldStorage);
     _.set(this.fields, pathToField, newField);
+  }
+
+  _updateStateWithEvent(cbWhichChangesState, forceEmit) {
+    const oldState = this._formStorage.getWholeState();
+
+    cbWhichChangesState();
+
+    this.validate();
+    const newState = this._formStorage.getWholeState();
+    this._formStorage.emitStorageEvent('update', newState, oldState, forceEmit);
   }
 
 };
