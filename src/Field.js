@@ -113,7 +113,7 @@ module.exports = class Field {
   setValue(newValue) {
     const oldState = this._fieldStorage.getWholeState(this._pathToField);
 
-    this.$setEditedValue(newValue);
+    this.$setEditedValueSilent(newValue);
     this.form.validate();
 
     const newState = this._fieldStorage.getWholeState(this._pathToField);
@@ -172,7 +172,7 @@ module.exports = class Field {
     if (isChanged) {
       const oldState = this._fieldStorage.getWholeState(this._pathToField);
       // set editedValue and dirty state
-      this.$setEditedValue(newValue);
+      this.$setEditedValueSilent(newValue);
       this.form.validate();
 
       // set touched to true
@@ -270,6 +270,14 @@ module.exports = class Field {
   clear() {
     const initial = this._fieldStorage.getState(this._pathToField, 'initial');
     this.setValue(initial);
+
+    // const oldState = this._fieldStorage.getWholeState(this._pathToField);
+    //
+    // this.$clearSilent();
+    // this.form.validate();
+    //
+    // const newState = this._fieldStorage.getWholeState(this._pathToField);
+    // this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
   }
 
   /**
@@ -277,6 +285,14 @@ module.exports = class Field {
    */
   revert() {
     this.setValue(this.savedValue);
+
+    // const oldState = this._fieldStorage.getWholeState(this._pathToField);
+    //
+    // this.$revertSilent();
+    // this.form.validate();
+    //
+    // const newState = this._fieldStorage.getWholeState(this._pathToField);
+    // this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
   }
 
   /**
@@ -284,6 +300,14 @@ module.exports = class Field {
    */
   reset() {
     this.setValue(this.defaultValue);
+
+    // const oldState = this._fieldStorage.getWholeState(this._pathToField);
+    //
+    // this.$resetSilent();
+    // this.form.validate();
+    //
+    // const newState = this._fieldStorage.getWholeState(this._pathToField);
+    // this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
   }
 
   /**
@@ -300,11 +324,24 @@ module.exports = class Field {
     this._debouncedCall.flush();
   }
 
+  // $clearSilent() {
+  //   const initial = this._fieldStorage.getState(this._pathToField, 'initial');
+  //   this.$setEditedValueSilent(initial);
+  // }
+  //
+  // $revertSilent() {
+  //   this.$setEditedValueSilent(this.savedValue);
+  // }
+  //
+  // $resetSilent() {
+  //   this.$setEditedValueSilent(this.defaultValue);
+  // }
+
   $destroyHandlers() {
     this._handlers = {};
   }
 
-  $setEditedValue(newValue) {
+  $setEditedValueSilent(newValue) {
     // set top value layer
     this.$setStateSilent({
       editedValue: newValue,

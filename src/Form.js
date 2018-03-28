@@ -208,7 +208,7 @@ module.exports = class Form {
    * Roll back to initial values for all the fields.
    */
   clear() {
-    this._updateStateWithEvent(() => {
+    this._updateFormStateWithValidateAndEvent(() => {
       findFieldRecursively(this.fields, (field) => {
         const initial = this._fieldStorage.getState(field.fullName, 'initial');
         field.$setEditedValueSilent(initial);
@@ -220,7 +220,7 @@ module.exports = class Form {
    * Roll back to previously saved values for all the fields.
    */
   revert() {
-    this._updateStateWithEvent(() => {
+    this._updateFormStateWithValidateAndEvent(() => {
       findFieldRecursively(this.fields, (field) => field.$setEditedValueSilent(field.savedValue));
     });
   }
@@ -229,7 +229,7 @@ module.exports = class Form {
    * Reset values to default values for all the fields.
    */
   reset() {
-    this._updateStateWithEvent(() => {
+    this._updateFormStateWithValidateAndEvent(() => {
       findFieldRecursively(this.fields, (field) => field.$setEditedValueSilent(field.defaultValue));
     });
   }
@@ -247,12 +247,15 @@ module.exports = class Form {
    */
   setValidateCb(cb) {
     this._validateCb = cb;
-    const oldState = this._formStorage.getWholeState();
 
-    this.validate();
-
-    const newState = this._formStorage.getWholeState();
-    this._formStorage.emitStorageEvent('update', newState, oldState);
+    this._updateFormStateWithValidateAndEvent();
+    //
+    // const oldState = this._formStorage.getWholeState();
+    //
+    // this.validate();
+    //
+    // const newState = this._formStorage.getWholeState();
+    // this._formStorage.emitStorageEvent('update', newState, oldState);
   }
 
   /**
@@ -393,7 +396,7 @@ module.exports = class Form {
     this._formStorage.setState({ submitting: false });
     const forceEmit = true;
 
-    this._updateStateWithEvent(() => {
+    this._updateFormStateWithValidateAndEvent(() => {
       findFieldRecursively(this.fields, (field, pathToField) => {
         const savedValue = _.get(values, pathToField);
         field.$setValueAfterSave(savedValue);
@@ -420,10 +423,10 @@ module.exports = class Form {
     _.set(this.fields, pathToField, newField);
   }
 
-  _updateStateWithEvent(cbWhichChangesState, forceEmit) {
+  _updateFormStateWithValidateAndEvent(cbWhichChangesState, forceEmit) {
     const oldState = this._formStorage.getWholeState();
 
-    cbWhichChangesState();
+    if (cbWhichChangesState) cbWhichChangesState();
 
     this.validate();
     const newState = this._formStorage.getWholeState();
