@@ -111,13 +111,9 @@ module.exports = class Field {
    * @param newValue
    */
   setValue(newValue) {
-    const oldState = this._fieldStorage.getWholeState(this._pathToField);
-
-    this.$setEditedValueSilent(newValue);
-    this.form.validate();
-
-    const newState = this._fieldStorage.getWholeState(this._pathToField);
-    this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
+    this._updateStateAndValidate(() => {
+      this.$setEditedValueSilent(newValue);
+    });
   }
 
   /**
@@ -125,13 +121,9 @@ module.exports = class Field {
    * @param {*} newSavedValue
    */
   setSavedValue(newSavedValue) {
-    const oldState = this._fieldStorage.getWholeState(this._pathToField);
-
-    this.$setSavedValue(newSavedValue);
-    this.form.validate();
-
-    const newState = this._fieldStorage.getWholeState(this._pathToField);
-    this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
+    this._updateStateAndValidate(() => {
+      this.$setSavedValue(newSavedValue);
+    });
   }
 
   setDisabled(value) {
@@ -170,19 +162,17 @@ module.exports = class Field {
     const isChanged = !_.isEqual(oldValue, newValue);
 
     if (isChanged) {
-      const oldState = this._fieldStorage.getWholeState(this._pathToField);
-      // set editedValue and dirty state
-      this.$setEditedValueSilent(newValue);
-      this.form.validate();
+      this._updateState(() => {
+        // set editedValue and dirty state
+        this.$setEditedValueSilent(newValue);
+        this.form.validate();
 
-      // set touched to true
-      if (!this.touched) {
-        this.$setStateSilent({ touched: true });
-        this._form.$setStateSilent({ touched: true });
-      }
-
-      const newState = this._fieldStorage.getWholeState(this._pathToField);
-      this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
+        // set touched to true
+        if (!this.touched) {
+          this.$setStateSilent({ touched: true });
+          this._form.$setStateSilent({ touched: true });
+        }
+      });
     }
 
     // rise change event and save only changed value
