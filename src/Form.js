@@ -190,7 +190,7 @@ module.exports = class Form {
   handleSubmit() {
     const { values, editedValues } = this;
 
-    this._formStorage.setState({ submitting: true });
+    this._setState({ submitting: true });
     this._formStorage.emit('submitStart', { values, editedValues });
 
     if (!this._handlers.onSubmit) {
@@ -390,7 +390,7 @@ module.exports = class Form {
           return data;
         })
         .catch((error) => {
-          this._formStorage.setState({ submitting: false });
+          this._setState({ submitting: false });
           this._formStorage.emit('submitEnd', { error });
 
           return Promise.reject(error);
@@ -404,7 +404,7 @@ module.exports = class Form {
   }
 
   _afterSubmitSuccess(values) {
-    this._formStorage.setState({ submitting: false });
+    this._setState({ submitting: false });
 
     // TODO: зачем здесь force ???
     const forceEmit = true;
@@ -436,12 +436,24 @@ module.exports = class Form {
     _.set(this.fields, pathToField, newField);
   }
 
+  _setState(partlyState) {
+    this._updateState(() => {
+      this._formStorage.setStateSilent(partlyState);
+    });
+  }
+
   _updateFormStateWithValidateAndEvent(cbWhichChangesState, forceEmit) {
+    this._updateState(() => {
+      if (cbWhichChangesState) cbWhichChangesState();
+      this.validate();
+    }, forceEmit);
+  }
+
+  _updateState(cbWhichChangesState, forceEmit) {
     const oldState = this._formStorage.getWholeState();
 
     if (cbWhichChangesState) cbWhichChangesState();
 
-    this.validate();
     const newState = this._formStorage.getWholeState();
     this._formStorage.emitStorageEvent('update', newState, oldState, forceEmit);
   }

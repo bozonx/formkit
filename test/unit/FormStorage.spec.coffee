@@ -8,25 +8,25 @@ describe 'Unit. FormStorage.', ->
     @formStorage = new FormStorage(@storage)
 
   it "get and set form state", ->
-    @formStorage.setState({ editedValue: 1, touched: true })
-    @formStorage.setState({ submitting: true })
+    @formStorage.setStateSilent({ editedValue: 1, touched: true })
+    @formStorage.setStateSilent({ submitting: true })
 
     assert.equal(@formStorage.getState('editedValue'), 1)
     assert.isTrue(@formStorage.getState('touched'))
     assert.isTrue(@formStorage.getState('submitting'))
     assert.isTrue(@formStorage.getState('valid'))
 
-  it "storage change event", ->
+  it "emitStorageEvent", ->
     changeHandler = sinon.spy()
     @formStorage.on('storage', changeHandler)
-    @formStorage.setState({ submitting: true })
+    @formStorage.emitStorageEvent('update', 'newState', 'oldState')
 
     sinon.assert.calledOnce(changeHandler)
     sinon.assert.calledWith(changeHandler, {
       action: 'update',
       event: 'storage',
-      oldState: { valid: true, submitting: false, touched: false },
-      state: { submitting: true },
+      oldState: 'oldState',
+      state: 'newState',
       target: 'form',
     })
 
