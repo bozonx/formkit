@@ -63,22 +63,6 @@ module.exports = class FormStorage {
     };
   }
 
-  // /**
-  //  * Set form's state.
-  //  * @param {object} partlyState - new partly state
-  //  */
-  // setState(partlyState) {
-  //   // TODO: review
-  //   const oldState = this.getWholeState();
-  //
-  //   this._storage.setFormState(partlyState);
-  //
-  //   // TODO: review
-  //   if (_.isEqual(oldState, this._storage.getWholeFormState())) return;
-  //
-  //   this.emitStorageEvent('update', partlyState, oldState);
-  // }
-
   setStateSilent(partlyState) {
     this._storage.setFormState(partlyState);
   }

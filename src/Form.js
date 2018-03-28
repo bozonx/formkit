@@ -208,7 +208,7 @@ module.exports = class Form {
    * Roll back to initial values for all the fields.
    */
   clear() {
-    this._updateFormStateWithValidateAndEvent(() => {
+    this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => {
         const initial = this._fieldStorage.getState(field.fullName, 'initial');
         field.$setEditedValueSilent(initial);
@@ -220,7 +220,7 @@ module.exports = class Form {
    * Roll back to previously saved values for all the fields.
    */
   revert() {
-    this._updateFormStateWithValidateAndEvent(() => {
+    this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$setEditedValueSilent(field.savedValue));
     });
   }
@@ -229,7 +229,7 @@ module.exports = class Form {
    * Reset values to default values for all the fields.
    */
   reset() {
-    this._updateFormStateWithValidateAndEvent(() => {
+    this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$setEditedValueSilent(field.defaultValue));
     });
   }
@@ -248,14 +248,7 @@ module.exports = class Form {
   setValidateCb(cb) {
     this._validateCb = cb;
 
-    this._updateFormStateWithValidateAndEvent();
-    //
-    // const oldState = this._formStorage.getWholeState();
-    //
-    // this.validate();
-    //
-    // const newState = this._formStorage.getWholeState();
-    // this._formStorage.emitStorageEvent('update', newState, oldState);
+    this._updateStateAndValidate();
   }
 
   /**
@@ -264,14 +257,12 @@ module.exports = class Form {
    *                             You can set values all the fields or just to a part of fields.
    */
   setValues(newValues) {
-    //const oldState = this._formStorage.getWholeState();
-
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
     // TODO: зачем здесь force ???
     const forceEmit = true;
 
-    this._updateFormStateWithValidateAndEvent(() => {
+    this._updateStateAndValidate(() => {
       findRecursively(newValues, (value, path) => {
         const field = _.get(this.fields, path);
         // if it is'n a field - go deeper
@@ -283,10 +274,6 @@ module.exports = class Form {
         return false;
       });
     }, forceEmit);
-
-    // this.validate();
-    // const newState = this._formStorage.getWholeState();
-    // this._formStorage.emitStorageEvent('update', newState, oldState, true);
   }
 
   /**
@@ -296,14 +283,12 @@ module.exports = class Form {
    * @param newValues
    */
   setSavedValues(newValues) {
-    //const oldState = this._formStorage.getWholeState();
-
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
     // TODO: зачем здесь force ???
     const forceEmit = true;
 
-    this._updateFormStateWithValidateAndEvent(() => {
+    this._updateStateAndValidate(() => {
       findRecursively(newValues, (value, path) => {
         const field = _.get(this.fields, path);
         // if it is'n a field - go deeper
@@ -316,10 +301,6 @@ module.exports = class Form {
       });
 
     }, forceEmit);
-
-    // this.validate();
-    // const newState = this._formStorage.getWholeState();
-    // this._formStorage.emitStorageEvent('update', newState, oldState, true);
   }
 
   /**
@@ -409,7 +390,7 @@ module.exports = class Form {
     // TODO: зачем здесь force ???
     const forceEmit = true;
 
-    this._updateFormStateWithValidateAndEvent(() => {
+    this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field, pathToField) => {
         const savedValue = _.get(values, pathToField);
         field.$setValueAfterSave(savedValue);
@@ -442,7 +423,7 @@ module.exports = class Form {
     });
   }
 
-  _updateFormStateWithValidateAndEvent(cbWhichChangesState, forceEmit) {
+  _updateStateAndValidate(cbWhichChangesState, forceEmit) {
     this._updateState(() => {
       if (cbWhichChangesState) cbWhichChangesState();
       this.validate();
