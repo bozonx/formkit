@@ -209,10 +209,7 @@ module.exports = class Form {
    */
   clear() {
     this._updateStateAndValidate(() => {
-      findFieldRecursively(this.fields, (field) => {
-        const initial = this._fieldStorage.getState(field.fullName, 'initial');
-        field.$setEditedValueSilent(initial);
-      });
+      findFieldRecursively(this.fields, (field) => field.$clearSilent());
     });
   }
 
@@ -221,7 +218,7 @@ module.exports = class Form {
    */
   revert() {
     this._updateStateAndValidate(() => {
-      findFieldRecursively(this.fields, (field) => field.$setEditedValueSilent(field.savedValue));
+      findFieldRecursively(this.fields, (field) => field.$revertSilent());
     });
   }
 
@@ -230,7 +227,7 @@ module.exports = class Form {
    */
   reset() {
     this._updateStateAndValidate(() => {
-      findFieldRecursively(this.fields, (field) => field.$setEditedValueSilent(field.defaultValue));
+      findFieldRecursively(this.fields, (field) => field.$resetSilent());
     });
   }
 
