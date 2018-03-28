@@ -112,8 +112,7 @@ describe 'Functional. Value, saved value, default value.', ->
         field1: 5
         field2: undefined
       })
-      # TODO: не понимается так как combined value не часть form state
-      #sinon.assert.calledOnce(@handleFormStorageChange)
+      sinon.assert.calledOnce(@handleFormStorageChange)
 
     it "revert user input of field", ->
       @field1.setSavedValue('savedValue')
@@ -138,8 +137,7 @@ describe 'Functional. Value, saved value, default value.', ->
         field1: 'savedValue'
         field2: undefined
       })
-      # TODO: не понимается так как combined value не часть form state
-      #sinon.assert.calledOnce(@handleFormStorageChange)
+      sinon.assert.calledOnce(@handleFormStorageChange)
 
     it "clear user input of field", ->
       @field1.$setStateSilent({ initial: 5 })
@@ -166,5 +164,4 @@ describe 'Functional. Value, saved value, default value.', ->
         field1: 5
         field2: undefined
       })
-      # TODO: не понимается так как combined value не часть form state
-      #sinon.assert.calledOnce(@handleFormStorageChange)
+      sinon.assert.calledOnce(@handleFormStorageChange)

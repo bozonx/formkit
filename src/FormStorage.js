@@ -57,8 +57,10 @@ module.exports = class FormStorage {
   }
 
   getWholeState() {
-    // TODO: наверное ещё и values возвращать
-    return this._storage.getWholeFormState();
+    return {
+      ...this._storage.getWholeFormState(),
+      values: this.getCombinedValues(),
+    };
   }
 
   /**
