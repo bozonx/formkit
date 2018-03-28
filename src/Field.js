@@ -268,7 +268,6 @@ module.exports = class Field {
    * Clear value(user input) and set initial value.
    */
   clear() {
-    // TODO: test
     const initial = this._fieldStorage.getState(this._pathToField, 'initial');
     this.setValue(initial);
   }
