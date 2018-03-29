@@ -46,7 +46,7 @@ module.exports = class DebouncedCall {
 
   /**
    * Pending means - callback is in progress.
-   * It is true until callback's promise will be fulfilled.
+   * It is true from callback has started and until callback's promise will be fulfilled.
    * @return {*}
    */
   getPending() {
@@ -68,22 +68,51 @@ module.exports = class DebouncedCall {
     return this.getDelayed() || this.getPending();
   }
 
+  /**
+   * Cancel:
+   * * callback which waiting
+   * * cancel call callback which is next
+   * * cancel callback which is executing
+   */
   cancel() {
     this._cancelDelayed();
     this._cancelQueue();
     if (this._currentProcess) this._currentProcess.cancel();
+
+    // TODO: надо очистить this._currentProcess
   }
 
+  /**
+   * Run immediately callback which is waiting for start.
+   */
   flush() {
-    this._debouncedCb.flush();
+    if (this._debouncedCb) this._debouncedCb.flush();
   }
 
-  exec(cb, force, ...params) {
+  /**
+   * Add callback to execution.
+   * if force = false
+   * * if there isn't executing or waiting callback - it start to wait to execute this callback
+   * * if there is executing or waiitng callback - it add this to queue.
+   * if force = true
+   * * if there isn't executing or waiting callback - it runs this callback immediately
+   * * if there is executing or waiitng callback - it cancels waiting or executing callback
+   *   and run this immediately
+   * @param {function} cb - your callback which will be executed
+   * @param {boolean} force - if true - cancel current callback and run immediately
+   * @param {array} params - params of callback
+   * @return {Promise} - It will be fulfilled at the end after waiting and executing
+   */
+  exec(cb, force = false, ...params) {
     this._chooseTheWay(cb, params, force);
 
     return this._currentProcess.getPromise();
   }
 
+  /**
+   * Cancel waiting for start next cb
+   * @private
+   */
   _cancelDelayed() {
     if (this._debouncedCb) this._debouncedCb.cancel();
     this._delayed = false;
@@ -95,29 +124,44 @@ module.exports = class DebouncedCall {
 
   _chooseTheWay(cb, params, force) {
     if (this._currentProcess) {
+      // add to queue
+
+      // TODO: remove isCanceled
+      // TODO: не должно быть isFulfilled - он должен сразу очиститься
+
+      // TODO: эту часть вооще убрать
       if (this._currentProcess.isFulfilled() || this._currentProcess.isCanceled()) {
         this._runFreshCb(cb, params, force);
       }
+
+      // TODO: почуму isStarted а не pending?
       else if (this._currentProcess.isStarted()) {
-        // set this callback in queue
-        this._queuedProcess = { cb, params };
+        this._addToQueue(cb, params);
       }
       else if (force) {
         // replace callback if it hasn't run.
+        // TODO: нужно отменить всё в том числе и то что в очереди
         this._cancelDelayed();
+        // TODO: нужно немедленно выполнить - пересоздать новый враппер и сразу его выполнить
         this._currentProcess.setCallback(cb, params);
         this._runWithoutDebounce();
       }
       else {
+        // replace promise which is waiting and start waiting from the beginning
+        // TODO: полностью пересоздать wrapper
         this._currentProcess.setCallback(cb, params);
       }
     }
     else {
+      // add new
       this._runFreshCb(cb, params, force);
     }
   }
 
   _runFreshCb(cb, params, force) {
+
+    // TODO: переделать
+
     this._setupNewCbWrapper(cb, params, force);
 
     if (force) {
@@ -135,6 +179,9 @@ module.exports = class DebouncedCall {
   }
 
   _runWithoutDebounce() {
+
+    // TODO: переделать
+
     // run without debounce
     this._delayed = true;
     this._currentProcess.start();
@@ -149,6 +196,9 @@ module.exports = class DebouncedCall {
    * @private
    */
   _setupNewCbWrapper(cb, params) {
+
+    // TODO: переделать
+
     // set new callback wrapper;
     this._currentProcess = new DebouncedCallbackWrapper();
     this._currentProcess.setCallback(cb, params);
@@ -161,7 +211,14 @@ module.exports = class DebouncedCall {
     });
   }
 
+  _addToQueue(cb, params) {
+    this._queuedProcess = { cb, params };
+  }
+
   _runQueuedCb() {
+
+    // TODO: review
+
     if (this._queuedProcess) {
       this._runFreshCb(this._queuedProcess.cb, this._queuedProcess.params, true);
       // remove queue

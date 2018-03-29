@@ -38,6 +38,7 @@ module.exports = class DebouncedCallbackWrapper {
   }
 
   isCanceled() {
+    // TODO: ??? why??
     return this._canceled;
   }
 
