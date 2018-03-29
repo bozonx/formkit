@@ -1,4 +1,4 @@
-DebouncedCall = require('../../src/DebouncedCall')
+DebouncedCall = require('../../src/helpers/DebouncedCall')
 
 
 describe 'Unit. DebouncedCall.', ->

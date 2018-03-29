@@ -1,6 +1,6 @@
 const _ = require('lodash');
-const DebouncedCall = require('./DebouncedCall');
-const { calculateDirty, getFieldName, isPromise, parseValue } = require('./helpers');
+const DebouncedCall = require('./helpers/DebouncedCall');
+const { calculateDirty, getFieldName, isPromise, parseValue } = require('./helpers/helpers');
 
 
 module.exports = class Field {

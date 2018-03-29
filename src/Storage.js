@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
 const { Map } = require('immutable');
-const { findRecursively } = require('./helpers');
+const { findRecursively } = require('./helpers/helpers');
 
 
 module.exports = class Storage {

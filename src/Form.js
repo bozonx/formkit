@@ -3,7 +3,7 @@ const Storage = require('./Storage');
 const FormStorage = require('./FormStorage');
 const FieldStorage = require('./FieldStorage');
 const Field = require('./Field');
-const { findFieldRecursively, findRecursively, isPromise, isFieldSchema } = require('./helpers');
+const { findFieldRecursively, findRecursively, isPromise, isFieldSchema } = require('./helpers/helpers');
 
 
 module.exports = class Form {

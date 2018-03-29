@@ -1,4 +1,4 @@
-helpers = require('../../src/helpers')
+helpers = require('../../src/helpers/helpers')
 
 
 describe 'Unit. helpers.', ->

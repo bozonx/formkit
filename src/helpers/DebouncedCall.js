@@ -20,7 +20,7 @@ const DebouncedCallbackWrapper = require('./DebouncedCallbackWrapper');
  */
 module.exports = class DebouncedCall {
   constructor(delayTime) {
-    this.setDelayTime(delayTime);
+    this.setDebounceTime(delayTime);
     // waiting for start
     this._delayed = false;
 
