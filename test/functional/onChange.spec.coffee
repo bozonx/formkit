@@ -24,17 +24,18 @@ describe 'Functional. onChange and handleChange.', ->
   it "call after setValue", ->
     @field.handleChange('userValue')
     @field.flushSaving();
-
-    sinon.assert.calledOnce(@fieldOnChangeHandler)
-    sinon.assert.calledWith(@fieldOnChangeHandler, {
+    result = {
       event: 'change'
-      fieldName: "name"
+      field: "name"
       oldValue: undefined
       value: "userValue"
-    })
+    }
+
+    sinon.assert.calledOnce(@fieldOnChangeHandler)
+    sinon.assert.calledWith(@fieldOnChangeHandler, result)
 
     sinon.assert.calledOnce(@formOnChangeHandler)
-    sinon.assert.calledWith(@formOnChangeHandler, {name: 'userValue'})
+    sinon.assert.calledWith(@formOnChangeHandler, result)
     sinon.assert.calledOnce(@fieldStorateHandler)
     sinon.assert.calledOnce(@formStorateHandler)
 
@@ -64,23 +65,25 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledOnce(@fieldOnSaveHandler)
     sinon.assert.calledOnce(@formOnSaveHandler)
 
-  it "dont call after uncahnged value if @form.config.allowSaveUnmodifiedField = false", ->
+  it "don't call after uncahnged value if @form.config.allowSaveUnmodifiedField = false", ->
     @form.config.allowSaveUnmodifiedField = false;
     @field.handleChange('userValue')
     @field.handleChange('userValue')
 
     @field.flushSaving();
 
-    sinon.assert.calledOnce(@fieldOnChangeHandler)
-    sinon.assert.calledWith(@fieldOnChangeHandler, {
+    result = {
       event: 'change'
-      fieldName: "name"
+      field: "name"
       oldValue: undefined
       value: "userValue"
-    })
+    }
+
+    sinon.assert.calledOnce(@fieldOnChangeHandler)
+    sinon.assert.calledWith(@fieldOnChangeHandler, result)
 
     sinon.assert.calledOnce(@formOnChangeHandler)
-    sinon.assert.calledWith(@formOnChangeHandler, {name: 'userValue'})
+    sinon.assert.calledWith(@formOnChangeHandler, result)
 
     sinon.assert.calledOnce(@fieldOnSaveHandler)
     sinon.assert.calledOnce(@formOnSaveHandler)

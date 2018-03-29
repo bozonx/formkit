@@ -387,7 +387,7 @@ module.exports = class Field {
    */
   _riseUserChangeEvent(pathToField, oldValue, newValue) {
     const eventData = {
-      fieldName: pathToField,
+      field: pathToField,
       oldValue,
       value: newValue,
       event: 'change',
@@ -397,12 +397,12 @@ module.exports = class Field {
     const fieldOnChangeHandler = this._handlers.onChange;
     if (fieldOnChangeHandler) fieldOnChangeHandler(eventData);
     // call forms's onChange handler
-    this._form.$callHandler('onChange', { [pathToField]: newValue });
+    this._form.$callHandler('onChange', eventData);
 
     // Rise events field's change handler
     this._fieldStorage.emit(pathToField, 'change', eventData);
     // run form's change handler
-    this._form.$emit('change', { [pathToField]: newValue });
+    this._form.$emit('change', eventData);
   }
 
   /**
