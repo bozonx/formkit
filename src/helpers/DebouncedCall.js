@@ -8,15 +8,18 @@ const DebouncedCallbackWrapper = require('./DebouncedCallbackWrapper');
  *   * running of callback will be delayed for a specified time
  *   * "delayed" will be true until callback starts
  *   * "pending" will be true after callback starts until it ends
- *   * If you try to call another callback while current callback is waiting
- *     for running and promise fulfilling,
+ *   * If you try to call another callback while current callback is waiting for running or in progress,
  *     it will delay it and call it after current callback has fulfilled.
  *   * After promise has fulfiled, the "pending" prop will be false.
  * * If callback returns an undefined:
- *   * the callback running will be delayed for a specific time
- *   * The "delayed" prop will be true
+ *   * running of callback will be delayed for a specified time
+ *   * "delayed" will be true until callback starts
  *   * If you try to call another callback while current callback is waiting for running,
  *     it will delay it and call it after current callback has fulfilled.
+ * * if you add one another callback while current callback is waitng or in progress,
+ *   it will replace that callback which is in queue.
+ * * also you can force run callback and it runs immediately
+ *   and reset currently delayed or executed callback
  */
 module.exports = class DebouncedCall {
   constructor(delayTime) {
