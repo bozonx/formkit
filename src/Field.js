@@ -134,10 +134,8 @@ module.exports = class Field {
   }
 
   setDebounceTime(delay) {
-    const toNumber = _.toNumber(delay);
-    if (_.isNull(toNumber) || _.isNaN(toNumber)) throw new Error(`Bad debounceTime value`);
-    // TODO: doesn't work
-    this._debouncedCall.delay = toNumber;
+    if (!_.isNumber(delay)) throw new Error(`Bad type of debounceTime value`);
+    this._debouncedCall.setDebounceTime(delay);
   }
 
   /**
