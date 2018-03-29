@@ -6,11 +6,12 @@ const DebouncedCallbackWrapper = require('./DebouncedCallbackWrapper');
  * It allows run callback with delay and debounce.
  * * If callback returns a promise
  *   * running of callback will be delayed for a specified time
- *   * The "delayed" and "pending" prop will be true
+ *   * "delayed" will be true until callback starts
+ *   * "pending" will be true after callback starts until it ends
  *   * If you try to call another callback while current callback is waiting
  *     for running and promise fulfilling,
  *     it will delay it and call it after current callback has fulfilled.
- *   * After promise has fulfiled, the "pending" prop will bi false.
+ *   * After promise has fulfiled, the "pending" prop will be false.
  * * If callback returns an undefined:
  *   * the callback running will be delayed for a specific time
  *   * The "delayed" prop will be true
@@ -22,6 +23,7 @@ module.exports = class DebouncedCall {
     this.setDelayTime(delayTime);
     // waiting for start
     this._delayed = false;
+
     // promise which wait while current callback has run and fulfilled.
     // this._waitPromise = null;
 
@@ -30,10 +32,20 @@ module.exports = class DebouncedCall {
     this._queuedCallback = null;
   }
 
+  /**
+   * Delayed means - callback is waiting for run.
+   * It is true until delayed time is up and callback will run.
+   * @return {boolean}
+   */
   getDelayed() {
     return this._delayed;
   }
 
+  /**
+   * Pending means - callback is in progress.
+   * It is true until callback's promise will be fulfilled.
+   * @return {*}
+   */
   getPending() {
     if (!this._cbWrapper) return false;
 
