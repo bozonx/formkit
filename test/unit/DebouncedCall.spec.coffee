@@ -127,7 +127,7 @@ describe 'Unit. DebouncedCall.', ->
 
       this.debounced.exec(this.secondHandler, false)
       # the second one is in queue
-      assert.deepEqual(this.debounced._queuedCallback.cb, this.secondHandler)
+      assert.deepEqual(this.debounced._queuedProcess.cb, this.secondHandler)
 
       this.firstPromiseResolve()
 
@@ -164,5 +164,5 @@ describe 'Unit. DebouncedCall.', ->
 
       assert.isFalse(this.debounced.getPending())
 
-      assert.isNull(this.debounced._queuedCallback)
+      assert.isNull(this.debounced._queuedProcess)
       expect(secondHandler).to.have.not.been.called

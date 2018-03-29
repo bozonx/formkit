@@ -26,13 +26,13 @@ module.exports = class DebouncedCall {
     this.setDebounceTime(delayTime);
     // waiting for start
     this._delayed = false;
+    // current callback which is waiting or in progress
+    this._currentProcess = null;
+    // callback which was added while current callback in progress
+    this._queuedProcess = null;
 
     // promise which wait while current callback has run and fulfilled.
-    // this._waitPromise = null;
-
-    this._cbWrapper = null;
-    // callback which was added while current callback in progress
-    this._queuedCallback = null;
+    //this._waitPromise = null;
   }
 
   /**
@@ -50,9 +50,9 @@ module.exports = class DebouncedCall {
    * @return {*}
    */
   getPending() {
-    if (!this._cbWrapper) return false;
+    if (!this._currentProcess) return false;
 
-    return this._cbWrapper.isPending();
+    return this._currentProcess.isPending();
   }
 
   setDebounceTime(delayTime) {
@@ -71,7 +71,7 @@ module.exports = class DebouncedCall {
   cancel() {
     this._cancelDelayed();
     this._cancelQueue();
-    if (this._cbWrapper) this._cbWrapper.cancel();
+    if (this._currentProcess) this._currentProcess.cancel();
   }
 
   flush() {
@@ -81,7 +81,7 @@ module.exports = class DebouncedCall {
   exec(cb, force, ...params) {
     this._chooseTheWay(cb, params, force);
 
-    return this._cbWrapper.getPromise();
+    return this._currentProcess.getPromise();
   }
 
   _cancelDelayed() {
@@ -90,26 +90,26 @@ module.exports = class DebouncedCall {
   }
 
   _cancelQueue() {
-    this._queuedCallback = null;
+    this._queuedProcess = null;
   }
 
   _chooseTheWay(cb, params, force) {
-    if (this._cbWrapper) {
-      if (this._cbWrapper.isFulfilled() || this._cbWrapper.isCanceled()) {
+    if (this._currentProcess) {
+      if (this._currentProcess.isFulfilled() || this._currentProcess.isCanceled()) {
         this._runFreshCb(cb, params, force);
       }
-      else if (this._cbWrapper.isStarted()) {
+      else if (this._currentProcess.isStarted()) {
         // set this callback in queue
-        this._queuedCallback = { cb, params };
+        this._queuedProcess = { cb, params };
       }
       else if (force) {
         // replace callback if it hasn't run.
         this._cancelDelayed();
-        this._cbWrapper.setCallback(cb, params);
+        this._currentProcess.setCallback(cb, params);
         this._runWithoutDebounce();
       }
       else {
-        this._cbWrapper.setCallback(cb, params);
+        this._currentProcess.setCallback(cb, params);
       }
     }
     else {
@@ -128,7 +128,7 @@ module.exports = class DebouncedCall {
       this._delayed = true;
       // TODO: may be use timeout / clearTimeout instead?
       this._debouncedCb(() => {
-        if (this._cbWrapper) this._cbWrapper.start();
+        if (this._currentProcess) this._currentProcess.start();
         this._delayed = false;
       });
     }
@@ -137,7 +137,7 @@ module.exports = class DebouncedCall {
   _runWithoutDebounce() {
     // run without debounce
     this._delayed = true;
-    this._cbWrapper.start();
+    this._currentProcess.start();
     this._delayed = false;
   }
 
@@ -150,11 +150,11 @@ module.exports = class DebouncedCall {
    */
   _setupNewCbWrapper(cb, params) {
     // set new callback wrapper;
-    this._cbWrapper = new DebouncedCallbackWrapper();
-    this._cbWrapper.setCallback(cb, params);
+    this._currentProcess = new DebouncedCallbackWrapper();
+    this._currentProcess.setCallback(cb, params);
 
     // after current promise was finished - run next cb in queue
-    this._cbWrapper.getPromise().then(() => this._runQueuedCb(), (err) => {
+    this._currentProcess.getPromise().then(() => this._runQueuedCb(), (err) => {
       this._runQueuedCb();
 
       return err;
@@ -162,8 +162,8 @@ module.exports = class DebouncedCall {
   }
 
   _runQueuedCb() {
-    if (this._queuedCallback) {
-      this._runFreshCb(this._queuedCallback.cb, this._queuedCallback.params, true);
+    if (this._queuedProcess) {
+      this._runFreshCb(this._queuedProcess.cb, this._queuedProcess.params, true);
       // remove queue
       this._cancelQueue();
     }
