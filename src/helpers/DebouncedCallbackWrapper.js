@@ -11,12 +11,15 @@ module.exports = class DebouncedCallbackWrapper {
       this._mainReject = reject;
     });
     this._callback = null;
-    this._started = false;
+    // has it started at least once
+    this._hasStarted = false;
     this._pending = false;
     this._waiting = false;
     // TODO: review
     this._canceled = false;
     this._onFinishCb = null;
+
+    this._debouncedCb = null;
   }
 
   getPromise() {
@@ -30,8 +33,9 @@ module.exports = class DebouncedCallbackWrapper {
     this._onFinishCb = cb;
   }
 
+  // TODO: не нужно - перенести в конструктор
   setCallback(cb, params) {
-    if (this._started) throw new Error(`The current callback is in progress, you can't set another one.`);
+    if (this._hasStarted) throw new Error(`The current callback is in progress, you can't set another one.`);
     this._callback = { cb, params };
   }
 
@@ -43,22 +47,9 @@ module.exports = class DebouncedCallbackWrapper {
     return this._pending;
   }
 
-  isStarted() {
-    // TODO: is it need?
-    return this._started;
-  }
-
-  isFulfilled() {
-    return this.isStarted() && !this.isPending() && !this._canceled;
-  }
-
-  isCanceled() {
-    // TODO: ??? why??
-    return this._canceled;
-  }
-
   // TODO: наверное не нужно
   cancel() {
+    // TODO: review
     this._onFinishCb = null;
     // TODO: cancel current promise in progress
     this._pending = false;
@@ -66,56 +57,64 @@ module.exports = class DebouncedCallbackWrapper {
   }
 
   start(delayTime) {
-    // TODO: add debounce
+    if (this._hasStarted) {
+      throw new Error(`The promise has already started, you can't start another one!`);
+    }
 
-    if (delayTime && delayTime > 0) {
+    this._hasStarted = true;
+    this._waiting = true;
+    const timeMeansForce = 0;
+    if (delayTime && delayTime > timeMeansForce) {
       // means regular with debounce
-      this._debouncedCb = _.debounce((cb) => cb(), this._delayTime);
+      // use _.debounce as a setTimeout because it can flush()
+      this._debouncedCb = _.debounce(() => {
+        this._waiting = false;
+        this._start();
+      }, delayTime);
     }
     else {
+      this._waiting = false;
       // means force
+      this._start();
     }
-
-    // this._debouncedCb(() => {
-    //   if (this._currentProcess) this._currentProcess.start();
-    // });
   }
 
   /**
    * Stop waiting and do nothing after that for ever
    */
   stop() {
-
+    this._waiting = false;
+    this._debouncedCb.cancel();
   }
 
-  oldStart() {
-
-    // TODO: add _onFinishCb
-    // TODO: add this._waiting;
-
-    if (!this._callback) throw new Error(`There isn't a callback to run!`);
-    if (this.isFulfilled()) throw new Error(`The promise was fulfilled, you can't start another one!`);
-
-    this._started = true;
+  _start() {
     this._pending = true;
 
-    const cbPromise = this._callback.cb(...this._callback.params);
-    if (isPromise(cbPromise)) {
-      cbPromise.then((data) => {
-        this._pending = false;
-        this._mainResolve();
+    const cbResult = this._callback.cb(...this._callback.params);
 
-        return data;
-      }, (err) => {
-        this._pending = false;
-        this._mainReject(err);
+    // TODO: можно промис требовать обязательно чтобы упростить
 
-        return err;
-      });
+    if (isPromise(cbResult)) {
+      cbResult
+        .then((data) => {
+          this._pending = false;
+          this._mainResolve();
+          if (this._onFinishCb) this._onFinishCb();
+
+          return data;
+        })
+        .catch((err) => {
+          this._pending = false;
+          this._mainReject(err);
+          if (this._onFinishCb) this._onFinishCb();
+
+          return err;
+        });
     }
     else {
       this._pending = false;
       this._mainResolve();
+      if (this._onFinishCb) this._onFinishCb();
     }
   }
 
