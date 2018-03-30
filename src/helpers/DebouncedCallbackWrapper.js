@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { isPromise } = require('./helpers');
 
 
@@ -33,11 +34,16 @@ module.exports = class DebouncedCallbackWrapper {
     this._callback = { cb, params };
   }
 
+  isDelayed() {
+    // TODO: !!!! add
+  }
+
   isPending() {
     return this._pending;
   }
 
   isStarted() {
+    // TODO: is it need?
     return this._started;
   }
 
@@ -50,6 +56,7 @@ module.exports = class DebouncedCallbackWrapper {
     return this._canceled;
   }
 
+  // TODO: наверное не нужно
   cancel() {
     this._afterDone = null;
     // TODO: cancel current promise in progress
@@ -62,7 +69,7 @@ module.exports = class DebouncedCallbackWrapper {
 
     if (delayTime && delayTime > 0) {
       // means regular with debounce
-
+      this._debouncedCb = _.debounce((cb) => cb(), this._delayTime);
     }
     else {
       // means force

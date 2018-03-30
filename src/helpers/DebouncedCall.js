@@ -24,9 +24,6 @@ const DebouncedCallbackWrapper = require('./DebouncedCallbackWrapper');
 module.exports = class DebouncedCall {
   constructor(delayTime) {
     this.setDebounceTime(delayTime);
-    // waiting for start
-    // TODO: не сохранять стейтом - брать из _currentProcess
-    this._delayed = false;
     // current callback which is waiting or in progress
     this._currentProcess = null;
     // callback which was added while current callback in progress
@@ -39,8 +36,9 @@ module.exports = class DebouncedCall {
    * @return {boolean}
    */
   isDelayed() {
-    // TODO: брать из _currentProcess
-    return this._delayed;
+    if (!this._currentProcess) return false;
+
+    return this._currentProcess.isDelayed();
   }
 
   /**
@@ -64,7 +62,6 @@ module.exports = class DebouncedCall {
 
   setDebounceTime(delayTime) {
     this._delayTime = delayTime;
-    this._debouncedCb = _.debounce((cb) => cb(), this._delayTime);
   }
 
   /**
@@ -74,18 +71,20 @@ module.exports = class DebouncedCall {
    * * cancel callback which is executing
    */
   cancel() {
-    this._cancelDelayed();
     this._cancelQueue();
-    if (this._currentProcess) this._currentProcess.cancel();
+    this._stopDelayed();
 
-    // TODO: надо очистить this._currentProcess
+    // TODO: нужно ли отменять выполняющийся колбэк?
+    //if (this._currentProcess) this._currentProcess.cancel();
+
+    this._currentProcess = null;
   }
 
   /**
    * Run immediately callback which is waiting for start.
    */
   flush() {
-    if (this._debouncedCb) this._debouncedCb.flush();
+    if (this._currentProcess) this._currentProcess.flush();
   }
 
   /**
@@ -105,19 +104,8 @@ module.exports = class DebouncedCall {
   exec(cb, force = false, ...params) {
     this._chooseTheWay(cb, params, force);
 
+    // TODO: ??? какой промис возвращаем, если колбэк может поставиться в очередь???
     return this._currentProcess.getPromise();
-  }
-
-  /**
-   * Cancel waiting for start next cb
-   * @private
-   */
-  _cancelDelayed() {
-    // TODO: review
-    if (this._debouncedCb) {
-      this._debouncedCb.cancel();
-      this._debouncedCb = null;
-    }
   }
 
   _cancelQueue() {
@@ -125,10 +113,10 @@ module.exports = class DebouncedCall {
   }
 
   _stopDelayed() {
-    if (!this._debouncedCb) return;
+    if (!this._currentProcess) return;
 
-    this._debouncedCb.stop();
-    this._debouncedCb = null;
+    this._currentProcess.stop();
+    this._currentProcess = null;
   }
 
   _chooseTheWay(cb, params, force) {
@@ -161,8 +149,8 @@ module.exports = class DebouncedCall {
   }
 
   _runFreshProcess(cb, params, delayTime) {
-    this._stopDelayed();
     this._cancelQueue();
+    this._stopDelayed();
 
     this._currentProcess = new DebouncedCallbackWrapper();
     // after current promise was finished - run next cb in queue
