@@ -13,17 +13,17 @@ describe 'Functional. onBlur.', ->
   it "run handle blur if there is no one delayed callback", ->
     @form.fields.name.setValue('newValue')
 
-    assert.isFalse(@form.fields.name._debouncedCall.getDelayed())
+    assert.isFalse(@form.fields.name._debouncedCall.isDelayed())
     @form.fields.name.handleBlur()
-    assert.isFalse(@form.fields.name._debouncedCall.getDelayed())
+    assert.isFalse(@form.fields.name._debouncedCall.isDelayed())
 
     expect(@fieldOnSaveHandler).to.have.been.calledOnce
 
   it "run handle blur if saving in progress", ->
     @form.fields.name.handleChange('newValue')
-    assert.isTrue(@form.fields.name._debouncedCall.getDelayed())
+    assert.isTrue(@form.fields.name._debouncedCall.isDelayed())
     @form.fields.name.handleBlur()
 
-    assert.isFalse(@form.fields.name._debouncedCall.getDelayed())
+    assert.isFalse(@form.fields.name._debouncedCall.isDelayed())
 
     expect(@fieldOnSaveHandler).to.have.been.calledOnce

@@ -12,21 +12,21 @@ describe 'Unit. DebouncedCall.', ->
         this.simpleValue = value;
 
     it "set simple callback force - check statuses and result", ->
-      assert.isFalse(this.debounced.getDelayed())
-      assert.isFalse(this.debounced.getPending())
+      assert.isFalse(this.debounced.isDelayed())
+      assert.isFalse(this.debounced.isPending())
 
       this.debounced.exec(this.simpleHandler, true, 'simpleValue')
 
-      assert.isFalse(this.debounced.getDelayed())
-      assert.isFalse(this.debounced.getPending())
+      assert.isFalse(this.debounced.isDelayed())
+      assert.isFalse(this.debounced.isPending())
       assert.equal(this.simpleValue, 'simpleValue')
 
     it "set simple callback force - check promise", ->
       promise = this.debounced.exec(this.simpleHandler, true, 'simpleValue')
 
       promise.then () =>
-        assert.isFalse(this.debounced.getDelayed())
-        assert.isFalse(this.debounced.getPending())
+        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isPending())
         assert.equal(this.simpleValue, 'simpleValue')
 
     it "set simple callback delayed", ->
@@ -34,8 +34,8 @@ describe 'Unit. DebouncedCall.', ->
       this.debounced.flush();
 
       promise.then () =>
-        assert.isFalse(this.debounced.getDelayed())
-        assert.isFalse(this.debounced.getPending())
+        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isPending())
         assert.equal(this.simpleValue, 'simpleValue')
 
   describe 'Promises.', ->
@@ -57,8 +57,8 @@ describe 'Unit. DebouncedCall.', ->
       this.firstPromiseResolve();
 
       promise.then () =>
-        assert.isFalse(this.debounced.getDelayed())
-        assert.isFalse(this.debounced.getPending())
+        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isPending())
         assert.equal(this.promisedValue, 'promisedValue')
 
     it "set promised callback delayed", () ->
@@ -67,8 +67,8 @@ describe 'Unit. DebouncedCall.', ->
       this.firstPromiseResolve();
 
       promise.then () =>
-        assert.isFalse(this.debounced.getDelayed())
-        assert.isFalse(this.debounced.getPending())
+        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isPending())
         assert.equal(this.promisedValue, 'promisedValue')
 
     it "set promised callback delayed - promise has rejected", () ->
@@ -77,8 +77,8 @@ describe 'Unit. DebouncedCall.', ->
       this.firstPromiseReject('error');
 
       promise.catch (err) =>
-        assert.isFalse(this.debounced.getDelayed())
-        assert.isFalse(this.debounced.getPending())
+        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isPending())
         assert.isUndefined(this.promisedValue)
         assert.equal(err, 'error')
 
@@ -122,8 +122,8 @@ describe 'Unit. DebouncedCall.', ->
       promise1 = this.debounced.exec(this.promisedHandler, false)
       this.debounced.flush();
 
-      assert.isFalse(this.debounced.getDelayed())
-      assert.isTrue(this.debounced.getPending())
+      assert.isFalse(this.debounced.isDelayed())
+      assert.isTrue(this.debounced.isPending())
 
       this.debounced.exec(this.secondHandler, false)
       # the second one is in queue
@@ -146,9 +146,9 @@ describe 'Unit. DebouncedCall.', ->
     it "cancel delayed", () ->
       firstHandler = sinon.spy()
       this.debounced.exec(firstHandler, false)
-      assert.isTrue(this.debounced.getDelayed())
+      assert.isTrue(this.debounced.isDelayed())
       this.debounced.cancel()
-      assert.isFalse(this.debounced.getDelayed())
+      assert.isFalse(this.debounced.isDelayed())
 
       expect(firstHandler).to.have.not.been.called
 
@@ -158,11 +158,11 @@ describe 'Unit. DebouncedCall.', ->
       this.debounced.flush();
       this.debounced.exec(secondHandler, false)
 
-      assert.isTrue(this.debounced.getPending())
+      assert.isTrue(this.debounced.isPending())
 
       this.debounced.cancel()
 
-      assert.isFalse(this.debounced.getPending())
+      assert.isFalse(this.debounced.isPending())
 
       assert.isNull(this.debounced._queuedProcess)
       expect(secondHandler).to.have.not.been.called
