@@ -14,10 +14,18 @@ module.exports = class DebouncedCallbackWrapper {
     this._started = false;
     this._pending = false;
     this._canceled = false;
+    this._afterDone = null;
   }
 
   getPromise() {
     return this._mainPromise;
+  }
+
+  /**
+   * It adds callback which will be called after fulfill or reject of promise
+   */
+  afterDone(cb) {
+    this._afterDone = cb;
   }
 
   setCallback(cb, params) {
@@ -43,12 +51,39 @@ module.exports = class DebouncedCallbackWrapper {
   }
 
   cancel() {
+    this._afterDone = null;
     // TODO: cancel current promise in progress
     this._pending = false;
     this._canceled = true;
   }
 
-  start() {
+  start(delayTime) {
+    // TODO: add debounce
+
+    if (delayTime && delayTime > 0) {
+      // means regular with debounce
+
+    }
+    else {
+      // means force
+    }
+
+    // this._debouncedCb(() => {
+    //   if (this._currentProcess) this._currentProcess.start();
+    // });
+  }
+
+  /**
+   * Stop waiting and do nothing after that for ever
+   */
+  stop() {
+
+  }
+
+  oldStart() {
+
+    // TODO: add _afterDone
+
     if (!this._callback) throw new Error(`There isn't a callback to run!`);
     if (this.isFulfilled()) throw new Error(`The promise was fulfilled, you can't start another one!`);
 

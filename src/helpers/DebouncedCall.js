@@ -113,12 +113,22 @@ module.exports = class DebouncedCall {
    * @private
    */
   _cancelDelayed() {
-    if (this._debouncedCb) this._debouncedCb.cancel();
-    this._delayed = false;
+    // TODO: review
+    if (this._debouncedCb) {
+      this._debouncedCb.cancel();
+      this._debouncedCb = null;
+    }
   }
 
   _cancelQueue() {
     this._nextCb = null;
+  }
+
+  _stopDelayed() {
+    if (this._debouncedCb) {
+      this._debouncedCb.stop();
+      this._debouncedCb = null;
+    }
   }
 
   _chooseTheWay(cb, params, force) {
@@ -163,15 +173,25 @@ module.exports = class DebouncedCall {
   }
 
   _runFreshProcessRegular(cb, params) {
-    this._cancelDelayed();
+    this._stopDelayed();
     this._cancelQueue();
-    // TODO: !!!
+
+    this._currentProcess = new DebouncedCallbackWrapper();
+    // after current promise was finished - run next cb in queue
+    this._currentProcess.afterDone(() => this._afterCbFinished());
+    this._currentProcess.setCallback(cb, params);
+    this._currentProcess.start(this._delayTime);
   }
 
   _runFreshProcessForce(cb, params) {
-    this._cancelDelayed();
+    this._stopDelayed();
     this._cancelQueue();
-    // TODO: !!!
+
+    this._currentProcess = new DebouncedCallbackWrapper();
+    // after current promise was finished - run next cb in queue
+    this._currentProcess.afterDone(() => this._afterCbFinished());
+    this._currentProcess.setCallback(cb, params);
+    this._currentProcess.start();
   }
 
   _runFreshCb(cb, params, force) {
@@ -193,6 +213,17 @@ module.exports = class DebouncedCall {
       });
     }
   }
+
+  _afterCbFinished() {
+    // TODO: если нет очереди - очистить this._currentProcess
+    // TODO: или запустить очередь
+  }
+
+
+
+
+
+
 
   _runWithoutDebounce() {
 
