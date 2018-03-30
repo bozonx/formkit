@@ -2,6 +2,17 @@ const _ = require('lodash');
 const { isPromise } = require('./helpers');
 
 
+/**
+ * It wraps logic of debounced call of callback.
+ * After start it:
+ * if with delay
+ * * waiting for start and switch to waiting state
+ * * then start and switch to pending state
+ * * after callback has resolved or rejected - it call onFinish callback
+ * if force - the same but without waiting state
+ * While callback is waiting you can stop it by calling stop()
+ * But if it pending you can't cancel it.
+ */
 module.exports = class DebouncedProcess {
   constructor() {
     this._mainResolve = null;
@@ -47,15 +58,23 @@ module.exports = class DebouncedProcess {
     return this._pending;
   }
 
-  // TODO: наверное не нужно
-  cancel() {
-    // TODO: review
-    this._onFinishCb = null;
-    // TODO: cancel current promise in progress
-    this._pending = false;
-    this._canceled = true;
+  flush() {
+    if (this._debouncedCb) this._debouncedCb.flush();
   }
 
+  /**
+   * Stop waiting and do nothing after that for ever.
+   * It doesn't cancel callback promise if it in pending state.
+   */
+  stop() {
+    if (this._debouncedCb) this._debouncedCb.cancel();
+    this._waiting = false;
+  }
+
+  /**
+   * Delay start or start immediately according to delayTime
+   * @param {number|undefined} delayTime - time to delay start. Undefined means start immediately.
+   */
   start(delayTime) {
     if (this._hasStarted) {
       throw new Error(`The promise has already started, you can't start another one!`);
@@ -73,18 +92,10 @@ module.exports = class DebouncedProcess {
       }, delayTime);
     }
     else {
-      this._waiting = false;
       // means force
+      this._waiting = false;
       this._start();
     }
-  }
-
-  /**
-   * Stop waiting and do nothing after that for ever
-   */
-  stop() {
-    this._waiting = false;
-    this._debouncedCb.cancel();
   }
 
   _start() {

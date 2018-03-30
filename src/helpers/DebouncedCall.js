@@ -105,7 +105,14 @@ module.exports = class DebouncedCall {
     this._chooseTheWay(cb, params, force);
 
     // TODO: ??? какой промис возвращаем, если колбэк может поставиться в очередь???
-    return this._currentProcess.getPromise();
+    // TODO: _currentProcess может быть null
+
+    if (this._currentProcess) {
+      return this._currentProcess.getPromise();
+    }
+    else {
+      return Promise.resolve();
+    }
   }
 
   _clearQueue() {
