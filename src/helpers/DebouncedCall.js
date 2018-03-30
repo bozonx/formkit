@@ -125,20 +125,18 @@ module.exports = class DebouncedCall {
   }
 
   _stopDelayed() {
-    if (this._debouncedCb) {
-      this._debouncedCb.stop();
-      this._debouncedCb = null;
-    }
+    if (!this._debouncedCb) return;
+
+    this._debouncedCb.stop();
+    this._debouncedCb = null;
   }
 
   _chooseTheWay(cb, params, force) {
     if (force) {
-      if (!this._currentProcess) {
+      // run fresh new process it there isn't any or some process is waiting
+      if (!this._currentProcess || this.isDelayed()) {
         // it hasn't been doing anything
-        this._runFreshProcessForce(cb, params);
-      }
-      else if (this.isDelayed()) {
-        this._runFreshProcessForce(cb, params);
+        this._runFreshProcess(cb, params);
       }
       else if (this.isPending()) {
         this._addToQueueForce(cb, params);
@@ -148,12 +146,10 @@ module.exports = class DebouncedCall {
       }
     }
     else {
-      if (!this._currentProcess) {
+      // run fresh new process it there isn't any or some process is waiting
+      if (!this._currentProcess || this.isDelayed()) {
         // it hasn't been doing anything
-        this._runFreshProcessRegular(cb, params);
-      }
-      else if (this.isDelayed()) {
-        this._runFreshProcessRegular(cb, params);
+        this._runFreshProcess(cb, params, this._delayTime);
       }
       else if (this.isPending()) {
         this._addToQueueRegular(cb, params);
@@ -164,54 +160,23 @@ module.exports = class DebouncedCall {
     }
   }
 
+  _runFreshProcess(cb, params, delayTime) {
+    this._stopDelayed();
+    this._cancelQueue();
+
+    this._currentProcess = new DebouncedCallbackWrapper();
+    // after current promise was finished - run next cb in queue
+    this._currentProcess.afterDone(() => this._afterCbFinished());
+    this._currentProcess.setCallback(cb, params);
+    this._currentProcess.start(delayTime);
+  }
+
   _addToQueueRegular(cb, params) {
     // TODO: !!!
   }
 
   _addToQueueForce(cb, params) {
     // TODO: !!!
-  }
-
-  _runFreshProcessRegular(cb, params) {
-    this._stopDelayed();
-    this._cancelQueue();
-
-    this._currentProcess = new DebouncedCallbackWrapper();
-    // after current promise was finished - run next cb in queue
-    this._currentProcess.afterDone(() => this._afterCbFinished());
-    this._currentProcess.setCallback(cb, params);
-    this._currentProcess.start(this._delayTime);
-  }
-
-  _runFreshProcessForce(cb, params) {
-    this._stopDelayed();
-    this._cancelQueue();
-
-    this._currentProcess = new DebouncedCallbackWrapper();
-    // after current promise was finished - run next cb in queue
-    this._currentProcess.afterDone(() => this._afterCbFinished());
-    this._currentProcess.setCallback(cb, params);
-    this._currentProcess.start();
-  }
-
-  _runFreshCb(cb, params, force) {
-
-    // TODO: переделать
-
-    this._setupNewCbWrapper(cb, params, force);
-
-    if (force) {
-      this._runWithoutDebounce();
-    }
-    else {
-      // run debounced
-      this._delayed = true;
-      // TODO: may be use timeout / clearTimeout instead?
-      this._debouncedCb(() => {
-        if (this._currentProcess) this._currentProcess.start();
-        this._delayed = false;
-      });
-    }
   }
 
   _afterCbFinished() {
@@ -221,42 +186,6 @@ module.exports = class DebouncedCall {
 
 
 
-
-
-
-
-  _runWithoutDebounce() {
-
-    // TODO: переделать
-
-    // run without debounce
-    this._delayed = true;
-    this._currentProcess.start();
-    this._delayed = false;
-  }
-
-  /**
-   * Set new callback wrapper.
-   * There aren't promise in progress and waiting queue and delayed cb on moment of running the method.
-   * @param cb
-   * @param params
-   * @private
-   */
-  _setupNewCbWrapper(cb, params) {
-
-    // TODO: переделать
-
-    // set new callback wrapper;
-    this._currentProcess = new DebouncedCallbackWrapper();
-    this._currentProcess.setCallback(cb, params);
-
-    // after current promise was finished - run next cb in queue
-    this._currentProcess.getPromise().then(() => this._runQueuedCb(), (err) => {
-      this._runQueuedCb();
-
-      return err;
-    });
-  }
 
   _addToQueue(cb, params) {
     this._nextCb = { cb, params };
