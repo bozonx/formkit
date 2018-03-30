@@ -260,7 +260,15 @@ module.exports = class Form {
       findRecursively(newValues, (value, path) => {
         const field = _.get(this.fields, path);
         // if it is'n a field - go deeper
-        if (!field || !(field instanceof Field)) return;
+        if (!field || !(field instanceof Field)) {
+          if (_.isPlainObject(value)) {
+            // go deeper
+            return;
+          }
+
+          // stop
+          return false;
+        }
         // else means it's field - set value and don't go deeper
         // set value to edited layer
         field.$setEditedValueSilent(value);
@@ -282,8 +290,17 @@ module.exports = class Form {
     this._updateStateAndValidate(() => {
       findRecursively(newValues, (value, path) => {
         const field = _.get(this.fields, path);
+
         // if it is'n a field - go deeper
-        if (!field || !(field instanceof Field)) return;
+        if (!field || !(field instanceof Field)) {
+          if (_.isPlainObject(value)) {
+            // go deeper
+            return;
+          }
+
+          // stop
+          return false;
+        }
         // else means it's field - set value and don't go deeper
         // set value to saved layer
         field.$setSavedValue(value);
