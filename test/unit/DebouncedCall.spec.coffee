@@ -12,12 +12,12 @@ describe 'Unit. DebouncedCall.', ->
         this.simpleValue = value;
 
     it "set simple callback force - check statuses and result", ->
-      assert.isFalse(this.debounced.isDelayed())
+      assert.isFalse(this.debounced.isWaiting())
       assert.isFalse(this.debounced.isPending())
 
       this.debounced.exec(this.simpleHandler, true, 'simpleValue')
 
-      assert.isFalse(this.debounced.isDelayed())
+      assert.isFalse(this.debounced.isWaiting())
       assert.isFalse(this.debounced.isPending())
       assert.equal(this.simpleValue, 'simpleValue')
 
@@ -25,7 +25,7 @@ describe 'Unit. DebouncedCall.', ->
       promise = this.debounced.exec(this.simpleHandler, true, 'simpleValue')
 
       promise.then () =>
-        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isWaiting())
         assert.isFalse(this.debounced.isPending())
         assert.equal(this.simpleValue, 'simpleValue')
 
@@ -34,7 +34,7 @@ describe 'Unit. DebouncedCall.', ->
       this.debounced.flush();
 
       promise.then () =>
-        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isWaiting())
         assert.isFalse(this.debounced.isPending())
         assert.equal(this.simpleValue, 'simpleValue')
 
@@ -57,7 +57,7 @@ describe 'Unit. DebouncedCall.', ->
       this.firstPromiseResolve();
 
       promise.then () =>
-        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isWaiting())
         assert.isFalse(this.debounced.isPending())
         assert.equal(this.promisedValue, 'promisedValue')
 
@@ -67,7 +67,7 @@ describe 'Unit. DebouncedCall.', ->
       this.firstPromiseResolve();
 
       promise.then () =>
-        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isWaiting())
         assert.isFalse(this.debounced.isPending())
         assert.equal(this.promisedValue, 'promisedValue')
 
@@ -77,7 +77,7 @@ describe 'Unit. DebouncedCall.', ->
       this.firstPromiseReject('error');
 
       promise.catch (err) =>
-        assert.isFalse(this.debounced.isDelayed())
+        assert.isFalse(this.debounced.isWaiting())
         assert.isFalse(this.debounced.isPending())
         assert.isUndefined(this.promisedValue)
         assert.equal(err, 'error')
@@ -122,7 +122,7 @@ describe 'Unit. DebouncedCall.', ->
       promise1 = this.debounced.exec(this.promisedHandler, false)
       this.debounced.flush();
 
-      assert.isFalse(this.debounced.isDelayed())
+      assert.isFalse(this.debounced.isWaiting())
       assert.isTrue(this.debounced.isPending())
 
       this.debounced.exec(this.secondHandler, false)
@@ -146,9 +146,9 @@ describe 'Unit. DebouncedCall.', ->
     it "cancel delayed", () ->
       firstHandler = sinon.spy()
       this.debounced.exec(firstHandler, false)
-      assert.isTrue(this.debounced.isDelayed())
+      assert.isTrue(this.debounced.isWaiting())
       this.debounced.cancel()
-      assert.isFalse(this.debounced.isDelayed())
+      assert.isFalse(this.debounced.isWaiting())
 
       expect(firstHandler).to.have.not.been.called
 

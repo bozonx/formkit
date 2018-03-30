@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const BbPromise = require('bluebird');
 const DebouncedCallbackWrapper = require('./DebouncedCallbackWrapper');
 
 
@@ -26,8 +27,7 @@ module.exports = class DebouncedCall {
     this.setDebounceTime(delayTime);
     // current callback which is waiting or in progress
     this._currentProcess = null;
-    // callback which was added while current callback in progress
-    this._nextCb = null;
+    this._nextCbWaitPromise = null;
   }
 
   /**
@@ -35,10 +35,10 @@ module.exports = class DebouncedCall {
    * It is true until delayed time is up and callback will run.
    * @return {boolean}
    */
-  isDelayed() {
+  isWaiting() {
     if (!this._currentProcess) return false;
 
-    return this._currentProcess.isDelayed();
+    return this._currentProcess.isWaiting();
   }
 
   /**
@@ -57,7 +57,7 @@ module.exports = class DebouncedCall {
    * @return {boolean}
    */
   isInProgress() {
-    return this.isDelayed() || this.isPending();
+    return this.isWaiting() || this.isPending();
   }
 
   setDebounceTime(delayTime) {
@@ -71,7 +71,7 @@ module.exports = class DebouncedCall {
    * * cancel callback which is executing
    */
   cancel() {
-    this._cancelQueue();
+    this._clearQueue();
     this._stopDelayed();
 
     // TODO: нужно ли отменять выполняющийся колбэк?
@@ -108,8 +108,8 @@ module.exports = class DebouncedCall {
     return this._currentProcess.getPromise();
   }
 
-  _cancelQueue() {
-    this._nextCb = null;
+  _clearQueue() {
+    this._nextCbWaitPromise = null;
   }
 
   _stopDelayed() {
@@ -122,7 +122,7 @@ module.exports = class DebouncedCall {
   _chooseTheWay(cb, params, force) {
     if (force) {
       // run fresh new process it there isn't any or some process is waiting
-      if (!this._currentProcess || this.isDelayed()) {
+      if (!this._currentProcess || this.isWaiting()) {
         // it hasn't been doing anything
         this._runFreshProcess(cb, params);
       }
@@ -135,7 +135,7 @@ module.exports = class DebouncedCall {
     }
     else {
       // run fresh new process it there isn't any or some process is waiting
-      if (!this._currentProcess || this.isDelayed()) {
+      if (!this._currentProcess || this.isWaiting()) {
         // it hasn't been doing anything
         this._runFreshProcess(cb, params, this._delayTime);
       }
@@ -149,45 +149,48 @@ module.exports = class DebouncedCall {
   }
 
   _runFreshProcess(cb, params, delayTime) {
-    this._cancelQueue();
+    this._clearQueue();
     this._stopDelayed();
 
     this._currentProcess = new DebouncedCallbackWrapper();
     // after current promise was finished - run next cb in queue
-    this._currentProcess.afterDone(() => this._afterCbFinished());
+    this._currentProcess.onFinish(() => this._afterCbFinished());
     this._currentProcess.setCallback(cb, params);
     this._currentProcess.start(delayTime);
   }
 
   _addToQueueRegular(cb, params) {
-    // TODO: !!!
+    if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
+
+    this._nextCbWaitPromise = new BbPromise((resolve, reject, onCancel) => {
+      const queueTimeout = setTimeout(() => {
+        resolve({ cb, params });
+      }, this._delayTime);
+
+      onCancel(() => {
+        clearTimeout(queueTimeout);
+      });
+    });
   }
 
   _addToQueueForce(cb, params) {
-    // TODO: !!!
+    if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
+
+    this._nextCbWaitPromise = BbPromise.resolve({ cb, params });
   }
 
   _afterCbFinished() {
-    // TODO: если нет очереди - очистить this._currentProcess
-    // TODO: или запустить очередь
-  }
+    if (this._nextCbWaitPromise) {
+      // run queue
+      this._nextCbWaitPromise
+        // run next process as new one with force
+        .then(({ cb, params }) => this._runFreshProcess(cb, params));
 
-
-
-
-  _addToQueue(cb, params) {
-    this._nextCb = { cb, params };
-  }
-
-  _runQueuedCb() {
-
-    // TODO: review
-
-    if (this._nextCb) {
-      this._runFreshCb(this._nextCb.cb, this._nextCb.params, true);
-      // remove queue
-      this._cancelQueue();
+      return;
     }
+
+    // if there isn't any queue - just finish and go to beginning
+    this._currentProcess = null;
   }
 
 };

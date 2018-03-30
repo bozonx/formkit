@@ -11,11 +11,12 @@ module.exports = class DebouncedCallbackWrapper {
       this._mainReject = reject;
     });
     this._callback = null;
-    // this._cbPromise = null;
     this._started = false;
     this._pending = false;
+    this._waiting = false;
+    // TODO: review
     this._canceled = false;
-    this._afterDone = null;
+    this._onFinishCb = null;
   }
 
   getPromise() {
@@ -25,8 +26,8 @@ module.exports = class DebouncedCallbackWrapper {
   /**
    * It adds callback which will be called after fulfill or reject of promise
    */
-  afterDone(cb) {
-    this._afterDone = cb;
+  onFinish(cb) {
+    this._onFinishCb = cb;
   }
 
   setCallback(cb, params) {
@@ -34,8 +35,8 @@ module.exports = class DebouncedCallbackWrapper {
     this._callback = { cb, params };
   }
 
-  isDelayed() {
-    // TODO: !!!! add
+  isWaiting() {
+    return this._waiting;
   }
 
   isPending() {
@@ -58,7 +59,7 @@ module.exports = class DebouncedCallbackWrapper {
 
   // TODO: наверное не нужно
   cancel() {
-    this._afterDone = null;
+    this._onFinishCb = null;
     // TODO: cancel current promise in progress
     this._pending = false;
     this._canceled = true;
@@ -89,7 +90,8 @@ module.exports = class DebouncedCallbackWrapper {
 
   oldStart() {
 
-    // TODO: add _afterDone
+    // TODO: add _onFinishCb
+    // TODO: add this._waiting;
 
     if (!this._callback) throw new Error(`There isn't a callback to run!`);
     if (this.isFulfilled()) throw new Error(`The promise was fulfilled, you can't start another one!`);
