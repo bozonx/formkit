@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const BbPromise = require('bluebird');
-const DebouncedCallbackWrapper = require('./DebouncedCallbackWrapper');
+const DebouncedProcess = require('./DebouncedProcess');
 
 
 /**
@@ -152,7 +152,7 @@ module.exports = class DebouncedCall {
     this._clearQueue();
     this._stopDelayed();
 
-    this._currentProcess = new DebouncedCallbackWrapper();
+    this._currentProcess = new DebouncedProcess();
     // after current promise was finished - run next cb in queue
     this._currentProcess.onFinish(() => this._afterCbFinished());
     this._currentProcess.setCallback(cb, params);

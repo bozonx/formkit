@@ -2,7 +2,7 @@ const _ = require('lodash');
 const { isPromise } = require('./helpers');
 
 
-module.exports = class DebouncedCallbackWrapper {
+module.exports = class DebouncedProcess {
   constructor() {
     this._mainResolve = null;
     this._mainReject = null;
