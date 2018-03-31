@@ -37,11 +37,11 @@ describe 'Unit. DebouncedCall.', ->
 
     it "there is pending cb before run - it moves to queue and will start as soon as current cb has finished", ->
       currentCb = sinon.stub().returns(Promise.resolve())
-      @debounced.exec(currentCb, true)
+      promise = @debounced.exec(currentCb, true)
 
       @debounced.flush()
 
-      promise = @debounced.exec(@promisedCb, true)
+      @debounced.exec(@promisedCb, true)
 
       assert.isFalse(@debounced.isWaiting())
       assert.isTrue(@debounced.isPending())
@@ -50,8 +50,8 @@ describe 'Unit. DebouncedCall.', ->
 
       promise
         .then =>
-          #assert.isNull(@debounced._currentProcess)
-          #assert.isNull(@debounced._nextCbWaitPromise)
+          assert.isNull(@debounced._currentProcess)
+          assert.isNull(@debounced._nextCbWaitPromise)
           sinon.assert.calledOnce(currentCb)
           sinon.assert.calledOnce(@promisedCb)
 

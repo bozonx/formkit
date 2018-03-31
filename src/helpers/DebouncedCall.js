@@ -28,6 +28,9 @@ module.exports = class DebouncedCall {
     // current callback which is waiting or in progress
     this._currentProcess = null;
     this._nextCbWaitPromise = null;
+    // promise of end of saving process
+    this._mainPromise = null;
+    this._mainResolve = null;
   }
 
   /**
@@ -103,7 +106,16 @@ module.exports = class DebouncedCall {
    *                     It will be fulfilled event a new one replaces current promise.
    */
   exec(cb, force = false, ...params) {
-    return this._chooseTheWay(cb, params, force);
+    if (!this._mainPromise) {
+      this._mainResolve = null;
+      this._mainPromise = new Promise((resolve) => {
+        this._mainResolve = resolve;
+      });
+    }
+
+    this._chooseTheWay(cb, params, force);
+
+    return this._mainPromise;
   }
 
   _clearQueue() {
@@ -189,7 +201,10 @@ module.exports = class DebouncedCall {
     }
 
     // if there isn't any queue - just finish and go to beginning
+    this._mainResolve();
     this._currentProcess = null;
+    this._mainPromise = null;
+    this._mainResolve = null;
   }
 
 };

@@ -15,12 +15,13 @@ const { isPromise } = require('./helpers');
  */
 module.exports = class DebouncedProcess {
   constructor() {
-    this._mainResolve = null;
-    this._mainReject = null;
-    this._mainPromise = new Promise((resolve, reject) => {
-      this._mainResolve = resolve;
-      this._mainReject = reject;
-    });
+    // TODO: наверное не нужно?
+    //this._mainResolve = null;
+    //this._mainReject = null;
+    // this._mainPromise = new Promise((resolve, reject) => {
+    //   this._mainResolve = resolve;
+    //   this._mainReject = reject;
+    // });
     this._callback = null;
     // has it started at least once
     this._hasStarted = false;
@@ -33,9 +34,9 @@ module.exports = class DebouncedProcess {
     this._timeout = null;
   }
 
-  getPromise() {
-    return this._mainPromise;
-  }
+  // getPromise() {
+  //   return this._mainPromise;
+  // }
 
   /**
    * It adds callback which will be called after fulfill or reject of promise
@@ -110,14 +111,14 @@ module.exports = class DebouncedProcess {
       cbResult
         .then((data) => {
           this._pending = false;
-          this._mainResolve();
+          //this._mainResolve();
           if (this._onFinishCb) this._onFinishCb();
 
           return data;
         })
         .catch((err) => {
           this._pending = false;
-          this._mainReject(err);
+          //this._mainReject(err);
           if (this._onFinishCb) this._onFinishCb();
 
           return err;
@@ -125,7 +126,7 @@ module.exports = class DebouncedProcess {
     }
     else {
       this._pending = false;
-      this._mainResolve();
+      //this._mainResolve();
       if (this._onFinishCb) this._onFinishCb();
     }
   }
