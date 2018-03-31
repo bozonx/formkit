@@ -477,6 +477,8 @@ module.exports = class Field {
     this._emitSaveStart();
     this.$setStateSilent({ saving: false });
     this._afterSaveEnd(valueToSave);
+
+    return Promise.resolve();
   }
 
   _emitSaveStart(data) {

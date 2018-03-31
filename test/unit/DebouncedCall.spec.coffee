@@ -3,166 +3,212 @@ DebouncedCall = require('../../src/helpers/DebouncedCall')
 
 describe 'Unit. DebouncedCall.', ->
   beforeEach () ->
-    this.debounced = new DebouncedCall(300);
+    @debounced = new DebouncedCall(300);
+    @promisedCb = sinon.stub().returns(Promise.resolve())
+
+  describe.only 'force', ->
+    it "there isn't pending or waiting cb before run", ->
+      promise = @debounced.exec(@promisedCb, true, 'cbParam')
+
+      assert.isFalse(@debounced.isWaiting())
+      assert.isTrue(@debounced.isPending())
+
+      promise
+        .then =>
+          assert.isNull(@debounced._currentProcess)
+          assert.isNull(@debounced._nextCbWaitPromise)
+
+          sinon.assert.calledOnce(@promisedCb)
+          sinon.assert.calledWith(@promisedCb, 'cbParam')
+
+    it "there is waiting cb before run", ->
+
+
+  describe.only 'with debounce', ->
+    it "there isn't pending or waiting cb before run", ->
+      promise = @debounced.exec(@promisedCb, false, 'cbParam')
+
+      assert.isTrue(@debounced.isWaiting())
+      assert.isFalse(@debounced.isPending())
+
+      @debounced.flush()
+
+      assert.isFalse(@debounced.isWaiting())
+      assert.isTrue(@debounced.isPending())
+
+      promise
+        .then =>
+          assert.isNull(@debounced._currentProcess)
+          assert.isNull(@debounced._nextCbWaitPromise)
+
+          sinon.assert.calledOnce(@promisedCb)
+          sinon.assert.calledWith(@promisedCb, 'cbParam')
+
+    it "there is waiting cb before run", ->
+
+
+
+
+
 
   describe 'Simple callback.', ->
     beforeEach () ->
-      this.simpleValue = undefined;
-      this.simpleHandler = (value) =>
-        this.simpleValue = value;
+      @simpleValue = undefined;
+      @simpleHandler = (value) =>
+        @simpleValue = value;
 
     it "set simple callback force - check statuses and result", ->
-      assert.isFalse(this.debounced.isWaiting())
-      assert.isFalse(this.debounced.isPending())
+      assert.isFalse(@debounced.isWaiting())
+      assert.isFalse(@debounced.isPending())
 
-      this.debounced.exec(this.simpleHandler, true, 'simpleValue')
+      @debounced.exec(@simpleHandler, true, 'simpleValue')
 
-      assert.isFalse(this.debounced.isWaiting())
-      assert.isFalse(this.debounced.isPending())
-      assert.equal(this.simpleValue, 'simpleValue')
+      assert.isFalse(@debounced.isWaiting())
+      assert.isFalse(@debounced.isPending())
+      assert.equal(@simpleValue, 'simpleValue')
 
     it "set simple callback force - check promise", ->
-      promise = this.debounced.exec(this.simpleHandler, true, 'simpleValue')
+      promise = @debounced.exec(@simpleHandler, true, 'simpleValue')
 
       promise.then () =>
-        assert.isFalse(this.debounced.isWaiting())
-        assert.isFalse(this.debounced.isPending())
-        assert.equal(this.simpleValue, 'simpleValue')
+        assert.isFalse(@debounced.isWaiting())
+        assert.isFalse(@debounced.isPending())
+        assert.equal(@simpleValue, 'simpleValue')
 
     it "set simple callback delayed", ->
-      promise = this.debounced.exec(this.simpleHandler, false, 'simpleValue')
-      this.debounced.flush();
+      promise = @debounced.exec(@simpleHandler, false, 'simpleValue')
+      @debounced.flush();
 
       promise.then () =>
-        assert.isFalse(this.debounced.isWaiting())
-        assert.isFalse(this.debounced.isPending())
-        assert.equal(this.simpleValue, 'simpleValue')
+        assert.isFalse(@debounced.isWaiting())
+        assert.isFalse(@debounced.isPending())
+        assert.equal(@simpleValue, 'simpleValue')
 
   describe 'Promises.', ->
     beforeEach () ->
-      this.promisedHandler = undefined;
-      this.firstPromiseResolve = undefined;
-      this.firstPromiseReject = undefined;
-      this.promisedValue = undefined;
+      @promisedHandler = undefined;
+      @firstPromiseResolve = undefined;
+      @firstPromiseReject = undefined;
+      @promisedValue = undefined;
 
-      this.promisedHandler = (value) =>
+      @promisedHandler = (value) =>
         return new Promise (resolve, reject) =>
-          this.firstPromiseResolve = () =>
-            this.promisedValue = value;
+          @firstPromiseResolve = () =>
+            @promisedValue = value;
             resolve()
-          this.firstPromiseReject = reject
+          @firstPromiseReject = reject
 
     it "set promised callback force", ->
-      promise = this.debounced.exec(this.promisedHandler, true, 'promisedValue')
-      this.firstPromiseResolve();
+      promise = @debounced.exec(@promisedHandler, true, 'promisedValue')
+      @firstPromiseResolve();
 
       promise.then () =>
-        assert.isFalse(this.debounced.isWaiting())
-        assert.isFalse(this.debounced.isPending())
-        assert.equal(this.promisedValue, 'promisedValue')
+        assert.isFalse(@debounced.isWaiting())
+        assert.isFalse(@debounced.isPending())
+        assert.equal(@promisedValue, 'promisedValue')
 
     it "set promised callback delayed", () ->
-      promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
-      this.debounced.flush();
-      this.firstPromiseResolve();
+      promise = @debounced.exec(@promisedHandler, false, 'promisedValue')
+      @debounced.flush();
+      @firstPromiseResolve();
 
       promise.then () =>
-        assert.isFalse(this.debounced.isWaiting())
-        assert.isFalse(this.debounced.isPending())
-        assert.equal(this.promisedValue, 'promisedValue')
+        assert.isFalse(@debounced.isWaiting())
+        assert.isFalse(@debounced.isPending())
+        assert.equal(@promisedValue, 'promisedValue')
 
     it "set promised callback delayed - promise has rejected", () ->
-      promise = this.debounced.exec(this.promisedHandler, false, 'promisedValue')
-      this.debounced.flush();
-      this.firstPromiseReject('error');
+      promise = @debounced.exec(@promisedHandler, false, 'promisedValue')
+      @debounced.flush();
+      @firstPromiseReject('error');
 
       promise.catch (err) =>
-        assert.isFalse(this.debounced.isWaiting())
-        assert.isFalse(this.debounced.isPending())
-        assert.isUndefined(this.promisedValue)
+        assert.isFalse(@debounced.isWaiting())
+        assert.isFalse(@debounced.isPending())
+        assert.isUndefined(@promisedValue)
         assert.equal(err, 'error')
 
 
   describe 'Collisions with delay.', ->
     beforeEach () ->
-      this.firstHandler = sinon.spy()
-      this.secondHandler = sinon.spy()
+      @firstHandler = sinon.spy()
+      @secondHandler = sinon.spy()
 
     it "set simple callback not force while current is delayed - the first will be canceled", () ->
-      this.debounced.exec(this.firstHandler, false)
-      this.debounced.exec(this.secondHandler, false)
-      this.debounced.flush();
+      @debounced.exec(@firstHandler, false)
+      @debounced.exec(@secondHandler, false)
+      @debounced.flush();
 
-      expect(this.firstHandler).to.have.not.been.called
-      expect(this.secondHandler).to.have.been.calledOnce
+      expect(@firstHandler).to.have.not.been.called
+      expect(@secondHandler).to.have.been.calledOnce
 
     it "set simple callback force while current is delayed - the first will be canceled", () ->
-      this.debounced.exec(this.firstHandler, false)
-      this.debounced.exec(this.secondHandler, true)
+      @debounced.exec(@firstHandler, false)
+      @debounced.exec(@secondHandler, true)
 
-      expect(this.firstHandler).to.have.not.been.called
-      expect(this.secondHandler).to.have.been.calledOnce
+      expect(@firstHandler).to.have.not.been.called
+      expect(@secondHandler).to.have.been.calledOnce
 
     it "set both simple callbacks force - all of them have to run", () ->
-      this.debounced.exec(this.firstHandler, true)
-      this.debounced.exec(this.secondHandler, true)
+      @debounced.exec(@firstHandler, true)
+      @debounced.exec(@secondHandler, true)
 
-      expect(this.firstHandler).to.have.been.calledOnce
-      expect(this.secondHandler).to.have.been.calledOnce
+      expect(@firstHandler).to.have.been.calledOnce
+      expect(@secondHandler).to.have.been.calledOnce
 
   describe 'Collisions with promise pending.', ->
     beforeEach () ->
-      this.promisedHandler = () =>
+      @promisedHandler = () =>
         return new Promise (resolve, reject) =>
-          this.firstPromiseResolve = resolve
-          this.firstPromiseReject = reject
-      this.secondHandler = sinon.spy()
+          @firstPromiseResolve = resolve
+          @firstPromiseReject = reject
+      @secondHandler = sinon.spy()
 
     it "set promised callback while current is pending - they run in order", () ->
-      promise1 = this.debounced.exec(this.promisedHandler, false)
-      this.debounced.flush();
+      promise1 = @debounced.exec(@promisedHandler, false)
+      @debounced.flush();
 
-      assert.isFalse(this.debounced.isWaiting())
-      assert.isTrue(this.debounced.isPending())
+      assert.isFalse(@debounced.isWaiting())
+      assert.isTrue(@debounced.isPending())
 
-      this.debounced.exec(this.secondHandler, false)
+      @debounced.exec(@secondHandler, false)
       # the second one is in queue
-      assert.deepEqual(this.debounced._queuedProcess.cb, this.secondHandler)
+      assert.deepEqual(@debounced._queuedProcess.cb, @secondHandler)
 
-      this.firstPromiseResolve()
+      @firstPromiseResolve()
 
-      expect(this.secondHandler).to.have.not.been.called
+      expect(@secondHandler).to.have.not.been.called
 
       promise1.then =>
-        expect(this.secondHandler).to.have.been.calledOnce
+        expect(@secondHandler).to.have.been.calledOnce
 
   describe 'cancel.', ->
     beforeEach () ->
-      this.promisedHandler = () =>
+      @promisedHandler = () =>
         return new Promise (resolve, reject) =>
-          this.firstPromiseResolve = resolve
-          this.firstPromiseReject = reject
+          @firstPromiseResolve = resolve
+          @firstPromiseReject = reject
 
     it "cancel delayed", () ->
       firstHandler = sinon.spy()
-      this.debounced.exec(firstHandler, false)
-      assert.isTrue(this.debounced.isWaiting())
-      this.debounced.cancel()
-      assert.isFalse(this.debounced.isWaiting())
+      @debounced.exec(firstHandler, false)
+      assert.isTrue(@debounced.isWaiting())
+      @debounced.cancel()
+      assert.isFalse(@debounced.isWaiting())
 
       expect(firstHandler).to.have.not.been.called
 
     it "cancel promise in progress", () ->
       secondHandler = sinon.spy()
-      this.debounced.exec(this.promisedHandler, false)
-      this.debounced.flush();
-      this.debounced.exec(secondHandler, false)
+      @debounced.exec(@promisedHandler, false)
+      @debounced.flush();
+      @debounced.exec(secondHandler, false)
 
-      assert.isTrue(this.debounced.isPending())
+      assert.isTrue(@debounced.isPending())
 
-      this.debounced.cancel()
+      @debounced.cancel()
 
-      assert.isFalse(this.debounced.isPending())
+      assert.isFalse(@debounced.isPending())
 
-      assert.isNull(this.debounced._queuedProcess)
+      assert.isNull(@debounced._queuedProcess)
       expect(secondHandler).to.have.not.been.called
