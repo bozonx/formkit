@@ -29,8 +29,8 @@ module.exports = class DebouncedProcess {
     // TODO: review
     this._canceled = false;
     this._onFinishCb = null;
-
-    this._debouncedCb = null;
+    // timeout to start
+    this._timeout = null;
   }
 
   getPromise() {
@@ -59,7 +59,10 @@ module.exports = class DebouncedProcess {
   }
 
   flush() {
-    if (this._debouncedCb) this._debouncedCb.flush();
+    if (!this._timeout) return;
+
+    clearTimeout(this._timeout);
+    this._start();
   }
 
   /**
@@ -67,7 +70,7 @@ module.exports = class DebouncedProcess {
    * It doesn't cancel callback promise if it in pending state.
    */
   stop() {
-    if (this._debouncedCb) this._debouncedCb.cancel();
+    if (this._timeout) clearTimeout(this._timeout);
     this._waiting = false;
   }
 
@@ -86,20 +89,19 @@ module.exports = class DebouncedProcess {
     if (delayTime && delayTime > timeMeansForce) {
       // means regular with debounce
       // use _.debounce as a setTimeout because it can flush()
-      this._debouncedCb = _.debounce(() => {
-        this._waiting = false;
+      this._timeout = setTimeout(() => {
         this._start();
       }, delayTime);
     }
     else {
       // means force
-      this._waiting = false;
       this._start();
     }
   }
 
   _start() {
     this._pending = true;
+    this._waiting = false;
 
     const cbResult = this._callback.cb(...this._callback.params);
 
