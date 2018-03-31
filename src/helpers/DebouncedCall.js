@@ -5,22 +5,13 @@ const DebouncedProcess = require('./DebouncedProcess');
 
 /**
  * It allows run callback with delay and debounce.
- * * If callback returns a promise
- *   * running of callback will be delayed for a specified time
- *   * "delayed" will be true until callback starts
- *   * "pending" will be true after callback starts until it ends
- *   * If you try to call another callback while current callback is waiting for running or in progress,
- *     it will delay it and call it after current callback has fulfilled.
- *   * After promise has fulfiled, the "pending" prop will be false.
- * * If callback returns an undefined:
- *   * running of callback will be delayed for a specified time
- *   * "delayed" will be true until callback starts
- *   * If you try to call another callback while current callback is waiting for running,
- *     it will delay it and call it after current callback has fulfilled.
- * * if you add one another callback while current callback is waitng or in progress,
- *   it will replace that callback which is in queue.
+ * * running of callback will be delayed for a specified time
+ * * If you try to add another callback while current callback is waiting
+ *   it replaces current callback.
+ * * if you add one another callback while current callback is in progress,
+ *   it will call it after current has fulfilled.
  * * also you can force run callback and it runs immediately
- *   and reset currently delayed or executed callback
+ *   and reset currently delayed callback
  */
 module.exports = class DebouncedCall {
   constructor(delayTime) {
