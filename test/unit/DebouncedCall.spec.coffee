@@ -17,12 +17,43 @@ describe 'Unit. DebouncedCall.', ->
         .then =>
           assert.isNull(@debounced._currentProcess)
           assert.isNull(@debounced._nextCbWaitPromise)
-
           sinon.assert.calledOnce(@promisedCb)
           sinon.assert.calledWith(@promisedCb, 'cbParam')
 
-    it "there is waiting cb before run", ->
+    it "there is waiting cb before run - it replaces current cb", ->
+      currentCb = sinon.stub().returns(Promise.resolve())
+      @debounced.exec(currentCb, false)
+      promise = @debounced.exec(@promisedCb, true)
 
+      assert.isFalse(@debounced.isWaiting())
+      assert.isTrue(@debounced.isPending())
+
+      promise
+        .then =>
+          assert.isNull(@debounced._currentProcess)
+          assert.isNull(@debounced._nextCbWaitPromise)
+          sinon.assert.notCalled(currentCb)
+          sinon.assert.calledOnce(@promisedCb)
+
+    it "there is pending cb before run - it moves to queue and will start as soon as current cb has finished", ->
+      currentCb = sinon.stub().returns(Promise.resolve())
+      @debounced.exec(currentCb, true)
+
+      @debounced.flush()
+
+      promise = @debounced.exec(@promisedCb, true)
+
+      assert.isFalse(@debounced.isWaiting())
+      assert.isTrue(@debounced.isPending())
+
+      @debounced.flush()
+
+      promise
+        .then =>
+          #assert.isNull(@debounced._currentProcess)
+          #assert.isNull(@debounced._nextCbWaitPromise)
+          sinon.assert.calledOnce(currentCb)
+          sinon.assert.calledOnce(@promisedCb)
 
   describe.only 'with debounce', ->
     it "there isn't pending or waiting cb before run", ->
@@ -40,11 +71,29 @@ describe 'Unit. DebouncedCall.', ->
         .then =>
           assert.isNull(@debounced._currentProcess)
           assert.isNull(@debounced._nextCbWaitPromise)
-
           sinon.assert.calledOnce(@promisedCb)
           sinon.assert.calledWith(@promisedCb, 'cbParam')
 
-    it "there is waiting cb before run", ->
+    it "there is waiting cb before run - it replaces current cb", ->
+      currentCb = sinon.stub().returns(Promise.resolve())
+      @debounced.exec(currentCb, false)
+      promise = @debounced.exec(@promisedCb, false)
+
+      assert.isTrue(@debounced.isWaiting())
+      assert.isFalse(@debounced.isPending())
+
+      @debounced.flush()
+
+      assert.isFalse(@debounced.isWaiting())
+      assert.isTrue(@debounced.isPending())
+
+      promise
+        .then =>
+          assert.isNull(@debounced._currentProcess)
+          assert.isNull(@debounced._nextCbWaitPromise)
+
+          sinon.assert.notCalled(currentCb)
+          sinon.assert.calledOnce(@promisedCb)
 
 
 

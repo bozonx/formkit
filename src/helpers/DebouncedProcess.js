@@ -87,8 +87,7 @@ module.exports = class DebouncedProcess {
     this._waiting = true;
     const timeMeansForce = 0;
     if (delayTime && delayTime > timeMeansForce) {
-      // means regular with debounce
-      // use _.debounce as a setTimeout because it can flush()
+      // means regular with waiting to start
       this._timeout = setTimeout(() => {
         this._start();
       }, delayTime);

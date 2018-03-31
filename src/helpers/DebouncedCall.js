@@ -99,20 +99,11 @@ module.exports = class DebouncedCall {
    * @param {function} cb - your callback which will be executed
    * @param {boolean} force - if true - cancel current callback and run immediately
    * @param {array} params - params of callback
-   * @return {Promise} - It will be fulfilled at the end after waiting and executing
+   * @return {Promise} - promise of end of save cycle.
+   *                     It will be fulfilled event a new one replaces current promise.
    */
   exec(cb, force = false, ...params) {
-    this._chooseTheWay(cb, params, force);
-
-    // TODO: ??? какой промис возвращаем, если колбэк может поставиться в очередь???
-
-    if (this._currentProcess) {
-      return this._currentProcess.getPromise();
-    }
-    else {
-      // if cb has executed immediately
-      return Promise.resolve();
-    }
+    return this._chooseTheWay(cb, params, force);
   }
 
   _clearQueue() {
@@ -181,8 +172,9 @@ module.exports = class DebouncedCall {
   }
 
   _addToQueueForce(cb, params) {
+    // stop waiting for starting next cb
     if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
-
+    // add new promise to queue
     this._nextCbWaitPromise = BbPromise.resolve({ cb, params });
   }
 
