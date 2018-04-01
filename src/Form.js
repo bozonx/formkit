@@ -3,12 +3,14 @@ const Storage = require('./Storage');
 const FormStorage = require('./FormStorage');
 const FieldStorage = require('./FieldStorage');
 const Field = require('./Field');
+const DebouncedCall = require('./helpers/DebouncedCall');
 const { findFieldRecursively, findRecursively, isPromise, isFieldSchema } = require('./helpers/helpers');
 
 
 module.exports = class Form {
   constructor(config) {
     this._config = config;
+    this._debouncedCall = new DebouncedCall(this._config.debounceTime);
     this._storage = new Storage();
     this._formStorage = new FormStorage(this._storage);
     this._fieldStorage = new FieldStorage(this._storage);
@@ -17,11 +19,13 @@ module.exports = class Form {
     this._handlers = {
       onChange: undefined,
       onSubmit: undefined,
+      onSave: undefined,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
     this.clear = this.clear.bind(this);
     this.reset = this.reset.bind(this);
+    this._doSave = this._doSave.bind(this);
   }
 
   get fields() {
@@ -55,9 +59,7 @@ module.exports = class Form {
    * Returns true if one or more fields are saving.
    */
   get saving() {
-    return Boolean(findFieldRecursively(this.fields, (field) => {
-      return field.saving;
-    }));
+    return this._formStorage.getState('saving');
   }
 
   get submitting() {
@@ -70,6 +72,10 @@ module.exports = class Form {
    */
   get submittable() {
     return !this.canSubmit();
+  }
+
+  get savable() {
+    return !this.canSave();
   }
 
   get valid() {
@@ -88,6 +94,9 @@ module.exports = class Form {
     return this._formStorage.getInvalidMessages();
   }
 
+  // get debounceTime() {
+  //   return this._debouncedCall.delay;
+  // }
 
   /**
    * It calls from outer app's code to init form.
@@ -154,6 +163,10 @@ module.exports = class Form {
     this._handlers.onSubmit = handler;
   }
 
+  onSave(handler) {
+    this._handlers.onSave = handler;
+  }
+
   /**
    * Clear storage and remove all the event handlers
    */
@@ -181,6 +194,29 @@ module.exports = class Form {
       if (!this.dirty) return `The form hasn't changed.`;
     }
   }
+
+
+  /**
+   * Check for field can be saved.
+   * @return {string|undefined} - undefined means it can. Otherwise it returns a reason.
+   */
+  canSave() {
+
+    // TODO: do it
+
+    // // don't save invalid value
+    // if (!this.valid) return 'Field is invalid';
+    //
+    // // save only value which was modified.
+    // if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) {
+    //   return `Value hasn't modified`;
+    // }
+  }
+
+  // setDebounceTime(delay) {
+  //   if (!_.isNumber(delay)) throw new Error(`Bad type of debounceTime value`);
+  //   this._debouncedCall.setDebounceTime(delay);
+  // }
 
   /**
    * It can be placed as a handler of <form> element on onSubmit attribute.
@@ -236,6 +272,20 @@ module.exports = class Form {
    */
   cancelSubmitting() {
     // TODO: add and test
+  }
+
+  /**
+   * Cancel debounce waiting for saving
+   */
+  cancelSaving() {
+    this._debouncedCall.cancel();
+  }
+
+  /**
+   * Saving immediately
+   */
+  flushSaving() {
+    this._debouncedCall.flush();
   }
 
   /**
@@ -355,14 +405,67 @@ module.exports = class Form {
     this._formStorage.setStateSilent(partlyState);
   }
 
-  $callHandler(handlerName, data) {
-    const handler = this._handlers[handlerName];
+  $handleFieldChange(eventData) {
+    this._handlers.onChange(eventData);
 
-    if (handler) handler(data);
+    // don't run saving process if there isn't onSave callback
+    if (!this._handlers.onSave) return;
+
+    const isImmediately = false;
+
+    this._debouncedCall.exec(this._doSave, isImmediately)
+      .then((result) => {
+        this._afterSaveEnd(result);
+      })
+      .catch((error) => {
+        this._afterSaveEnd({ error });
+      });
   }
 
   $emit(eventName, data) {
     this._formStorage.emit(eventName, data);
+  }
+
+  _doSave() {
+    // run save callback
+    const cbResult = this._handlers.onSave(this.values);
+
+    if (isPromise(cbResult)) {
+      this._setState({ saving: true });
+      // emit save start
+      this.$emit('saveStart');
+
+      return cbResult
+        .then((result) => {
+          this._setState({ saving: false });
+
+          return result;
+        })
+        .catch((error) => {
+          this._setState({ saving: false });
+
+          return Promise.reject(error);
+        });
+    }
+
+    // else if save callback hasn't returned a promise
+    this.$setStateSilent({ saving: true });
+    // emit save start
+    this.$emit('saveStart');
+    this.$setStateSilent({ saving: false });
+
+    return Promise.resolve();
+  }
+
+  _afterSaveEnd(result) {
+    this.$emit('saveEnd', {
+      result,
+      isSuccess: !(result && result.error),
+    });
+
+    // TODO: сделать как в _afterSubmitSuccess
+
+    //this.$setValueAfterSave(valueWhichSaved);
   }
 
   _runSubmitHandler(values, editedValues) {
