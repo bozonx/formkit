@@ -18,7 +18,8 @@ module.exports = class DebouncedCall {
     this.setDebounceTime(delayTime);
     // current callback which is waiting or in progress
     this._currentProcess = null;
-    this._nextCbWaitPromise = null;
+    //this._nextCbWaitPromise = null;
+    this._nextCb = null;
     // promise of end of saving process
     this._mainPromise = null;
     this._mainResolve = null;
@@ -110,7 +111,8 @@ module.exports = class DebouncedCall {
   }
 
   _clearQueue() {
-    this._nextCbWaitPromise = null;
+    //this._nextCbWaitPromise = null;
+    this._nextCb = null;
   }
 
   _stopDelayed() {
@@ -161,41 +163,56 @@ module.exports = class DebouncedCall {
   }
 
   _addToQueueRegular(cb, params) {
-    if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
+    this._nextCb = [ cb, params, this._delayTime ];
 
-    this._nextCbWaitPromise = new BbPromise((resolve, reject, onCancel) => {
-      const queueTimeout = setTimeout(() => {
-        resolve({ cb, params });
-      }, this._delayTime);
 
-      onCancel(() => {
-        clearTimeout(queueTimeout);
-      });
-    });
+    // if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
+    //
+    // this._nextCbWaitPromise = new BbPromise((resolve, reject, onCancel) => {
+    //   const queueTimeout = setTimeout(() => {
+    //     resolve({ cb, params });
+    //   }, this._delayTime);
+    //
+    //   onCancel(() => {
+    //     clearTimeout(queueTimeout);
+    //   });
+    // });
   }
 
   _addToQueueForce(cb, params) {
-    // stop waiting for starting next cb
-    if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
-    // add new promise to queue
-    this._nextCbWaitPromise = BbPromise.resolve({ cb, params });
+    this._nextCb = [ cb, params ];
+
+    // // stop waiting for starting next cb
+    // if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
+    // // add new promise to queue
+    // this._nextCbWaitPromise = BbPromise.resolve({ cb, params });
   }
 
   _afterCbFinished() {
-    if (this._nextCbWaitPromise) {
-      // run queue
-      this._nextCbWaitPromise
-        // run next process as new one with force
-        .then(({ cb, params }) => this._runFreshProcess(cb, params));
-
-      return;
+    if (this._nextCb) {
+      const cbParams = this._nextCb;
+      this._nextCb = null;
+      this._currentProcess = null;
+      this._runFreshProcess(...cbParams);
+    }
+    else {
+      // if there isn't any queue - just finish and go to beginning
+      this._currentProcess = null;
+      this._mainResolve();
+      this._mainPromise = null;
+      this._mainResolve = null;
     }
 
-    // if there isn't any queue - just finish and go to beginning
-    this._mainResolve();
-    this._currentProcess = null;
-    this._mainPromise = null;
-    this._mainResolve = null;
+    // if (this._nextCbWaitPromise) {
+    //   // run queue
+    //   this._nextCbWaitPromise
+    //     // run next process as new one with force
+    //     .then(({ cb, params }) => this._runFreshProcess(cb, params));
+    //
+    //   return;
+    // }
+
+
   }
 
 };

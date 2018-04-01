@@ -108,7 +108,7 @@ module.exports = class Field {
    * It doesn't:
    * * It doesn't rise onChange callback (for user's events).
    * * It doesn't update "touched" state.
-   * @param newValue
+   * @param {*} rawValue - new value to set
    */
   setValue(rawValue) {
     this._updateStateAndValidate(() => {
@@ -119,7 +119,7 @@ module.exports = class Field {
 
   /**
    * Set previously saved value. Usually it sets after server data has loading.
-   * @param {*} newSavedValue
+   * @param {*} rawValue - new value to set
    */
   setSavedValue(rawValue) {
     this._updateStateAndValidate(() => {

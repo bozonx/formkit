@@ -16,7 +16,7 @@ describe 'Unit. DebouncedCall.', ->
       promise
         .then =>
           assert.isNull(@debounced._currentProcess)
-          assert.isNull(@debounced._nextCbWaitPromise)
+          assert.isNull(@debounced._nextCb)
           sinon.assert.calledOnce(@promisedCb)
           sinon.assert.calledWith(@promisedCb, 'cbParam')
 
@@ -31,7 +31,7 @@ describe 'Unit. DebouncedCall.', ->
       promise
         .then =>
           assert.isNull(@debounced._currentProcess)
-          assert.isNull(@debounced._nextCbWaitPromise)
+          assert.isNull(@debounced._nextCb)
           sinon.assert.notCalled(currentCb)
           sinon.assert.calledOnce(@promisedCb)
 
@@ -51,7 +51,7 @@ describe 'Unit. DebouncedCall.', ->
       promise
         .then =>
           assert.isNull(@debounced._currentProcess)
-          assert.isNull(@debounced._nextCbWaitPromise)
+          assert.isNull(@debounced._nextCb)
           sinon.assert.calledOnce(currentCb)
           sinon.assert.calledOnce(@promisedCb)
 
@@ -72,7 +72,7 @@ describe 'Unit. DebouncedCall.', ->
       promise
         .then =>
           assert.isNull(@debounced._currentProcess)
-          assert.isNull(@debounced._nextCbWaitPromise)
+          assert.isNull(@debounced._nextCb)
           sinon.assert.calledOnce(@promisedCb)
           sinon.assert.calledWith(@promisedCb, 'cbParam')
 
@@ -92,29 +92,39 @@ describe 'Unit. DebouncedCall.', ->
       promise
         .then =>
           assert.isNull(@debounced._currentProcess)
-          assert.isNull(@debounced._nextCbWaitPromise)
+          assert.isNull(@debounced._nextCb)
 
           sinon.assert.notCalled(currentCb)
           sinon.assert.calledOnce(@promisedCb)
 
     it "there is pending cb before run - cb moves to queue and wait for call", ->
-      currentCb = sinon.stub().returns(Promise.resolve())
-      promise = @debounced.exec(currentCb, true)
+      firstPromise = Promise.resolve()
+      currentCb = sinon.stub().returns(firstPromise)
+      # add first cb
+      promise = @debounced.exec(currentCb, false)
 
-      # make current cb pending
+      # first cb is waiting
       @debounced.flush()
+      # first cb is pending
 
-      # add to queue
+      # add second cb. It has to be added to queue
       @debounced.exec(@promisedCb, false)
+      # first cb is pending and new cb in queue
 
-      # at the moment current cb is pending and new cb in queue
+      assert.isArray(@debounced._nextCb)
 
-      promise
+      firstPromise
         .then =>
-          assert.isNull(@debounced._currentProcess)
-          assert.isNull(@debounced._nextCbWaitPromise)
-          sinon.assert.calledOnce(currentCb)
-          sinon.assert.calledOnce(@promisedCb)
+          assert.isNull(@debounced._nextCb)
+          assert.isFalse(@debounced.isWaiting())
+          assert.isTrue(@debounced.isPending())
+
+          promise
+            .then =>
+              assert.isNull(@debounced._currentProcess)
+              assert.isNull(@debounced._nextCb)
+              sinon.assert.calledOnce(currentCb)
+              sinon.assert.calledOnce(@promisedCb)
 
     # TODO: replace queue
 
