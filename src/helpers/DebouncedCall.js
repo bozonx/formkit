@@ -61,16 +61,11 @@ module.exports = class DebouncedCall {
    * Cancel:
    * * callback which waiting
    * * cancel call callback which is next
-   * * cancel callback which is executing
+   * It doesn't cancel currently executing callback
    */
   cancel() {
     this._clearQueue();
     this._stopDelayed();
-
-    // TODO: нужно ли отменять выполняющийся колбэк?
-    //if (this._currentProcess) this._currentProcess.cancel();
-
-    this._currentProcess = null;
   }
 
   /**

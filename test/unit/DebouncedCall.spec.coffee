@@ -165,36 +165,32 @@ describe 'Unit. DebouncedCall.', ->
               sinon.assert.notCalled(queuedCb)
               sinon.assert.calledOnce(@promisedCb)
 
-  # TODO: test cancel
+  describe 'cancel.', ->
+    it "cancel delayed", () ->
+      @debounced.exec(@promisedCb, false)
 
+      assert.isTrue(@debounced.isWaiting())
 
-#  describe 'cancel.', ->
-#    beforeEach () ->
-#      @promisedHandler = () =>
-#        return new Promise (resolve, reject) =>
-#          @firstPromiseResolve = resolve
-#          @firstPromiseReject = reject
-#
-#    it "cancel delayed", () ->
-#      firstHandler = sinon.spy()
-#      @debounced.exec(firstHandler, false)
-#      assert.isTrue(@debounced.isWaiting())
-#      @debounced.cancel()
-#      assert.isFalse(@debounced.isWaiting())
-#
-#      expect(firstHandler).to.have.not.been.called
-#
-#    it "cancel promise in progress", () ->
-#      secondHandler = sinon.spy()
-#      @debounced.exec(@promisedHandler, false)
-#      @debounced.flush();
-#      @debounced.exec(secondHandler, false)
-#
-#      assert.isTrue(@debounced.isPending())
-#
-#      @debounced.cancel()
-#
-#      assert.isFalse(@debounced.isPending())
-#
-#      assert.isNull(@debounced._queuedProcess)
-#      expect(secondHandler).to.have.not.been.called
+      @debounced.cancel()
+
+      assert.isFalse(@debounced.isWaiting())
+      assert.isNull(@debounced._currentProcess)
+      sinon.assert.notCalled(@promisedCb)
+
+    it "cancel promise in progress - it don't cancel it but clears the queue", () ->
+      currentCb = sinon.stub().returns(Promise.resolve())
+      queuedCb = sinon.stub().returns(Promise.resolve())
+
+      promise = @debounced.exec(currentCb, true)
+      @debounced.exec(queuedCb, false)
+
+      assert.isArray(@debounced._nextCb)
+
+      @debounced.cancel()
+
+      assert.isNull(@debounced._nextCb)
+      assert.isNull(@debounced._currentProcess)
+
+      promise
+        .then =>
+           sinon.assert.calledOnce(currentCb)
