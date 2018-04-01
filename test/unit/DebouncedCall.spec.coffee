@@ -39,14 +39,14 @@ describe 'Unit. DebouncedCall.', ->
       currentCb = sinon.stub().returns(Promise.resolve())
       promise = @debounced.exec(currentCb, true)
 
-      @debounced.flush()
+      #@debounced.flush()
 
       @debounced.exec(@promisedCb, true)
 
       assert.isFalse(@debounced.isWaiting())
       assert.isTrue(@debounced.isPending())
 
-      @debounced.flush()
+      #@debounced.flush()
 
       promise
         .then =>
@@ -55,7 +55,19 @@ describe 'Unit. DebouncedCall.', ->
           sinon.assert.calledOnce(currentCb)
           sinon.assert.calledOnce(@promisedCb)
 
-    # TODO: replace queue
+    it "replace cb in queue", ->
+      currentCb = sinon.stub().returns(Promise.resolve())
+      queuedCb = sinon.stub().returns(Promise.resolve())
+
+      promise = @debounced.exec(currentCb, true)
+      @debounced.exec(queuedCb, true)
+      @debounced.exec(@promisedCb, true)
+
+      promise
+        .then =>
+          sinon.assert.calledOnce(currentCb)
+          sinon.assert.notCalled(queuedCb)
+          sinon.assert.calledOnce(@promisedCb)
 
   describe 'with debounce', ->
     it "there isn't pending or waiting cb before run", ->
@@ -133,10 +145,23 @@ describe 'Unit. DebouncedCall.', ->
               sinon.assert.calledOnce(currentCb)
               sinon.assert.calledOnce(@promisedCb)
 
-    # TODO: replace queue
+    it "replace cb in queue", ->
+      currentCb = sinon.stub().returns(Promise.resolve())
+      queuedCb = sinon.stub().returns(Promise.resolve())
+
+      promise = @debounced.exec(currentCb, false)
+      @debounced.flush()
+      @debounced.exec(queuedCb, false)
+      @debounced.exec(@promisedCb, false)
+      @debounced.flush()
+
+      promise
+        .then =>
+          sinon.assert.calledOnce(currentCb)
+          sinon.assert.notCalled(queuedCb)
+          sinon.assert.calledOnce(@promisedCb)
 
   # TODO: test cancel
-  # TODO: test stop
 
 
 #  describe 'cancel.', ->
