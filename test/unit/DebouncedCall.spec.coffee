@@ -146,20 +146,24 @@ describe 'Unit. DebouncedCall.', ->
               sinon.assert.calledOnce(@promisedCb)
 
     it "replace cb in queue", ->
-      currentCb = sinon.stub().returns(Promise.resolve())
+      firstPromise = Promise.resolve()
+      currentCb = sinon.stub().returns(firstPromise)
       queuedCb = sinon.stub().returns(Promise.resolve())
 
       promise = @debounced.exec(currentCb, false)
       @debounced.flush()
       @debounced.exec(queuedCb, false)
       @debounced.exec(@promisedCb, false)
-      @debounced.flush()
 
-      promise
+      firstPromise
         .then =>
-          sinon.assert.calledOnce(currentCb)
-          sinon.assert.notCalled(queuedCb)
-          sinon.assert.calledOnce(@promisedCb)
+          @debounced.flush()
+
+          promise
+            .then =>
+              sinon.assert.calledOnce(currentCb)
+              sinon.assert.notCalled(queuedCb)
+              sinon.assert.calledOnce(@promisedCb)
 
   # TODO: test cancel
 
