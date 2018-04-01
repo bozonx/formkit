@@ -116,6 +116,11 @@ describe 'Unit. DebouncedCall.', ->
       firstPromise
         .then =>
           assert.isNull(@debounced._nextCb)
+          assert.isTrue(@debounced.isWaiting())
+          assert.isFalse(@debounced.isPending())
+
+          @debounced.flush()
+
           assert.isFalse(@debounced.isWaiting())
           assert.isTrue(@debounced.isPending())
 
@@ -123,6 +128,8 @@ describe 'Unit. DebouncedCall.', ->
             .then =>
               assert.isNull(@debounced._currentProcess)
               assert.isNull(@debounced._nextCb)
+              assert.isFalse(@debounced.isWaiting())
+              assert.isFalse(@debounced.isPending())
               sinon.assert.calledOnce(currentCb)
               sinon.assert.calledOnce(@promisedCb)
 

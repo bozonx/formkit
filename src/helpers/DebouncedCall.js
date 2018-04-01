@@ -1,5 +1,4 @@
 const _ = require('lodash');
-const BbPromise = require('bluebird');
 const DebouncedProcess = require('./DebouncedProcess');
 
 
@@ -9,16 +8,15 @@ const DebouncedProcess = require('./DebouncedProcess');
  * * If you try to add another callback while current callback is waiting
  *   it replaces current callback.
  * * if you add one another callback while current callback is in progress,
- *   it will call it after current has fulfilled.
+ *   this new callback will be called after current has fulfilled.
  * * also you can force run callback and it runs immediately
- *   and reset currently delayed callback
+ *   and resets currently delayed callback
  */
 module.exports = class DebouncedCall {
   constructor(delayTime) {
     this.setDebounceTime(delayTime);
     // current callback which is waiting or in progress
     this._currentProcess = null;
-    //this._nextCbWaitPromise = null;
     this._nextCb = null;
     // promise of end of saving process
     this._mainPromise = null;
@@ -84,13 +82,7 @@ module.exports = class DebouncedCall {
 
   /**
    * Add callback to execution.
-   * if force = false
-   * * if there isn't executing or waiting callback - it start to wait to execute this callback
-   * * if there is executing or waiitng callback - it add this to queue.
-   * if force = true
-   * * if there isn't executing or waiting callback - it runs this callback immediately
-   * * if there is executing or waiitng callback - it cancels waiting or executing callback
-   *   and run this immediately
+   * It starts after delay or immediately if force or after current executing callback.
    * @param {function} cb - your callback which will be executed
    * @param {boolean} force - if true - cancel current callback and run immediately
    * @param {array} params - params of callback
@@ -111,7 +103,6 @@ module.exports = class DebouncedCall {
   }
 
   _clearQueue() {
-    //this._nextCbWaitPromise = null;
     this._nextCb = null;
   }
 
@@ -130,7 +121,7 @@ module.exports = class DebouncedCall {
         this._runFreshProcess(cb, params);
       }
       else if (this.isPending()) {
-        this._addToQueueForce(cb, params);
+        this._addToQueue(cb, params);
       }
       else {
         throw new Error(`Something wrong`);
@@ -143,7 +134,7 @@ module.exports = class DebouncedCall {
         this._runFreshProcess(cb, params, this._delayTime);
       }
       else if (this.isPending()) {
-        this._addToQueueRegular(cb, params);
+        this._addToQueue(cb, params, this._delayTime);
       }
       else {
         throw new Error(`Something wrong`);
@@ -162,30 +153,8 @@ module.exports = class DebouncedCall {
     this._currentProcess.start(delayTime);
   }
 
-  _addToQueueRegular(cb, params) {
-    this._nextCb = [ cb, params, this._delayTime ];
-
-
-    // if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
-    //
-    // this._nextCbWaitPromise = new BbPromise((resolve, reject, onCancel) => {
-    //   const queueTimeout = setTimeout(() => {
-    //     resolve({ cb, params });
-    //   }, this._delayTime);
-    //
-    //   onCancel(() => {
-    //     clearTimeout(queueTimeout);
-    //   });
-    // });
-  }
-
-  _addToQueueForce(cb, params) {
-    this._nextCb = [ cb, params ];
-
-    // // stop waiting for starting next cb
-    // if (this._nextCbWaitPromise) this._nextCbWaitPromise.cancel();
-    // // add new promise to queue
-    // this._nextCbWaitPromise = BbPromise.resolve({ cb, params });
+  _addToQueue(cb, params, delayTime) {
+    this._nextCb = [ cb, params, delayTime ];
   }
 
   _afterCbFinished() {
@@ -202,17 +171,6 @@ module.exports = class DebouncedCall {
       this._mainPromise = null;
       this._mainResolve = null;
     }
-
-    // if (this._nextCbWaitPromise) {
-    //   // run queue
-    //   this._nextCbWaitPromise
-    //     // run next process as new one with force
-    //     .then(({ cb, params }) => this._runFreshProcess(cb, params));
-    //
-    //   return;
-    // }
-
-
   }
 
 };
