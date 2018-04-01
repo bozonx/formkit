@@ -141,10 +141,9 @@ module.exports = class DebouncedCall {
     this._clearQueue();
     this._stopDelayed();
 
-    this._currentProcess = new DebouncedProcess();
+    this._currentProcess = new DebouncedProcess(cb, params);
     // after current promise was finished - run next cb in queue
     this._currentProcess.onFinish(() => this._afterCbFinished());
-    this._currentProcess.setCallback(cb, params);
     this._currentProcess.start(delayTime);
   }
 

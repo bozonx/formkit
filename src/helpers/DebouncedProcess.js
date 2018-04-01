@@ -14,14 +14,12 @@ const { isPromise } = require('./helpers');
  * But if it pending you can't cancel it.
  */
 module.exports = class DebouncedProcess {
-  constructor() {
-    this._callback = null;
+  constructor(cb, params) {
+    this._callback = { cb, params };
     // has it started at least once
     this._hasStarted = false;
     this._pending = false;
     this._waiting = false;
-    // TODO: review
-    this._canceled = false;
     this._onFinishCb = null;
     // timeout to start
     this._timeout = null;
@@ -32,12 +30,6 @@ module.exports = class DebouncedProcess {
    */
   onFinish(cb) {
     this._onFinishCb = cb;
-  }
-
-  // TODO: не нужно - перенести в конструктор
-  setCallback(cb, params) {
-    if (this._hasStarted) throw new Error(`The current callback is in progress, you can't set another one.`);
-    this._callback = { cb, params };
   }
 
   isWaiting() {
