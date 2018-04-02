@@ -23,6 +23,10 @@ module.exports = class DebouncedCall {
     this._mainResolve = null;
   }
 
+  getPromise() {
+    return this._mainPromise;
+  }
+
   /**
    * Delayed means - callback is waiting for run.
    * It is true until delayed time is up and callback will run.

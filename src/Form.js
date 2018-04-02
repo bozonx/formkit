@@ -407,7 +407,7 @@ module.exports = class Form {
 
   $handleFieldChange(eventData) {
     // call onChange handler
-    if (this._handlers) this._handlers.onChange(eventData);
+    if (this._handlers.onChange) this._handlers.onChange(eventData);
     // run form's change event
     this.$emit('change', eventData);
 
@@ -462,10 +462,7 @@ module.exports = class Form {
   }
 
   _afterSaveEnd(result) {
-    this.$emit('saveEnd', {
-      result,
-      isSuccess: !(result && result.error),
-    });
+    this.$emit('saveEnd', result);
 
     // TODO: сделать как в _afterSubmitSuccess
 
