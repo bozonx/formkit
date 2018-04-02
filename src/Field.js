@@ -150,11 +150,6 @@ module.exports = class Field {
 
     // rise change by user event handlers and callbacks of form and field
     this._riseUserChangeEvent(this._pathToField, oldValue, newValue);
-    // start save with debounced delay
-
-    // TODO: !!!!
-
-    //this._addSavingToQueue(false);
   }
 
   /**
@@ -169,11 +164,7 @@ module.exports = class Field {
    */
   handleBlur() {
     this._setState({ focused: false });
-    // start save immediately
-
-    // TODO: call form save flush ???
-
-    //this.save();
+    this._form.flushSaving();
   }
 
   /**
@@ -184,7 +175,7 @@ module.exports = class Field {
    */
   handleEndEditing() {
     if (this.disabled) return;
-    this._form.$handleEndEditing();
+    this._form.flushSaving();
   }
 
   /**
@@ -211,14 +202,6 @@ module.exports = class Field {
   onChange(handler) {
     this._handlers.onChange = handler;
   }
-
-  // /**
-  //  * Start saving of field's value immediately.
-  //  * @return {Promise}
-  //  */
-  // save() {
-  //   return this._addSavingToQueue(true);
-  // }
 
   /**
    * Clear value(user input) and set initial value.
@@ -353,98 +336,6 @@ module.exports = class Field {
     // call forms's change handler - it rises change callback and start saving
     this._form.$handleFieldChange(eventData);
   }
-
-  // /**
-  //  * Start saving field and form if they have a corresponding handlers.
-  //  * @param {boolean} isImmediately
-  //  *   * if true it will save immediately.
-  //  *   * if false it will save with debounce delay
-  //  * @private
-  //  * @return {Promise} - promise of saving process or just resolve if field isn't savable.
-  //  */
-  // _addSavingToQueue(isImmediately) {
-  //
-  //   // TODO: проверить логику - должно либо встать в очередь либо отменить текущее сохранение
-  //   /*
-  //    * If "force" param is true it will cancel current saving process before start a new one.
-  //    * If "force" param is false it add this saving process to queue.
-  //    */
-  //
-  //   // do nothing if field isn't savable
-  //   if (!this.savable) return Promise.resolve();
-  //
-  //   // do save after debounce
-  //   return this._debouncedCall.exec(this._doSave, isImmediately);
-  // }
-
-  // /**
-  //  * Do field saving process.
-  //  * * set "saving" state to true
-  //  * * rise "saveStart" event
-  //  * * call "save" callback. If it returns a promise - wait for it
-  //  * and after saving ends:
-  //  * * set "saving" state to false
-  //  * * rise "saveEnd" event
-  //  * @return {Promise|undefined} - if "save" callback returns promise this method returns it.
-  //  * @private
-  //  */
-  // _doSave() {
-  //   // value is immutable
-  //   const valueToSave = this.value;
-  //
-  //   if (this._handlers.onSave) {
-  //     // run save callback
-  //     const cbPromise = this._handlers.onSave(valueToSave);
-  //
-  //     if (isPromise(cbPromise)) {
-  //       // set saving to true and rise storage event
-  //       this._setState({ saving: true });
-  //       this._emitSaveStart();
-  //
-  //       return cbPromise
-  //         .then((result) => {
-  //           // set saving to false and rise storage event
-  //           this._setState({ saving: false });
-  //           this._afterSaveEnd(valueToSave, result);
-  //
-  //           return result;
-  //         })
-  //         .catch((error) => {
-  //           // set saving to false and rise storage event
-  //           this._setState({ saving: false });
-  //           this._afterSaveEnd(valueToSave, { error });
-  //
-  //           return Promise.reject(error);
-  //         });
-  //     }
-  //   }
-  //
-  //   // if save callback hasn't returned a promise
-  //   // or if there isn't a save callback
-  //
-  //   this.$setStateSilent({ saving: true });
-  //   this._emitSaveStart();
-  //   this.$setStateSilent({ saving: false });
-  //   this._afterSaveEnd(valueToSave);
-  //
-  //   return Promise.resolve();
-  // }
-
-  // _emitSaveStart(data) {
-  //   this._fieldStorage.emit(this._pathToField, 'saveStart', data);
-  //   this._form.$emit('saveStart', { path: this._pathToField, data });
-  // }
-  //
-  // _afterSaveEnd(valueWhichSaved, result) {
-  //   this._fieldStorage.emit(this._pathToField, 'saveEnd', result);
-  //   this._form.$emit('saveEnd', {
-  //     path: this._pathToField,
-  //     result,
-  //     isSuccess: !(result && result.error),
-  //   });
-  //
-  //   this.$setValueAfterSave(valueWhichSaved);
-  // }
 
   _setState(partlyState) {
     this._updateState(() => {

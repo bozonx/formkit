@@ -167,6 +167,16 @@ module.exports = class Form {
     this._handlers.onSave = handler;
   }
 
+
+  // /**
+  //  * Start saving of field's value immediately.
+  //  * @return {Promise}
+  //  */
+  // save() {
+  //   return this._addSavingToQueue(true);
+  // }
+
+
   /**
    * Clear storage and remove all the event handlers
    */
@@ -400,14 +410,6 @@ module.exports = class Form {
 
   $setStateSilent(partlyState) {
     this._formStorage.setStateSilent(partlyState);
-  }
-
-  /**
-   * End editing on press enter.
-   * If onSave callback is specified - it flushes it
-   */
-  $handleEndEditing() {
-    if (this._handlers.onSave) this.flushSaving();
   }
 
   $handleFieldChange(eventData) {
