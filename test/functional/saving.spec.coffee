@@ -7,23 +7,40 @@ describe 'Functional. saving.', ->
       @form = formkit.newForm()
       @form.init([ 'name' ])
       @field = @form.fields.name
-      @saveHandler = sinon.spy();
+      @savePromise = Promise.resolve()
+      @saveHandler = sinon.stub().returns(@savePromise)
 
-    it 'save debounced after value had changed', ->
-      @field.onSave(@saveHandler)
+    it.only 'save debounced after value had changed', ->
+      saveStartHandler = sinon.spy()
+      saveEndHandler = sinon.spy()
+      @form.onSave(@saveHandler)
+      @form.on('saveStart', saveStartHandler)
+      @form.on('saveEnd', saveEndHandler)
       @field.handleChange('newValue')
 
       assert.isUndefined(@field.savedValue)
       assert.equal(@field.editedValue, 'newValue')
 
-      # reset debounce
-      @field.flushSaving()
+      sinon.assert.notCalled(saveStartHandler)
+      sinon.assert.notCalled(saveEndHandler)
 
-      assert.isFalse(@field.saving)
-      sinon.assert.calledOnce(@saveHandler)
-      sinon.assert.calledWith(@saveHandler, 'newValue')
-      assert.equal(@field.savedValue, 'newValue')
-      assert.isUndefined(@field.editedValue)
+      # reset debounce
+      @form.flushSaving()
+
+      sinon.assert.calledOnce(saveStartHandler)
+      sinon.assert.notCalled(saveEndHandler)
+      assert.isTrue(@form.saving)
+
+      @saveHandler
+        .then =>
+          sinon.assert.calledOnce(saveStartHandler)
+          sinon.assert.calledOnce(saveEndHandler)
+          assert.isFalse(@form.saving)
+          sinon.assert.calledOnce(@saveHandler)
+          sinon.assert.calledWith(@saveHandler, 'newValue')
+
+          assert.equal(@field.savedValue, 'newValue')
+          assert.isUndefined(@field.editedValue)
 
     it 'after change and pressing enter, value has to save immediately
         and only the last save callback will be called', ->

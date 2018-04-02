@@ -406,7 +406,10 @@ module.exports = class Form {
   }
 
   $handleFieldChange(eventData) {
-    this._handlers.onChange(eventData);
+    // call onChange handler
+    if (this._handlers) this._handlers.onChange(eventData);
+    // run form's change event
+    this.$emit('change', eventData);
 
     // don't run saving process if there isn't onSave callback
     if (!this._handlers.onSave) return;
@@ -416,9 +419,13 @@ module.exports = class Form {
     this._debouncedCall.exec(this._doSave, isImmediately)
       .then((result) => {
         this._afterSaveEnd(result);
+
+        return result;
       })
       .catch((error) => {
         this._afterSaveEnd({ error });
+
+        return Promise.reject(error);
       });
   }
 
@@ -427,14 +434,14 @@ module.exports = class Form {
   }
 
   _doSave() {
+    this._setState({ saving: true });
+    // emit save start
+    this.$emit('saveStart');
+
     // run save callback
     const cbResult = this._handlers.onSave(this.values);
 
     if (isPromise(cbResult)) {
-      this._setState({ saving: true });
-      // emit save start
-      this.$emit('saveStart');
-
       return cbResult
         .then((result) => {
           this._setState({ saving: false });
@@ -449,9 +456,6 @@ module.exports = class Form {
     }
 
     // else if save callback hasn't returned a promise
-    this.$setStateSilent({ saving: true });
-    // emit save start
-    this.$emit('saveStart');
     this.$setStateSilent({ saving: false });
 
     return Promise.resolve();

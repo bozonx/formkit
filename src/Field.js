@@ -353,15 +353,11 @@ module.exports = class Field {
     };
 
     // call field's onChange handler
-    const fieldOnChangeHandler = this._handlers.onChange;
-    if (fieldOnChangeHandler) fieldOnChangeHandler(eventData);
-    // call forms's change handler - it rises change callback and start saving
-    this._form.$handleFieldChange(eventData);
-
+    if (this._handlers.onChange) this._handlers.onChange(eventData);
     // Rise events field's change handler
     this._fieldStorage.emit(pathToField, 'change', eventData);
-    // run form's change handler
-    this._form.$emit('change', eventData);
+    // call forms's change handler - it rises change callback and start saving
+    this._form.$handleFieldChange(eventData);
   }
 
   // /**
