@@ -9,21 +9,21 @@ describe 'Functional. onChange and handleChange.', ->
 
     @fieldOnChangeHandler = sinon.spy();
     @formOnChangeHandler = sinon.spy();
-    @fieldOnSaveHandler = sinon.spy();
     @formOnSaveHandler = sinon.spy();
-    @fieldStorateHandler = sinon.spy();
-    @formStorateHandler = sinon.spy();
+    @formSaveEndHandler = sinon.spy();
+    @fieldStorageHandler = sinon.spy();
+    @formStorageHandler = sinon.spy();
 
     @field.onChange(@fieldOnChangeHandler);
     @form.onChange(@formOnChangeHandler);
-    @field.onSave(@fieldOnSaveHandler);
-    @form.on('saveEnd', @formOnSaveHandler);
-    @field.on('storage', @fieldStorateHandler);
-    @form.on('storage', @formStorateHandler);
+    @form.onSave(@formOnSaveHandler);
+    @form.on('saveEnd', @formSaveEndHandler);
+    @field.on('storage', @fieldStorageHandler);
+    @form.on('storage', @formStorageHandler);
 
   it "call after setValue", ->
     @field.handleChange('userValue')
-    @field.flushSaving();
+    @form.flushSaving();
     result = {
       event: 'change'
       field: "name"
@@ -36,16 +36,19 @@ describe 'Functional. onChange and handleChange.', ->
 
     sinon.assert.calledOnce(@formOnChangeHandler)
     sinon.assert.calledWith(@formOnChangeHandler, result)
-    sinon.assert.calledOnce(@fieldStorateHandler)
-    sinon.assert.calledOnce(@formStorateHandler)
+    sinon.assert.calledOnce(@fieldStorageHandler)
+
+    @form._debouncedCall.getPromise()
+      .then =>
+        sinon.assert.calledThrice(@formStorageHandler)
 
   it "don't call after machine update", ->
     @field.setValue('machineValue')
 
     sinon.assert.notCalled(@fieldOnChangeHandler)
     sinon.assert.notCalled(@formOnChangeHandler)
-    sinon.assert.calledOnce(@fieldStorateHandler)
-    sinon.assert.calledOnce(@formStorateHandler)
+    sinon.assert.calledOnce(@fieldStorageHandler)
+    sinon.assert.calledOnce(@formStorageHandler)
 
   it "it doesn't rise events on set initial values", ->
     @field.setValue('initialValue')
@@ -53,24 +56,26 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.notCalled(@fieldOnChangeHandler)
     sinon.assert.notCalled(@formOnChangeHandler)
 
-  it "call after uncahnged value if @form.config.allowSaveUnmodifiedField = true", ->
+  it "call after uncahnged value if config.allowSaveUnmodifiedField = true", ->
     @form.config.allowSaveUnmodifiedField = true;
     @field.handleChange('userValue')
     @field.handleChange('userValue')
 
-    @field.flushSaving();
+    @form.flushSaving();
 
     sinon.assert.calledTwice(@fieldOnChangeHandler)
     sinon.assert.calledTwice(@formOnChangeHandler)
-    sinon.assert.calledOnce(@fieldOnSaveHandler)
-    sinon.assert.calledOnce(@formOnSaveHandler)
+    @form._debouncedCall.getPromise()
+      .then =>
+        sinon.assert.calledOnce(@formOnSaveHandler)
+        sinon.assert.calledOnce(@formSaveEndHandler)
 
-  it "don't call after uncahnged value if @form.config.allowSaveUnmodifiedField = false", ->
+  it "don't call after uncahnged value if config.allowSaveUnmodifiedField = false", ->
     @form.config.allowSaveUnmodifiedField = false;
     @field.handleChange('userValue')
     @field.handleChange('userValue')
 
-    @field.flushSaving();
+    @form.flushSaving();
 
     result = {
       event: 'change'
@@ -85,13 +90,15 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledOnce(@formOnChangeHandler)
     sinon.assert.calledWith(@formOnChangeHandler, result)
 
-    sinon.assert.calledOnce(@fieldOnSaveHandler)
-    sinon.assert.calledOnce(@formOnSaveHandler)
+    @form._debouncedCall.getPromise()
+      .then =>
+        sinon.assert.calledOnce(@formOnSaveHandler)
+        sinon.assert.calledOnce(@formSaveEndHandler)
 
   it "don't do anything if disabled", ->
     @field.handleChange('oldValue')
     @field.setDisabled(true)
     @field.handleChange('newValue')
-    @field.flushSaving();
+    @form.flushSaving();
 
     assert.equal(@field.value, 'oldValue')

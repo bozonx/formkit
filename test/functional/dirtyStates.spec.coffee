@@ -29,7 +29,7 @@ describe 'Functional. Dirty and touched states.', ->
 
   it 'set savedValue after user input', ->
     @field.handleChange('newValue')
-    @field.flushSaving()
+    @form.flushSaving()
     @field.setSavedValue('savedValue')
 
     assert.isFalse(@field.dirty)

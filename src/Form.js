@@ -420,6 +420,7 @@ module.exports = class Form {
 
     this._debouncedCall.exec(this._doSave, isImmediately)
       .then((result) => {
+        // TODO: поднимается лишнее событие sotorage
         this._setState({ saving: false });
         this._afterSaveEnd(valuesBeforeSave);
 
@@ -438,6 +439,7 @@ module.exports = class Form {
   }
 
   _doSave() {
+    // TODO: ??? поднимается лишнее событие sotorage
     this._setState({ saving: true });
     // emit save start
     this.$emit('saveStart');
