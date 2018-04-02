@@ -1,7 +1,3 @@
-const _ = require('lodash');
-const { isPromise } = require('./helpers');
-
-
 /**
  * It wraps logic of debounced call of callback.
  * After start it:
@@ -84,29 +80,19 @@ module.exports = class DebouncedProcess {
     this._pending = true;
     this._waiting = false;
 
-    const cbResult = this._callback.cb(...this._callback.params);
+    this._callback.cb(...this._callback.params)
+      .then((data) => {
+        this._pending = false;
+        if (this._onFinishCb) this._onFinishCb();
 
-    // TODO: можно промис требовать обязательно чтобы упростить
+        return data;
+      })
+      .catch((err) => {
+        this._pending = false;
+        if (this._onFinishCb) this._onFinishCb();
 
-    if (isPromise(cbResult)) {
-      cbResult
-        .then((data) => {
-          this._pending = false;
-          if (this._onFinishCb) this._onFinishCb();
-
-          return data;
-        })
-        .catch((err) => {
-          this._pending = false;
-          if (this._onFinishCb) this._onFinishCb();
-
-          return err;
-        });
-    }
-    else {
-      this._pending = false;
-      if (this._onFinishCb) this._onFinishCb();
-    }
+        return err;
+      });
   }
 
 };

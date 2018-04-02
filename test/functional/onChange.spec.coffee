@@ -9,7 +9,7 @@ describe 'Functional. onChange and handleChange.', ->
 
     @fieldOnChangeHandler = sinon.spy();
     @formOnChangeHandler = sinon.spy();
-    @formOnSaveHandler = sinon.spy();
+    @formOnSaveHandler = sinon.stub().returns(Promise.resolve());
     @formSaveEndHandler = sinon.spy();
     @fieldStorageHandler = sinon.spy();
     @formStorageHandler = sinon.spy();
@@ -40,6 +40,7 @@ describe 'Functional. onChange and handleChange.', ->
 
     @form._debouncedCall.getPromise()
       .then =>
+        # TODO: должно сработать 1 или 2 раза
         sinon.assert.calledThrice(@formStorageHandler)
 
   it "don't call after machine update", ->
@@ -56,7 +57,7 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.notCalled(@fieldOnChangeHandler)
     sinon.assert.notCalled(@formOnChangeHandler)
 
-  it "call after uncahnged value if config.allowSaveUnmodifiedField = true", ->
+  it.only "call after uncahnged value if config.allowSaveUnmodifiedField = true", ->
     @form.config.allowSaveUnmodifiedField = true;
     @field.handleChange('userValue')
     @field.handleChange('userValue')
@@ -68,6 +69,7 @@ describe 'Functional. onChange and handleChange.', ->
     @form._debouncedCall.getPromise()
       .then =>
         sinon.assert.calledOnce(@formOnSaveHandler)
+        # TODO: должно подниматься один раз
         sinon.assert.calledOnce(@formSaveEndHandler)
 
   it "don't call after uncahnged value if config.allowSaveUnmodifiedField = false", ->
