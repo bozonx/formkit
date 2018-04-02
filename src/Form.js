@@ -201,12 +201,9 @@ module.exports = class Form {
    * @return {string|undefined} - undefined means it can. Otherwise it returns a reason.
    */
   canSave() {
+    // disallow save invalid form
+    if (!this.valid) return `The form is invalid.`;
 
-    // TODO: do it
-
-    // // don't save invalid value
-    // if (!this.valid) return 'Field is invalid';
-    //
     // // save only value which was modified.
     // if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) {
     //   return `Value hasn't modified`;
@@ -403,6 +400,14 @@ module.exports = class Form {
 
   $setStateSilent(partlyState) {
     this._formStorage.setStateSilent(partlyState);
+  }
+
+  /**
+   * End editing on press enter.
+   * If onSave callback is specified - it flushes it
+   */
+  $handleEndEditing() {
+    if (this._handlers.onSave) this.flushSaving();
   }
 
   $handleFieldChange(eventData) {

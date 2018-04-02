@@ -184,11 +184,7 @@ module.exports = class Field {
    */
   handleEndEditing() {
     if (this.disabled) return;
-    // start save immediately
-
-    // TODO: call form save
-
-    //this.save();
+    this._form.$handleEndEditing();
   }
 
   /**
