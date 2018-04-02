@@ -227,7 +227,7 @@ module.exports = class Form {
     const { values, editedValues } = this;
 
     this._setState({ submitting: true });
-    this._formStorage.emit('submitStart', { values, editedValues });
+    this.$emit('submitStart', { values, editedValues });
 
     if (!this._handlers.onSubmit) {
       // if there isn't a submit callback, just finish submit process
@@ -416,14 +416,18 @@ module.exports = class Form {
 
     const isImmediately = false;
 
+    const valuesBeforeSave = this.values;
+
     this._debouncedCall.exec(this._doSave, isImmediately)
       .then((result) => {
-        this._afterSaveEnd(result);
+        this._setState({ saving: false });
+        this._afterSaveEnd(valuesBeforeSave);
 
         return result;
       })
       .catch((error) => {
-        this._afterSaveEnd({ error });
+        this._setState({ saving: false });
+        this.$emit('saveEnd', { error });
 
         return Promise.reject(error);
       });
@@ -442,31 +446,12 @@ module.exports = class Form {
     const cbResult = this._handlers.onSave(this.values);
 
     if (isPromise(cbResult)) {
-      return cbResult
-        .then((result) => {
-          this._setState({ saving: false });
-
-          return result;
-        })
-        .catch((error) => {
-          this._setState({ saving: false });
-
-          return Promise.reject(error);
-        });
+      return cbResult;
     }
 
     // else if save callback hasn't returned a promise
-    this.$setStateSilent({ saving: false });
 
     return Promise.resolve();
-  }
-
-  _afterSaveEnd(result) {
-    this.$emit('saveEnd', result);
-
-    // TODO: сделать как в _afterSubmitSuccess
-
-    //this.$setValueAfterSave(valueWhichSaved);
   }
 
   _runSubmitHandler(values, editedValues) {
@@ -483,7 +468,7 @@ module.exports = class Form {
         })
         .catch((error) => {
           this._setState({ submitting: false });
-          this._formStorage.emit('submitEnd', { error });
+          this.$emit('submitEnd', { error });
 
           return Promise.reject(error);
         });
@@ -497,15 +482,22 @@ module.exports = class Form {
 
   _afterSubmitSuccess(values) {
     this._setState({ submitting: false });
+    this._moveValuesToSaveLayer(values);
+    this.$emit('submitEnd');
+  }
 
+  _afterSaveEnd(values) {
+    this._moveValuesToSaveLayer(values);
+    this.$emit('saveEnd');
+  }
+
+  _moveValuesToSaveLayer(values) {
     this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field, pathToField) => {
         const savedValue = _.get(values, pathToField);
         field.$setValueAfterSave(savedValue);
       });
     });
-
-    this._formStorage.emit('submitEnd');
   }
 
   /**

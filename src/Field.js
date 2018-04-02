@@ -299,14 +299,12 @@ module.exports = class Field {
   }
 
   $setValueAfterSave(savedValue) {
-
-    // TODO: reveiw
-
     // if value hasn't changed after submit was started - clear it
     if (savedValue === this.value) {
       this._fieldStorage.setStateSilent(this._pathToField, { editedValue: undefined });
     }
 
+    // in any way set to saved layer
     this._fieldStorage.setStateSilent(this._pathToField, {
       savedValue,
       dirty: calculateDirty(this.editedValue, savedValue),

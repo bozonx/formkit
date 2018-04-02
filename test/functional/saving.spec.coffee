@@ -9,7 +9,7 @@ describe 'Functional. saving.', ->
       @field = @form.fields.name
       @saveHandler = sinon.stub().returns(Promise.resolve())
 
-    it.only 'save debounced after value had changed', ->
+    it 'save debounced after value had changed', ->
       saveStartHandler = sinon.spy()
       saveEndHandler = sinon.spy()
       @form.onSave(@saveHandler)
@@ -38,8 +38,8 @@ describe 'Functional. saving.', ->
           sinon.assert.calledOnce(@saveHandler)
           sinon.assert.calledWith(@saveHandler, { name: 'newValue' })
 
-          #assert.equal(@field.savedValue, 'newValue')
-          #assert.isUndefined(@field.editedValue)
+          assert.equal(@field.savedValue, 'newValue')
+          assert.isUndefined(@field.editedValue)
 
     it 'after change and pressing enter, value has to save immediately
         and only the last save callback will be called', ->

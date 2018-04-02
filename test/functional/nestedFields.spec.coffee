@@ -51,9 +51,9 @@ describe 'Functional. nestedFields.', ->
 
   it 'saving', ->
     @saveHandler = sinon.spy();
-    @form.fields.nested.name.onSave(@saveHandler)
+    @form.onSave(@saveHandler)
     @form.fields.nested.name.handleChange('newValue')
-    @form.fields.nested.name.flushSaving()
+    @form.flushSaving()
 
     sinon.assert.calledOnce(@saveHandler)
-    sinon.assert.calledWith(@saveHandler, 'newValue')
+    sinon.assert.calledWith(@saveHandler, { nested: { name: 'newValue' } })
