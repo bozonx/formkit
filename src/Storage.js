@@ -124,7 +124,9 @@ module.exports = class Storage {
     });
 
     if (needToCombineValue) {
-      this._updateCombinedValue(pathToField, partlyState.savedValue, partlyState.editedValue);
+      // TODO: why???
+      this._updateCombinedValue(pathToField, newState.savedValue, newState.editedValue);
+      //this._updateCombinedValue(pathToField, partlyState.savedValue, partlyState.editedValue);
     }
   }
 
