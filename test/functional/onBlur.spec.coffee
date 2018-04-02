@@ -5,25 +5,15 @@ describe 'Functional. onBlur.', ->
   beforeEach () ->
     @form = formkit.newForm()
     @form.init(['name'])
+    @onSaveHandler = sinon.spy();
+    @form.onSave(@onSaveHandler);
 
-    @fieldOnSaveHandler = sinon.spy();
-
-    @form.fields.name.onSave(@fieldOnSaveHandler);
-
-  it "run handle blur if there is no one delayed callback", ->
-    @form.fields.name.setValue('newValue')
-
-    assert.isFalse(@form.fields.name._debouncedCall.isWaiting())
-    @form.fields.name.handleBlur()
-    assert.isFalse(@form.fields.name._debouncedCall.isWaiting())
-
-    expect(@fieldOnSaveHandler).to.have.been.calledOnce
-
-  it "run handle blur if saving in progress", ->
+  it "run handle blur if saving is in progress", ->
     @form.fields.name.handleChange('newValue')
-    assert.isTrue(@form.fields.name._debouncedCall.isWaiting())
+
+    assert.isTrue(@form._debouncedCall.isWaiting())
+
     @form.fields.name.handleBlur()
 
-    assert.isFalse(@form.fields.name._debouncedCall.isWaiting())
-
-    expect(@fieldOnSaveHandler).to.have.been.calledOnce
+    assert.isFalse(@form._debouncedCall.isWaiting())
+    sinon.assert.calledOnce(@onSaveHandler)

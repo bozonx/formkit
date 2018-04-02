@@ -94,10 +94,6 @@ module.exports = class Form {
     return this._formStorage.getInvalidMessages();
   }
 
-  // get debounceTime() {
-  //   return this._debouncedCall.delay;
-  // }
-
   /**
    * It calls from outer app's code to init form.
    * @param {array|object} initialFields
