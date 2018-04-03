@@ -301,13 +301,14 @@ module.exports = class Field {
     const parsedDefaultValue = parseValue(defaultValue);
 
     // set initial value otherwise default value
-    const newValue = (_.isUndefined(parsedInitial)) ? parsedDefaultValue : parsedInitial;
     const initialState = _.omitBy({
       disabled,
       defaultValue: parsedDefaultValue,
       initial: parsedInitial,
-      // set initial value to edited layer
-      editedValue: (_.isUndefined(newValue)) ? undefined : newValue,
+      // set default value to edited layer
+      editedValue: parsedDefaultValue,
+      // set initial value to saved layer
+      savedValue: parsedInitial,
     }, _.isUndefined);
 
     // init state
