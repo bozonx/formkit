@@ -132,6 +132,7 @@ module.exports = class Field {
     const isChanged = !_.isEqual(oldValue, newValue);
 
     if (isChanged) {
+      // it rises a storage event
       this._updateState(() => {
         // set editedValue and dirty state
         this.$setEditedValueSilent(newValue);

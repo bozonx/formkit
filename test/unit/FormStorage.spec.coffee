@@ -63,6 +63,33 @@ describe 'Unit. FormStorage.', ->
       }
     })
 
+  it "getUnSavedValues - edited is undefined", ->
+    @storage.setFieldState('path.to.field', {
+      savedValue: 'value'
+      editedValue: undefined
+    })
+    assert.deepEqual(@formStorage.getUnSavedValues(), {})
+
+  it "getUnSavedValues - edited is defined and the same as saved value", ->
+    @storage.setFieldState('path.to.field', {
+      savedValue: 'value'
+      editedValue: 'value'
+    })
+    assert.deepEqual(@formStorage.getUnSavedValues(), {})
+
+  it "getUnSavedValues - edited is defined and different", ->
+    @storage.setFieldState('path.to.field', {
+      savedValue: 'value'
+      editedValue: 5
+    })
+    assert.deepEqual(@formStorage.getUnSavedValues(), {
+      path: {
+        to: {
+          field: 5
+        }
+      }
+    })
+
   it "getInvalidMessages", ->
     @storage.setFieldState('field', { invalidMsg: 'value' })
     assert.deepEqual(@formStorage.getInvalidMessages(), [

@@ -39,6 +39,19 @@ module.exports = class FormStorage {
     return savedValues;
   }
 
+  getUnSavedValues() {
+    const unSavedValues = {};
+
+    this._storage.eachField((field, path) => {
+      const editedValue = field.get('editedValue');
+      if (_.isUndefined(editedValue) || field.get('savedValue') === editedValue) return;
+      // if editedValue has a defined value and it isn't equal to editedValue
+      _.set(unSavedValues, path, field.get('editedValue'));
+    });
+
+    return unSavedValues;
+  }
+
   getInvalidMessages() {
     const invalidMessages = [];
 

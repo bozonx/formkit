@@ -44,6 +44,10 @@ module.exports = class Form {
     return this._formStorage.getEditedValues();
   }
 
+  get unsavedValues() {
+    return this._formStorage.getUnSavedValues();
+  }
+
   get dirty() {
     // search for dirty values in fields
     return Boolean(findFieldRecursively(this.fields, (field) => {
@@ -215,11 +219,6 @@ module.exports = class Form {
     //   return `Value hasn't modified`;
     // }
   }
-
-  // setDebounceTime(delay) {
-  //   if (!_.isNumber(delay)) throw new Error(`Bad type of debounceTime value`);
-  //   this._debouncedCall.setDebounceTime(delay);
-  // }
 
   /**
    * It can be placed as a handler of <form> element on onSubmit attribute.
