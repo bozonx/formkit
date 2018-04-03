@@ -10,7 +10,7 @@ const { findFieldRecursively, findRecursively, isPromise, isFieldSchema } = requ
 module.exports = class Form {
   constructor(config) {
     this._config = config;
-    this._debouncedCall = new DebouncedCall(this._config.debounceTime);
+    this._debouncedSave = new DebouncedCall(this._config.debounceTime);
     this._storage = new Storage();
     this._formStorage = new FormStorage(this._storage);
     this._fieldStorage = new FieldStorage(this._storage);
@@ -263,7 +263,7 @@ module.exports = class Form {
     };
 
     Promise.all([
-      this._debouncedCall.getPromise() || Promise.resolve(),
+      this._debouncedSave.getPromise() || Promise.resolve(),
       // TODO: add submit promise
     ])
       .then(doDestroy)
@@ -281,14 +281,14 @@ module.exports = class Form {
    * Cancel debounce waiting for saving
    */
   cancelSaving() {
-    this._debouncedCall.cancel();
+    this._debouncedSave.cancel();
   }
 
   /**
    * Saving immediately
    */
   flushSaving() {
-    this._debouncedCall.flush();
+    this._debouncedSave.flush();
   }
 
   /**
@@ -420,8 +420,8 @@ module.exports = class Form {
     const isImmediately = false;
     const valuesBeforeSave = this.values;
 
-    this._debouncedCall.exec(this._doSave, isImmediately);
-    this._debouncedCall.onEnd((error) => {
+    this._debouncedSave.exec(this._doSave, isImmediately);
+    this._debouncedSave.onEnd((error) => {
       if (error) {
         this._setState({ saving: false });
         this.$emit('saveEnd', { error });
