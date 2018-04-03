@@ -8,6 +8,9 @@ describe 'Functional. destory.', ->
     @field = @form.fields.name
 
   it "form destroy", ->
+    @form._debouncedSave._mainPromise = Promise.resolve()
+    @form._submitPromise = Promise.resolve()
+
     @form.on('change', ->)
     @form.on('storage', ->)
     @form.on('submitStart', ->)
@@ -39,16 +42,18 @@ describe 'Functional. destory.', ->
 
     @form.destroy()
 
-    assert.deepEqual(@form._storage._store, {})
-    assert.equal(@form._storage.getListeners('change').length, 0)
-    assert.equal(@form._storage.getListeners('storage').length, 0)
-    assert.equal(@form._storage.getListeners('submitStart').length, 0)
-    assert.equal(@form._storage.getListeners('submitEnd').length, 0)
-    assert.equal(@form._storage.getListeners('field.name.change').length, 0)
-    assert.equal(@form._storage.getListeners('field.name.storage').length, 0)
-    assert.equal(@form._storage.getListeners('field.name.saveStart').length, 0)
-    assert.equal(@form._storage.getListeners('field.name.saveEnd').length, 0)
-    assert.isNotFunction(@form._handlers.onChange)
-    assert.isNotFunction(@form._handlers.onSubmit)
-    assert.isNotFunction(@form._handlers.onSave)
-    assert.isNotFunction(@field._handlers.onChange)
+    Promise.all([ @form._debouncedSave._mainPromise, @form._submitPromise ])
+      .then =>
+        assert.deepEqual(@form._storage._store, {})
+        assert.equal(@form._storage.getListeners('change').length, 0)
+        assert.equal(@form._storage.getListeners('storage').length, 0)
+        assert.equal(@form._storage.getListeners('submitStart').length, 0)
+        assert.equal(@form._storage.getListeners('submitEnd').length, 0)
+        assert.equal(@form._storage.getListeners('field.name.change').length, 0)
+        assert.equal(@form._storage.getListeners('field.name.storage').length, 0)
+        assert.equal(@form._storage.getListeners('field.name.saveStart').length, 0)
+        assert.equal(@form._storage.getListeners('field.name.saveEnd').length, 0)
+        assert.isNotFunction(@form._handlers.onChange)
+        assert.isNotFunction(@form._handlers.onSubmit)
+        assert.isNotFunction(@form._handlers.onSave)
+        assert.isNotFunction(@field._handlers.onChange)

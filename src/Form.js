@@ -16,6 +16,7 @@ module.exports = class Form {
     this._fieldStorage = new FieldStorage(this._storage);
     this._fields = {};
     this._validateCb = null;
+    this._submitPromise = null;
     this._handlers = {
       onChange: undefined,
       onSubmit: undefined,
@@ -216,7 +217,20 @@ module.exports = class Form {
     this.$emit('submitStart', { values, editedValues });
 
     // run submit callback
-    return this._runSubmitHandler(values, editedValues);
+    this._submitPromise = this._runSubmitHandler(values, editedValues);
+    this._submitPromise
+      .then((data) => {
+        this._submitPromise = null;
+
+        return data;
+      })
+      .catch((err) => {
+        this._submitPromise = null;
+
+        return Promise.reject(err);
+      });
+
+    return this._submitPromise;
   }
 
   /**
@@ -262,19 +276,13 @@ module.exports = class Form {
       this._formStorage.destroy();
     };
 
+    // wait for save and submit process have finished
     Promise.all([
       this._debouncedSave.getPromise() || Promise.resolve(),
-      // TODO: add submit promise
+      this._submitPromise || Promise.resolve(),
     ])
       .then(doDestroy)
       .catch(doDestroy);
-  }
-
-  /**
-   * Cancel submitting
-   */
-  cancelSubmitting() {
-    // TODO: add and test
   }
 
   /**
