@@ -90,7 +90,7 @@ module.exports = class DebouncedProcess {
       })
       .catch((err) => {
         this._pending = false;
-        if (this._onFinishCb) this._onFinishCb();
+        if (this._onFinishCb) this._onFinishCb(err);
 
         return err;
       });

@@ -418,7 +418,6 @@ module.exports = class Form {
 
     this._debouncedCall.exec(this._doSave, isImmediately);
     this._debouncedCall.onEnd((error) => {
-      // TODO: как узнать был ли error ????
       if (error) {
         this._setState({ saving: false });
         this.$emit('saveEnd', { error });

@@ -152,7 +152,7 @@ module.exports = class DebouncedCall {
 
     this._currentProcess = new DebouncedProcess(cb, params);
     // after current promise was finished - run next cb in queue
-    this._currentProcess.onFinish(() => this._afterCbFinished());
+    this._currentProcess.onFinish((err) => this._afterCbFinished(err));
     this._currentProcess.start(delayTime);
   }
 
@@ -160,7 +160,7 @@ module.exports = class DebouncedCall {
     this._nextCb = [ cb, params, delayTime ];
   }
 
-  _afterCbFinished() {
+  _afterCbFinished(err) {
     if (this._nextCb) {
       const cbParams = this._nextCb;
       this._nextCb = null;
@@ -170,8 +170,8 @@ module.exports = class DebouncedCall {
     else {
       // if there isn't any queue - just finish and go to beginning
       this._currentProcess = null;
-      this._mainResolve();
-      if (this._onEndCb) this._onEndCb();
+      this._mainResolve(err);
+      if (this._onEndCb) this._onEndCb(err);
       this._mainPromise = null;
       this._mainResolve = null;
       this._onEndCb = null;
