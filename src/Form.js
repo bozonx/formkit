@@ -417,9 +417,9 @@ module.exports = class Form {
         this.$emit('saveEnd', { error });
       }
       else {
-        // TODO: поднимается лишнее событие sotorage
-        this._setState({ saving: false });
-        this._moveValuesToSaveLayer(valuesBeforeSave);
+        const force = true;
+        this.$setStateSilent({ saving: false });
+        this._moveValuesToSaveLayer(valuesBeforeSave, force);
         this.$emit('saveEnd');
       }
     });
@@ -479,13 +479,13 @@ module.exports = class Form {
     this.$emit('submitEnd');
   }
 
-  _moveValuesToSaveLayer(values) {
+  _moveValuesToSaveLayer(values, force) {
     this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field, pathToField) => {
         const savedValue = _.get(values, pathToField);
         field.$setValueAfterSave(savedValue);
       });
-    });
+    }, force);
   }
 
   /**
@@ -511,20 +511,20 @@ module.exports = class Form {
     });
   }
 
-  _updateStateAndValidate(cbWhichChangesState) {
+  _updateStateAndValidate(cbWhichChangesState, force) {
     this._updateState(() => {
       if (cbWhichChangesState) cbWhichChangesState();
       this.validate();
-    });
+    }, force);
   }
 
-  _updateState(cbWhichChangesState) {
+  _updateState(cbWhichChangesState, force) {
     const oldState = this._formStorage.getWholeState();
 
     if (cbWhichChangesState) cbWhichChangesState();
 
     const newState = this._formStorage.getWholeState();
-    this._formStorage.emitStorageEvent('update', newState, oldState);
+    this._formStorage.emitStorageEvent('update', newState, oldState, force);
   }
 
 };

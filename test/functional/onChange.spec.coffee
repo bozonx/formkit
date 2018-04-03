@@ -41,7 +41,7 @@ describe 'Functional. onChange and handleChange.', ->
     @form._debouncedCall.getPromise()
       .then =>
         # TODO: должно сработать 1 или 2 раза
-        sinon.assert.calledThrice(@formStorageHandler)
+        sinon.assert.calledOnce(@formStorageHandler)
 
   it "don't call after machine update", ->
     @field.setValue('machineValue')
