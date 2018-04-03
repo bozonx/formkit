@@ -177,20 +177,6 @@ module.exports = class Form {
     //return this._addSavingToQueue(true);
   }
 
-
-  /**
-   * Clear storage and remove all the event handlers
-   */
-  destroy() {
-    this._handlers = {};
-
-    findFieldRecursively(this.fields, (field) => {
-      return field.$destroyHandlers();
-    });
-
-    this._formStorage.destroy();
-  }
-
   /**
    * Check for ability to form submit.
    * @return {string|undefined} - returns undefined if it's OK else returns a reason.
@@ -258,6 +244,30 @@ module.exports = class Form {
     this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$resetSilent());
     });
+  }
+
+  /**
+   * Clear storage and remove all the event handlers
+   */
+  destroy() {
+    this._handlers = {};
+
+    this.flushSaving();
+
+    const doDestroy = () => {
+      findFieldRecursively(this.fields, (field) => {
+        return field.$destroyHandlers();
+      });
+
+      this._formStorage.destroy();
+    };
+
+    Promise.all([
+      this._debouncedCall.getPromise() || Promise.resolve(),
+      // TODO: add submit promise
+    ])
+      .then(doDestroy)
+      .catch(doDestroy);
   }
 
   /**
