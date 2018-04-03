@@ -414,30 +414,22 @@ module.exports = class Form {
     if (!this._handlers.onSave) return;
 
     const isImmediately = false;
-    const wasInProgress = this._debouncedCall.isInProgress();
-
-    const promise = this._debouncedCall.exec(this._doSave, isImmediately);
-
-    // add end logic only once
-    if (wasInProgress) return;
-
-    // TODO: значения должны браться от последнего сохранения
     const valuesBeforeSave = this.values;
-    promise
-      .then((result) => {
+
+    this._debouncedCall.exec(this._doSave, isImmediately);
+    this._debouncedCall.onEnd((error) => {
+      // TODO: как узнать был ли error ????
+      if (error) {
+        this._setState({ saving: false });
+        this.$emit('saveEnd', { error });
+      }
+      else {
         // TODO: поднимается лишнее событие sotorage
         this._setState({ saving: false });
         this._moveValuesToSaveLayer(valuesBeforeSave);
         this.$emit('saveEnd');
-
-        return result;
-      })
-      .catch((error) => {
-        this._setState({ saving: false });
-        this.$emit('saveEnd', { error });
-
-        return Promise.reject(error);
-      });
+      }
+    });
   }
 
   $emit(eventName, data) {

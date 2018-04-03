@@ -18,6 +18,7 @@ module.exports = class DebouncedCall {
     // current callback which is waiting or in progress
     this._currentProcess = null;
     this._nextCb = null;
+    this._onEndCb = null;
     // promise of end of saving process
     this._mainPromise = null;
     this._mainResolve = null;
@@ -77,6 +78,10 @@ module.exports = class DebouncedCall {
    */
   flush() {
     if (this._currentProcess) this._currentProcess.flush();
+  }
+
+  onEnd(cb) {
+    this._onEndCb = cb;
   }
 
   /**
@@ -166,8 +171,10 @@ module.exports = class DebouncedCall {
       // if there isn't any queue - just finish and go to beginning
       this._currentProcess = null;
       this._mainResolve();
+      if (this._onEndCb) this._onEndCb();
       this._mainPromise = null;
       this._mainResolve = null;
+      this._onEndCb = null;
     }
   }
 
