@@ -220,20 +220,14 @@ module.exports = class Form {
   /**
    * It can be placed as a handler of <form> element on onSubmit attribute.
    * Please check ability of submission of form by calling `form.canSubmit()` or use submittable param
-   * @return {Promise} - wait for submit has finished
+   * @return {Promise|undefined} - wait for submit has finished
    */
   handleSubmit() {
-    const { values, editedValues } = this;
+    if (!this._handlers.onSubmit) return;
 
+    const { values, editedValues } = this;
     this._setState({ submitting: true });
     this.$emit('submitStart', { values, editedValues });
-
-    if (!this._handlers.onSubmit) {
-      // if there isn't a submit callback, just finish submit process
-      this._afterSubmitSuccess(values);
-
-      return Promise.resolve();
-    }
 
     // run submit callback
     return this._runSubmitHandler(values, editedValues);

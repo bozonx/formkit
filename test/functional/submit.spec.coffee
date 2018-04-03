@@ -65,19 +65,8 @@ describe 'Functional. Submit.', ->
       .catch =>
         assert.isFalse(@form.submitting)
 
-  it "run submit without submit callback", ->
-    @field.setValue('newValue')
-    @form.flushSaving()
-
-    assert.deepEqual(@form.editedValues, { name: 'newValue' })
-    assert.isTrue(@form.dirty)
-    @form.handleSubmit()
-
-    assert.isFalse(@form.submitting)
-    assert.deepEqual(@form.editedValues, {})
-    assert.isFalse(@form.dirty)
-
   it "check values after submit - edited value moves to saved layer", ->
+    @form.onSubmit ->
     @field.setSavedValue('savedValue')
     @field.handleChange('editedValue')
 
