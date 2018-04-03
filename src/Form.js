@@ -168,13 +168,14 @@ module.exports = class Form {
   }
 
 
-  // /**
-  //  * Start saving of field's value immediately.
-  //  * @return {Promise}
-  //  */
-  // save() {
-  //   return this._addSavingToQueue(true);
-  // }
+  /**
+   * Start saving immediately.
+   * @return {Promise}
+   */
+  save() {
+    // TODO: !!!!!!
+    //return this._addSavingToQueue(true);
+  }
 
 
   /**
@@ -213,11 +214,7 @@ module.exports = class Form {
   canSave() {
     // disallow save invalid form
     if (!this.valid) return `The form is invalid.`;
-
-    // // save only value which was modified.
-    // if (!this._fieldStorage.isFieldUnsaved(this._pathToField)) {
-    //   return `Value hasn't modified`;
-    // }
+    if (!this.touched) return `The form hasn't been modified`;
   }
 
   /**

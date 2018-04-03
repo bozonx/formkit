@@ -8,12 +8,21 @@ describe 'Functional. saving.', ->
     @field = @form.fields.name
     @saveHandler = sinon.stub().returns(Promise.resolve())
 
-  it "canSave and savable", ->
+  it "canSave and savable - not valid form", ->
     @form.setValidateCb((errors) -> errors.name = 'bad value')
     @field.handleChange('newValue')
 
     assert.isFalse(@form.savable)
     assert.isString(@form.canSave())
+
+  it "canSave and savable - form isn't changed", ->
+    assert.isFalse(@form.savable)
+    assert.isString(@form.canSave())
+
+  it "canSave and savable - saveable", ->
+    @field.handleChange('newValue')
+    assert.isTrue(@form.savable)
+    assert.isUndefined(@form.canSave())
 
   it 'save debounced after value had changed', ->
     saveStartHandler = sinon.spy()
