@@ -90,11 +90,13 @@ module.exports = class Storage {
 
     if (!fieldState) return;
 
-    return fieldState.getIn(stateName.split('.'));
+    // TODO: возвращает мутабельный стейт
+    return _.cloneDeep(fieldState.getIn(stateName.split('.')));
   }
 
   getCombinedValue(pathToField) {
-    return this._store.values.getIn(pathToField.split('.'));
+    // TODO: возвращает мутабельный стейт
+    return _.cloneDeep(this._store.values.getIn(pathToField.split('.')));
   }
 
   /**
