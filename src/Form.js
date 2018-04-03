@@ -414,15 +414,17 @@ module.exports = class Form {
     if (!this._handlers.onSave) return;
 
     const isImmediately = false;
+    const wasInProgress = this._debouncedCall.isInProgress();
+
+    const promise = this._debouncedCall.exec(this._doSave, isImmediately);
+
+    // add end logic only once
+    if (wasInProgress) return;
+
+    // TODO: значения должны браться от последнего сохранения
     const valuesBeforeSave = this.values;
-
-    this._debouncedCall.exec(this._doSave, isImmediately)
+    promise
       .then((result) => {
-
-        // TODO: дважды навешываемся на промис
-
-        console.log(22222222)
-
         // TODO: поднимается лишнее событие sotorage
         this._setState({ saving: false });
         this._moveValuesToSaveLayer(valuesBeforeSave);
