@@ -414,14 +414,19 @@ module.exports = class Form {
     if (!this._handlers.onSave) return;
 
     const isImmediately = false;
-
     const valuesBeforeSave = this.values;
 
     this._debouncedCall.exec(this._doSave, isImmediately)
       .then((result) => {
+
+        // TODO: дважды навешываемся на промис
+
+        console.log(22222222)
+
         // TODO: поднимается лишнее событие sotorage
         this._setState({ saving: false });
-        this._afterSaveEnd(valuesBeforeSave);
+        this._moveValuesToSaveLayer(valuesBeforeSave);
+        this.$emit('saveEnd');
 
         return result;
       })
@@ -485,11 +490,6 @@ module.exports = class Form {
     this._setState({ submitting: false });
     this._moveValuesToSaveLayer(values);
     this.$emit('submitEnd');
-  }
-
-  _afterSaveEnd(values) {
-    this._moveValuesToSaveLayer(values);
-    this.$emit('saveEnd');
   }
 
   _moveValuesToSaveLayer(values) {

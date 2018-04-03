@@ -49,6 +49,7 @@ module.exports = class DebouncedProcess {
    */
   stop() {
     if (this._timeout) clearTimeout(this._timeout);
+    this._timeout = null;
     this._waiting = false;
   }
 

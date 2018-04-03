@@ -57,7 +57,8 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.notCalled(@fieldOnChangeHandler)
     sinon.assert.notCalled(@formOnChangeHandler)
 
-  it.only "call after uncahnged value if config.allowSaveUnmodifiedField = true", ->
+  it.only "call after uncahnged value if config.allowSaveUnmodifiedField = true.
+           It saves even form isn't modified", ->
     @form.config.allowSaveUnmodifiedField = true;
     @field.handleChange('userValue')
     @field.handleChange('userValue')
@@ -66,6 +67,7 @@ describe 'Functional. onChange and handleChange.', ->
 
     sinon.assert.calledTwice(@fieldOnChangeHandler)
     sinon.assert.calledTwice(@formOnChangeHandler)
+
     @form._debouncedCall.getPromise()
       .then =>
         sinon.assert.calledOnce(@formOnSaveHandler)
