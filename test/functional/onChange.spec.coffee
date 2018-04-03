@@ -23,7 +23,13 @@ describe 'Functional. onChange and handleChange.', ->
 
   it "call after setValue", ->
     @field.handleChange('userValue')
+
+    sinon.assert.calledOnce(@formStorageHandler)
+
     @form.flushSaving();
+
+    sinon.assert.calledTwice(@formStorageHandler)
+
     result = {
       event: 'change'
       field: "name"
@@ -40,8 +46,7 @@ describe 'Functional. onChange and handleChange.', ->
 
     @form._debouncedCall.getPromise()
       .then =>
-        # TODO: должно сработать 1 или 2 раза
-        sinon.assert.calledOnce(@formStorageHandler)
+        sinon.assert.calledThrice(@formStorageHandler)
 
   it "don't call after machine update", ->
     @field.setValue('machineValue')

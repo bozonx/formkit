@@ -430,7 +430,6 @@ module.exports = class Form {
   }
 
   _doSave() {
-    // TODO: ??? поднимается лишнее событие sotorage
     this._setState({ saving: true });
     // emit save start
     this.$emit('saveStart');
