@@ -170,12 +170,12 @@ module.exports = class Form {
 
 
   /**
-   * Start saving immediately.
+   * Start saving of form immediately.
    * @return {Promise}
    */
   save() {
-    // TODO: !!!!!!
-    //return this._addSavingToQueue(true);
+    const isImmediately = true;
+    return this._startSaving(isImmediately);
   }
 
   /**
@@ -422,10 +422,14 @@ module.exports = class Form {
     // run form's change event
     this.$emit('change', eventData);
 
+    const isImmediately = false;
+    this._startSaving(isImmediately);
+  }
+
+  _startSaving(isImmediately) {
     // don't run saving process if there isn't onSave callback
     if (!this._handlers.onSave) return;
 
-    const isImmediately = false;
     const valuesBeforeSave = this.values;
 
     this._debouncedSave.exec(this._doSave, isImmediately);
@@ -441,6 +445,8 @@ module.exports = class Form {
         this.$emit('saveEnd');
       }
     });
+
+    return this._debouncedSave.getPromise();
   }
 
   $emit(eventName, data) {
