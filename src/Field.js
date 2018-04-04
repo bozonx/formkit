@@ -2,6 +2,10 @@ const _ = require('lodash');
 const { calculateDirty, getFieldName, parseValue } = require('./helpers/helpers');
 
 
+/**
+ * Field. It represent form field.
+ * @type {module.Field}
+ */
 module.exports = class Field {
   constructor(pathToField, params, form, fieldStorage) {
     this._form = form;

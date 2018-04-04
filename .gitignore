@@ -21,4 +21,4 @@ coverage
 node_modules
 
 html-report
-esdoc
+docs-html
