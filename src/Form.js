@@ -415,6 +415,10 @@ module.exports = class Form {
     this._startSaving(isImmediately);
   }
 
+  $emit(eventName, data) {
+    this._formStorage.emit(eventName, data);
+  }
+
   _startSaving(isImmediately) {
     // don't run saving process if there isn't onSave callback
     if (!this._handlers.onSave) return;
@@ -436,10 +440,6 @@ module.exports = class Form {
     });
 
     return this._debouncedSave.getPromise();
-  }
-
-  $emit(eventName, data) {
-    this._formStorage.emit(eventName, data);
   }
 
   _doSave() {
