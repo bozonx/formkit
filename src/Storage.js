@@ -71,10 +71,7 @@ module.exports = class Storage {
 
   eachField(cb) {
     findRecursively(this._store.fieldsState, (field, path) => {
-
-      // TODO: review
-
-      if (!field || !(field instanceof Map)) return;
+      if (!field || !Map.isMap(field)) return;
 
       cb(field, path);
 
@@ -124,8 +121,6 @@ module.exports = class Storage {
       if (_.includes([ 'savedValue', 'editedValue' ], name)) return true;
     });
 
-    // TODO: get вернут mutable
-
     this._updateCombinedValue(pathToField, newState.get('savedValue'), newState.get('editedValue'));
   }
 
@@ -156,8 +151,9 @@ module.exports = class Storage {
   }
 
   _updateCombinedValue(pathToField, savedValue, editedValue) {
-    const value = _.isUndefined(editedValue) ? savedValue : editedValue;
-    this._store.values = this._store.values.setIn(pathToField.split('.'), value);
+    let combinedValue = _.isUndefined(editedValue) ? savedValue : editedValue;
+    combinedValue = _.cloneDeep( combinedValue );
+    this._store.values = this._store.values.setIn(pathToField.split('.'), combinedValue);
   }
 
 };
