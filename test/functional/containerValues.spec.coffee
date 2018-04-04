@@ -31,3 +31,14 @@ describe 'Functional. containerValues.', ->
     @form.fields.name.handleChange(['item2'])
 
     assert.deepEqual(@form.fields.name.value, ['item2'])
+
+  it 'Arrays - has to be immutable', ->
+    arr = [
+      {
+        param: 1
+      }
+    ]
+    @form.fields.name.setValue(arr)
+
+    assert.notEqual(@form.fields.name.value[0], arr[0])
+    assert.notEqual(@form.fields.name.editedValue[0], arr[0])

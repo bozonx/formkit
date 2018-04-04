@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const EventEmitter = require('eventemitter3');
-const { Map } = require('immutable');
+const { fromJS, Map } = require('immutable');
 const { findRecursively } = require('./helpers/helpers');
 
 
@@ -35,7 +35,9 @@ module.exports = class Storage {
   }
 
   getFormState(stateName) {
-    return this._store.formState.get(stateName);
+    const formState = this._store.formState.toJS();
+
+    return formState[stateName];
   }
 
   getCombinedValues() {
@@ -61,7 +63,7 @@ module.exports = class Storage {
   setFormState(partlyState) {
     const prevState = this.getWholeFormState();
 
-    this._store.formState = new Map({
+    this._store.formState = fromJS({
       ...prevState,
       ...partlyState,
     });
@@ -69,6 +71,9 @@ module.exports = class Storage {
 
   eachField(cb) {
     findRecursively(this._store.fieldsState, (field, path) => {
+
+      // TODO: review
+
       if (!field || !(field instanceof Map)) return;
 
       cb(field, path);
@@ -90,13 +95,13 @@ module.exports = class Storage {
 
     if (!fieldState) return;
 
-    // TODO: возвращает мутабельный стейт
-    return _.cloneDeep(fieldState.getIn(stateName.split('.')));
+    return _.get(fieldState.toJS(), stateName);
   }
 
   getCombinedValue(pathToField) {
-    // TODO: возвращает мутабельный стейт
-    return _.cloneDeep(this._store.values.getIn(pathToField.split('.')));
+    const values = this._store.values.toJS();
+
+    return _.get(values, pathToField);
   }
 
   /**
@@ -108,18 +113,20 @@ module.exports = class Storage {
   setFieldState(pathToField, partlyState) {
     const prevState = this.getWholeFieldState(pathToField);
 
-    const newState = {
+    const newState = fromJS({
       ...prevState,
       ...partlyState,
-    };
+    });
 
-    _.set(this._store.fieldsState, pathToField, new Map(newState));
+    _.set(this._store.fieldsState, pathToField, newState);
 
     _.find(partlyState, (item, name) => {
       if (_.includes([ 'savedValue', 'editedValue' ], name)) return true;
     });
 
-    this._updateCombinedValue(pathToField, newState.savedValue, newState.editedValue);
+    // TODO: get вернут mutable
+
+    this._updateCombinedValue(pathToField, newState.get('savedValue'), newState.get('editedValue'));
   }
 
   generateNewFieldState() {
