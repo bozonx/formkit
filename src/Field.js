@@ -6,13 +6,9 @@ module.exports = class Field {
   constructor(pathToField, params, form, fieldStorage) {
     this._form = form;
     this._fieldStorage = fieldStorage;
-    if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
-
     this._pathToField = pathToField;
     this._fieldName = getFieldName(pathToField);
-    this._handlers = {
-      onChange: undefined,
-    };
+    if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
 
     this._initState(params);
 
@@ -81,7 +77,7 @@ module.exports = class Field {
    * * It rises storageChange event.
    *
    * It doesn't:
-   * * It doesn't rise onChange callback (for user's events).
+   * * It doesn't rise change event.
    * * It doesn't update "touched" state.
    * @param {*} rawValue - new value to set
    */
@@ -118,7 +114,6 @@ module.exports = class Field {
    * * update "touched" and "dirty" states
    * * validate form
    * * Rise a "change" events for field and form
-   * * Run an onChange callback if it assigned.
    * * Start saving
    * @param {*} rawValue
    */
@@ -194,14 +189,6 @@ module.exports = class Field {
 
   off(eventName, cb) {
     this._fieldStorage.off(this._pathToField, eventName, cb);
-  }
-
-  /**
-   * It rises a callback on field's value changes which has made by user.
-   * @param {function} handler - callback. You can set only one callback per field.
-   */
-  onChange(handler) {
-    this._handlers.onChange = handler;
   }
 
   /**
@@ -331,8 +318,6 @@ module.exports = class Field {
       event: 'change',
     };
 
-    // call field's onChange handler
-    if (this._handlers.onChange) this._handlers.onChange(eventData);
     // Rise events field's change handler
     this._fieldStorage.emit(pathToField, 'change', eventData);
     // call forms's change handler - it rises change callback and start saving

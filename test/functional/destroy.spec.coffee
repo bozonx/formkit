@@ -21,7 +21,6 @@ describe 'Functional. destory.', ->
     @field.on('saveEnd', ->)
     @form.onChange(->)
     @form.onSubmit(->)
-    @field.onChange(->)
     @form.onSave(->)
 
     @field.setValue('newValue')
@@ -38,7 +37,6 @@ describe 'Functional. destory.', ->
     assert.isFunction(@form._handlers.onChange)
     assert.isFunction(@form._handlers.onSubmit)
     assert.isFunction(@form._handlers.onSave)
-    assert.isFunction(@field._handlers.onChange)
 
     @form.destroy()
 
@@ -56,4 +54,3 @@ describe 'Functional. destory.', ->
         assert.isNotFunction(@form._handlers.onChange)
         assert.isNotFunction(@form._handlers.onSubmit)
         assert.isNotFunction(@form._handlers.onSave)
-        assert.isNotFunction(@field._handlers.onChange)

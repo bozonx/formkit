@@ -40,13 +40,13 @@ describe 'Functional. nestedFields.', ->
     assert.deepEqual(@form.invalidMessages, [{ field: 'nested.name', message: 'errorMsg' }])
 
   it 'events', ->
-    @fieldOnChangeHandler = sinon.spy()
+    @fieldChangeHandler = sinon.spy()
     @formOnChangeHandler = sinon.spy()
-    @form.fields.nested.name.onChange(@fieldOnChangeHandler)
+    @form.fields.nested.name.on('change', @fieldChangeHandler)
     @form.onChange(@formOnChangeHandler)
 
     @form.fields.nested.name.handleChange('userValue')
-    sinon.assert.calledOnce(@fieldOnChangeHandler)
+    sinon.assert.calledOnce(@fieldChangeHandler)
     sinon.assert.calledOnce(@formOnChangeHandler)
 
   it 'saving', ->
