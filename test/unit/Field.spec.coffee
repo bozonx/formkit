@@ -34,7 +34,12 @@ describe 'Unit. Field.', ->
   it "_initState with initial params", ->
     storageChangeHandler = sinon.spy()
     @form._fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
-    params = { disabled: true, defaultValue: 5, initial: 7 }
+    params = {
+      disabled: true
+      defaultValue: 5
+      initial: 7
+      savedValue: 9
+    }
     @form._storage._store.fieldsState[@pathToField] = undefined
     field = new Field(@pathToField, params, @form, @form._fieldStorage)
 
@@ -46,7 +51,7 @@ describe 'Unit. Field.', ->
       editedValue: 7
       focused: false
       invalidMsg: undefined
-      savedValue: undefined
+      savedValue: 9
       saving: false
       touched: false
     })

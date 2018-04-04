@@ -296,19 +296,19 @@ module.exports = class Field {
    * @param {object} params - params which was passed to form init.
    * @private
    */
-  _initState({ initial, disabled, defaultValue }) {
+  _initState({ initial, disabled, defaultValue, savedValue }) {
     const parsedInitial = parseValue(initial);
     const parsedDefaultValue = parseValue(defaultValue);
 
     // set initial value otherwise default value
+    const newValue = (_.isUndefined(parsedInitial)) ? parsedDefaultValue : parsedInitial;
     const initialState = _.omitBy({
       disabled,
       defaultValue: parsedDefaultValue,
       initial: parsedInitial,
-      // set default value to edited layer
-      editedValue: parsedDefaultValue,
-      // set initial value to saved layer
-      savedValue: parsedInitial,
+      // set initial value to edited layer
+      editedValue: (_.isUndefined(newValue)) ? undefined : newValue,
+      savedValue,
     }, _.isUndefined);
 
     // init state
