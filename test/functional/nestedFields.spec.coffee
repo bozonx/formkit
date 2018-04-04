@@ -41,13 +41,13 @@ describe 'Functional. nestedFields.', ->
 
   it 'events', ->
     @fieldChangeHandler = sinon.spy()
-    @formOnChangeHandler = sinon.spy()
+    @formChangeHandler = sinon.spy()
     @form.fields.nested.name.on('change', @fieldChangeHandler)
-    @form.onChange(@formOnChangeHandler)
+    @form.on('change', @formChangeHandler)
 
     @form.fields.nested.name.handleChange('userValue')
     sinon.assert.calledOnce(@fieldChangeHandler)
-    sinon.assert.calledOnce(@formOnChangeHandler)
+    sinon.assert.calledOnce(@formChangeHandler)
 
   it 'saving', ->
     @saveHandler = sinon.spy();

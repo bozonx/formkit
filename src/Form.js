@@ -18,7 +18,6 @@ module.exports = class Form {
     this._validateCb = null;
     this._submitPromise = null;
     this._handlers = {
-      onChange: undefined,
       onSubmit: undefined,
       onSave: undefined,
     };
@@ -150,14 +149,6 @@ module.exports = class Form {
 
   off(eventName, cb) {
     this._formStorage.off(eventName, cb);
-  }
-
-  /**
-   * Add only one callback of 'change' event. It usefull for use as handler of component.
-   * @param {function} handler - your handler
-   */
-  onChange(handler) {
-    this._handlers.onChange = handler;
   }
 
   onSubmit(handler) {
@@ -417,8 +408,6 @@ module.exports = class Form {
   }
 
   $handleFieldChange(eventData) {
-    // call onChange handler
-    if (this._handlers.onChange) this._handlers.onChange(eventData);
     // run form's change event
     this.$emit('change', eventData);
 
