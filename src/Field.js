@@ -4,6 +4,7 @@ const { calculateDirty, getFieldName, parseValue } = require('./helpers/helpers'
 
 /**
  * Field. It represent form field.
+ * @class
  * @type {module.Field}
  */
 module.exports = class Field {
@@ -184,8 +185,8 @@ module.exports = class Field {
    * * storage
    * * saveStart
    * * saveEnd
-   * @param eventName
-   * @param cb
+   * @param {string} eventName - name of field's event
+   * @param {function} cb - Event handler
    */
   on(eventName, cb) {
     this._fieldStorage.on(this._pathToField, eventName, cb);
