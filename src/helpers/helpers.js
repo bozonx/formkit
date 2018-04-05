@@ -145,6 +145,10 @@ module.exports = {
     else if (rawValue === '') {
       return '';
     }
+    // it is for - 2. strings
+    else if (_.isString(rawValue) && rawValue.match(/^\d+\.$/)) {
+      return rawValue;
+    }
     else if (_.isBoolean(rawValue) || _.isPlainObject(rawValue) || _.isArray(rawValue)) {
       return rawValue;
     }
