@@ -4,10 +4,8 @@ const { calculateDirty, getFieldName, parseValue } = require('./helpers/helpers'
 
 /**
  * Field. It represent form field.
- * @class
- * @type {module.Field}
  */
-module.exports = class Field {
+class Field {
   constructor(pathToField, params, form, fieldStorage) {
     this._form = form;
     this._fieldStorage = fieldStorage;
@@ -351,4 +349,6 @@ module.exports = class Field {
     this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
   }
 
-};
+}
+
+module.exports = Field;

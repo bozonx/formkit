@@ -7,7 +7,10 @@ const DebouncedCall = require('./helpers/DebouncedCall');
 const { findFieldRecursively, findRecursively, isPromise, isFieldSchema } = require('./helpers/helpers');
 
 
-module.exports = class Form {
+/**
+ * Form
+ */
+class Form {
   constructor(config) {
     this._config = config;
     this._debouncedSave = new DebouncedCall(this._config.debounceTime);
@@ -539,4 +542,6 @@ module.exports = class Form {
     this._formStorage.emitStorageEvent('update', newState, oldState, force);
   }
 
-};
+}
+
+module.exports = Form;
