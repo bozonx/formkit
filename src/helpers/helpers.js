@@ -1,27 +1,7 @@
 const _ = require('lodash');
 
 
-// const extendDeep = function (willExtend, newValues) {
-//   _.each(newValues, (value, name) => {
-//     if (_.isPlainObject(value)) {
-//       // create container if it isn't exist
-//       if (!_.isPlainObject(willExtend[name])) {
-//         willExtend[name] = {};
-//       }
-//       // run recursively
-//       extendDeep(willExtend[name], value);
-//     }
-//     else {
-//       willExtend[name] = value;
-//     }
-//   });
-//
-//   return willExtend;
-// };
-
-
 module.exports = {
-  // extendDeep,
 
   isFieldSchema(comingSchema) {
     let isSchema = false;
