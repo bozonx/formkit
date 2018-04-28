@@ -1,9 +1,13 @@
 {
+  "plugins": [
+    "transform-runtime"
+  ],
   "presets": [
     ["env", {
       "targets": {
         "node": "current"
       }
-    }]
+    }],
+    "stage-2"
   ]
 }

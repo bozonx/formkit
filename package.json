@@ -1,6 +1,6 @@
 {
   "name": "formkit",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Smart framework agnostic form helper.",
   "repository": "git@github.com:bozonx/formkit.git",
   "license": "MIT",
@@ -30,7 +30,9 @@
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.2.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "coffee-coverage": "^3.0.0",
