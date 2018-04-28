@@ -120,7 +120,7 @@ class Form {
         if (!_.isPlainObject(item)) return false;
 
         // means field
-        if (_.isEmpty(item) || isFieldSchema(item) ) {
+        if (_.isEmpty(item) || isFieldSchema(item)) {
           this._initField(path, item);
 
           // don't go deeper

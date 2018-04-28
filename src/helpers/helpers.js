@@ -7,8 +7,9 @@ module.exports = {
     let isSchema = false;
     const filedParams = [
       'initial',
-      'defaultValue',
       'disabled',
+      'defaultValue',
+      'savedValue',
     ];
 
     _.find(comingSchema, (value, name) => {
