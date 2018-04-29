@@ -5,7 +5,6 @@ const configDefaults = require('./configDefaults');
 const globalConfig = configDefaults;
 const plugins = [];
 
-
 module.exports = {
   setDefaultConfig: (config) => {
     _.extend(globalConfig, config);
