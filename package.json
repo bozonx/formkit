@@ -12,16 +12,16 @@
   "scripts": {
     "test": "mocha",
     "build": "yarn test && yarn run build-module && yarn run build-web && yarn run build-web-min",
-    "build-module": "node_modules/.bin/webpack-cli  --mode development --progress --config ./webpack.module.config.js",
-    "build-web": "node_modules/.bin/webpack-cli     --mode development --progress --config ./webpack.web.config.js",
-    "build-web-min": "node_modules/.bin/webpack-cli --mode production  --progress --config ./webpack.web-min.config.js",
-    "cov": "./node_modules/.bin/istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
-    "cov-html": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test && sensible-browser ./coverage/lcov-report/index.html",
-    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
+    "build-module": "webpack-cli --mode development --progress --config ./webpack.module.config.js",
+    "build-web": "webpack-cli     --mode development --progress --config ./webpack.web.config.js",
+    "build-web-min": "webpack-cli --mode production  --progress --config ./webpack.web-min.config.js",
+    "cov": "istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
+    "cov-html": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test && sensible-browser ./coverage/lcov-report/index.html",
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
     "doc-html": "esdoc -c esdoc.json && sensible-browser ./esdoc/index.html",
-    "doc": "./node_modules/.bin/jsdoc -c ./jsdoc.conf.js",
-    "lint": "node_modules/.bin/eslint ./src",
-    "fix": "node_modules/.bin/eslint --fix ./src"
+    "doc": "jsdoc -c ./jsdoc.conf.js",
+    "lint": "eslint ./src",
+    "fix": "eslint --fix ./src"
   },
   "dependencies": {
     "eventemitter3": "^3.0.1",
