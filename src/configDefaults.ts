@@ -1,7 +1,5 @@
-module.exports = {
-  /**
-   * Delay time after field changing
-   */
+export default {
+
   debounceTime: 800,
 
   /**

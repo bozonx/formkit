@@ -1,16 +1,16 @@
-const _ = require('lodash');
-const Storage = require('./Storage');
-const FormStorage = require('./FormStorage');
-const FieldStorage = require('./FieldStorage');
-const Field = require('./Field');
-const DebouncedCall = require('./helpers/DebouncedCall');
-const { findFieldRecursively, findRecursively, isPromise, isFieldSchema } = require('./helpers/helpers');
+import * as _ from 'lodash';
+import Storage from './Storage';
+import FormStorage from './FormStorage';
+import FieldStorage from './FieldStorage';
+import Field from './Field';
+import DebouncedCall from './helpers/DebouncedCall';
+import { findFieldRecursively, findRecursively, isPromise, isFieldSchema } from './helpers/helpers';
 
 
 /**
  * Form
  */
-class Form {
+export default class Form {
   constructor(config) {
     this._config = config;
     this._debouncedSave = new DebouncedCall(this._config.debounceTime);
@@ -543,5 +543,3 @@ class Form {
   }
 
 }
-
-module.exports = Form;

@@ -3,7 +3,7 @@
 module.exports = {
   source: {
     include: [
-      'src/Form.js',
+      'src/Form.ts',
       'src/Field.js',
       //'src/dodoc.js',
     ],
