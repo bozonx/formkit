@@ -1,4 +1,6 @@
 --recursive
 --ui bdd
 --colors
---compilers coffee:coffeescript/register
+--require coffeescript/register
+--require ts-node/register
+test/**/*.spec.coffee
