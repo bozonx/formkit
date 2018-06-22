@@ -1,10 +1,10 @@
-const _ = require('lodash');
-const EventEmitter = require('eventemitter3');
-const { fromJS, Map } = require('immutable');
-const { findRecursively } = require('./helpers/helpers');
+import * as _ from 'lodash';
+import * as EventEmitter from 'eventemitter3';
+import { fromJS, Map } from 'immutable';
+import { findRecursively } from './helpers/helpers';
 
 
-module.exports = class Storage {
+export default class Storage {
   constructor() {
     this.events = new EventEmitter();
 
@@ -156,4 +156,4 @@ module.exports = class Storage {
     this._store.values = this._store.values.setIn(pathToField.split('.'), combinedValue);
   }
 
-};
+}

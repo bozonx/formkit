@@ -9,7 +9,7 @@
  * While callback is waiting you can stop it by calling stop()
  * But if it pending you can't cancel it.
  */
-module.exports = class DebouncedProcess {
+export default class DebouncedProcess {
   constructor(cb, params) {
     this._callback = { cb, params };
     // has it started at least once
@@ -96,4 +96,4 @@ module.exports = class DebouncedProcess {
       });
   }
 
-};
+}

@@ -1,5 +1,5 @@
-const _ = require('lodash');
-const DebouncedProcess = require('./DebouncedProcess');
+import * as _ from 'lodash';
+import DebouncedProcess from './DebouncedProcess';
 
 
 /**
@@ -12,7 +12,7 @@ const DebouncedProcess = require('./DebouncedProcess');
  * * also you can force run callback and it runs immediately
  *   and resets currently delayed callback
  */
-module.exports = class DebouncedCall {
+export default class DebouncedCall {
   constructor(delayTime) {
     this.setDebounceTime(delayTime);
     // current callback which is waiting or in progress
@@ -178,4 +178,4 @@ module.exports = class DebouncedCall {
     }
   }
 
-};
+}

@@ -1,7 +1,7 @@
-const _ = require('lodash');
+import * as _ from 'lodash';
 
 
-module.exports = class FormStorage {
+export default class FormStorage {
   constructor(storage) {
     this._storage = storage;
   }
@@ -121,4 +121,4 @@ module.exports = class FormStorage {
     this._storage.destroy();
   }
 
-};
+}

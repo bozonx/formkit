@@ -1,11 +1,11 @@
-const _ = require('lodash');
-const { calculateDirty, getFieldName, parseValue } = require('./helpers/helpers');
+import * as _ from 'lodash';
+import { calculateDirty, getFieldName, parseValue } from './helpers/helpers';
 
 
 /**
  * Field. It represent form field.
  */
-class Field {
+export default class Field {
   constructor(pathToField, params, form, fieldStorage) {
     this._form = form;
     this._fieldStorage = fieldStorage;
@@ -350,5 +350,3 @@ class Field {
   }
 
 }
-
-module.exports = Field;

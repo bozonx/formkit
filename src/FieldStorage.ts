@@ -1,7 +1,7 @@
-const _ = require('lodash');
+import * as _ from 'lodash';
 
 
-module.exports = class FieldStorage {
+export default class FieldStorage {
   constructor(storage) {
     this._storage = storage;
   }
@@ -84,4 +84,4 @@ module.exports = class FieldStorage {
     return savedValue !== editedValue;
   }
 
-};
+}

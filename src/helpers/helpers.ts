@@ -1,151 +1,147 @@
-const _ = require('lodash');
+import * as _ from 'lodash';
 
 
-module.exports = {
+export function isFieldSchema(comingSchema) {
+  let isSchema = false;
+  const filedParams = [
+    'initial',
+    'disabled',
+    'defaultValue',
+    'savedValue',
+  ];
 
-  isFieldSchema(comingSchema) {
-    let isSchema = false;
-    const filedParams = [
-      'initial',
-      'disabled',
-      'defaultValue',
-      'savedValue',
-    ];
+  _.find(comingSchema, (value, name) => {
+    if (_.includes(filedParams, name)) {
+      isSchema = true;
 
-    _.find(comingSchema, (value, name) => {
-      if (_.includes(filedParams, name)) {
-        isSchema = true;
-
-        return true;
-      }
-    });
-
-    return isSchema;
-  },
-
-  findFieldRecursively(rootObject, cb) {
-    const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
-      const itemPath = _.trim(`${rootPath}.${name}`, '.');
-
-      if (_.isPlainObject(item)) {
-        // it's a container
-        return recursive(item, itemPath);
-      }
-      else if (_.isObject(item)) {
-        // it's a field
-        return cb(item, itemPath);
-      }
-    });
-
-    return recursive(rootObject, '');
-  },
-
-  /**
-   * It works with common structures like
-   *     {
-   *       parent: {
-   *         prop: 'value'
-   *       }
-   *     }
-   * @param rootObject
-   * @param {function} cb - callback like (items, pathToItem) => {}.
-   *                        If it returns false it means don't go deeper.
-   */
-  findRecursively(rootObject, cb) {
-    const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
-      const itemPath = _.trim(`${rootPath}.${name}`, '.');
-
-      const cbResult = cb(item, itemPath);
-      if (_.isUndefined(cbResult)) {
-        // go deeper
-        return recursive(item, itemPath);
-      }
-      else if (cbResult === false) {
-        // don't go deeper
-        return undefined;
-      }
-      else {
-        // found - stop search
-        return cbResult;
-      }
-    });
-
-    return recursive(rootObject, '');
-  },
-
-  calculateDirty(editedValue, savedValue) {
-    let newDirtyValue;
-
-    // if edited value don't specified - it means field isn't dirty
-    if (_.isUndefined(editedValue)) return false;
-
-    // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
-    if ((editedValue === '' || _.isNil(editedValue)) && (savedValue === '' || _.isNil(savedValue))) {
-      newDirtyValue = false;
-    }
-    else {
-      // just compare current editedValue and saved value
-      newDirtyValue = editedValue !== savedValue;
-    }
-
-    return newDirtyValue;
-  },
-
-  getFieldName(pathToField) {
-    const split = pathToField.split('.');
-    const onlyOneItem = 1;
-
-    if (split.length <= onlyOneItem) return pathToField;
-
-    return _.last(split);
-  },
-
-  isPromise(unknown) {
-    return _.isObject(unknown) && unknown.then;
-  },
-
-  parseValue(rawValue) {
-    if (_.isUndefined(rawValue)) {
-      return;
-    }
-    if (_.isNull(rawValue)) {
-      return null;
-    }
-    else if (rawValue === 'true') {
       return true;
     }
-    else if (rawValue === 'false') {
-      return false;
-    }
-    else if (rawValue === 'null') {
-      return null;
-    }
-    else if (rawValue === 'NaN') {
-      return NaN;
-    }
-    else if (rawValue === '') {
-      return '';
-    }
-    // it is for - 2. strings
-    else if (_.isString(rawValue) && rawValue.match(/^\d+\.$/)) {
-      return rawValue;
-    }
-    else if (_.isBoolean(rawValue) || _.isPlainObject(rawValue) || _.isArray(rawValue)) {
-      return rawValue;
-    }
+  });
 
-    const toNumber = _.toNumber(rawValue);
+  return isSchema;
+}
 
-    if (!_.isNaN(toNumber)) {
-      // it's number
-      return toNumber;
+export function findFieldRecursively(rootObject, cb) {
+  const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
+    const itemPath = _.trim(`${rootPath}.${name}`, '.');
+
+    if (_.isPlainObject(item)) {
+      // it's a container
+      return recursive(item, itemPath);
     }
+    else if (_.isObject(item)) {
+      // it's a field
+      return cb(item, itemPath);
+    }
+  });
 
-    // string
+  return recursive(rootObject, '');
+}
+
+/**
+ * It works with common structures like
+ *     {
+ *       parent: {
+ *         prop: 'value'
+ *       }
+ *     }
+ * @param rootObject
+ * @param {function} cb - callback like (items, pathToItem) => {}.
+ *                        If it returns false it means don't go deeper.
+ */
+export function findRecursively(rootObject, cb) {
+  const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
+    const itemPath = _.trim(`${rootPath}.${name}`, '.');
+
+    const cbResult = cb(item, itemPath);
+    if (_.isUndefined(cbResult)) {
+      // go deeper
+      return recursive(item, itemPath);
+    }
+    else if (cbResult === false) {
+      // don't go deeper
+      return undefined;
+    }
+    else {
+      // found - stop search
+      return cbResult;
+    }
+  });
+
+  return recursive(rootObject, '');
+}
+
+export function calculateDirty(editedValue, savedValue) {
+  let newDirtyValue;
+
+  // if edited value don't specified - it means field isn't dirty
+  if (_.isUndefined(editedValue)) return false;
+
+  // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
+  if ((editedValue === '' || _.isNil(editedValue)) && (savedValue === '' || _.isNil(savedValue))) {
+    newDirtyValue = false;
+  }
+  else {
+    // just compare current editedValue and saved value
+    newDirtyValue = editedValue !== savedValue;
+  }
+
+  return newDirtyValue;
+}
+
+export function getFieldName(pathToField) {
+  const split = pathToField.split('.');
+  const onlyOneItem = 1;
+
+  if (split.length <= onlyOneItem) return pathToField;
+
+  return _.last(split);
+}
+
+export function isPromise(unknown) {
+  return _.isObject(unknown) && unknown.then;
+}
+
+export function parseValue(rawValue) {
+  if (_.isUndefined(rawValue)) {
+    return;
+  }
+  if (_.isNull(rawValue)) {
+    return null;
+  }
+  else if (rawValue === 'true') {
+    return true;
+  }
+  else if (rawValue === 'false') {
+    return false;
+  }
+  else if (rawValue === 'null') {
+    return null;
+  }
+  else if (rawValue === 'NaN') {
+    return NaN;
+  }
+  else if (rawValue === '') {
+    return '';
+  }
+  // it is for - 2. strings
+  else if (_.isString(rawValue) && rawValue.match(/^\d+\.$/)) {
     return rawValue;
-  },
+  }
+  else if (_.isBoolean(rawValue) || _.isPlainObject(rawValue) || _.isArray(rawValue)) {
+    return rawValue;
+  }
 
-};
+  const toNumber = _.toNumber(rawValue);
+
+  if (!_.isNaN(toNumber)) {
+    // it's number
+    return toNumber;
+  }
+
+  // string
+  return rawValue;
+}
 
 
 // /**
