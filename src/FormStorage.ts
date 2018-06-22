@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import {ErrorMessage} from './Form';
 
 
 export default class FormStorage {
@@ -52,8 +53,8 @@ export default class FormStorage {
     return unSavedValues;
   }
 
-  getInvalidMessages() {
-    const invalidMessages = [];
+  getInvalidMessages(): Array<ErrorMessage> {
+    const invalidMessages: Array<ErrorMessage> = [];
 
     this._storage.eachField((field, path) => {
       const msg = field.get('invalidMsg');

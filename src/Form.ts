@@ -5,100 +5,113 @@ import FieldStorage from './FieldStorage';
 import Field from './Field';
 import DebouncedCall from './helpers/DebouncedCall';
 import { findFieldRecursively, findRecursively, isPromise, isFieldSchema } from './helpers/helpers';
+import Config from './interfaces/Config';
+
+
+export interface ErrorMessage {
+  field: string;
+  message: string;
+}
+
+interface Hnadlers {
+  // TODO: уточнить
+  onSubmit?: Function;
+  onSave?: Function;
+}
+
+// TODO: может быть вложенный
+type Values = { [index: string]: any };
 
 
 /**
  * Form
  */
 export default class Form {
-  constructor(config) {
-    this._config = config;
-    this._debouncedSave = new DebouncedCall(this._config.debounceTime);
-    this._storage = new Storage();
-    this._formStorage = new FormStorage(this._storage);
-    this._fieldStorage = new FieldStorage(this._storage);
-    this._fields = {};
-    this._validateCb = null;
-    this._submitPromise = null;
-    this._handlers = {
-      onSubmit: undefined,
-      onSave: undefined,
-    };
+  // TODO: может быть вложенный
+  readonly fields: {[index: string]: Field} = {};
+  readonly config: Config;
 
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.clear = this.clear.bind(this);
-    this.reset = this.reset.bind(this);
-    this._doSave = this._doSave.bind(this);
+  private readonly debouncedSave: DebouncedCall;
+  private readonly storage: Storage = new Storage();
+  private readonly formStorage: FormStorage;
+  private readonly fieldStorage: FieldStorage;
+  // TODO: review
+  private readonly submitPromise?: Function;
+  // TODO: review
+  private readonly handlers: Hnadlers = {
+    onSubmit: undefined,
+    onSave: undefined,
+  };
+  // TODO: review почему не в handlers ???
+  private readonly validateCb?: Function;
+
+  constructor(config: Config) {
+    this.config = config;
+    this.debouncedSave = new DebouncedCall(this.config.debounceTime);
+    this.formStorage = new FormStorage(this.storage);
+    this.fieldStorage = new FieldStorage(this.storage);
   }
 
-  get fields() {
-    return this._fields;
+  get values(): Values {
+    return this.formStorage.getCombinedValues();
   }
 
-  get values() {
-    return this._formStorage.getCombinedValues();
+  get savedValues(): Values {
+    return this.formStorage.getSavedValues();
   }
 
-  get savedValues() {
-    return this._formStorage.getSavedValues();
+  get editedValues(): Values {
+    return this.formStorage.getEditedValues();
   }
 
-  get editedValues() {
-    return this._formStorage.getEditedValues();
+  get unsavedValues(): Values {
+    return this.formStorage.getUnSavedValues();
   }
 
-  get unsavedValues() {
-    return this._formStorage.getUnSavedValues();
-  }
-
-  get dirty() {
+  get dirty(): boolean {
     // search for dirty values in fields
-    return Boolean(findFieldRecursively(this.fields, (field) => {
+    return Boolean(findFieldRecursively(this.fields, (field: Field) => {
       return field.dirty;
     }));
   }
 
-  get touched() {
-    return this._formStorage.getState('touched');
+  get touched(): boolean {
+    return this.formStorage.getState('touched');
   }
 
   /**
    * Returns true if one or more fields are saving.
    */
-  get saving() {
-    return this._formStorage.getState('saving');
+  get saving(): boolean {
+    return this.formStorage.getState('saving');
   }
 
-  get submitting() {
-    return this._formStorage.getState('submitting');
+  get submitting(): boolean {
+    return this.formStorage.getState('submitting');
   }
 
   /**
    * allow/disallow submit. It helpful to use as "disabled" button's attribute.
    * @return {boolean} - true if allows to submit.
    */
-  get submittable() {
+  get submittable(): boolean {
     return !this.canSubmit();
   }
 
-  get savable() {
+  get savable(): boolean {
     return !this.canSave();
   }
 
-  get valid() {
-    return this._formStorage.getState('valid');
-  }
-
-  get config() {
-    return this._config;
+  get valid(): boolean {
+    return this.formStorage.getState('valid');
   }
 
   /**
    * Get all the messages of invalid fields
    * @return {Array} - like [{path: "path.to.field", message: "msg"}, ...]
    */
-  get invalidMessages() {
-    return this._formStorage.getInvalidMessages();
+  get invalidMessages(): Array<ErrorMessage> {
+    return this.formStorage.getInvalidMessages();
   }
 
   /**
@@ -109,7 +122,7 @@ export default class Form {
    * @param {function} validateCb - function which will be called on each change to validate form
    */
   init(initialFields, validateCb) {
-    this._validateCb = validateCb;
+    this.validateCb = validateCb;
 
     if (_.isArray(initialFields)) {
       _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
@@ -134,7 +147,7 @@ export default class Form {
 
     this.validate();
 
-    this._formStorage.emitStorageEvent('init', this.values, undefined);
+    this.formStorage.emitStorageEvent('init', this.values, undefined);
   }
 
   /**
@@ -146,20 +159,20 @@ export default class Form {
    * @param eventName
    * @param cb
    */
-  on(eventName, cb) {
-    this._formStorage.on(eventName, cb);
+  on(eventName: string, cb): void {
+    this.formStorage.on(eventName, cb);
   }
 
-  off(eventName, cb) {
-    this._formStorage.off(eventName, cb);
+  off(eventName: string, cb): void {
+    this.formStorage.off(eventName, cb);
   }
 
-  onSubmit(handler) {
-    this._handlers.onSubmit = handler;
+  onSubmit(handler): void {
+    this.handlers.onSubmit = handler;
   }
 
-  onSave(handler) {
-    this._handlers.onSave = handler;
+  onSave(handler): void {
+    this.handlers.onSave = handler;
   }
 
 
@@ -167,8 +180,9 @@ export default class Form {
    * Start saving of form immediately.
    * @return {Promise}
    */
-  save() {
+  save(): Promise<void> {
     const isImmediately = true;
+
     return this._startSaving(isImmediately);
   }
 
@@ -182,7 +196,7 @@ export default class Form {
     // do nothing if form is submitting at the moment
     if (this.submitting) return `The form is submitting now.`;
 
-    if (!this._config.allowSubmitUnchangedForm) {
+    if (!this.config.allowSubmitUnchangedForm) {
       if (!this.dirty) return `The form hasn't changed.`;
     }
   }
@@ -203,62 +217,62 @@ export default class Form {
    * Please check ability of submission of form by calling `form.canSubmit()` or use submittable param
    * @return {Promise|undefined} - wait for submit has finished
    */
-  handleSubmit() {
-    if (!this._handlers.onSubmit) return;
+  handleSubmit = () => {
+    if (!this.handlers.onSubmit) return;
 
     const { values, editedValues } = this;
     this._setState({ submitting: true });
     this.$emit('submitStart', { values, editedValues });
 
     // run submit callback
-    this._submitPromise = this._runSubmitHandler(values, editedValues);
-    this._submitPromise
+    this.submitPromise = this._runSubmitHandler(values, editedValues);
+    this.submitPromise
       .then((data) => {
-        this._submitPromise = null;
+        this.submitPromise = null;
 
         return data;
       })
       .catch((err) => {
-        this._submitPromise = null;
+        this.submitPromise = null;
 
         return Promise.reject(err);
       });
 
-    return this._submitPromise;
-  }
+    return this.submitPromise;
+  };
 
   /**
    * Roll back to initial values for all the fields.
    */
-  clear() {
+  clear = () => {
     this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$clearSilent());
     });
-  }
+  };
 
   /**
    * Roll back to previously saved values for all the fields.
    */
-  revert() {
+  revert = () => {
     this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$revertSilent());
     });
-  }
+  };
 
   /**
    * Reset values to default values for all the fields.
    */
-  reset() {
+  reset = () => {
     this._updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$resetSilent());
     });
-  }
+  };
 
   /**
    * Clear storage and remove all the event handlers
    */
   destroy() {
-    this._handlers = {};
+    this.handlers = {};
 
     this.flushSaving();
 
@@ -267,13 +281,13 @@ export default class Form {
         return field.$destroyHandlers();
       });
 
-      this._formStorage.destroy();
+      this.formStorage.destroy();
     };
 
     // wait for save and submit process have finished
     Promise.all([
-      this._debouncedSave.getPromise() || Promise.resolve(),
-      this._submitPromise || Promise.resolve(),
+      this.debouncedSave.getPromise() || Promise.resolve(),
+      this.submitPromise || Promise.resolve(),
     ])
       .then(doDestroy)
       .catch(doDestroy);
@@ -283,14 +297,14 @@ export default class Form {
    * Cancel debounce waiting for saving
    */
   cancelSaving() {
-    this._debouncedSave.cancel();
+    this.debouncedSave.cancel();
   }
 
   /**
    * Saving immediately
    */
   flushSaving() {
-    this._debouncedSave.flush();
+    this.debouncedSave.flush();
   }
 
   /**
@@ -298,7 +312,7 @@ export default class Form {
    * @param {function} cb - callback like (errors, values) => {...}
    */
   setValidateCb(cb) {
-    this._validateCb = cb;
+    this.validateCb = cb;
 
     this._updateStateAndValidate();
   }
@@ -370,7 +384,7 @@ export default class Form {
    * @return {string|undefined} - valid if undefined or error message.
    */
   validate() {
-    if (!this._validateCb) return;
+    if (!this.validateCb) return;
 
     const errors = {};
     const values = this.values;
@@ -389,7 +403,7 @@ export default class Form {
     });
 
     // do validate
-    this._validateCb(errors, values);
+    this.validateCb(errors, values);
 
     // set valid state to all the fields
     findFieldRecursively(this.fields, (field, path) => {
@@ -399,15 +413,15 @@ export default class Form {
       field.$setStateSilent({ invalidMsg });
     });
 
-    this._formStorage.setStateSilent({ valid: isFormValid });
+    this.formStorage.setStateSilent({ valid: isFormValid });
   }
 
   $getWholeStorageState() {
-    return this._storage.getWholeStorageState();
+    return this.storage.getWholeStorageState();
   }
 
   $setStateSilent(partlyState) {
-    this._formStorage.setStateSilent(partlyState);
+    this.formStorage.setStateSilent(partlyState);
   }
 
   $handleFieldChange(eventData) {
@@ -419,17 +433,17 @@ export default class Form {
   }
 
   $emit(eventName, data) {
-    this._formStorage.emit(eventName, data);
+    this.formStorage.emit(eventName, data);
   }
 
   _startSaving(isImmediately) {
     // don't run saving process if there isn't onSave callback
-    if (!this._handlers.onSave) return;
+    if (!this.handlers.onSave) return;
 
     const valuesBeforeSave = this.values;
 
-    this._debouncedSave.exec(this._doSave, isImmediately);
-    this._debouncedSave.onEnd((error) => {
+    this.debouncedSave.exec(this.doSave, isImmediately);
+    this.debouncedSave.onEnd((error) => {
       if (error) {
         this._setState({ saving: false });
         this.$emit('saveEnd', { error });
@@ -442,16 +456,16 @@ export default class Form {
       }
     });
 
-    return this._debouncedSave.getPromise();
+    return this.debouncedSave.getPromise();
   }
 
-  _doSave() {
+  private doSave = () => {
     this._setState({ saving: true });
     // emit save start
     this.$emit('saveStart');
 
     // run save callback
-    const cbResult = this._handlers.onSave(this.values);
+    const cbResult = this.handlers.onSave(this.values);
 
     if (isPromise(cbResult)) {
       return cbResult;
@@ -460,11 +474,11 @@ export default class Form {
     // else if save callback hasn't returned a promise
 
     return Promise.resolve();
-  }
+  };
 
   _runSubmitHandler(values, editedValues) {
     // get result of submit handler
-    const returnedValue = this._handlers.onSubmit({ values, editedValues });
+    const returnedValue = this.handlers.onSubmit({ values, editedValues });
 
     // if handler returns a promise - wait for its fulfilling
     if (isPromise(returnedValue)) {
@@ -516,13 +530,13 @@ export default class Form {
     if (existentField) throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
 
     // create new one
-    const newField = new Field(pathToField, fieldParams, this, this._fieldStorage);
+    const newField = new Field(pathToField, fieldParams, this, this.fieldStorage);
     _.set(this.fields, pathToField, newField);
   }
 
   _setState(partlyState) {
     this._updateState(() => {
-      this._formStorage.setStateSilent(partlyState);
+      this.formStorage.setStateSilent(partlyState);
     });
   }
 
@@ -534,12 +548,12 @@ export default class Form {
   }
 
   _updateState(cbWhichChangesState, force) {
-    const oldState = this._formStorage.getWholeState();
+    const oldState = this.formStorage.getWholeState();
 
     if (cbWhichChangesState) cbWhichChangesState();
 
-    const newState = this._formStorage.getWholeState();
-    this._formStorage.emitStorageEvent('update', newState, oldState, force);
+    const newState = this.formStorage.getWholeState();
+    this.formStorage.emitStorageEvent('update', newState, oldState, force);
   }
 
 }
