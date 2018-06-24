@@ -3,6 +3,9 @@ import {ErrorMessage} from './Form';
 import EventData from './interfaces/EventData';
 
 
+export type FromEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd' | 'submitStart' | 'submitEnd';
+
+
 export default class FormStorage {
   constructor(storage) {
     this._storage = storage;
@@ -107,15 +110,15 @@ export default class FormStorage {
    * @param eventName
    * @param cb
    */
-  on(eventName, cb) {
+  on(eventName: FromEventName, cb: (data: EventData) => void) {
     this._storage.events.on(eventName, cb);
   }
 
-  emit(eventName, data) {
+  emit(eventName: FromEventName, data) {
     this._storage.events.emit(eventName, data);
   }
 
-  off(eventName, cb) {
+  off(eventName: FromEventName, cb: (data: EventData) => void) {
     this._storage.events.off(eventName, cb);
   }
 

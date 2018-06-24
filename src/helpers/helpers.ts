@@ -21,8 +21,11 @@ export function isFieldSchema(comingSchema) {
   return isSchema;
 }
 
-export function findFieldRecursively(rootObject, cb) {
-  const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
+export function findFieldRecursively(
+  rootObject: {[index: string]: any},
+  cb: (item, path: string) => any
+): void {
+  const recursive = (obj: {[index: string]: any}, rootPath: string) => _.find(obj, (item, name) => {
     const itemPath = _.trim(`${rootPath}.${name}`, '.');
 
     if (_.isPlainObject(item)) {
@@ -38,6 +41,23 @@ export function findFieldRecursively(rootObject, cb) {
   return recursive(rootObject, '');
 }
 
+export function eachFieldSchemaRecursively(
+  rootObject: {[index: string]: any},
+  cb: (item: {[index: string]: any}, path: string) => any
+): void {
+  findRecursively(rootObject, (item: {[index: string]: any}, path: string): boolean | void => {
+    if (!_.isPlainObject(item)) return false;
+
+    // means field
+    if (_.isEmpty(item) || isFieldSchema(item)) {
+      cb(item, path);
+
+      // don't go deeper
+      return false;
+    }
+  })
+}
+
 /**
  * It works with common structures like
  *     {
@@ -49,7 +69,10 @@ export function findFieldRecursively(rootObject, cb) {
  * @param {function} cb - callback like (items, pathToItem) => {}.
  *                        If it returns false it means don't go deeper.
  */
-export function findRecursively(rootObject, cb) {
+export function findRecursively(
+  rootObject: {[index: string]: any},
+  cb: (item: {[index: string]: any}, path: string) => boolean | void
+): void {
   const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
     const itemPath = _.trim(`${rootPath}.${name}`, '.');
 

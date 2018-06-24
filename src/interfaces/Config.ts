@@ -4,6 +4,7 @@ export default interface Config {
    */
   debounceTime?: number;
 
+  allowSubmitUnchangedForm: boolean;
   // TODO: add others
 
 }

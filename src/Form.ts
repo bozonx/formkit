@@ -1,11 +1,18 @@
 import * as _ from 'lodash';
 import Storage from './Storage';
-import FormStorage from './FormStorage';
+import FormStorage, { FromEventName } from './FormStorage';
 import FieldStorage from './FieldStorage';
 import Field from './Field';
 import DebouncedCall from './helpers/DebouncedCall';
-import { findFieldRecursively, findRecursively, isPromise, isFieldSchema } from './helpers/helpers';
+import {
+  findFieldRecursively,
+  findRecursively,
+  eachFieldSchemaRecursively,
+  isPromise
+} from './helpers/helpers';
 import Config from './interfaces/Config';
+import FieldSchema from './interfaces/FieldSchema';
+import EventData from './interfaces/EventData';
 
 
 export interface ErrorMessage {
@@ -14,14 +21,14 @@ export interface ErrorMessage {
 }
 
 interface Hnadlers {
-  // TODO: уточнить
-  onSubmit?: Function;
-  onSave?: Function;
+  onSubmit?: () => void;
+  onSave?: () => void;
 }
 
 // TODO: может быть вложенный
 type Values = { [index: string]: any };
 type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
+
 
 /**
  * Form
@@ -132,65 +139,48 @@ export default class Form {
     }
     else {
       // read schema
-      findRecursively(initialFields, (item: {[index: string]: any}, path: string) => {
-        if (!_.isPlainObject(item)) return false;
-
-        // means field
-        if (_.isEmpty(item) || isFieldSchema(item)) {
-          this._initField(path, item);
-
-          // don't go deeper
-          return false;
-        }
+      eachFieldSchemaRecursively(initialFields, (fieldSchema: FieldSchema, path: string) => {
+        this._initField(path, fieldSchema);
       });
     }
 
+    // validate whole form
     this.validate();
-
+    // emit init event
     this.formStorage.emitStorageEvent('init', this.values, undefined);
   }
 
   /**
    * Add one or more handlers on form's event:
-   * * change - changes made by user
-   * * storage - changes of storage
-   * * submitStart
-   * * submitEnd
-   * @param eventName
-   * @param cb
    */
-  on(eventName: string, cb): void {
+  on(eventName: FromEventName, cb: (data: EventData) => void): void {
     this.formStorage.on(eventName, cb);
   }
 
-  off(eventName: string, cb): void {
+  off(eventName: FromEventName, cb: (data: EventData) => void): void {
     this.formStorage.off(eventName, cb);
   }
 
-  onSubmit(handler): void {
+  onSubmit(handler: () => void): void {
     this.handlers.onSubmit = handler;
   }
 
-  onSave(handler): void {
+  onSave(handler: () => void): void {
     this.handlers.onSave = handler;
   }
 
-
   /**
    * Start saving of form immediately.
-   * @return {Promise}
    */
   save(): Promise<void> {
-    const isImmediately = true;
-
-    return this._startSaving(isImmediately);
+    return this._startSaving(true);
   }
 
   /**
    * Check for ability to form submit.
-   * @return {string|undefined} - returns undefined if it's OK else returns a reason.
+   * @return {string|void} - returns undefined if it's OK else returns a reason.
    */
-  canSubmit() {
+  canSubmit(): string | void {
     // disallow submit invalid form
     if (!this.valid) return `The form is invalid.`;
     // do nothing if form is submitting at the moment
@@ -201,12 +191,11 @@ export default class Form {
     }
   }
 
-
   /**
    * Check for field can be saved.
-   * @return {string|undefined} - undefined means it can. Otherwise it returns a reason.
+   * @return {string|void} - undefined means it can. Otherwise it returns a reason.
    */
-  canSave() {
+  canSave(): string | void {
     // disallow save invalid form
     if (!this.valid) return `The form is invalid.`;
     if (!this.touched) return `The form hasn't been modified`;
@@ -217,10 +206,11 @@ export default class Form {
    * Please check ability of submission of form by calling `form.canSubmit()` or use submittable param
    * @return {Promise|undefined} - wait for submit has finished
    */
-  handleSubmit = () => {
+  handleSubmit = (): Promise<void> => {
     if (!this.handlers.onSubmit) return;
 
     const { values, editedValues } = this;
+
     this._setState({ submitting: true });
     this.$emit('submitStart', { values, editedValues });
 
@@ -523,14 +513,17 @@ export default class Form {
    * @param {object} fieldParams - { initial, defaultValue, disabled, validate, debounceTime }
    * @private
    */
-  _initField(pathToField, fieldParams) {
-    if (!pathToField) throw new Error(`You have to specify a field's name!`);
+  _initField(pathToField: string, fieldParams: FieldSchema) {
     // Try to get existent field
     const existentField = _.get(this.fields, pathToField);
-    if (existentField) throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
+
+    if (existentField) {
+      throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
+    }
 
     // create new one
-    const newField = new Field(pathToField, fieldParams, this, this.fieldStorage);
+    const newField: Field = new Field(pathToField, fieldParams, this, this.fieldStorage);
+
     _.set(this.fields, pathToField, newField);
   }
 
