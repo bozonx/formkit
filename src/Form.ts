@@ -254,6 +254,7 @@ export default class Form {
    * Clear storage and remove all the event handlers
    */
   destroy(): Promise<void> {
+    // TODO: как удалить чтобы сборщик мусора сработал?
     this.handlers = {};
 
     this.flushSaving();
@@ -389,19 +390,22 @@ export default class Form {
     this.startSaving(false);
   }
 
-  $emit(eventName: FormEventName, data: FormEventData) {
+  $emit(eventName: FormEventName, data?: FormEventData) {
     this.formStorage.emit(eventName, data);
   }
 
 
-  private startSaving(isImmediately) {
+  private startSaving(isImmediately: boolean): Promise<void> {
+
+    // TODO: review
+
     // don't run saving process if there isn't onSave callback
     if (!this.handlers.onSave) return;
 
     const valuesBeforeSave = this.values;
 
     this.debouncedSave.exec(this.doSave, isImmediately);
-    this.debouncedSave.onEnd((error) => {
+    this.debouncedSave.onEnd((error: Error) => {
       if (error) {
         this.setState({ saving: false });
         this.$emit('saveEnd', { error });
@@ -417,7 +421,10 @@ export default class Form {
     return this.debouncedSave.getPromise();
   }
 
-  private doSave = () => {
+  private doSave = (): Promise<void> => {
+
+    // TODO: review
+
     this.setState({ saving: true });
     // emit save start
     this.$emit('saveStart');
@@ -435,6 +442,9 @@ export default class Form {
   };
 
   private async runSubmitHandler(values: Values, editedValues: Values): Promise<void> {
+
+    // TODO: review
+
     // get result of submit handler
     const returnedValue = this.handlers.onSubmit && this.handlers.onSubmit(values, editedValues);
     const returnedPromise = resolvePromise(returnedValue);
@@ -444,19 +454,19 @@ export default class Form {
       await returnedPromise;
       this.afterSubmitSuccess(values);
     }
-    catch (error) {
+    catch (error: Error) {
       this.setState({ submitting: false });
       this.$emit('submitEnd', { error });
     }
   }
 
-  private afterSubmitSuccess(values) {
+  private afterSubmitSuccess(values: Values): void {
     this.setState({ submitting: false });
     this.moveValuesToSaveLayer(values);
     this.$emit('submitEnd');
   }
 
-  private moveValuesToSaveLayer(values, force?: boolean) {
+  private moveValuesToSaveLayer(values: Values, force?: boolean): void {
     this.updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field: Field, pathToField: string) => {
         const savedValue = _.get(values, pathToField);
@@ -472,7 +482,7 @@ export default class Form {
    * @param {object} fieldParams - { initial, defaultValue, disabled, validate, debounceTime }
    * @private
    */
-  private initField(pathToField: string, fieldParams: FieldSchema) {
+  private initField(pathToField: string, fieldParams: FieldSchema): void {
     // Try to get existent field
     const existentField = _.get(this.fields, pathToField);
 
@@ -486,20 +496,20 @@ export default class Form {
     _.set(this.fields, pathToField, newField);
   }
 
-  private setState(partlyState: {[index: string]: any}) {
+  private setState(partlyState: {[index: string]: any}): void {
     this.updateState(() => {
       this.formStorage.setStateSilent(partlyState);
     });
   }
 
-  private updateStateAndValidate(cbWhichChangesState?: () => void, force?: boolean) {
+  private updateStateAndValidate(cbWhichChangesState?: () => void, force?: boolean): void {
     this.updateState(() => {
       if (cbWhichChangesState) cbWhichChangesState();
       this.validate();
     }, force);
   }
 
-  private updateState(cbWhichChangesState: () => void, force?: boolean) {
+  private updateState(cbWhichChangesState: () => void, force?: boolean): void {
     const oldState: FormState = this.formStorage.getWholeState();
 
     if (cbWhichChangesState) cbWhichChangesState();

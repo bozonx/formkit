@@ -6,4 +6,5 @@ export default interface FormEventData {
   event: string;
   state: FormState;
   oldState: FormState;
+  error?: Error;
 }
