@@ -8,7 +8,7 @@ import {
   findFieldRecursively,
   findRecursively,
   eachFieldSchemaRecursively,
-  isPromise
+  isPromise, resolvePromise
 } from './helpers/helpers';
 import Config from './interfaces/Config';
 import FieldSchema from './interfaces/FieldSchema';
@@ -208,7 +208,7 @@ export default class Form {
    * @return {Promise|undefined} - wait for submit has finished
    */
   handleSubmit = (): Promise<void> => {
-    if (!this.handlers.onSubmit) return;
+    if (!this.handlers.onSubmit) return Promise.resolve();
 
     const { values, editedValues } = this;
 
@@ -216,7 +216,7 @@ export default class Form {
     this.$emit('submitStart', { values, editedValues });
 
     // run submit callback
-    this.submitPromise = this.runSubmitHandler(values, editedValues);
+    this.submitPromise: Promise<void> = this.runSubmitHandler(values, editedValues);
     this.submitPromise
       .then((data) => {
         this.submitPromise = null;
@@ -468,30 +468,20 @@ export default class Form {
     return Promise.resolve();
   };
 
-  private runSubmitHandler(values, editedValues) {
+  private async runSubmitHandler(values: Values, editedValues: Values): Promise<void> {
     // get result of submit handler
-    const returnedValue = this.handlers.onSubmit({ values, editedValues });
+    const returnedValue = this.handlers.onSubmit && this.handlers.onSubmit({ values, editedValues });
+    const returnedPromise = resolvePromise(returnedValue);
 
-    // if handler returns a promise - wait for its fulfilling
-    if (isPromise(returnedValue)) {
-      return returnedValue
-        .then((data) => {
-          this.afterSubmitSuccess(values);
-
-          return data;
-        })
-        .catch((error) => {
-          this.setState({ submitting: false });
-          this.$emit('submitEnd', { error });
-
-          return Promise.reject(error);
-        });
+    try {
+      // wait for saving process
+      await returnedPromise;
+      this.afterSubmitSuccess(values);
     }
-
-    // else if handler returns any other type - don't wait and finish submit process
-    this.afterSubmitSuccess(values);
-
-    return Promise.resolve();
+    catch (error) {
+      this.setState({ submitting: false });
+      this.$emit('submitEnd', { error });
+    }
   }
 
   private afterSubmitSuccess(values) {

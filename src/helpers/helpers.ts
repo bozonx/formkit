@@ -125,6 +125,12 @@ export function isPromise(unknown) {
   return _.isObject(unknown) && unknown.then;
 }
 
+export function resolvePromise(value: any): Promise<any> {
+  if (isPromise(value)) return value;
+
+  return Promise.resolve();
+}
+
 export function parseValue(rawValue) {
   if (_.isUndefined(rawValue)) {
     return;
