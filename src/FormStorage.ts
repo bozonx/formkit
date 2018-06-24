@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import {ErrorMessage} from './Form';
-import EventData from './interfaces/EventData';
+import FromEventData from './interfaces/FromEventData';
 
 
 export type FromEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd' | 'submitStart' | 'submitEnd';
@@ -88,7 +88,7 @@ export default class FormStorage {
   emitStorageEvent(action: string, newState: any, oldState: any, force?: boolean) {
     if (!force && _.isEqual(oldState, newState)) return;
 
-    const data: EventData = {
+    const data: FromEventData = {
       target: 'form',
       event: 'storage',
       state: newState,
@@ -110,7 +110,7 @@ export default class FormStorage {
    * @param eventName
    * @param cb
    */
-  on(eventName: FromEventName, cb: (data: EventData) => void) {
+  on(eventName: FromEventName, cb: (data: FromEventData) => void) {
     this._storage.events.on(eventName, cb);
   }
 
@@ -118,7 +118,7 @@ export default class FormStorage {
     this._storage.events.emit(eventName, data);
   }
 
-  off(eventName: FromEventName, cb: (data: EventData) => void) {
+  off(eventName: FromEventName, cb: (data: FromEventData) => void) {
     this._storage.events.off(eventName, cb);
   }
 

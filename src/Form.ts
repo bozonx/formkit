@@ -12,7 +12,8 @@ import {
 } from './helpers/helpers';
 import Config from './interfaces/Config';
 import FieldSchema from './interfaces/FieldSchema';
-import EventData from './interfaces/EventData';
+import FromEventData from './interfaces/FromEventData';
+import FormState from './interfaces/FormState';
 
 
 export interface ErrorMessage {
@@ -153,11 +154,11 @@ export default class Form {
   /**
    * Add one or more handlers on form's event:
    */
-  on(eventName: FromEventName, cb: (data: EventData) => void): void {
+  on(eventName: FromEventName, cb: (data: FromEventData) => void): void {
     this.formStorage.on(eventName, cb);
   }
 
-  off(eventName: FromEventName, cb: (data: EventData) => void): void {
+  off(eventName: FromEventName, cb: (data: FromEventData) => void): void {
     this.formStorage.off(eventName, cb);
   }
 
@@ -499,10 +500,11 @@ export default class Form {
     this.$emit('submitEnd');
   }
 
-  private moveValuesToSaveLayer(values, force) {
+  private moveValuesToSaveLayer(values, force?: boolean) {
     this.updateStateAndValidate(() => {
-      findFieldRecursively(this.fields, (field, pathToField) => {
+      findFieldRecursively(this.fields, (field: Field, pathToField: string) => {
         const savedValue = _.get(values, pathToField);
+
         field.$setValueAfterSave(savedValue);
       });
     }, force);
@@ -528,21 +530,21 @@ export default class Form {
     _.set(this.fields, pathToField, newField);
   }
 
-  private setState(partlyState) {
+  private setState(partlyState: {[index: string]: any}) {
     this.updateState(() => {
       this.formStorage.setStateSilent(partlyState);
     });
   }
 
-  private updateStateAndValidate(cbWhichChangesState, force) {
+  private updateStateAndValidate(cbWhichChangesState: () => void, force?: boolean) {
     this.updateState(() => {
       if (cbWhichChangesState) cbWhichChangesState();
       this.validate();
     }, force);
   }
 
-  private updateState(cbWhichChangesState, force) {
-    const oldState = this.formStorage.getWholeState();
+  private updateState(cbWhichChangesState: () => void, force?: boolean) {
+    const oldState: FormState = this.formStorage.getWholeState();
 
     if (cbWhichChangesState) cbWhichChangesState();
 
