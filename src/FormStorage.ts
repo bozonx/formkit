@@ -1,9 +1,10 @@
 import * as _ from 'lodash';
 import {ErrorMessage} from './Form';
-import FromEventData from './interfaces/FromEventData';
+import FormEventData from './interfaces/FormEventData';
+import FormState from './interfaces/FormState';
 
 
-export type FromEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd' | 'submitStart' | 'submitEnd';
+export type FormEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd' | 'submitStart' | 'submitEnd';
 
 
 export default class FormStorage {
@@ -81,14 +82,14 @@ export default class FormStorage {
     };
   }
 
-  setStateSilent(partlyState) {
+  setStateSilent(partlyState: FormState) {
     this._storage.setFormState(partlyState);
   }
 
   emitStorageEvent(action: string, newState: any, oldState: any, force?: boolean) {
     if (!force && _.isEqual(oldState, newState)) return;
 
-    const data: FromEventData = {
+    const data: FormEventData = {
       target: 'form',
       event: 'storage',
       state: newState,
@@ -110,15 +111,15 @@ export default class FormStorage {
    * @param eventName
    * @param cb
    */
-  on(eventName: FromEventName, cb: (data: FromEventData) => void) {
+  on(eventName: FormEventName, cb: (data: FormEventData) => void) {
     this._storage.events.on(eventName, cb);
   }
 
-  emit(eventName: FromEventName, data) {
+  emit(eventName: FormEventName, data) {
     this._storage.events.emit(eventName, data);
   }
 
-  off(eventName: FromEventName, cb: (data: FromEventData) => void) {
+  off(eventName: FormEventName, cb: (data: FormEventData) => void) {
     this._storage.events.off(eventName, cb);
   }
 

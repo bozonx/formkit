@@ -2,13 +2,22 @@ import * as _ from 'lodash';
 import * as EventEmitter from 'eventemitter3';
 import { fromJS, Map } from 'immutable';
 import { findRecursively } from './helpers/helpers';
+import FormState from './interfaces/FormState';
+import FieldState from './interfaces/FieldState';
+
+
+export interface Store {
+  formState: FormState;
+  fieldsState: {[index: string]: FieldState};
+  values: Map;
+}
 
 
 export default class Storage {
   constructor() {
     this.events = new EventEmitter();
 
-    this._store = {
+    this._store: Store = {
       formState: new Map(this._generateNewFormState()),
       fieldsState: {},
       // combined saved and edited values
@@ -16,7 +25,7 @@ export default class Storage {
     };
   }
 
-  getWholeStorageState() {
+  getWholeStorageState(): Store {
     const store = {
       formState: this._store.formState.toJS(),
       fieldsState: {},

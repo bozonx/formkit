@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import Storage from './Storage';
-import FormStorage, { FromEventName } from './FormStorage';
+import Storage, {Store} from './Storage';
+import FormStorage, { FormEventName } from './FormStorage';
 import FieldStorage from './FieldStorage';
 import Field from './Field';
 import DebouncedCall from './helpers/DebouncedCall';
@@ -12,7 +12,7 @@ import {
 } from './helpers/helpers';
 import Config from './interfaces/Config';
 import FieldSchema from './interfaces/FieldSchema';
-import FromEventData from './interfaces/FromEventData';
+import FormEventData from './interfaces/FormEventData';
 import FormState from './interfaces/FormState';
 
 
@@ -155,11 +155,11 @@ export default class Form {
   /**
    * Add one or more handlers on form's event:
    */
-  on(eventName: FromEventName, cb: (data: FromEventData) => void): void {
+  on(eventName: FormEventName, cb: (data: FormEventData) => void): void {
     this.formStorage.on(eventName, cb);
   }
 
-  off(eventName: FromEventName, cb: (data: FromEventData) => void): void {
+  off(eventName: FormEventName, cb: (data: FormEventData) => void): void {
     this.formStorage.off(eventName, cb);
   }
 
@@ -346,13 +346,15 @@ export default class Form {
     let isFormValid: boolean = true;
 
     // add sub structures to "errors" for easy access to error
-    findFieldRecursively(this.fields, (field: Field, path: string) => {
-      const split = path.split('.');
-      const minPathItems = 2;
+    findFieldRecursively(this.fields, (field: Field, path: string): void => {
+      const split: Array<string> = path.split('.');
+      const minPathItems: number = 2;
+
       if (split.length < minPathItems) return;
 
       split.pop();
-      const basePath = split.join();
+
+      const basePath: string = split.join();
 
       _.set(errors, basePath, {});
     });
@@ -360,9 +362,11 @@ export default class Form {
     // do validate
     this.validateCb(errors, values);
 
+    // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
-    findFieldRecursively(this.fields, (field, path) => {
+    findFieldRecursively(this.fields, (field: Field, path: string) => {
       const invalidMsg = _.get(errors, path) || null;
+
       if (isFormValid) isFormValid = !invalidMsg;
 
       field.$setStateSilent({ invalidMsg });
@@ -371,23 +375,21 @@ export default class Form {
     this.formStorage.setStateSilent({ valid: isFormValid });
   }
 
-  $getWholeStorageState() {
+  $getWholeStorageState(): Store {
     return this.storage.getWholeStorageState();
   }
 
-  $setStateSilent(partlyState) {
+  $setStateSilent(partlyState: FormState): void {
     this.formStorage.setStateSilent(partlyState);
   }
 
-  $handleFieldChange(eventData) {
+  $handleFieldChange(eventData: FormEventData): void {
     // run form's change event
     this.$emit('change', eventData);
-
-    const isImmediately = false;
-    this.startSaving(isImmediately);
+    this.startSaving(false);
   }
 
-  $emit(eventName, data) {
+  $emit(eventName: FormEventName, data: FormEventData) {
     this.formStorage.emit(eventName, data);
   }
 
