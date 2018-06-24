@@ -135,12 +135,12 @@ export default class Form {
     this.validateCb = validateCb;
 
     if (Array.isArray(initialFields)) {
-      initialFields.forEach((pathToField) => this._initField(pathToField, {}));
+      initialFields.forEach((pathToField) => this.initField(pathToField, {}));
     }
     else {
       // read schema
       eachFieldSchemaRecursively(initialFields, (fieldSchema: FieldSchema, path: string) => {
-        this._initField(path, fieldSchema);
+        this.initField(path, fieldSchema);
       });
     }
 
@@ -173,7 +173,7 @@ export default class Form {
    * Start saving of form immediately.
    */
   save(): Promise<void> {
-    return this._startSaving(true);
+    return this.startSaving(true);
   }
 
   /**
@@ -211,11 +211,11 @@ export default class Form {
 
     const { values, editedValues } = this;
 
-    this._setState({ submitting: true });
+    this.setState({ submitting: true });
     this.$emit('submitStart', { values, editedValues });
 
     // run submit callback
-    this.submitPromise = this._runSubmitHandler(values, editedValues);
+    this.submitPromise = this.runSubmitHandler(values, editedValues);
     this.submitPromise
       .then((data) => {
         this.submitPromise = null;
@@ -235,7 +235,7 @@ export default class Form {
    * Roll back to initial values for all the fields.
    */
   clear = () => {
-    this._updateStateAndValidate(() => {
+    this.updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$clearSilent());
     });
   };
@@ -244,7 +244,7 @@ export default class Form {
    * Roll back to previously saved values for all the fields.
    */
   revert = () => {
-    this._updateStateAndValidate(() => {
+    this.updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$revertSilent());
     });
   };
@@ -253,7 +253,7 @@ export default class Form {
    * Reset values to default values for all the fields.
    */
   reset = () => {
-    this._updateStateAndValidate(() => {
+    this.updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field) => field.$resetSilent());
     });
   };
@@ -304,7 +304,7 @@ export default class Form {
   setValidateCb(cb) {
     this.validateCb = cb;
 
-    this._updateStateAndValidate();
+    this.updateStateAndValidate();
   }
 
   /**
@@ -315,7 +315,7 @@ export default class Form {
   setValues(newValues) {
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
-    this._updateStateAndValidate(() => {
+    this.updateStateAndValidate(() => {
       findRecursively(newValues, (value, path) => {
         const field = _.get(this.fields, path);
         // if it is'n a field - go deeper
@@ -346,7 +346,7 @@ export default class Form {
   setSavedValues(newValues) {
     if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
 
-    this._updateStateAndValidate(() => {
+    this.updateStateAndValidate(() => {
       findRecursively(newValues, (value, path) => {
         const field = _.get(this.fields, path);
 
@@ -419,14 +419,15 @@ export default class Form {
     this.$emit('change', eventData);
 
     const isImmediately = false;
-    this._startSaving(isImmediately);
+    this.startSaving(isImmediately);
   }
 
   $emit(eventName, data) {
     this.formStorage.emit(eventName, data);
   }
 
-  _startSaving(isImmediately) {
+
+  private startSaving(isImmediately) {
     // don't run saving process if there isn't onSave callback
     if (!this.handlers.onSave) return;
 
@@ -435,13 +436,13 @@ export default class Form {
     this.debouncedSave.exec(this.doSave, isImmediately);
     this.debouncedSave.onEnd((error) => {
       if (error) {
-        this._setState({ saving: false });
+        this.setState({ saving: false });
         this.$emit('saveEnd', { error });
       }
       else {
         const force = true;
         this.$setStateSilent({ saving: false });
-        this._moveValuesToSaveLayer(valuesBeforeSave, force);
+        this.moveValuesToSaveLayer(valuesBeforeSave, force);
         this.$emit('saveEnd');
       }
     });
@@ -450,7 +451,7 @@ export default class Form {
   }
 
   private doSave = () => {
-    this._setState({ saving: true });
+    this.setState({ saving: true });
     // emit save start
     this.$emit('saveStart');
 
@@ -466,7 +467,7 @@ export default class Form {
     return Promise.resolve();
   };
 
-  _runSubmitHandler(values, editedValues) {
+  private runSubmitHandler(values, editedValues) {
     // get result of submit handler
     const returnedValue = this.handlers.onSubmit({ values, editedValues });
 
@@ -474,12 +475,12 @@ export default class Form {
     if (isPromise(returnedValue)) {
       return returnedValue
         .then((data) => {
-          this._afterSubmitSuccess(values);
+          this.afterSubmitSuccess(values);
 
           return data;
         })
         .catch((error) => {
-          this._setState({ submitting: false });
+          this.setState({ submitting: false });
           this.$emit('submitEnd', { error });
 
           return Promise.reject(error);
@@ -487,19 +488,19 @@ export default class Form {
     }
 
     // else if handler returns any other type - don't wait and finish submit process
-    this._afterSubmitSuccess(values);
+    this.afterSubmitSuccess(values);
 
     return Promise.resolve();
   }
 
-  _afterSubmitSuccess(values) {
-    this._setState({ submitting: false });
-    this._moveValuesToSaveLayer(values);
+  private afterSubmitSuccess(values) {
+    this.setState({ submitting: false });
+    this.moveValuesToSaveLayer(values);
     this.$emit('submitEnd');
   }
 
-  _moveValuesToSaveLayer(values, force) {
-    this._updateStateAndValidate(() => {
+  private moveValuesToSaveLayer(values, force) {
+    this.updateStateAndValidate(() => {
       findFieldRecursively(this.fields, (field, pathToField) => {
         const savedValue = _.get(values, pathToField);
         field.$setValueAfterSave(savedValue);
@@ -513,7 +514,7 @@ export default class Form {
    * @param {object} fieldParams - { initial, defaultValue, disabled, validate, debounceTime }
    * @private
    */
-  _initField(pathToField: string, fieldParams: FieldSchema) {
+  private initField(pathToField: string, fieldParams: FieldSchema) {
     // Try to get existent field
     const existentField = _.get(this.fields, pathToField);
 
@@ -527,20 +528,20 @@ export default class Form {
     _.set(this.fields, pathToField, newField);
   }
 
-  _setState(partlyState) {
-    this._updateState(() => {
+  private setState(partlyState) {
+    this.updateState(() => {
       this.formStorage.setStateSilent(partlyState);
     });
   }
 
-  _updateStateAndValidate(cbWhichChangesState, force) {
-    this._updateState(() => {
+  private updateStateAndValidate(cbWhichChangesState, force) {
+    this.updateState(() => {
       if (cbWhichChangesState) cbWhichChangesState();
       this.validate();
     }, force);
   }
 
-  _updateState(cbWhichChangesState, force) {
+  private updateState(cbWhichChangesState, force) {
     const oldState = this.formStorage.getWholeState();
 
     if (cbWhichChangesState) cbWhichChangesState();
