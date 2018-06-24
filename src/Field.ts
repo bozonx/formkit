@@ -234,7 +234,7 @@ export default class Field {
     this.$setEditedValueSilent(this.defaultValue);
   }
 
-  $destroyHandlers() {
+  $destroyHandlers(): void {
     this._handlers = {};
   }
 

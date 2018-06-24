@@ -16,19 +16,20 @@ import FromEventData from './interfaces/FromEventData';
 import FormState from './interfaces/FormState';
 
 
+// TODO: может быть вложенный
+type Values = { [index: string]: any };
+type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
+
 export interface ErrorMessage {
   field: string;
   message: string;
 }
 
 interface Hnadlers {
-  onSubmit?: () => void;
+  onSubmit?: (values: Values, editedValues: Values) => void;
   onSave?: () => void;
 }
 
-// TODO: может быть вложенный
-type Values = { [index: string]: any };
-type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
 
 
 /**
@@ -44,7 +45,7 @@ export default class Form {
   private readonly formStorage: FormStorage;
   private readonly fieldStorage: FieldStorage;
   // TODO: review
-  private readonly submitPromise?: Function;
+  private submitPromise?: Function;
   // TODO: review
   private readonly handlers: Hnadlers = {
     onSubmit: undefined,
@@ -207,8 +208,8 @@ export default class Form {
    * Please check ability of submission of form by calling `form.canSubmit()` or use submittable param
    * @return {Promise|undefined} - wait for submit has finished
    */
-  handleSubmit = (): Promise<void> => {
-    if (!this.handlers.onSubmit) return Promise.resolve();
+  handleSubmit = async (): Promise<void> => {
+    if (!this.handlers.onSubmit) return;
 
     const { values, editedValues } = this;
 
@@ -216,67 +217,57 @@ export default class Form {
     this.$emit('submitStart', { values, editedValues });
 
     // run submit callback
-    this.submitPromise: Promise<void> = this.runSubmitHandler(values, editedValues);
-    this.submitPromise
-      .then((data) => {
-        this.submitPromise = null;
+    await this.runSubmitHandler(values, editedValues);
 
-        return data;
-      })
-      .catch((err) => {
-        this.submitPromise = null;
-
-        return Promise.reject(err);
-      });
-
-    return this.submitPromise;
+    // TODO: зачем это нужно ???
+    //this.submitPromise = null;
   };
 
   /**
    * Roll back to initial values for all the fields.
    */
-  clear = () => {
-    this.updateStateAndValidate(() => {
-      findFieldRecursively(this.fields, (field) => field.$clearSilent());
+  clear = (): void => {
+    this.updateStateAndValidate((): void => {
+      findFieldRecursively(this.fields, (field: Field) => field.$clearSilent());
     });
   };
 
   /**
    * Roll back to previously saved values for all the fields.
    */
-  revert = () => {
-    this.updateStateAndValidate(() => {
-      findFieldRecursively(this.fields, (field) => field.$revertSilent());
+  revert = (): void => {
+    this.updateStateAndValidate((): void => {
+      findFieldRecursively(this.fields, (field: Field) => field.$revertSilent());
     });
   };
 
   /**
    * Reset values to default values for all the fields.
    */
-  reset = () => {
-    this.updateStateAndValidate(() => {
-      findFieldRecursively(this.fields, (field) => field.$resetSilent());
+  reset = (): void => {
+    this.updateStateAndValidate((): void => {
+      findFieldRecursively(this.fields, (field: Field) => field.$resetSilent());
     });
   };
 
   /**
    * Clear storage and remove all the event handlers
    */
-  destroy() {
+  destroy(): Promise<void> {
     this.handlers = {};
 
     this.flushSaving();
 
-    const doDestroy = () => {
-      findFieldRecursively(this.fields, (field) => {
-        return field.$destroyHandlers();
+    const doDestroy = (): void => {
+      findFieldRecursively(this.fields, (field: Field): void => {
+        field.$destroyHandlers();
       });
 
       this.formStorage.destroy();
     };
 
     // wait for save and submit process have finished
-    Promise.all([
+    return Promise.all([
       this.debouncedSave.getPromise() || Promise.resolve(),
       this.submitPromise || Promise.resolve(),
     ])
@@ -287,14 +278,14 @@ export default class Form {
   /**
    * Cancel debounce waiting for saving
    */
-  cancelSaving() {
+  cancelSaving(): void {
     this.debouncedSave.cancel();
   }
 
   /**
    * Saving immediately
    */
-  flushSaving() {
+  flushSaving(): void {
     this.debouncedSave.flush();
   }
 
@@ -302,7 +293,7 @@ export default class Form {
    * Set callback wich will be called on each validating request.
    * @param {function} cb - callback like (errors, values) => {...}
    */
-  setValidateCb(cb) {
+  setValidateCb(cb: ValidateCb): void {
     this.validateCb = cb;
 
     this.updateStateAndValidate();
@@ -313,27 +304,14 @@ export default class Form {
    * @param {object} newValues - fields' values.
    *                             You can set values all the fields or just to a part of fields.
    */
-  setValues(newValues) {
-    if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
+  setValues(newValues: Values) {
+    if (!_.isPlainObject(newValues)) {
+      throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
+    }
 
     this.updateStateAndValidate(() => {
-      findRecursively(newValues, (value, path) => {
-        const field = _.get(this.fields, path);
-        // if it is'n a field - go deeper
-        if (!field || !(field instanceof Field)) {
-          if (_.isPlainObject(value)) {
-            // go deeper
-            return;
-          }
-
-          // stop
-          return false;
-        }
-        // else means it's field - set value and don't go deeper
-        // set value to edited layer
+      this.eachRawField(newValues, (field: Field, value: any): void => {
         field.$setEditedValueSilent(value);
-
-        return false;
       });
     });
   }
@@ -344,28 +322,14 @@ export default class Form {
    * It needs if you want to rollback user changes to previously saved values.
    * @param newValues
    */
-  setSavedValues(newValues) {
-    if (!_.isPlainObject(newValues)) throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
+  setSavedValues(newValues: Values) {
+    if (!_.isPlainObject(newValues)) {
+      throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
+    }
 
     this.updateStateAndValidate(() => {
-      findRecursively(newValues, (value, path) => {
-        const field = _.get(this.fields, path);
-
-        // if it is'n a field - go deeper
-        if (!field || !(field instanceof Field)) {
-          if (_.isPlainObject(value)) {
-            // go deeper
-            return;
-          }
-
-          // stop
-          return false;
-        }
-        // else means it's field - set value and don't go deeper
-        // set value to saved layer
+      this.eachRawField(newValues, (field: Field, value: any): void => {
         field.$setSavedValue(value);
-
-        return false;
       });
     });
   }
@@ -470,7 +434,7 @@ export default class Form {
 
   private async runSubmitHandler(values: Values, editedValues: Values): Promise<void> {
     // get result of submit handler
-    const returnedValue = this.handlers.onSubmit && this.handlers.onSubmit({ values, editedValues });
+    const returnedValue = this.handlers.onSubmit && this.handlers.onSubmit(values, editedValues);
     const returnedPromise = resolvePromise(returnedValue);
 
     try {
@@ -526,7 +490,7 @@ export default class Form {
     });
   }
 
-  private updateStateAndValidate(cbWhichChangesState: () => void, force?: boolean) {
+  private updateStateAndValidate(cbWhichChangesState?: () => void, force?: boolean) {
     this.updateState(() => {
       if (cbWhichChangesState) cbWhichChangesState();
       this.validate();
@@ -540,6 +504,31 @@ export default class Form {
 
     const newState = this.formStorage.getWholeState();
     this.formStorage.emitStorageEvent('update', newState, oldState, force);
+  }
+
+  private eachRawField(
+    values: {[index: string]: any},
+    cb: (field: Field, value: any, path: string) => void
+  ): void {
+    findRecursively(values, (value: any, path: string) => {
+      const field = _.get(this.fields, path);
+
+      // if it is'n a field - go deeper
+      if (!field || !(field instanceof Field)) {
+        if (_.isPlainObject(value)) {
+          // go deeper
+          return;
+        }
+
+        // stop
+        return false;
+      }
+      // else means it's field - set value and don't go deeper
+      // set value to saved layer
+      cb(field, value, path);
+
+      return false;
+    });
   }
 
 }
