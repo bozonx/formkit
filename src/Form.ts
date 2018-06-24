@@ -21,7 +21,7 @@ interface Hnadlers {
 
 // TODO: может быть вложенный
 type Values = { [index: string]: any };
-
+type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
 
 /**
  * Form
@@ -43,7 +43,7 @@ export default class Form {
     onSave: undefined,
   };
   // TODO: review почему не в handlers ???
-  private readonly validateCb?: Function;
+  private validateCb?: ValidateCb;
 
   constructor(config: Config) {
     this.config = config;
@@ -121,15 +121,18 @@ export default class Form {
    *   * if object: you can pass a fields config like: {name: {default: 'no name', ...}}
    * @param {function} validateCb - function which will be called on each change to validate form
    */
-  init(initialFields, validateCb) {
+  init(
+    initialFields: Array<string> | {[index: string]: object},
+    validateCb: ValidateCb
+  ): void {
     this.validateCb = validateCb;
 
-    if (_.isArray(initialFields)) {
-      _.each(initialFields, (pathToField) => this._initField(pathToField, {}));
+    if (Array.isArray(initialFields)) {
+      initialFields.forEach((pathToField) => this._initField(pathToField, {}));
     }
-    else if (_.isPlainObject(initialFields)) {
+    else {
       // read schema
-      findRecursively(initialFields, (item, path) => {
+      findRecursively(initialFields, (item: {[index: string]: any}, path: string) => {
         if (!_.isPlainObject(item)) return false;
 
         // means field
@@ -140,9 +143,6 @@ export default class Form {
           return false;
         }
       });
-    }
-    else {
-      throw new Error(`Bad type of fields param`);
     }
 
     this.validate();

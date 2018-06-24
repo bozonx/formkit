@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import {ErrorMessage} from './Form';
+import EventData from './interfaces/EventData';
 
 
 export default class FormStorage {
@@ -81,10 +82,10 @@ export default class FormStorage {
     this._storage.setFormState(partlyState);
   }
 
-  emitStorageEvent(action, newState, oldState, force) {
+  emitStorageEvent(action: string, newState: any, oldState: any, force?: boolean) {
     if (!force && _.isEqual(oldState, newState)) return;
 
-    const data = {
+    const data: EventData = {
       target: 'form',
       event: 'storage',
       state: newState,
