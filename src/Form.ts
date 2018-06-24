@@ -338,15 +338,15 @@ export default class Form {
    * Validate whole form.
    * @return {string|undefined} - valid if undefined or error message.
    */
-  validate() {
+  validate(): string | void {
     if (!this.validateCb) return;
 
-    const errors = {};
-    const values = this.values;
-    let isFormValid = true;
+    const errors: {[index: string]: string} = {};
+    const values: Values = this.values;
+    let isFormValid: boolean = true;
 
     // add sub structures to "errors" for easy access to error
-    findFieldRecursively(this.fields, (field, path) => {
+    findFieldRecursively(this.fields, (field: Field, path: string) => {
       const split = path.split('.');
       const minPathItems = 2;
       if (split.length < minPathItems) return;
