@@ -1,6 +1,9 @@
 import DebouncedProcess from './DebouncedProcess';
 
 
+type NextCb = [ () => void, Array<any>, number | undefined ];
+
+
 /**
  * It allows run callback with delay and debounce.
  * * running of callback will be delayed for a specified time
@@ -14,17 +17,18 @@ import DebouncedProcess from './DebouncedProcess';
 export default class DebouncedCall {
   private currentProcess: DebouncedProcess | null = null;
   // current callback which is waiting or in progress
-  private nextCb: (() => void) | null = null;
+  private nextCb: NextCb | null = null;
   private onEndCb: (() => void) | null = null;
   // promise of end of saving process
   private mainPromise: Promise<void> | null = null;
   private mainResolve: (() => void) | null = null;
+  private delayTime: number = 0;
 
   constructor(delayTime: number) {
     this.setDebounceTime(delayTime);
   }
 
-  getPromise() {
+  getPromise(): Promise<void> | null {
     return this.mainPromise;
   }
 
@@ -33,7 +37,7 @@ export default class DebouncedCall {
    * It is true until delayed time is up and callback will run.
    * @return {boolean}
    */
-  isWaiting() {
+  isWaiting(): boolean {
     if (!this.currentProcess) return false;
 
     return this.currentProcess.isWaiting();
@@ -44,7 +48,7 @@ export default class DebouncedCall {
    * It is true from callback has started and until callback's promise will be fulfilled.
    * @return {*}
    */
-  isPending() {
+  isPending(): boolean {
     if (!this.currentProcess) return false;
 
     return this.currentProcess.isPending();
@@ -54,12 +58,12 @@ export default class DebouncedCall {
    * delayed or pending
    * @return {boolean}
    */
-  isInProgress() {
+  isInProgress(): boolean {
     return this.isWaiting() || this.isPending();
   }
 
-  setDebounceTime(delayTime) {
-    this._delayTime = delayTime;
+  setDebounceTime(delayTime: number): void {
+    this.delayTime = delayTime;
   }
 
   /**
@@ -68,19 +72,19 @@ export default class DebouncedCall {
    * * cancel call callback which is next
    * It doesn't cancel currently executing callback
    */
-  cancel() {
-    this._clearQueue();
-    this._stopDelayed();
+  cancel(): void {
+    this.clearQueue();
+    this.stopDelayed();
   }
 
   /**
    * Run immediately callback which is waiting for start.
    */
-  flush() {
+  flush(): void {
     if (this.currentProcess) this.currentProcess.flush();
   }
 
-  onEnd(cb) {
+  onEnd(cb: () => void): void {
     this.onEndCb = cb;
   }
 
@@ -89,43 +93,49 @@ export default class DebouncedCall {
    * It starts after delay or immediately if force or after current executing callback.
    * @param {function} cb - your callback which will be executed
    * @param {boolean} force - if true - cancel current callback and run immediately
-   * @param {array} params - params of callback
+   * @param {array} cbParams - params of callback
    * @return {Promise} - promise of end of save cycle.
    *                     It will be fulfilled event a new one replaces current promise.
    */
-  exec(cb, force = false, ...params) {
+  exec(cb: () => void, force: boolean = false, ...cbParams: Array<any>): Promise<void> {
+
+    // TODO: cbParams не нужно
+
     if (!this.mainPromise) {
       this.mainResolve = null;
-      this.mainPromise = new Promise((resolve) => {
+      this.mainPromise = new Promise((resolve: () => void) => {
         this.mainResolve = resolve;
       });
     }
 
-    this._chooseTheWay(cb, params, force);
+    this.chooseTheWay(cb, cbParams, force);
 
     return this.mainPromise;
   }
 
-  _clearQueue() {
+  private clearQueue(): void {
     this.nextCb = null;
   }
 
-  _stopDelayed() {
+  private stopDelayed(): void {
+
+    // TODO: rename to stopCurrent ???
+
     if (!this.currentProcess) return;
 
     this.currentProcess.stop();
     this.currentProcess = null;
   }
 
-  _chooseTheWay(cb, params, force) {
+  private chooseTheWay(cb: () => void, params: Array<any>, force: boolean): void {
     if (force) {
       // run fresh new process it there isn't any or some process is waiting
       if (!this.currentProcess || this.isWaiting()) {
         // it hasn't been doing anything
-        this._runFreshProcess(cb, params);
+        this.runFreshProcess(cb, params);
       }
       else if (this.isPending()) {
-        this._addToQueue(cb, params);
+        this.addToQueue(cb, params);
       }
       else {
         throw new Error(`Something wrong`);
@@ -135,10 +145,10 @@ export default class DebouncedCall {
       // run fresh new process it there isn't any or some process is waiting
       if (!this.currentProcess || this.isWaiting()) {
         // it hasn't been doing anything
-        this._runFreshProcess(cb, params, this._delayTime);
+        this.runFreshProcess(cb, params, this.delayTime);
       }
       else if (this.isPending()) {
-        this._addToQueue(cb, params, this._delayTime);
+        this.addToQueue(cb, params, this.delayTime);
       }
       else {
         throw new Error(`Something wrong`);
@@ -146,26 +156,26 @@ export default class DebouncedCall {
     }
   }
 
-  _runFreshProcess(cb, params, delayTime) {
-    this._clearQueue();
-    this._stopDelayed();
+  private runFreshProcess(cb: () => void, params: Array<any>, delayTime?: number): void {
+    this.clearQueue();
+    this.stopDelayed();
 
     this.currentProcess = new DebouncedProcess(cb, params);
     // after current promise was finished - run next cb in queue
-    this.currentProcess.onFinish((err) => this._afterCbFinished(err));
+    this.currentProcess.onFinish((err) => this.afterCbFinished(err));
     this.currentProcess.start(delayTime);
   }
 
-  _addToQueue(cb, params, delayTime) {
+  private addToQueue(cb: () => void, params: Array<any>, delayTime?: number): void {
     this.nextCb = [ cb, params, delayTime ];
   }
 
-  _afterCbFinished(err) {
+  private afterCbFinished(err): void {
     if (this.nextCb) {
-      const cbParams = this.nextCb;
+      const cbParams: NextCb = this.nextCb;
       this.nextCb = null;
       this.currentProcess = null;
-      this._runFreshProcess(...cbParams);
+      this.runFreshProcess(...cbParams);
     }
     else {
       // if there isn't any queue - just finish and go to beginning
