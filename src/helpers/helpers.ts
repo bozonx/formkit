@@ -94,31 +94,27 @@ export function findRecursively(
   return recursive(rootObject, '');
 }
 
-export function calculateDirty(editedValue, savedValue) {
-  let newDirtyValue;
-
+export function calculateDirty(editedValue: any, savedValue: any): boolean {
   // if edited value don't specified - it means field isn't dirty
   if (_.isUndefined(editedValue)) return false;
 
   // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
   if ((editedValue === '' || _.isNil(editedValue)) && (savedValue === '' || _.isNil(savedValue))) {
-    newDirtyValue = false;
+    return false;
   }
   else {
     // just compare current editedValue and saved value
-    newDirtyValue = editedValue !== savedValue;
+    return editedValue !== savedValue;
   }
-
-  return newDirtyValue;
 }
 
-export function getFieldName(pathToField) {
-  const split = pathToField.split('.');
-  const onlyOneItem = 1;
+export function getFieldName(pathToField: string): string {
+  const split: Array<string> = pathToField.split('.');
+  const lastItem: string | undefined = _.last(split);
 
-  if (split.length <= onlyOneItem) return pathToField;
+  if (typeof lastItem === 'undefined') return pathToField;
 
-  return _.last(split);
+  return lastItem;
 }
 
 export function isPromise(unknown) {

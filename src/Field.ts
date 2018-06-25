@@ -2,8 +2,9 @@ import * as _ from 'lodash';
 import { calculateDirty, getFieldName, parseValue } from './helpers/helpers';
 import Form from './Form';
 import FieldSchema from './interfaces/FieldSchema';
-import FieldStorage from './FieldStorage';
+import FieldStorage, {FieldEventName} from './FieldStorage';
 import FieldEventData from './interfaces/FieldEventData';
+import FieldState from './interfaces/FieldState';
 
 
 /**
@@ -21,7 +22,7 @@ export default class Field {
     this.pathToField = pathToField;
     this.fieldName = getFieldName(pathToField);
     // TODO: ????
-    if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
+    //if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
 
     this.initState(params);
   }
@@ -154,14 +155,14 @@ export default class Field {
   /**
    * Set field's "focused" prop to true.
    */
-  handleFocusIn = () => {
+  handleFocusIn = (): void => {
     this.setState({ focused: true });
   }
 
   /**
    * Set field's "focused" prop to false.
    */
-  handleBlur = () => {
+  handleBlur = (): void => {
     this.setState({ focused: false });
     this.form.flushSaving();
   }
@@ -172,32 +173,26 @@ export default class Field {
    * * cancel previous save in queue
    * * immediately starts save
    */
-  handleEndEditing = () => {
+  handleEndEditing = (): void => {
     if (this.disabled) return;
     this.form.flushSaving();
   }
 
   /**
    * Add one or more handlers on fields's event:
-   * * change
-   * * storage
-   * * saveStart
-   * * saveEnd
-   * @param {string} eventName - name of field's event
-   * @param {function} cb - Event handler
    */
-  on(eventName, cb) {
+  on(eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
     this.fieldStorage.on(this.pathToField, eventName, cb);
   }
 
-  off(eventName, cb) {
+  off(eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
     this.fieldStorage.off(this.pathToField, eventName, cb);
   }
 
   /**
    * Clear value(user input) and set initial value.
    */
-  clear = () => {
+  clear = (): void => {
     this.updateStateAndValidate(() => {
       this.$clearSilent();
     });
@@ -206,7 +201,7 @@ export default class Field {
   /**
    * set saved value to current value.
    */
-  revert = () => {
+  revert = (): void => {
     this.updateStateAndValidate(() => {
       this.$revertSilent();
     });
@@ -215,30 +210,33 @@ export default class Field {
   /**
    * Reset to default value
    */
-  reset = () => {
+  reset = (): void => {
     this.updateStateAndValidate(() => {
       this.$resetSilent();
     });
   }
 
-  $clearSilent() {
+  $clearSilent(): void {
     const initial = this.fieldStorage.getState(this.pathToField, 'initial');
     this.$setEditedValueSilent(initial);
   }
 
-  $revertSilent() {
+  $revertSilent(): void {
     this.$setEditedValueSilent(this.savedValue);
   }
 
-  $resetSilent() {
+  $resetSilent(): void {
     this.$setEditedValueSilent(this.defaultValue);
   }
 
   $destroyHandlers(): void {
-    this._handlers = {};
+
+    // TODO: do it !!!!
+
+    //this._handlers = {};
   }
 
-  $setEditedValueSilent(newValue) {
+  $setEditedValueSilent(newValue: any): void {
     // set top value layer
     this.$setStateSilent({
       editedValue: newValue,
@@ -246,15 +244,19 @@ export default class Field {
     });
   }
 
-  $setSavedValue(newSavedValue) {
-    const newState = {
+  $setSavedValue(newSavedValue: any): void {
+    const newState: FieldState = {
       savedValue: newSavedValue,
       editedValue: this.editedValue,
     };
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
-    if (this.form.config.allowFocusedFieldUpdating || (!this.form.config.allowFocusedFieldUpdating && !this.focused)) {
+    if (
+      this.form.config.allowFocusedFieldUpdating
+      || (!this.form.config.allowFocusedFieldUpdating
+      && !this.focused)
+    ) {
       // clear top level
       newState.editedValue = undefined;
     }
@@ -264,11 +266,11 @@ export default class Field {
     this.$setStateSilent(newState);
   }
 
-  $setStateSilent(newPartlyState) {
+  $setStateSilent(newPartlyState: FieldState): void {
     this.fieldStorage.setStateSilent(this.pathToField, newPartlyState);
   }
 
-  $setValueAfterSave(savedValue) {
+  $setValueAfterSave(savedValue: any): void {
     // if value hasn't changed after submit was started - clear it
     if (savedValue === this.value) {
       this.fieldStorage.setStateSilent(this.pathToField, { editedValue: undefined });
@@ -285,7 +287,7 @@ export default class Field {
   /**
    * Init field's state.
    */
-  private initState(rawFieldSchema: FieldSchema) {
+  private initState(rawFieldSchema: FieldSchema): void {
     const initialState: FieldSchema = this.generateInitialState(rawFieldSchema);
 
     // init state
@@ -330,7 +332,7 @@ export default class Field {
     this.form.$handleFieldChange(eventData);
   }
 
-  private setState(partlyState: {[index: string]: any}): void {
+  private setState(partlyState: FieldState): void {
     this.updateState(() => {
       this.fieldStorage.setStateSilent(this.pathToField, partlyState);
     });

@@ -2,6 +2,9 @@ import * as _ from 'lodash';
 import FieldEventData from './interfaces/FieldEventData';
 
 
+export type FieldEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd';
+
+
 export default class FieldStorage {
   constructor(storage) {
     this._storage = storage;
@@ -61,15 +64,15 @@ export default class FieldStorage {
     this._storage.events.emit('storage', formEventData);
   }
 
-  on(pathToField, eventName, cb) {
+  on(pathToField: string, eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
     this._storage.events.on(`field.${pathToField}.${eventName}`, cb);
   }
 
-  emit(pathToField: string, eventName: string, data: FieldEventData): void {
+  emit(pathToField: string, eventName: FieldEventName, data: FieldEventData): void {
     this._storage.events.emit(`field.${pathToField}.${eventName}`, data);
   }
 
-  off(pathToField, eventName, cb) {
+  off(pathToField: string, eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
     this._storage.events.off(`field.${pathToField}.${eventName}`, cb);
   }
 
