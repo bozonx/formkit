@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import DebouncedProcess from './DebouncedProcess';
 
 
@@ -13,19 +12,20 @@ import DebouncedProcess from './DebouncedProcess';
  *   and resets currently delayed callback
  */
 export default class DebouncedCall {
-  constructor(delayTime) {
+  private currentProcess: DebouncedProcess | null = null;
+  // current callback which is waiting or in progress
+  private nextCb: (() => void) | null = null;
+  private onEndCb: (() => void) | null = null;
+  // promise of end of saving process
+  private mainPromise: Promise<void> | null = null;
+  private mainResolve: (() => void) | null = null;
+
+  constructor(delayTime: number) {
     this.setDebounceTime(delayTime);
-    // current callback which is waiting or in progress
-    this._currentProcess = null;
-    this._nextCb = null;
-    this._onEndCb = null;
-    // promise of end of saving process
-    this._mainPromise = null;
-    this._mainResolve = null;
   }
 
   getPromise() {
-    return this._mainPromise;
+    return this.mainPromise;
   }
 
   /**
@@ -34,9 +34,9 @@ export default class DebouncedCall {
    * @return {boolean}
    */
   isWaiting() {
-    if (!this._currentProcess) return false;
+    if (!this.currentProcess) return false;
 
-    return this._currentProcess.isWaiting();
+    return this.currentProcess.isWaiting();
   }
 
   /**
@@ -45,9 +45,9 @@ export default class DebouncedCall {
    * @return {*}
    */
   isPending() {
-    if (!this._currentProcess) return false;
+    if (!this.currentProcess) return false;
 
-    return this._currentProcess.isPending();
+    return this.currentProcess.isPending();
   }
 
   /**
@@ -77,11 +77,11 @@ export default class DebouncedCall {
    * Run immediately callback which is waiting for start.
    */
   flush() {
-    if (this._currentProcess) this._currentProcess.flush();
+    if (this.currentProcess) this.currentProcess.flush();
   }
 
   onEnd(cb) {
-    this._onEndCb = cb;
+    this.onEndCb = cb;
   }
 
   /**
@@ -94,33 +94,33 @@ export default class DebouncedCall {
    *                     It will be fulfilled event a new one replaces current promise.
    */
   exec(cb, force = false, ...params) {
-    if (!this._mainPromise) {
-      this._mainResolve = null;
-      this._mainPromise = new Promise((resolve) => {
-        this._mainResolve = resolve;
+    if (!this.mainPromise) {
+      this.mainResolve = null;
+      this.mainPromise = new Promise((resolve) => {
+        this.mainResolve = resolve;
       });
     }
 
     this._chooseTheWay(cb, params, force);
 
-    return this._mainPromise;
+    return this.mainPromise;
   }
 
   _clearQueue() {
-    this._nextCb = null;
+    this.nextCb = null;
   }
 
   _stopDelayed() {
-    if (!this._currentProcess) return;
+    if (!this.currentProcess) return;
 
-    this._currentProcess.stop();
-    this._currentProcess = null;
+    this.currentProcess.stop();
+    this.currentProcess = null;
   }
 
   _chooseTheWay(cb, params, force) {
     if (force) {
       // run fresh new process it there isn't any or some process is waiting
-      if (!this._currentProcess || this.isWaiting()) {
+      if (!this.currentProcess || this.isWaiting()) {
         // it hasn't been doing anything
         this._runFreshProcess(cb, params);
       }
@@ -133,7 +133,7 @@ export default class DebouncedCall {
     }
     else {
       // run fresh new process it there isn't any or some process is waiting
-      if (!this._currentProcess || this.isWaiting()) {
+      if (!this.currentProcess || this.isWaiting()) {
         // it hasn't been doing anything
         this._runFreshProcess(cb, params, this._delayTime);
       }
@@ -150,31 +150,31 @@ export default class DebouncedCall {
     this._clearQueue();
     this._stopDelayed();
 
-    this._currentProcess = new DebouncedProcess(cb, params);
+    this.currentProcess = new DebouncedProcess(cb, params);
     // after current promise was finished - run next cb in queue
-    this._currentProcess.onFinish((err) => this._afterCbFinished(err));
-    this._currentProcess.start(delayTime);
+    this.currentProcess.onFinish((err) => this._afterCbFinished(err));
+    this.currentProcess.start(delayTime);
   }
 
   _addToQueue(cb, params, delayTime) {
-    this._nextCb = [ cb, params, delayTime ];
+    this.nextCb = [ cb, params, delayTime ];
   }
 
   _afterCbFinished(err) {
-    if (this._nextCb) {
-      const cbParams = this._nextCb;
-      this._nextCb = null;
-      this._currentProcess = null;
+    if (this.nextCb) {
+      const cbParams = this.nextCb;
+      this.nextCb = null;
+      this.currentProcess = null;
       this._runFreshProcess(...cbParams);
     }
     else {
       // if there isn't any queue - just finish and go to beginning
-      this._currentProcess = null;
-      this._mainResolve(err);
-      if (this._onEndCb) this._onEndCb(err);
-      this._mainPromise = null;
-      this._mainResolve = null;
-      this._onEndCb = null;
+      this.currentProcess = null;
+      this.mainResolve(err);
+      if (this.onEndCb) this.onEndCb(err);
+      this.mainPromise = null;
+      this.mainResolve = null;
+      this.onEndCb = null;
     }
   }
 
