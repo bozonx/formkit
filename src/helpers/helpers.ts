@@ -71,7 +71,7 @@ export function eachFieldSchemaRecursively(
  */
 export function findRecursively(
   rootObject: {[index: string]: any},
-  cb: (item: {[index: string]: any}, path: string) => boolean | void
+  cb: (item: any, path: string) => boolean | void
 ): void {
   const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
     const itemPath = _.trim(`${rootPath}.${name}`, '.');
