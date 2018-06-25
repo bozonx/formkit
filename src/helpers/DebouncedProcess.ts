@@ -10,12 +10,14 @@
  * But if it pending you can't cancel it.
  */
 export default class DebouncedProcess {
-  constructor(cb, params) {
-    this._callback = { cb, params };
-    // has it started at least once
-    this._hasStarted = false;
-    this._pending = false;
-    this._waiting = false;
+  private readonly callback: () => Promise<void>;
+  // has it started at least once
+  private hasStarted = false;
+  private pending = false;
+  private waiting = false;
+
+  constructor(cb: () => Promise<void>) {
+    this.callback = cb;
     this._onFinishCb = null;
     // timeout to start
     this._timeout = null;
@@ -29,11 +31,11 @@ export default class DebouncedProcess {
   }
 
   isWaiting() {
-    return this._waiting;
+    return this.waiting;
   }
 
   isPending() {
-    return this._pending;
+    return this.pending;
   }
 
   flush() {
@@ -50,7 +52,7 @@ export default class DebouncedProcess {
   stop() {
     if (this._timeout) clearTimeout(this._timeout);
     this._timeout = null;
-    this._waiting = false;
+    this.waiting = false;
   }
 
   /**
@@ -58,12 +60,12 @@ export default class DebouncedProcess {
    * @param {number|undefined} delayTime - time to delay start. Undefined means start immediately.
    */
   start(delayTime) {
-    if (this._hasStarted) {
+    if (this.hasStarted) {
       throw new Error(`The promise has already started, you can't start another one!`);
     }
 
-    this._hasStarted = true;
-    this._waiting = true;
+    this.hasStarted = true;
+    this.waiting = true;
     const timeMeansForce = 0;
     if (delayTime && delayTime > timeMeansForce) {
       // means regular with waiting to start
@@ -78,18 +80,18 @@ export default class DebouncedProcess {
   }
 
   _start() {
-    this._pending = true;
-    this._waiting = false;
+    this.pending = true;
+    this.waiting = false;
 
-    this._callback.cb(...this._callback.params)
+    this.callback()
       .then((data) => {
-        this._pending = false;
+        this.pending = false;
         if (this._onFinishCb) this._onFinishCb();
 
         return data;
       })
       .catch((err) => {
-        this._pending = false;
+        this.pending = false;
         if (this._onFinishCb) this._onFinishCb(err);
 
         return err;
