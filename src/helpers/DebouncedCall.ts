@@ -152,14 +152,14 @@ export default class DebouncedCall {
     }
   }
 
-  private runFreshProcess(cb: () => void, delayTime?: number): void {
+  private runFreshProcess(cb: () => Promise<void>, delayTime?: number): void {
     this.clearQueue();
     this.stopDelayed();
 
     this.currentProcess = new DebouncedProcess(cb);
     // after current promise was finished - run next cb in queue
     this.currentProcess.onFinish((err) => this.afterCbFinished(err));
-    this.currentProcess.start(delayTime);
+    this.currentProcess.start(delayTime || 0);
   }
 
   private addToQueue(cb: () => void, delayTime?: number): void {

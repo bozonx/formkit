@@ -15,43 +15,47 @@ export default class DebouncedProcess {
   private hasStarted = false;
   private pending = false;
   private waiting = false;
+  private onFinishCb: (() => void) | null = null;
+  // timeout to start
+  // TODO: зачем null если можно использовать 0
+  private timeout: number | null = null;
 
   constructor(cb: () => Promise<void>) {
     this.callback = cb;
-    this._onFinishCb = null;
-    // timeout to start
-    this._timeout = null;
   }
 
   /**
    * It adds callback which will be called after fulfill or reject of promise
    */
-  onFinish(cb) {
-    this._onFinishCb = cb;
+  onFinish(cb: () => void): void {
+    this.onFinishCb = cb;
   }
 
-  isWaiting() {
+  isWaiting(): boolean {
     return this.waiting;
   }
 
-  isPending() {
+  isPending(): boolean {
     return this.pending;
   }
 
-  flush() {
-    if (!this._timeout) return;
+  /**
+   * Start immediately without timeout
+   */
+  flush(): void {
+    if (!this.timeout) return;
 
-    clearTimeout(this._timeout);
-    this._start();
+    clearTimeout(this.timeout);
+    this.startIt();
   }
 
   /**
    * Stop waiting and do nothing after that for ever.
    * It doesn't cancel callback promise if it in pending state.
    */
-  stop() {
-    if (this._timeout) clearTimeout(this._timeout);
-    this._timeout = null;
+  stop(): void {
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = null;
     this.waiting = false;
   }
 
@@ -59,40 +63,42 @@ export default class DebouncedProcess {
    * Delay start or start immediately according to delayTime
    * @param {number|undefined} delayTime - time to delay start. Undefined means start immediately.
    */
-  start(delayTime) {
+  start(delayTime: number) {
     if (this.hasStarted) {
       throw new Error(`The promise has already started, you can't start another one!`);
     }
 
     this.hasStarted = true;
     this.waiting = true;
+
     const timeMeansForce = 0;
-    if (delayTime && delayTime > timeMeansForce) {
+
+    if (delayTime > timeMeansForce) {
       // means regular with waiting to start
-      this._timeout = setTimeout(() => {
-        this._start();
+      this.timeout = setTimeout(() => {
+        this.startIt();
       }, delayTime);
     }
     else {
       // means force
-      this._start();
+      this.startIt();
     }
   }
 
-  _start() {
+  private startIt() {
     this.pending = true;
     this.waiting = false;
 
     this.callback()
       .then((data) => {
         this.pending = false;
-        if (this._onFinishCb) this._onFinishCb();
+        if (this.onFinishCb) this.onFinishCb();
 
         return data;
       })
       .catch((err) => {
         this.pending = false;
-        if (this._onFinishCb) this._onFinishCb(err);
+        if (this.onFinishCb) this.onFinishCb(err);
 
         return err;
       });
