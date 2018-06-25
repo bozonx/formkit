@@ -299,14 +299,15 @@ export default class Field {
     const parsedDefaultValue = parseValue(defaultValue);
 
     // set initial value otherwise default value
-    const newValue = (_.isUndefined(parsedInitial)) ? parsedDefaultValue : parsedInitial;
+    const newValue = (typeof parsedInitial === 'undefined') ? parsedDefaultValue : parsedInitial;
 
+    // TODO: зачем нужно omitBy ???
     return _.omitBy({
       disabled,
       defaultValue: parsedDefaultValue,
       initial: parsedInitial,
       // set initial value to edited layer
-      editedValue: (_.isUndefined(newValue)) ? undefined : newValue,
+      editedValue: (typeof newValue === 'undefined') ? undefined : newValue,
       savedValue,
     }, _.isUndefined);
   }

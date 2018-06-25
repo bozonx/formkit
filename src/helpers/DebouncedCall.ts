@@ -1,7 +1,7 @@
 import DebouncedProcess from './DebouncedProcess';
 
 
-type NextCb = [ () => void, number | undefined ];
+type NextCb = [ () => Promise<void>, number | undefined ];
 
 
 /**
@@ -18,7 +18,7 @@ export default class DebouncedCall {
   private currentProcess: DebouncedProcess | null = null;
   // current callback which is waiting or in progress
   private nextCb: NextCb | null = null;
-  private onEndCb: (() => void) | null = null;
+  private onEndCb: ((error: Error | null) => void) | null = null;
   // promise of end of saving process
   private mainPromise: Promise<void> | null = null;
   private mainResolve: (() => void) | null = null;
@@ -84,7 +84,7 @@ export default class DebouncedCall {
     if (this.currentProcess) this.currentProcess.flush();
   }
 
-  onEnd(cb: () => void): void {
+  onEnd(cb: (error: Error | null) => void): void {
     this.onEndCb = cb;
   }
 
@@ -96,7 +96,7 @@ export default class DebouncedCall {
    * @return {Promise} - promise of end of save cycle.
    *                     It will be fulfilled event a new one replaces current promise.
    */
-  exec(cb: () => void, force: boolean = false): Promise<void> {
+  exec(cb: () => Promise<void>, force: boolean = false): Promise<void> {
     if (!this.mainPromise) {
       this.mainResolve = null;
       this.mainPromise = new Promise((resolve: () => void) => {
@@ -123,7 +123,7 @@ export default class DebouncedCall {
     this.currentProcess = null;
   }
 
-  private chooseTheWay(cb: () => void, force: boolean): void {
+  private chooseTheWay(cb: () => Promise<void>, force: boolean): void {
     if (force) {
       // run fresh new process it there isn't any or some process is waiting
       if (!this.currentProcess || this.isWaiting()) {
@@ -158,24 +158,25 @@ export default class DebouncedCall {
 
     this.currentProcess = new DebouncedProcess(cb);
     // after current promise was finished - run next cb in queue
-    this.currentProcess.onFinish((err) => this.afterCbFinished(err));
+    this.currentProcess.onFinish((err: Error | null) => this.afterCbFinished(err));
     this.currentProcess.start(delayTime || 0);
   }
 
-  private addToQueue(cb: () => void, delayTime?: number): void {
+  private addToQueue(cb: () => Promise<void>, delayTime?: number): void {
     this.nextCb = [ cb, delayTime ];
   }
 
-  private afterCbFinished(err): void {
+  private afterCbFinished(err: Error | null): void {
     if (this.nextCb) {
       const nextCb: NextCb = this.nextCb;
       this.nextCb = null;
       this.currentProcess = null;
-      this.runFreshProcess(...nextCb);
+      this.runFreshProcess(nextCb[0], nextCb[1]);
     }
     else {
       // if there isn't any queue - just finish and go to beginning
       this.currentProcess = null;
+      // TODO: наверное надо reject вызывать
       this.mainResolve(err);
       if (this.onEndCb) this.onEndCb(err);
       this.mainPromise = null;

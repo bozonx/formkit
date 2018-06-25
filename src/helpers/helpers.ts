@@ -127,7 +127,7 @@ export function resolvePromise(value: any): Promise<any> {
   return Promise.resolve();
 }
 
-export function parseValue(rawValue) {
+export function parseValue(rawValue: any): any {
   if (_.isUndefined(rawValue)) {
     return;
   }
@@ -151,6 +151,7 @@ export function parseValue(rawValue) {
   }
   // it is for - 2. strings
   else if (_.isString(rawValue) && rawValue.match(/^\d+\.$/)) {
+    // TODO: why not number ????
     return rawValue;
   }
   else if (_.isBoolean(rawValue) || _.isPlainObject(rawValue) || _.isArray(rawValue)) {

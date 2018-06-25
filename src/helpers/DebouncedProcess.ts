@@ -15,7 +15,7 @@ export default class DebouncedProcess {
   private hasStarted = false;
   private pending = false;
   private waiting = false;
-  private onFinishCb: (() => void) | null = null;
+  private onFinishCb: ((error: Error | null) => void) | null = null;
   // timeout to start
   // TODO: зачем null если можно использовать 0
   private timeout: number | null = null;
@@ -27,7 +27,7 @@ export default class DebouncedProcess {
   /**
    * It adds callback which will be called after fulfill or reject of promise
    */
-  onFinish(cb: () => void): void {
+  onFinish(cb: (error: Error | null) => void): void {
     this.onFinishCb = cb;
   }
 
@@ -92,11 +92,11 @@ export default class DebouncedProcess {
     this.callback()
       .then((data) => {
         this.pending = false;
-        if (this.onFinishCb) this.onFinishCb();
+        if (this.onFinishCb) this.onFinishCb(null);
 
         return data;
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         this.pending = false;
         if (this.onFinishCb) this.onFinishCb(err);
 
