@@ -26,6 +26,9 @@ export function findFieldRecursively(
         // it's a container
         return recursive(item as {[index: string]: object}, itemPath);
       }
+      else {
+        throw new Error(`Wrong fields dict`);
+      }
     });
 
     return foundField as Field | void;
@@ -34,10 +37,38 @@ export function findFieldRecursively(
   return recursive(fields, '');
 }
 
+export function eachFieldRecursively(
+  fields: {[index: string]: object},
+  cb: (field: Field, path: string) => void
+): void {
+  const recursive = (obj: {[index: string]: object}, rootPath: string): void => {
+    _.each(obj, (item: object, name: string): void => {
+      const itemPath: string = _.trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+
+      if (item instanceof Field) {
+        // it's a field
+        cb(item, itemPath);
+      }
+      else if (_.isPlainObject(item)) {
+        // it's a container
+        recursive(item as {[index: string]: object}, itemPath);
+      }
+      else {
+        throw new Error(`Wrong fields dict`);
+      }
+    });
+  };
+
+  recursive(fields, '');
+}
+
 export function eachFieldSchemaRecursively(
   rootObject: {[index: string]: any},
   cb: (item: {[index: string]: any}, path: string) => any
 ): void {
+
+  // TODO: use eachRecursively
+
   findRecursively(rootObject, (item: {[index: string]: any}, path: string): boolean | void => {
     if (!_.isPlainObject(item)) return false;
 
@@ -134,7 +165,7 @@ export function getFieldName(pathToField: string): string {
   return lastItem;
 }
 
-export function isPromise(unknown) {
+export function isPromise(unknown: any) {
   return _.isObject(unknown) && unknown.then;
 }
 

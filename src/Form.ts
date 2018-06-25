@@ -6,6 +6,7 @@ import Field from './Field';
 import DebouncedCall from './helpers/DebouncedCall';
 import {
   findFieldRecursively,
+  eachFieldRecursively,
   findRecursively,
   eachFieldSchemaRecursively,
   isPromise, resolvePromise
@@ -228,7 +229,7 @@ export default class Form {
    */
   clear = (): void => {
     this.updateStateAndValidate((): void => {
-      findFieldRecursively(this.fields, (field: Field) => field.$clearSilent());
+      eachFieldRecursively(this.fields, (field: Field) => field.$clearSilent());
     });
   };
 
@@ -237,7 +238,7 @@ export default class Form {
    */
   revert = (): void => {
     this.updateStateAndValidate((): void => {
-      findFieldRecursively(this.fields, (field: Field) => field.$revertSilent());
+      eachFieldRecursively(this.fields, (field: Field) => field.$revertSilent());
     });
   };
 
@@ -246,7 +247,7 @@ export default class Form {
    */
   reset = (): void => {
     this.updateStateAndValidate((): void => {
-      findFieldRecursively(this.fields, (field: Field) => field.$resetSilent());
+      eachFieldRecursively(this.fields, (field: Field) => field.$resetSilent());
     });
   };
 
@@ -260,7 +261,7 @@ export default class Form {
     this.flushSaving();
 
     const doDestroy = (): void => {
-      findFieldRecursively(this.fields, (field: Field): void => {
+      eachFieldRecursively(this.fields, (field: Field): void => {
         field.$destroyHandlers();
       });
 
@@ -347,7 +348,7 @@ export default class Form {
     let isFormValid: boolean = true;
 
     // add sub structures to "errors" for easy access to error
-    findFieldRecursively(this.fields, (field: Field, path: string) => {
+    eachFieldRecursively(this.fields, (field: Field, path: string) => {
       const split: Array<string> = path.split('.');
       const minPathItems: number = 2;
 
@@ -365,7 +366,7 @@ export default class Form {
 
     // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
-    findFieldRecursively(this.fields, (field: Field, path: string) => {
+    eachFieldRecursively(this.fields, (field: Field, path: string) => {
       const invalidMsg = _.get(errors, path) || null;
 
       if (isFormValid) isFormValid = !invalidMsg;
@@ -468,7 +469,7 @@ export default class Form {
 
   private moveValuesToSaveLayer(values: Values, force?: boolean): void {
     this.updateStateAndValidate(() => {
-      findFieldRecursively(this.fields, (field: Field, pathToField: string) => {
+      eachFieldRecursively(this.fields, (field: Field, pathToField: string) => {
         const savedValue = _.get(values, pathToField);
 
         field.$setValueAfterSave(savedValue);
