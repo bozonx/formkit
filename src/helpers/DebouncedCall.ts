@@ -1,7 +1,7 @@
 import DebouncedProcess from './DebouncedProcess';
 
 
-type NextCb = [ () => void, Array<any>, number | undefined ];
+type NextCb = [ () => void, number | undefined ];
 
 
 /**
@@ -93,14 +93,10 @@ export default class DebouncedCall {
    * It starts after delay or immediately if force or after current executing callback.
    * @param {function} cb - your callback which will be executed
    * @param {boolean} force - if true - cancel current callback and run immediately
-   * @param {array} cbParams - params of callback
    * @return {Promise} - promise of end of save cycle.
    *                     It will be fulfilled event a new one replaces current promise.
    */
-  exec(cb: () => void, force: boolean = false, ...cbParams: Array<any>): Promise<void> {
-
-    // TODO: cbParams не нужно
-
+  exec(cb: () => void, force: boolean = false): Promise<void> {
     if (!this.mainPromise) {
       this.mainResolve = null;
       this.mainPromise = new Promise((resolve: () => void) => {
@@ -108,7 +104,7 @@ export default class DebouncedCall {
       });
     }
 
-    this.chooseTheWay(cb, cbParams, force);
+    this.chooseTheWay(cb, force);
 
     return this.mainPromise;
   }
@@ -127,15 +123,15 @@ export default class DebouncedCall {
     this.currentProcess = null;
   }
 
-  private chooseTheWay(cb: () => void, params: Array<any>, force: boolean): void {
+  private chooseTheWay(cb: () => void, force: boolean): void {
     if (force) {
       // run fresh new process it there isn't any or some process is waiting
       if (!this.currentProcess || this.isWaiting()) {
         // it hasn't been doing anything
-        this.runFreshProcess(cb, params);
+        this.runFreshProcess(cb);
       }
       else if (this.isPending()) {
-        this.addToQueue(cb, params);
+        this.addToQueue(cb);
       }
       else {
         throw new Error(`Something wrong`);
@@ -145,10 +141,10 @@ export default class DebouncedCall {
       // run fresh new process it there isn't any or some process is waiting
       if (!this.currentProcess || this.isWaiting()) {
         // it hasn't been doing anything
-        this.runFreshProcess(cb, params, this.delayTime);
+        this.runFreshProcess(cb, this.delayTime);
       }
       else if (this.isPending()) {
-        this.addToQueue(cb, params, this.delayTime);
+        this.addToQueue(cb, this.delayTime);
       }
       else {
         throw new Error(`Something wrong`);
@@ -156,26 +152,26 @@ export default class DebouncedCall {
     }
   }
 
-  private runFreshProcess(cb: () => void, params: Array<any>, delayTime?: number): void {
+  private runFreshProcess(cb: () => void, delayTime?: number): void {
     this.clearQueue();
     this.stopDelayed();
 
-    this.currentProcess = new DebouncedProcess(cb, params);
+    this.currentProcess = new DebouncedProcess(cb);
     // after current promise was finished - run next cb in queue
     this.currentProcess.onFinish((err) => this.afterCbFinished(err));
     this.currentProcess.start(delayTime);
   }
 
-  private addToQueue(cb: () => void, params: Array<any>, delayTime?: number): void {
-    this.nextCb = [ cb, params, delayTime ];
+  private addToQueue(cb: () => void, delayTime?: number): void {
+    this.nextCb = [ cb, delayTime ];
   }
 
   private afterCbFinished(err): void {
     if (this.nextCb) {
-      const cbParams: NextCb = this.nextCb;
+      const nextCb: NextCb = this.nextCb;
       this.nextCb = null;
       this.currentProcess = null;
-      this.runFreshProcess(...cbParams);
+      this.runFreshProcess(...nextCb);
     }
     else {
       // if there isn't any queue - just finish and go to beginning
