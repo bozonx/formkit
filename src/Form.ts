@@ -77,9 +77,11 @@ export default class Form {
 
   get dirty(): boolean {
     // search for dirty values in fields
-    return Boolean(findFieldRecursively(this.fields, (field: Field) => {
+    const field: Field | void = findFieldRecursively(this.fields, (field: Field) => {
       return field.dirty;
-    }));
+    });
+
+    return Boolean(field && field.dirty);
   }
 
   get touched(): boolean {
@@ -345,7 +347,7 @@ export default class Form {
     let isFormValid: boolean = true;
 
     // add sub structures to "errors" for easy access to error
-    findFieldRecursively(this.fields, (field: Field, path: string): void => {
+    findFieldRecursively(this.fields, (field: Field, path: string) => {
       const split: Array<string> = path.split('.');
       const minPathItems: number = 2;
 

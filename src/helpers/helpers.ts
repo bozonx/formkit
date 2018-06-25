@@ -1,44 +1,37 @@
 import * as _ from 'lodash';
+import FieldSchema from '../interfaces/FieldSchema';
+import Field from '../Field';
 
 
-export function isFieldSchema(comingSchema) {
-  let isSchema = false;
-  const filedParams = [
-    'initial',
-    'disabled',
-    'defaultValue',
-    'savedValue',
-  ];
+export const FIELD_PATH_SEPARATOR = '.';
 
-  _.find(comingSchema, (value, name) => {
-    if (_.includes(filedParams, name)) {
-      isSchema = true;
 
-      return true;
-    }
-  });
-
-  return isSchema;
-}
-
+/**
+ * Each all the fields and find certain field.
+ * If cb returned true - finding will be stopped and found field will returned
+ */
 export function findFieldRecursively(
-  rootObject: {[index: string]: any},
-  cb: (item, path: string) => any
-): void {
-  const recursive = (obj: {[index: string]: any}, rootPath: string) => _.find(obj, (item, name) => {
-    const itemPath = _.trim(`${rootPath}.${name}`, '.');
+  fields: {[index: string]: object},
+  cb: (field: Field, path: string) => boolean | Field | void
+): Field | void {
+  const recursive = (obj: {[index: string]: object}, rootPath: string): Field | void => {
+    const foundField = _.find(obj, (item: object, name: string): Field | boolean | void => {
+      const itemPath: string = _.trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
 
-    if (_.isPlainObject(item)) {
-      // it's a container
-      return recursive(item, itemPath);
-    }
-    else if (_.isObject(item)) {
-      // it's a field
-      return cb(item, itemPath);
-    }
-  });
+      if (item instanceof Field) {
+        // it's a field
+        return cb(item, itemPath);
+      }
+      else if (_.isPlainObject(item)) {
+        // it's a container
+        return recursive(item as {[index: string]: object}, itemPath);
+      }
+    });
 
-  return recursive(rootObject, '');
+    return foundField as Field | void;
+  };
+
+  return recursive(fields, '');
 }
 
 export function eachFieldSchemaRecursively(
@@ -56,6 +49,30 @@ export function eachFieldSchemaRecursively(
       return false;
     }
   })
+}
+
+export function isFieldSchema(comingSchema) {
+
+  // TODO: упростить, может проверять интерфейс FieldSchema
+
+  let isSchema = false;
+  const filedParams = [
+    'initial',
+    'disabled',
+    'defaultValue',
+    'savedValue',
+    'debounceTime',
+  ];
+
+  _.find(comingSchema, (value, name) => {
+    if (_.includes(filedParams, name)) {
+      isSchema = true;
+
+      return true;
+    }
+  });
+
+  return isSchema;
 }
 
 /**

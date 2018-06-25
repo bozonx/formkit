@@ -3,7 +3,7 @@ import * as EventEmitter from 'eventemitter3';
 import {ListenerFn} from 'eventemitter3';
 import { fromJS, Map } from 'immutable';
 
-import { findRecursively } from './helpers/helpers';
+import {FIELD_PATH_SEPARATOR, findRecursively} from './helpers/helpers';
 import FormState from './interfaces/FormState';
 import FieldState from './interfaces/FieldState';
 import {FormStateName, Values} from './FormStorage';
@@ -175,9 +175,7 @@ export default class Storage {
     const rawCombinedValue = _.isUndefined(editedValue) ? savedValue : editedValue;
     const combinedValue = _.cloneDeep(rawCombinedValue);
 
-    // TODO: use constant FIELD_PATH_SEPARATOR
-
-    this.store.values = this.store.values.setIn(pathToField.split('.'), combinedValue);
+    this.store.values = this.store.values.setIn(pathToField.split(FIELD_PATH_SEPARATOR), combinedValue);
   }
 
 }
