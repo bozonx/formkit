@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import FieldEventData from './interfaces/FieldEventData';
 
 
 export default class FieldStorage {
@@ -64,7 +65,7 @@ export default class FieldStorage {
     this._storage.events.on(`field.${pathToField}.${eventName}`, cb);
   }
 
-  emit(pathToField, eventName, data) {
+  emit(pathToField: string, eventName: string, data: FieldEventData): void {
     this._storage.events.emit(`field.${pathToField}.${eventName}`, data);
   }
 

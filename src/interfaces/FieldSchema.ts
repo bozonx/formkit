@@ -1,3 +1,7 @@
 export default interface FieldSchema {
-  default?: any;
+  initial?: any;
+  disabled?: boolean;
+  defaultValue?: any;
+  savedValue?: any;
+  debounceTime?: number;
 }

@@ -39,11 +39,11 @@ export default class Form {
   // TODO: может быть вложенный
   readonly fields: {[index: string]: Field} = {};
   readonly config: Config;
+  readonly fieldStorage: FieldStorage;
 
   private readonly debouncedSave: DebouncedCall;
   private readonly storage: Storage = new Storage();
   private readonly formStorage: FormStorage;
-  private readonly fieldStorage: FieldStorage;
   // TODO: review
   private submitPromise?: Function;
   // TODO: review
@@ -491,7 +491,7 @@ export default class Form {
     }
 
     // create new one
-    const newField: Field = new Field(pathToField, fieldParams, this, this.fieldStorage);
+    const newField: Field = new Field(pathToField, fieldParams, this);
 
     _.set(this.fields, pathToField, newField);
   }

@@ -1,74 +1,73 @@
 import * as _ from 'lodash';
 import { calculateDirty, getFieldName, parseValue } from './helpers/helpers';
+import Form from './Form';
+import FieldSchema from './interfaces/FieldSchema';
+import FieldStorage from './FieldStorage';
+import FieldEventData from './interfaces/FieldEventData';
 
 
 /**
  * Field. It represent form field.
  */
 export default class Field {
-  constructor(pathToField, params, form, fieldStorage) {
-    this._form = form;
-    this._fieldStorage = fieldStorage;
-    this._pathToField = pathToField;
-    this._fieldName = getFieldName(pathToField);
+  private readonly form: Form;
+  private readonly fieldStorage: FieldStorage;
+  private readonly pathToField: string;
+  private readonly fieldName: string;
+
+  constructor(pathToField: string, params: FieldSchema, form: Form) {
+    this.form = form;
+    this.fieldStorage = this.form.fieldStorage;
+    this.pathToField = pathToField;
+    this.fieldName = getFieldName(pathToField);
+    // TODO: ????
     if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
 
     this.initState(params);
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleFocusIn = this.handleFocusIn.bind(this);
-    this.handleBlur = this.handleBlur.bind(this);
-    this.handleEndEditing = this.handleEndEditing.bind(this);
-    this.clear = this.clear.bind(this);
-    this.reset = this.reset.bind(this);
   }
 
-  get form() {
-    return this._form;
+  get savedValue(): any {
+    return this.fieldStorage.getState(this.pathToField, 'savedValue');
   }
-  get savedValue() {
-    return this._fieldStorage.getState(this._pathToField, 'savedValue');
-  }
-  get editedValue() {
-    return this._fieldStorage.getState(this._pathToField, 'editedValue');
+  get editedValue(): any {
+    return this.fieldStorage.getState(this.pathToField, 'editedValue');
   }
 
   /**
    * Combined value
-   * @return {*}
    */
-  get value() {
-    return this._fieldStorage.getCombinedValue(this._pathToField);
+  get value(): any {
+    return this.fieldStorage.getCombinedValue(this.pathToField);
   }
-  get name() {
-    return this._fieldName;
+  get name(): string {
+    return this.fieldName;
   }
-  get fullName() {
-    return this._pathToField;
+  get fullName(): string {
+    return this.pathToField;
   }
-  get dirty() {
-    return this._fieldStorage.getState(this._pathToField, 'dirty');
+  get dirty(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'dirty');
   }
-  get touched() {
-    return this._fieldStorage.getState(this._pathToField, 'touched');
+  get touched(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'touched');
   }
-  get valid() {
-    return !this._fieldStorage.getState(this._pathToField, 'invalidMsg');
+  get valid(): boolean {
+    return !this.fieldStorage.getState(this.pathToField, 'invalidMsg');
   }
-  get invalidMsg() {
-    return this._fieldStorage.getState(this._pathToField, 'invalidMsg');
+  get invalidMsg(): string {
+    return this.fieldStorage.getState(this.pathToField, 'invalidMsg');
   }
-  get saving() {
-    return this._fieldStorage.getState(this._pathToField, 'saving');
+  get saving(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'saving');
   }
-  get focused() {
-    return this._fieldStorage.getState(this._pathToField, 'focused');
+  get focused(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'focused');
   }
-  get disabled() {
-    return this._fieldStorage.getState(this._pathToField, 'disabled');
+  get disabled(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'disabled');
   }
-  get defaultValue() {
-    return this._fieldStorage.getState(this._pathToField, 'defaultValue');
+  get defaultValue(): any {
+    return this.fieldStorage.getState(this.pathToField, 'defaultValue');
   }
 
 
@@ -84,9 +83,10 @@ export default class Field {
    * * It doesn't update "touched" state.
    * @param {*} rawValue - new value to set
    */
-  setValue(rawValue) {
+  setValue(rawValue: any): void {
     this.updateStateAndValidate(() => {
-      const newValue = parseValue(rawValue);
+      const newValue: any = parseValue(rawValue);
+
       this.$setEditedValueSilent(newValue);
     });
   }
@@ -95,16 +95,16 @@ export default class Field {
    * Set previously saved value. Usually it sets after server data has loading.
    * @param {*} rawValue - new value to set
    */
-  setSavedValue(rawValue) {
+  setSavedValue(rawValue: any): void {
     this.updateStateAndValidate(() => {
-      const newSavedValue = parseValue(rawValue);
+      const newSavedValue: any = parseValue(rawValue);
+
       this.$setSavedValue(newSavedValue);
     });
   }
 
-  setDisabled(value) {
-    if (!_.isBoolean(value)) throw new Error(`Disabled has to be boolean`);
-    this.setState({ disabled: value });
+  setDisabled(disabled: boolean): void {
+    this.setState({ disabled });
   }
 
   /**
@@ -120,14 +120,14 @@ export default class Field {
    * * Start saving
    * @param {*} rawValue
    */
-  handleChange(rawValue) {
+  handleChange = (rawValue: any): void => {
     // don't do anything if disabled
     if (this.disabled) return;
 
     const newValue = parseValue(rawValue);
     // value is immutable
     const oldValue = this.value;
-    const isChanged = !_.isEqual(oldValue, newValue);
+    const isChanged: boolean = !_.isEqual(oldValue, newValue);
 
     if (isChanged) {
       // it rises a storage event
@@ -136,34 +136,34 @@ export default class Field {
         this.$setEditedValueSilent(newValue);
         this.form.validate();
 
-        // set touched to true
+        // set touched to true of field and form
         if (!this.touched) {
           this.$setStateSilent({ touched: true });
-          this._form.$setStateSilent({ touched: true });
+          this.form.$setStateSilent({ touched: true });
         }
       });
     }
 
-    // rise change event and save only changed value
-    if (!this._form.config.allowSaveUnmodifiedField && !isChanged) return;
+    // rise change event and save only if value has changed
+    if (!this.form.config.allowSaveUnmodifiedField && !isChanged) return;
 
     // rise change by user event handlers and callbacks of form and field
-    this.riseUserChangeEvent(this._pathToField, oldValue, newValue);
+    this.riseUserChangeEvent(this.pathToField, oldValue, newValue);
   }
 
   /**
    * Set field's "focused" prop to true.
    */
-  handleFocusIn() {
+  handleFocusIn = () => {
     this.setState({ focused: true });
   }
 
   /**
    * Set field's "focused" prop to false.
    */
-  handleBlur() {
+  handleBlur = () => {
     this.setState({ focused: false });
-    this._form.flushSaving();
+    this.form.flushSaving();
   }
 
   /**
@@ -172,9 +172,9 @@ export default class Field {
    * * cancel previous save in queue
    * * immediately starts save
    */
-  handleEndEditing() {
+  handleEndEditing = () => {
     if (this.disabled) return;
-    this._form.flushSaving();
+    this.form.flushSaving();
   }
 
   /**
@@ -187,17 +187,17 @@ export default class Field {
    * @param {function} cb - Event handler
    */
   on(eventName, cb) {
-    this._fieldStorage.on(this._pathToField, eventName, cb);
+    this.fieldStorage.on(this.pathToField, eventName, cb);
   }
 
   off(eventName, cb) {
-    this._fieldStorage.off(this._pathToField, eventName, cb);
+    this.fieldStorage.off(this.pathToField, eventName, cb);
   }
 
   /**
    * Clear value(user input) and set initial value.
    */
-  clear() {
+  clear = () => {
     this.updateStateAndValidate(() => {
       this.$clearSilent();
     });
@@ -206,7 +206,7 @@ export default class Field {
   /**
    * set saved value to current value.
    */
-  revert() {
+  revert = () => {
     this.updateStateAndValidate(() => {
       this.$revertSilent();
     });
@@ -215,14 +215,14 @@ export default class Field {
   /**
    * Reset to default value
    */
-  reset() {
+  reset = () => {
     this.updateStateAndValidate(() => {
       this.$resetSilent();
     });
   }
 
   $clearSilent() {
-    const initial = this._fieldStorage.getState(this._pathToField, 'initial');
+    const initial = this.fieldStorage.getState(this.pathToField, 'initial');
     this.$setEditedValueSilent(initial);
   }
 
@@ -254,7 +254,7 @@ export default class Field {
 
     // update user input if field isn't on focus and set dirty to false.
     // of course if it allows in config.
-    if (this._form.config.allowFocusedFieldUpdating || (!this._form.config.allowFocusedFieldUpdating && !this.focused)) {
+    if (this.form.config.allowFocusedFieldUpdating || (!this.form.config.allowFocusedFieldUpdating && !this.focused)) {
       // clear top level
       newState.editedValue = undefined;
     }
@@ -265,17 +265,17 @@ export default class Field {
   }
 
   $setStateSilent(newPartlyState) {
-    this._fieldStorage.setStateSilent(this._pathToField, newPartlyState);
+    this.fieldStorage.setStateSilent(this.pathToField, newPartlyState);
   }
 
   $setValueAfterSave(savedValue) {
     // if value hasn't changed after submit was started - clear it
     if (savedValue === this.value) {
-      this._fieldStorage.setStateSilent(this._pathToField, { editedValue: undefined });
+      this.fieldStorage.setStateSilent(this.pathToField, { editedValue: undefined });
     }
 
     // in any way set to saved layer
-    this._fieldStorage.setStateSilent(this._pathToField, {
+    this.fieldStorage.setStateSilent(this.pathToField, {
       savedValue,
       dirty: calculateDirty(this.editedValue, savedValue),
     });
@@ -284,16 +284,22 @@ export default class Field {
 
   /**
    * Init field's state.
-   * @param {object} params - params which was passed to form init.
-   * @private
    */
-  private initState({ initial, disabled, defaultValue, savedValue }) {
+  private initState(rawFieldSchema: FieldSchema) {
+    const initialState: FieldSchema = this.generateInitialState(rawFieldSchema);
+
+    // init state
+    this.fieldStorage.initState(this.pathToField, initialState);
+  }
+
+  private generateInitialState({ initial, disabled, defaultValue, savedValue }: FieldSchema): FieldSchema {
     const parsedInitial = parseValue(initial);
     const parsedDefaultValue = parseValue(defaultValue);
 
     // set initial value otherwise default value
     const newValue = (_.isUndefined(parsedInitial)) ? parsedDefaultValue : parsedInitial;
-    const initialState = _.omitBy({
+
+    return _.omitBy({
       disabled,
       defaultValue: parsedDefaultValue,
       initial: parsedInitial,
@@ -301,21 +307,15 @@ export default class Field {
       editedValue: (_.isUndefined(newValue)) ? undefined : newValue,
       savedValue,
     }, _.isUndefined);
-
-    // init state
-    this._fieldStorage.initState(this._pathToField, initialState);
   }
 
   /**
    * It calls form field on value changed by user
    * It rises a "change" event.
    * It rises only if value changed by user.
-   * @param {string} pathToField
-   * @param {*} oldValue
-   * @param {*} newValue
    */
-  private riseUserChangeEvent(pathToField, oldValue, newValue) {
-    const eventData = {
+  private riseUserChangeEvent(pathToField: string, oldValue: any, newValue: any) {
+    const eventData: FieldEventData = {
       field: pathToField,
       oldValue,
       value: newValue,
@@ -323,31 +323,33 @@ export default class Field {
     };
 
     // Rise events field's change handler
-    this._fieldStorage.emit(pathToField, 'change', eventData);
+    this.fieldStorage.emit(pathToField, 'change', eventData);
     // call forms's change handler - it rises change callback and start saving
-    this._form.$handleFieldChange(eventData);
+
+    // TODO: !!!!??? надо преобразовать
+    this.form.$handleFieldChange(eventData);
   }
 
-  private setState(partlyState) {
+  private setState(partlyState: {[index: string]: any}): void {
     this.updateState(() => {
-      this._fieldStorage.setStateSilent(this._pathToField, partlyState);
+      this.fieldStorage.setStateSilent(this.pathToField, partlyState);
     });
   }
 
-  private updateStateAndValidate(cbWhichChangesState) {
+  private updateStateAndValidate(cbWhichChangesState?: () => void): void {
     this.updateState(() => {
       if (cbWhichChangesState) cbWhichChangesState();
       this.form.validate();
     });
   }
 
-  private updateState(cbWhichChangesState) {
-    const oldState = this._fieldStorage.getWholeState(this._pathToField);
+  private updateState(cbWhichChangesState: () => void): void {
+    const oldState = this.fieldStorage.getWholeState(this.pathToField);
 
     if (cbWhichChangesState) cbWhichChangesState();
 
-    const newState = this._fieldStorage.getWholeState(this._pathToField);
-    this._fieldStorage.emitStorageEvent(this._pathToField, 'update', newState, oldState);
+    const newState = this.fieldStorage.getWholeState(this.pathToField);
+    this.fieldStorage.emitStorageEvent(this.pathToField, 'update', newState, oldState);
   }
 
 }
