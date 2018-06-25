@@ -3,7 +3,7 @@ import * as EventEmitter from 'eventemitter3';
 import {ListenerFn} from 'eventemitter3';
 import { fromJS, Map } from 'immutable';
 
-import {FIELD_PATH_SEPARATOR, findRecursively} from './helpers/helpers';
+import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers';
 import FormState from './interfaces/FormState';
 import FieldState from './interfaces/FieldState';
 import {FormStateName, Values} from './FormStorage';
@@ -84,7 +84,7 @@ export default class Storage {
   }
 
   eachField(cb: (field: Map<string, any>, path: string) => void): void {
-    findRecursively(this.store.fieldsState, (field: Map<string, any>, path: string): false | undefined => {
+    eachRecursively(this.store.fieldsState, (field: Map<string, any>, path: string): false | undefined => {
       if (!field || !Map.isMap(field)) return;
 
       cb(field, path);

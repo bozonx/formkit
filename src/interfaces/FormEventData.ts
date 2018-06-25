@@ -8,6 +8,7 @@ export default interface FormEventData {
   oldState: FormState;
   error?: Error;
 
+  // TODO: values, editedValues
   // TODO: review - наверное наследовать от базового интерфейса
 
 }

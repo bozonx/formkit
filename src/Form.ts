@@ -7,7 +7,7 @@ import DebouncedCall from './helpers/DebouncedCall';
 import {
   findFieldRecursively,
   eachFieldRecursively,
-  findRecursively,
+  eachRecursively,
   eachFieldSchemaRecursively,
   isPromise, resolvePromise
 } from './helpers/helpers';
@@ -367,6 +367,9 @@ export default class Form {
     // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
     eachFieldRecursively(this.fields, (field: Field, path: string) => {
+
+      // TODO: почему null ???
+
       const invalidMsg = _.get(errors, path) || null;
 
       if (isFormValid) isFormValid = !invalidMsg;
@@ -391,7 +394,7 @@ export default class Form {
     this.startSaving(false);
   }
 
-  $emit(eventName: FormEventName, data?: FormEventData) {
+  $emit(eventName: FormEventName, data: FormEventData) {
     this.formStorage.emit(eventName, data);
   }
 
@@ -523,7 +526,7 @@ export default class Form {
     values: {[index: string]: any},
     cb: (field: Field, value: any, path: string) => void
   ): void {
-    findRecursively(values, (value: any, path: string) => {
+    eachRecursively(values, (value: any, path: string) => {
       const field = _.get(this.fields, path);
 
       // if it is'n a field - go deeper

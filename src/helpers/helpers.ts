@@ -66,10 +66,7 @@ export function eachFieldSchemaRecursively(
   rootObject: {[index: string]: any},
   cb: (item: {[index: string]: any}, path: string) => any
 ): void {
-
-  // TODO: use eachRecursively
-
-  findRecursively(rootObject, (item: {[index: string]: any}, path: string): boolean | void => {
+  eachRecursively(rootObject, (item: {[index: string]: any}, path: string): false | void => {
     if (!_.isPlainObject(item)) return false;
 
     // means field
@@ -113,31 +110,24 @@ export function isFieldSchema(comingSchema) {
  *         prop: 'value'
  *       }
  *     }
- * @param rootObject
- * @param {function} cb - callback like (items, pathToItem) => {}.
  *                        If it returns false it means don't go deeper.
  */
-export function findRecursively(
+export function eachRecursively(
   rootObject: {[index: string]: any},
-  cb: (item: any, path: string) => boolean | void
+  cb: (item: any, path: string) => false | void
 ): void {
-  const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
-    const itemPath = _.trim(`${rootPath}.${name}`, '.');
+  const recursive = (obj: {[index: string]: any}, rootPath: string): void => {
+    _.each(obj, (item: object, name: string): void => {
+      const itemPath: string = _.trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+      const cbResult: false | void = cb(item, itemPath);
 
-    const cbResult = cb(item, itemPath);
-    if (_.isUndefined(cbResult)) {
+      // don't go deeper
+      if (cbResult === false) return;
+
       // go deeper
       return recursive(item, itemPath);
-    }
-    else if (cbResult === false) {
-      // don't go deeper
-      return undefined;
-    }
-    else {
-      // found - stop search
-      return cbResult;
-    }
-  });
+    });
+  };
 
   return recursive(rootObject, '');
 }
@@ -216,6 +206,44 @@ export function parseValue(rawValue: any): any {
   // string
   return rawValue;
 }
+
+
+// /**
+//  * It works with common structures like
+//  *     {
+//  *       parent: {
+//  *         prop: 'value'
+//  *       }
+//  *     }
+//  * @param rootObject
+//  * @param {function} cb - callback like (items, pathToItem) => {}.
+//  *                        If it returns false it means don't go deeper.
+//  */
+// export function findRecursively(
+//   rootObject: {[index: string]: any},
+//   cb: (item: any, path: string) => boolean | object | void
+// ): object | void {
+//   const recursive = (obj, rootPath) => _.find(obj, (item, name) => {
+//     const itemPath = _.trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+//     const cbResult = cb(item, itemPath);
+//
+//     if (_.isUndefined(cbResult)) {
+//       // go deeper
+//       return recursive(item, itemPath);
+//     }
+//     else if (cbResult === false) {
+//       // don't go deeper
+//       return undefined;
+//     }
+//     else {
+//       // found - stop search
+//       return cbResult;
+//     }
+//   });
+//
+//   return recursive(rootObject, '');
+// }
+
 
 
 // /**
