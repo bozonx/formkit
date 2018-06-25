@@ -1,11 +1,15 @@
 export default interface FieldState {
-  savedValue?: any;
+  defaultValue?: any;
+  dirty?: boolean;
+  disabled?: boolean;
   editedValue?: any;
   focused?: boolean;
-  dirty?: boolean;
+  initial?: any;
+  invalidMsg?: string;
   touched?: boolean;
-  disabled?: boolean;
+  savedValue?: any;
+  saving?: boolean;
 
-  // TODO: другие стейты
+  // TODO: зачем не обязательные ???
 
 }

@@ -1,3 +1,9 @@
 export default interface FormState {
-  // TODO: другие стейты
+  touched: boolean;
+  submitting: boolean;
+  saving: boolean;
+  valid: boolean;
+
+  // TODO: зачем не обязательные ???
+
 }

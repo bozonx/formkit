@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 import Storage, {Store} from './Storage';
-import FormStorage, { FormEventName } from './FormStorage';
+import FormStorage, { FormEventName, Values } from './FormStorage';
 import FieldStorage from './FieldStorage';
 import Field from './Field';
 import DebouncedCall from './helpers/DebouncedCall';
@@ -16,8 +16,6 @@ import FormEventData from './interfaces/FormEventData';
 import FormState from './interfaces/FormState';
 
 
-// TODO: может быть вложенный
-type Values = { [index: string]: any };
 type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
 
 export interface ErrorMessage {

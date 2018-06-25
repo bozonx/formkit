@@ -1,18 +1,25 @@
 import * as _ from 'lodash';
 import FieldEventData from './interfaces/FieldEventData';
+import Storage from './Storage';
+import FieldState from './interfaces/FieldState';
+import FormEventData from './interfaces/FormEventData';
 
 
 export type FieldEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd';
+export type FieldStateName = 'defaultValue' | 'dirty' | 'disabled' | 'editedValue' | 'focused'
+  | 'initial' | 'invalidMsg' | 'touched' | 'savedValue' | 'saving';
 
 
 export default class FieldStorage {
-  constructor(storage) {
-    this._storage = storage;
+  private readonly storage: Storage;
+
+  constructor(storage: Storage) {
+    this.storage = storage;
   }
 
-  initState(pathToField, initialState) {
+  initState(pathToField: string, initialState: FieldState): void {
     const newState = {
-      ...this._storage.generateNewFieldState(),
+      ...this.storage.generateNewFieldState(),
       ...initialState,
     };
 
@@ -24,26 +31,26 @@ export default class FieldStorage {
    * @param {string} pathToField - path to your field
    * @return {*}
    */
-  getCombinedValue(pathToField) {
-    return this._storage.getCombinedValue(pathToField);
+  getCombinedValue(pathToField: string): any {
+    return this.storage.getCombinedValue(pathToField);
   }
 
-  getState(pathToField, stateName) {
-    return this._storage.getFieldState(pathToField, stateName);
+  getState(pathToField: string, stateName: FieldStateName): any {
+    return this.storage.getFieldState(pathToField, stateName);
   }
 
-  getWholeState(pathToField) {
-    return this._storage.getWholeFieldState(pathToField);
+  getWholeState(pathToField: string): FieldState {
+    return this.storage.getWholeFieldState(pathToField);
   }
 
-  setStateSilent(pathToField, partlyState) {
-    this._storage.setFieldState(pathToField, partlyState);
+  setStateSilent(pathToField: string, partlyState: FieldState): void {
+    this.storage.setFieldState(pathToField, partlyState);
   }
 
-  emitStorageEvent(pathToField, action, newState, oldState) {
+  emitStorageEvent(pathToField: string, action: string, newState: FieldState, oldState: FieldState): void {
     if (_.isEqual(oldState, newState)) return;
 
-    const fieldEventdata = {
+    const fieldEventdata: FieldEventData = {
       field: pathToField,
       target: 'field',
       event: 'storage',
@@ -51,9 +58,10 @@ export default class FieldStorage {
       oldState,
       action,
     };
+
     this.emit(pathToField, 'storage', fieldEventdata);
 
-    const formEventData = {
+    const formEventData: FormEventData = {
       field: pathToField,
       target: 'field',
       event: 'storage',
@@ -61,19 +69,20 @@ export default class FieldStorage {
       oldState,
       action,
     };
-    this._storage.events.emit('storage', formEventData);
+
+    this.storage.events.emit('storage', formEventData);
   }
 
   on(pathToField: string, eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
-    this._storage.events.on(`field.${pathToField}.${eventName}`, cb);
+    this.storage.events.on(`field.${pathToField}.${eventName}`, cb);
   }
 
   emit(pathToField: string, eventName: FieldEventName, data: FieldEventData): void {
-    this._storage.events.emit(`field.${pathToField}.${eventName}`, data);
+    this.storage.events.emit(`field.${pathToField}.${eventName}`, data);
   }
 
   off(pathToField: string, eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
-    this._storage.events.off(`field.${pathToField}.${eventName}`, cb);
+    this.storage.events.off(`field.${pathToField}.${eventName}`, cb);
   }
 
   /**
@@ -81,7 +90,7 @@ export default class FieldStorage {
    * @param {string} pathToField - path to your field
    * @return {boolean} - true if field unsaved
    */
-  isFieldUnsaved(pathToField) {
+  isFieldUnsaved(pathToField: string): boolean {
     const savedValue = this.getState(pathToField, 'savedValue');
     const editedValue = this.getState(pathToField, 'editedValue');
 

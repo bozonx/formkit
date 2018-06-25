@@ -14,9 +14,9 @@ export interface Store {
 
 
 export default class Storage {
-  constructor() {
-    this.events = new EventEmitter();
+  readonly events: EventEmitter = new EventEmitter();
 
+  constructor() {
     this._store: Store = {
       formState: new Map(this._generateNewFormState()),
       fieldsState: {},
@@ -134,6 +134,9 @@ export default class Storage {
   }
 
   generateNewFieldState() {
+
+    // TODO: почему здесь ???
+
     return {
       defaultValue: undefined,
       dirty: false,
@@ -151,6 +154,9 @@ export default class Storage {
   }
 
   _generateNewFormState() {
+
+    // TODO: почему здесь ???
+
     return {
       touched: false,
       submitting: false,
