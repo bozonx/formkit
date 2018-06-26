@@ -150,7 +150,7 @@ export default class Form {
     // validate whole form
     this.validate();
     // emit init event
-    this.formStorage.emitStorageEvent('init', this.values, undefined);
+    this.formStorage.emitStorageEvent(this.values, undefined);
   }
 
   /**
@@ -519,7 +519,7 @@ export default class Form {
     if (cbWhichChangesState) cbWhichChangesState();
 
     const newState = this.formStorage.getWholeState();
-    this.formStorage.emitStorageEvent('update', newState, prevState, force);
+    this.formStorage.emitStorageEvent(newState, prevState, force);
   }
 
   private eachRawField(

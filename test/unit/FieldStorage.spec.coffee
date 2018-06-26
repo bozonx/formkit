@@ -51,7 +51,7 @@ describe 'Unit. FieldStorage.', ->
     handleChange = sinon.spy()
     @fieldStorage.on(@pathToField, 'storage', handleChange)
 
-    @fieldStorage.emitStorageEvent(@pathToField, 'update', 'newState', 'prevState')
+    @fieldStorage.emitStorageEvent(@pathToField, 'newState', 'prevState')
 
     sinon.assert.calledWith(handleChange, {
       action: "update",

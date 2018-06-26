@@ -352,7 +352,7 @@ export default class Field {
     if (cbWhichChangesState) cbWhichChangesState();
 
     const newState = this.fieldStorage.getWholeState(this.pathToField);
-    this.fieldStorage.emitStorageEvent(this.pathToField, 'update', newState, prevState);
+    this.fieldStorage.emitStorageEvent(this.pathToField, newState, prevState);
   }
 
 }

@@ -47,7 +47,7 @@ export default class FieldStorage {
     this.storage.setFieldState(pathToField, partlyState);
   }
 
-  emitStorageEvent(pathToField: string, action: string, newState: FieldState, prevState: FieldState): void {
+  emitStorageEvent(pathToField: string, newState: FieldState, prevState: FieldState): void {
     if (_.isEqual(prevState, newState)) return;
 
     const fieldEventdata: FieldEventData = {
@@ -56,7 +56,6 @@ export default class FieldStorage {
       event: 'storage',
       state: newState,
       prevState,
-      action,
     };
 
     this.emit(pathToField, 'storage', fieldEventdata);
@@ -67,7 +66,6 @@ export default class FieldStorage {
       event: 'storage',
       state: newState,
       prevState,
-      action,
     };
 
     this.storage.events.emit('storage', formEventData);

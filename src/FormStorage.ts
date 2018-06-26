@@ -101,7 +101,7 @@ export default class FormStorage {
     this.storage.setFormState(partlyState);
   }
 
-  emitStorageEvent(action: string, newState: any, prevState: any, force?: boolean): void {
+  emitStorageEvent(newState: any, prevState: any, force?: boolean): void {
 
     // TODO: action - one of - init, update
 
@@ -112,7 +112,6 @@ export default class FormStorage {
       event: 'storage',
       state: newState,
       prevState,
-      action,
     };
 
     this.emit('storage', data);
