@@ -1,13 +1,19 @@
+import FieldState from './FieldState';
+import {FieldEventName} from '../FieldStorage';
+
+
 export default interface FieldEventData {
-  // TODO: use one of
-  action: string;
+  // TODO: зачем это нужно ???
+  action: 'update' | 'init';
+  // path to field
   field: string;
   target: 'field';
-  // TODO: use one of
-  event: string;
+  event: FieldEventName;
   oldValue: any;
   value: any;
-  //error?: Error;
-
-  // TODO: state, oldState
+  // current state
+  state: FieldState;
+  // previous state
+  prevState: FieldState;
+  error?: Error;
 }

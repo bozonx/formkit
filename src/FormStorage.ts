@@ -88,6 +88,9 @@ export default class FormStorage {
   }
 
   getWholeState(): FormState {
+
+    // TODO: review
+
     return {
       ...this.storage.getWholeFormState(),
       values: this.getCombinedValues(),
@@ -98,17 +101,17 @@ export default class FormStorage {
     this.storage.setFormState(partlyState);
   }
 
-  emitStorageEvent(action: string, newState: any, oldState: any, force?: boolean): void {
+  emitStorageEvent(action: string, newState: any, prevState: any, force?: boolean): void {
 
     // TODO: action - one of - init, update
 
-    if (!force && _.isEqual(oldState, newState)) return;
+    if (!force && _.isEqual(prevState, newState)) return;
 
     const data: FormEventData = {
       target: 'form',
       event: 'storage',
       state: newState,
-      oldState,
+      prevState,
       action,
     };
 

@@ -85,7 +85,7 @@ describe 'Unit. Field.', ->
       action: 'update'
       event: 'storage'
       field: 'testField'
-      oldState: {
+      prevState: {
         defaultValue: undefined
         dirty: false
         disabled: false
@@ -117,7 +117,7 @@ describe 'Unit. Field.', ->
       action: 'update'
       event: 'storage'
       field: 'testField'
-      oldState: {
+      prevState: {
         defaultValue: undefined
         dirty: false
         disabled: false

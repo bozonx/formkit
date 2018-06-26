@@ -1,14 +1,15 @@
 import FormState from './FormState';
+import {FormEventName} from '../FormStorage';
+
 
 export default interface FormEventData {
-  action: string;
-  target: string;
-  event: string;
+  // TODO: зачем это нужно ???
+  action: 'update' | 'init';
+  target: 'form';
+  event: FormEventName;
   state: FormState;
-  oldState: FormState;
+  prevState: FormState;
   error?: Error;
 
   // TODO: values, editedValues
-  // TODO: review - наверное наследовать от базового интерфейса
-
 }

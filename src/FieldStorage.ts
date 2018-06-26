@@ -47,15 +47,15 @@ export default class FieldStorage {
     this.storage.setFieldState(pathToField, partlyState);
   }
 
-  emitStorageEvent(pathToField: string, action: string, newState: FieldState, oldState: FieldState): void {
-    if (_.isEqual(oldState, newState)) return;
+  emitStorageEvent(pathToField: string, action: string, newState: FieldState, prevState: FieldState): void {
+    if (_.isEqual(prevState, newState)) return;
 
     const fieldEventdata: FieldEventData = {
       field: pathToField,
       target: 'field',
       event: 'storage',
       state: newState,
-      oldState,
+      prevState,
       action,
     };
 
@@ -66,7 +66,7 @@ export default class FieldStorage {
       target: 'field',
       event: 'storage',
       state: newState,
-      oldState,
+      prevState,
       action,
     };
 

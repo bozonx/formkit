@@ -514,12 +514,12 @@ export default class Form {
   }
 
   private updateState(cbWhichChangesState: () => void, force?: boolean): void {
-    const oldState: FormState = this.formStorage.getWholeState();
+    const prevState: FormState = this.formStorage.getWholeState();
 
     if (cbWhichChangesState) cbWhichChangesState();
 
     const newState = this.formStorage.getWholeState();
-    this.formStorage.emitStorageEvent('update', newState, oldState, force);
+    this.formStorage.emitStorageEvent('update', newState, prevState, force);
   }
 
   private eachRawField(

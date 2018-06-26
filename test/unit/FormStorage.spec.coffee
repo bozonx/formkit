@@ -19,13 +19,13 @@ describe 'Unit. FormStorage.', ->
   it "emitStorageEvent", ->
     changeHandler = sinon.spy()
     @formStorage.on('storage', changeHandler)
-    @formStorage.emitStorageEvent('update', 'newState', 'oldState')
+    @formStorage.emitStorageEvent('update', 'newState', 'prevState')
 
     sinon.assert.calledOnce(changeHandler)
     sinon.assert.calledWith(changeHandler, {
       action: 'update',
       event: 'storage',
-      oldState: 'oldState',
+      prevState: 'prevState',
       state: 'newState',
       target: 'form',
     })
