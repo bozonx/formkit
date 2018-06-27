@@ -5,6 +5,7 @@ import {ErrorMessage} from './Form';
 import FormEventData from './interfaces/FormEventData';
 import FormState from './interfaces/FormState';
 import Storage from './Storage';
+import ChangeEventData from './interfaces/ChangeEventData';
 
 
 // TODO: может быть вложенный
@@ -132,7 +133,7 @@ export default class FormStorage {
     this.storage.events.on(eventName, cb);
   }
 
-  emit(eventName: FormEventName, data: FormEventData): void {
+  emit(eventName: FormEventName, data: FormEventData | ChangeEventData): void {
     this.storage.events.emit(eventName, data);
   }
 

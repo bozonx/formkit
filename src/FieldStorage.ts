@@ -3,6 +3,7 @@ import FieldEventData from './interfaces/FieldEventData';
 import Storage from './Storage';
 import FieldState from './interfaces/FieldState';
 import FormEventData from './interfaces/FormEventData';
+import FormStorage from './FormStorage';
 
 
 export type FieldEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd';
@@ -12,9 +13,11 @@ export type FieldStateName = 'defaultValue' | 'dirty' | 'disabled' | 'editedValu
 
 export default class FieldStorage {
   private readonly storage: Storage;
+  private readonly formStorage: FormStorage;
 
-  constructor(storage: Storage) {
+  constructor(storage: Storage, formStorage: FormStorage) {
     this.storage = storage;
+    this.formStorage = formStorage;
   }
 
   initState(pathToField: string, initialState: FieldState): void {
@@ -60,27 +63,28 @@ export default class FieldStorage {
 
     this.emit(pathToField, 'storage', fieldEventdata);
 
-    const formEventData: FormEventData = {
-      field: pathToField,
-      target: 'field',
-      event: 'storage',
-      state: newState,
-      prevState,
-    };
-
-    this.storage.events.emit('storage', formEventData);
+    // const formEventData: FormEventData = {
+    //   target: 'form',
+    //   event: 'storage',
+    //   state: newState,
+    //   prevState,
+    // };
+    // // emit form event
+    // this.storage.events.emit('storage', formEventData);
+    //
+    this.formStorage.emitStorageEvent(newState, prevState);
   }
 
   on(pathToField: string, eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
-    this.storage.events.on(`field.${pathToField}.${eventName}`, cb);
+    this.storage.events.on(`${pathToField}.${eventName}`, cb);
   }
 
   emit(pathToField: string, eventName: FieldEventName, data: FieldEventData): void {
-    this.storage.events.emit(`field.${pathToField}.${eventName}`, data);
+    this.storage.events.emit(`${pathToField}.${eventName}`, data);
   }
 
   off(pathToField: string, eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
-    this.storage.events.off(`field.${pathToField}.${eventName}`, cb);
+    this.storage.events.off(`${pathToField}.${eventName}`, cb);
   }
 
   /**

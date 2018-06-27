@@ -7,6 +7,7 @@ import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers';
 import FormState from './interfaces/FormState';
 import FieldState from './interfaces/FieldState';
 import {FormStateName, Values} from './FormStorage';
+import {FieldStateName} from './FieldStorage';
 
 
 export interface Store {
@@ -101,7 +102,7 @@ export default class Storage {
     return fieldState.toJS();
   }
 
-  getFieldState(pathToField: string, stateName: FormStateName) {
+  getFieldState(pathToField: string, stateName: FieldStateName) {
     const fieldState = _.get(this.store.fieldsState, pathToField);
 
     if (!fieldState) return;

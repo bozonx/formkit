@@ -15,6 +15,7 @@ import Config from './interfaces/Config';
 import FieldSchema from './interfaces/FieldSchema';
 import FormEventData from './interfaces/FormEventData';
 import FormState from './interfaces/FormState';
+import ChangeEventData from './interfaces/ChangeEventData';
 
 
 type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
@@ -57,7 +58,7 @@ export default class Form {
     this.config = config;
     this.debouncedSave = new DebouncedCall(this.config.debounceTime);
     this.formStorage = new FormStorage(this.storage);
-    this.fieldStorage = new FieldStorage(this.storage);
+    this.fieldStorage = new FieldStorage(this.storage, this.formStorage);
   }
 
   get values(): Values {
@@ -388,13 +389,13 @@ export default class Form {
     this.formStorage.setStateSilent(partlyState);
   }
 
-  $handleFieldChange(eventData: FormEventData): void {
+  $handleFieldChange(eventData: ChangeEventData): void {
     // run form's change event
     this.$emit('change', eventData);
     this.startSaving(false);
   }
 
-  $emit(eventName: FormEventName, data: FormEventData) {
+  $emit(eventName: FormEventName, data: FormEventData | ChangeEventData) {
     this.formStorage.emit(eventName, data);
   }
 

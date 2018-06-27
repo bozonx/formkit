@@ -4,6 +4,7 @@ import Form from './Form';
 import FieldSchema from './interfaces/FieldSchema';
 import FieldStorage, {FieldEventName} from './FieldStorage';
 import FieldEventData from './interfaces/FieldEventData';
+import ChangeEventData from './interfaces/ChangeEventData';
 import FieldState from './interfaces/FieldState';
 
 
@@ -127,8 +128,8 @@ export default class Field {
 
     const newValue = parseValue(rawValue);
     // value is immutable
-    const oldValue = this.value;
-    const isChanged: boolean = !_.isEqual(oldValue, newValue);
+    const prevValue = this.value;
+    const isChanged: boolean = !_.isEqual(prevValue, newValue);
 
     if (isChanged) {
       // it rises a storage event
@@ -149,7 +150,7 @@ export default class Field {
     if (!this.form.config.allowSaveUnmodifiedField && !isChanged) return;
 
     // rise change by user event handlers and callbacks of form and field
-    this.riseUserChangeEvent(this.pathToField, oldValue, newValue);
+    this.riseUserChangeEvent(this.pathToField, prevValue, newValue);
   }
 
   /**
@@ -317,10 +318,10 @@ export default class Field {
    * It rises a "change" event.
    * It rises only if value changed by user.
    */
-  private riseUserChangeEvent(pathToField: string, oldValue: any, newValue: any) {
-    const eventData: FieldEventData = {
+  private riseUserChangeEvent(pathToField: string, prevValue: any, newValue: any) {
+    const eventData: ChangeEventData = {
       field: pathToField,
-      oldValue,
+      prevValue,
       value: newValue,
       event: 'change',
     };
