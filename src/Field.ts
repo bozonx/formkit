@@ -3,7 +3,7 @@ import { calculateDirty, getFieldName, parseValue } from './helpers/helpers';
 import Form from './Form';
 import FieldSchema from './interfaces/FieldSchema';
 import FieldStorage, {FieldEventName} from './FieldStorage';
-import FieldEventData from './interfaces/FieldEventData';
+import FieldStorageEventData from './interfaces/FieldStorageEventData';
 import ChangeEventData from './interfaces/ChangeEventData';
 import FieldState from './interfaces/FieldState';
 
@@ -182,11 +182,11 @@ export default class Field {
   /**
    * Add one or more handlers on fields's event:
    */
-  on(eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
+  on(eventName: FieldEventName, cb: (data: FieldStorageEventData) => void): void {
     this.fieldStorage.on(this.pathToField, eventName, cb);
   }
 
-  off(eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
+  off(eventName: FieldEventName, cb: (data: FieldStorageEventData) => void): void {
     this.fieldStorage.off(this.pathToField, eventName, cb);
   }
 

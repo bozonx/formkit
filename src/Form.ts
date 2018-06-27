@@ -13,7 +13,7 @@ import {
 } from './helpers/helpers';
 import Config from './interfaces/Config';
 import FieldSchema from './interfaces/FieldSchema';
-import FormEventData from './interfaces/FormEventData';
+import FormStorageEventData from './interfaces/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import ChangeEventData from './interfaces/ChangeEventData';
 
@@ -157,11 +157,11 @@ export default class Form {
   /**
    * Add one or more handlers on form's event:
    */
-  on(eventName: FormEventName, cb: (data: FormEventData) => void): void {
+  on(eventName: FormEventName, cb: (data: FormStorageEventData) => void): void {
     this.formStorage.on(eventName, cb);
   }
 
-  off(eventName: FormEventName, cb: (data: FormEventData) => void): void {
+  off(eventName: FormEventName, cb: (data: FormStorageEventData) => void): void {
     this.formStorage.off(eventName, cb);
   }
 
@@ -395,7 +395,7 @@ export default class Form {
     this.startSaving(false);
   }
 
-  $emit(eventName: FormEventName, data: FormEventData | ChangeEventData) {
+  $emit(eventName: FormEventName, data: FormStorageEventData | ChangeEventData) {
     this.formStorage.emit(eventName, data);
   }
 

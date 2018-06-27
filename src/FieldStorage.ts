@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
-import FieldEventData from './interfaces/FieldEventData';
+import FieldStorageEventData from './interfaces/FieldStorageEventData';
 import Storage from './Storage';
 import FieldState from './interfaces/FieldState';
-import FormEventData from './interfaces/FormEventData';
+import FormStorageEventData from './interfaces/FormStorageEventData';
 import FormStorage from './FormStorage';
 
 
@@ -53,7 +53,7 @@ export default class FieldStorage {
   emitStorageEvent(pathToField: string, newState: FieldState, prevState: FieldState): void {
     if (_.isEqual(prevState, newState)) return;
 
-    const fieldEventdata: FieldEventData = {
+    const fieldEventdata: FieldStorageEventData = {
       field: pathToField,
       target: 'field',
       event: 'storage',
@@ -63,7 +63,7 @@ export default class FieldStorage {
 
     this.emit(pathToField, 'storage', fieldEventdata);
 
-    // const formEventData: FormEventData = {
+    // const formEventData: FormStorageEventData = {
     //   target: 'form',
     //   event: 'storage',
     //   state: newState,
@@ -75,15 +75,15 @@ export default class FieldStorage {
     this.formStorage.emitStorageEvent(newState, prevState);
   }
 
-  on(pathToField: string, eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
+  on(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData) => void): void {
     this.storage.events.on(`${pathToField}.${eventName}`, cb);
   }
 
-  emit(pathToField: string, eventName: FieldEventName, data: FieldEventData): void {
+  emit(pathToField: string, eventName: FieldEventName, data: FieldStorageEventData): void {
     this.storage.events.emit(`${pathToField}.${eventName}`, data);
   }
 
-  off(pathToField: string, eventName: FieldEventName, cb: (data: FieldEventData) => void): void {
+  off(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData) => void): void {
     this.storage.events.off(`${pathToField}.${eventName}`, cb);
   }
 

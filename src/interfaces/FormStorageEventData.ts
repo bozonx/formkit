@@ -2,7 +2,7 @@ import FormState from './FormState';
 import {FormEventName} from '../FormStorage';
 
 
-export default interface FormEventData {
+export default interface FormStorageEventData {
   target: 'form';
   event: FormEventName;
   state: FormState;

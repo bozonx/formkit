@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 import { Map } from 'immutable';
 
 import {ErrorMessage} from './Form';
-import FormEventData from './interfaces/FormEventData';
+import FormStorageEventData from './interfaces/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import Storage from './Storage';
 import ChangeEventData from './interfaces/ChangeEventData';
@@ -108,7 +108,7 @@ export default class FormStorage {
 
     if (!force && _.isEqual(prevState, newState)) return;
 
-    const data: FormEventData = {
+    const data: FormStorageEventData = {
       target: 'form',
       event: 'storage',
       state: newState,
@@ -129,15 +129,15 @@ export default class FormStorage {
    * @param eventName
    * @param cb
    */
-  on(eventName: FormEventName, cb: (data: FormEventData) => void): void {
+  on(eventName: FormEventName, cb: (data: FormStorageEventData) => void): void {
     this.storage.events.on(eventName, cb);
   }
 
-  emit(eventName: FormEventName, data: FormEventData | ChangeEventData): void {
+  emit(eventName: FormEventName, data: FormStorageEventData | ChangeEventData): void {
     this.storage.events.emit(eventName, data);
   }
 
-  off(eventName: FormEventName, cb: (data: FormEventData) => void): void {
+  off(eventName: FormEventName, cb: (data: FormStorageEventData) => void): void {
     this.storage.events.off(eventName, cb);
   }
 

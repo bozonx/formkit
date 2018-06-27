@@ -8,7 +8,7 @@ interface EventFieldState extends FieldState {
 }
 
 
-export default interface FieldEventData {
+export default interface FieldStorageEventData {
   target: 'field';
   // TODO: use 'storage'
   event: FieldEventName;
