@@ -129,7 +129,7 @@ export default class FormStorage {
    * @param eventName
    * @param cb
    */
-  on(eventName: FormEventName, cb: (data: FormStorageEventData) => void): void {
+  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData) => void): void {
     this.storage.events.on(eventName, cb);
   }
 
@@ -137,7 +137,7 @@ export default class FormStorage {
     this.storage.events.emit(eventName, data);
   }
 
-  off(eventName: FormEventName, cb: (data: FormStorageEventData) => void): void {
+  off(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData) => void): void {
     this.storage.events.off(eventName, cb);
   }
 

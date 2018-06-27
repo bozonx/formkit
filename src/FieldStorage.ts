@@ -4,6 +4,7 @@ import Storage from './Storage';
 import FieldState from './interfaces/FieldState';
 import FormStorageEventData from './interfaces/FormStorageEventData';
 import FormStorage from './FormStorage';
+import ChangeEventData from './interfaces/ChangeEventData';
 
 
 export type FieldEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd';
@@ -75,15 +76,15 @@ export default class FieldStorage {
     this.formStorage.emitStorageEvent(newState, prevState);
   }
 
-  on(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData) => void): void {
+  on(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData| ChangeEventData) => void): void {
     this.storage.events.on(`${pathToField}.${eventName}`, cb);
   }
 
-  emit(pathToField: string, eventName: FieldEventName, data: FieldStorageEventData): void {
+  emit(pathToField: string, eventName: FieldEventName, data: FieldStorageEventData | ChangeEventData): void {
     this.storage.events.emit(`${pathToField}.${eventName}`, data);
   }
 
-  off(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData) => void): void {
+  off(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData | ChangeEventData) => void): void {
     this.storage.events.off(`${pathToField}.${eventName}`, cb);
   }
 

@@ -182,11 +182,11 @@ export default class Field {
   /**
    * Add one or more handlers on fields's event:
    */
-  on(eventName: FieldEventName, cb: (data: FieldStorageEventData) => void): void {
+  on(eventName: FieldEventName, cb: (data: FieldStorageEventData | ChangeEventData) => void): void {
     this.fieldStorage.on(this.pathToField, eventName, cb);
   }
 
-  off(eventName: FieldEventName, cb: (data: FieldStorageEventData) => void): void {
+  off(eventName: FieldEventName, cb: (data: FieldStorageEventData | ChangeEventData) => void): void {
     this.fieldStorage.off(this.pathToField, eventName, cb);
   }
 
@@ -330,7 +330,6 @@ export default class Field {
     this.fieldStorage.emit(pathToField, 'change', eventData);
     // call forms's change handler - it rises change callback and start saving
 
-    // TODO: !!!!??? надо преобразовать
     this.form.$handleFieldChange(eventData);
   }
 
