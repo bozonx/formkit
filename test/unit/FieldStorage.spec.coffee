@@ -1,14 +1,17 @@
-Storage = require('../../src/Storage')
-FieldStorage = require('../../src/FieldStorage')
+Storage = require('../../src/Storage').default
+FieldStorage = require('../../src/FieldStorage').default
 
 
-describe 'Unit. FieldStorage.', ->
+describe.only 'Unit. FieldStorage.', ->
   beforeEach () ->
     @storage = new Storage()
-    @fieldStorage = new FieldStorage(@storage)
+    @formStorage = {
+      emitStorageEvent: sinon.spy()
+    }
+    @fieldStorage = new FieldStorage(@storage, @formStorage)
     @pathToField = 'path.to.field'
 
-  it "initState", ->
+  it 'initState', ->
     @fieldStorage.initState(@pathToField, { dirty: true, touched: true })
 
     assert.deepEqual(@storage.getWholeFieldState(@pathToField), {
@@ -17,7 +20,7 @@ describe 'Unit. FieldStorage.', ->
       touched: true
     })
 
-  it "get and set state", ->
+  it 'get and set state', ->
     @fieldStorage.setStateSilent(@pathToField, { dirty: true, touched: true })
     @fieldStorage.setStateSilent(@pathToField, { saving: true })
 
@@ -25,7 +28,7 @@ describe 'Unit. FieldStorage.', ->
     assert.isTrue(@fieldStorage.getState(@pathToField, 'touched'))
     assert.isTrue(@fieldStorage.getState(@pathToField, 'saving'))
 
-  it "get and set value", ->
+  it 'get and set value', ->
     @fieldStorage.setStateSilent(@pathToField, {
       savedValue: 'saved'
       editedValue: 'edited'
@@ -35,7 +38,7 @@ describe 'Unit. FieldStorage.', ->
     assert.equal(@fieldStorage.getState(@pathToField, 'editedValue'), 'edited')
     assert.equal(@fieldStorage.getCombinedValue(@pathToField), 'edited')
 
-  it "isFieldUnsaved", ->
+  it 'isFieldUnsaved', ->
     @fieldStorage.setStateSilent(@pathToField, {
       savedValue: 'saved'
       editedValue: 'edited'
@@ -47,17 +50,17 @@ describe 'Unit. FieldStorage.', ->
 
     assert.isFalse(@fieldStorage.isFieldUnsaved(@pathToField))
 
-  it "emitStorageEvent", ->
+  it 'emitStorageEvent', ->
     handleChange = sinon.spy()
     @fieldStorage.on(@pathToField, 'storage', handleChange)
 
     @fieldStorage.emitStorageEvent(@pathToField, 'newState', 'prevState')
 
     sinon.assert.calledWith(handleChange, {
-      action: "update",
-      event: "storage",
-      field: "path.to.field",
-      prevState: "prevState",
-      state: "newState",
-      target: "field"
+      event: 'storage',
+      field: 'path.to.field',
+      prevState: 'prevState',
+      state: 'newState',
+      target: 'field'
     })
+    sinon.assert.calledWith(@formStorage.emitStorageEvent, 'newState', 'prevState')

@@ -1,5 +1,5 @@
-Storage = require('../../src/Storage')
-FormStorage = require('../../src/FormStorage')
+Storage = require('../../src/Storage').default
+FormStorage = require('../../src/FormStorage').default
 
 
 describe 'Unit. FormStorage.', ->
