@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import FieldSchema from '../interfaces/FieldSchema';
 import Field from '../Field';
 
 
@@ -15,23 +14,35 @@ export function findFieldRecursively(
   cb: (field: Field, path: string) => boolean | Field | void
 ): Field | void {
   const recursive = (obj: {[index: string]: object}, rootPath: string): Field | void => {
-    const foundField = _.find(obj, (item: object, name: string): Field | boolean | void => {
+    let foundField;
+
+    _.find(obj, (item: object, name: string): any => {
       const itemPath: string = _.trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
 
       if (item instanceof Field) {
         // it's a field
-        return cb(item, itemPath);
+        const returnedValue: any = cb(item, itemPath);
+
+        if (returnedValue) {
+          foundField = item;
+
+          return true;
+        }
+
+        return;
       }
       else if (_.isPlainObject(item)) {
         // it's a container
-        return recursive(item as {[index: string]: object}, itemPath);
+        foundField = recursive(item as {[index: string]: object}, itemPath);
+
+        return;
       }
       else {
         throw new Error(`Wrong fields dict`);
       }
     });
 
-    return foundField as Field | void;
+    return foundField;
   };
 
   return recursive(fields, '');
@@ -154,6 +165,9 @@ export function getFieldName(pathToField: string): string {
 
   return lastItem;
 }
+
+
+// //// not tested
 
 export function isPromise(unknown: any) {
   return _.isObject(unknown) && unknown.then;

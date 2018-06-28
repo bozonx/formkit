@@ -1,8 +1,8 @@
 formkit = require('../../src/index')
-Field = require('../../src/Field')
+Field = require('../../src/Field').default
 
 
-describe 'Unit. Field.', ->
+describe.only 'Unit. Field.', ->
   beforeEach () ->
     @pathToField = 'testField'
     @form = formkit.newForm()
@@ -11,11 +11,11 @@ describe 'Unit. Field.', ->
 
   it "_initState without params", ->
     storageChangeHandler = sinon.spy()
-    @form._fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
-    @form._storage._store.fieldsState[@pathToField] = undefined
-    field = new Field(@pathToField, {}, @form, @form._fieldStorage)
+    @form.fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
+    @form.storage.store.fieldsState[@pathToField] = undefined
+    field = new Field(@pathToField, {}, @form, @form.fieldStorage)
 
-    assert.deepEqual(@form._storage.getWholeFieldState(@pathToField), {
+    assert.deepEqual(@form.storage.getWholeFieldState(@pathToField), {
       defaultValue: undefined
       dirty: false
       disabled: false
@@ -33,17 +33,17 @@ describe 'Unit. Field.', ->
 
   it "_initState with initial params", ->
     storageChangeHandler = sinon.spy()
-    @form._fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
+    @form.fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
     params = {
       disabled: true
       defaultValue: 5
       initial: 7
       savedValue: 9
     }
-    @form._storage._store.fieldsState[@pathToField] = undefined
-    field = new Field(@pathToField, params, @form, @form._fieldStorage)
+    @form.storage.store.fieldsState[@pathToField] = undefined
+    field = new Field(@pathToField, params, @form, @form.fieldStorage)
 
-    assert.deepEqual(@form._storage.getWholeFieldState(@pathToField), {
+    assert.deepEqual(@form.storage.getWholeFieldState(@pathToField), {
       defaultValue: 5
       dirty: false
       initial: 7
