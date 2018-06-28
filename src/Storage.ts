@@ -21,7 +21,7 @@ export interface Store {
 
 export default class Storage {
   readonly events: EventEmitter = new EventEmitter();
-  private readonly store: Store = {
+  private store: Store = {
     formState: Map<string, any>(this._generateNewFormState()),
     fieldsState: {},
     // combined saved and edited values
@@ -63,7 +63,11 @@ export default class Storage {
   destroy(): void {
 
     // TODO: do it in right way
-    //this.store = {};
+    this.store = {
+      formState: Map(),
+      fieldsState: {},
+      values: Map(),
+    };
 
     const eventNames: Array<string> = this.events.eventNames() as Array<string>;
 

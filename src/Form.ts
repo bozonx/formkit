@@ -49,7 +49,7 @@ export default class Form {
   // TODO: review
   private submitPromise?: Function;
   // TODO: review
-  private readonly handlers: Hnadlers = {
+  private handlers: Hnadlers = {
     onSubmit: undefined,
     onSave: undefined,
   };
@@ -218,11 +218,10 @@ export default class Form {
     const { values, editedValues } = this;
 
     this.setState({ submitting: true });
-
     this.riseActionEvent('submitStart');
 
     // run submit callback
-    await this.runSubmitHandler(values, editedValues);
+    await this.runSubmitHandler(this.handlers.onSubmit, values, editedValues);
 
     // TODO: зачем это нужно ???
     //this.submitPromise = null;
@@ -260,7 +259,7 @@ export default class Form {
    */
   destroy(): Promise<void> {
     // TODO: как удалить чтобы сборщик мусора сработал?
-    //this.handlers = {};
+    this.handlers = {};
 
     this.flushSaving();
 
@@ -444,9 +443,13 @@ export default class Form {
     return resolvePromise(cbResult);
   };
 
-  private async runSubmitHandler(values: Values, editedValues: Values): Promise<void> {
+  private async runSubmitHandler(
+    cb: (values: Values, editedValues: Values) => Promise<void> | void,
+    values: Values,
+    editedValues: Values
+  ): Promise<void> {
     // get result of submit handler
-    const returnedPromiseOrVoid = this.handlers.onSubmit && this.handlers.onSubmit(values, editedValues);
+    const returnedPromiseOrVoid = cb(values, editedValues);
 
     try {
       // wait for saving process

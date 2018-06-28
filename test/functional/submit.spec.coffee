@@ -1,7 +1,7 @@
 formkit = require('../../src/index')
 
 
-describe.only 'Functional. Submit.', ->
+describe 'Functional. Submit.', ->
   beforeEach () ->
     @form = formkit.newForm()
     @form.init(['name'])
@@ -19,15 +19,8 @@ describe.only 'Functional. Submit.', ->
     await @form.handleSubmit()
 
     sinon.assert.calledOnce(submitHandler)
-    sinon.assert.calledWith(submitHandler, {
-      values: { name: 'newValue' }
-      editedValues: { name: 'newValue' }
-    })
+    sinon.assert.calledWith(submitHandler, { name: 'newValue' }, { name: 'newValue' })
     sinon.assert.calledOnce(submitStartHandler)
-    sinon.assert.calledWith(submitStartHandler, {
-      values: { name: 'newValue' }
-      editedValues: { name: 'newValue' }
-    })
     sinon.assert.calledOnce(submitEndHandler)
     assert.isFalse(@form.submitting)
 
@@ -45,9 +38,10 @@ describe.only 'Functional. Submit.', ->
     assert.isTrue(@form.submitting)
     sinon.assert.notCalled(submitEndHandler)
 
-    handleSubmitReturn.then () =>
-      assert.isFalse(@form.submitting)
-      sinon.assert.calledOnce(submitEndHandler)
+    await handleSubmitReturn
+
+    assert.isFalse(@form.submitting)
+    sinon.assert.calledOnce(submitEndHandler)
 
   it 'rejected promise', ->
     submitHandler = ->
@@ -76,7 +70,7 @@ describe.only 'Functional. Submit.', ->
     assert.deepEqual(@form.editedValues, { name: 'editedValue' })
     assert.isTrue(@form.dirty)
 
-    @form.handleSubmit()
+    await @form.handleSubmit()
 
     assert.equal(@form.submitting, false)
     assert.equal(@field.savedValue, 'editedValue')
@@ -99,7 +93,7 @@ describe.only 'Functional. Submit.', ->
       @form.onSubmit(-> Promise.resolve())
       @field.handleChange('newValue')
 
-      await @form.handleSubmit()
+      @form.handleSubmit()
 
       assert.isTrue(@form.submitting)
       assert.equal(@form.canSubmit(), 'The form is submitting now.')
