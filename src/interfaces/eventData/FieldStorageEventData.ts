@@ -11,6 +11,7 @@ interface EventFieldState extends FieldState {
 export default interface FieldStorageEventData {
   // TODO: почему бы событие не назвать fieldStorage
   target: 'field';
+  // TODO: ??? Why ???
   event: 'storage';
   // TODO: новый стейт не нужен, его и так можно получить
   // current state

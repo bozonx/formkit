@@ -6,6 +6,7 @@ import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import Storage from './Storage';
 import ChangeEventData from './interfaces/eventData/ChangeEventData';
+import ActionEventData from './interfaces/eventData/ActionEventData';
 
 
 // TODO: может быть вложенный
@@ -129,15 +130,15 @@ export default class FormStorage {
    * @param eventName
    * @param cb
    */
-  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData) => void): void {
+  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): void {
     this.storage.events.on(eventName, cb);
   }
 
-  emit(eventName: FormEventName, data: FormStorageEventData | ChangeEventData): void {
+  emit(eventName: FormEventName, data: FormStorageEventData | ChangeEventData | ActionEventData): void {
     this.storage.events.emit(eventName, data);
   }
 
-  off(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData) => void): void {
+  off(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): void {
     this.storage.events.off(eventName, cb);
   }
 

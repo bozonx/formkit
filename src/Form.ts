@@ -16,7 +16,7 @@ import FieldSchema from './interfaces/FieldSchema';
 import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import ChangeEventData from './interfaces/eventData/ChangeEventData';
-import ActionEndEventData from './interfaces/eventData/ActionEndEventData';
+import ActionEventData from './interfaces/eventData/ActionEventData';
 
 
 type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
@@ -158,11 +158,11 @@ export default class Form {
   /**
    * Add one or more handlers on form's event:
    */
-  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData) => void): void {
+  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): void {
     this.formStorage.on(eventName, cb);
   }
 
-  off(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData) => void): void {
+  off(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): void {
     this.formStorage.off(eventName, cb);
   }
 
@@ -218,7 +218,7 @@ export default class Form {
 
     this.setState({ submitting: true });
 
-    this.riseActionEnd('submitStart');
+    this.riseActionEvent('submitStart');
 
     // run submit callback
     await this.runSubmitHandler(values, editedValues);
@@ -397,7 +397,7 @@ export default class Form {
     this.startSaving(false);
   }
 
-  $emit(eventName: FormEventName, data: FormStorageEventData | ChangeEventData) {
+  $emit(eventName: FormEventName, data: FormStorageEventData | ChangeEventData | ActionEventData) {
     this.formStorage.emit(eventName, data);
   }
 
@@ -415,13 +415,13 @@ export default class Form {
     this.debouncedSave.onEnd((error: Error) => {
       if (error) {
         this.setState({ saving: false });
-        this.riseActionEnd('saveEnd', error);
+        this.riseActionEvent('saveEnd', error);
       }
       else {
         const force = true;
         this.$setStateSilent({ saving: false });
         this.moveValuesToSaveLayer(valuesBeforeSave, force);
-        this.riseActionEnd('saveEnd');
+        this.riseActionEvent('saveEnd');
       }
     });
 
@@ -434,7 +434,7 @@ export default class Form {
 
     this.setState({ saving: true });
     // emit save start
-    this.riseActionEnd('saveStart');
+    this.riseActionEvent('saveStart');
 
     // run save callback
     const cbResult = this.handlers.onSave(this.values);
@@ -463,18 +463,18 @@ export default class Form {
     }
     catch (error) {
       this.setState({ submitting: false });
-      this.riseActionEnd('submitEnd', error);
+      this.riseActionEvent('submitEnd', error);
     }
   }
 
   private afterSubmitSuccess(values: Values): void {
     this.setState({ submitting: false });
     this.moveValuesToSaveLayer(values);
-    this.riseActionEnd('submitEnd');
+    this.riseActionEvent('submitEnd');
   }
 
-  private riseActionEnd(eventName: FormEventName, error?: Error): void {
-    const eventData: ActionEndEventData = {
+  private riseActionEvent(eventName: FormEventName, error?: Error): void {
+    const eventData: ActionEventData = {
       error
     };
 

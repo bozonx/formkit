@@ -11,6 +11,7 @@ interface EventFormState extends FormState {
 export default interface FormStorageEventData {
   // TODO: почему бы событие не назвать formStorage
   target: 'form';
+  // TODO: ??? Why ???
   event: 'storage';
   // TODO: новый стейт не нужен, его и так можно получить
   state: EventFormState;
