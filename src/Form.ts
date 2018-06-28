@@ -461,19 +461,19 @@ export default class Form {
       await returnedPromise;
       this.afterSubmitSuccess(values);
     }
-    catch (error: Error) {
+    catch (error) {
       this.setState({ submitting: false });
-      this.$emit('submitEnd', { error });
+      this.riseSubmitEnd(error);
     }
   }
 
   private afterSubmitSuccess(values: Values): void {
     this.setState({ submitting: false });
     this.moveValuesToSaveLayer(values);
-    this.$emit('submitEnd');
+    this.riseSubmitEnd();
   }
 
-  private riseSubmitEnd(error): void {
+  private riseSubmitEnd(error?: Error): void {
     const eventData: SubmitEndEventData = {
       error
     };
