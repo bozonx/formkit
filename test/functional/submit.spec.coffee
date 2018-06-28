@@ -16,7 +16,7 @@ describe.only 'Functional. Submit.', ->
     @form.on('submitEnd', submitEndHandler)
 
     @field.handleChange('newValue')
-    @form.handleSubmit()
+    await @form.handleSubmit()
 
     sinon.assert.calledOnce(submitHandler)
     sinon.assert.calledWith(submitHandler, {
@@ -98,7 +98,8 @@ describe.only 'Functional. Submit.', ->
     it "don't submit while form is submitting at the moment.", ->
       @form.onSubmit(-> Promise.resolve())
       @field.handleChange('newValue')
-      @form.handleSubmit()
+
+      await @form.handleSubmit()
 
       assert.isTrue(@form.submitting)
       assert.equal(@form.canSubmit(), 'The form is submitting now.')
@@ -108,14 +109,14 @@ describe.only 'Functional. Submit.', ->
       @form.setValidateCb((errors) -> errors.name = 'invalid' )
       @field.handleChange('newValue')
 
-      @form.handleSubmit()
+      await @form.handleSubmit()
 
       assert.equal(@form.canSubmit(), 'The form is invalid.')
 
     it "don't do submit on clear form", ->
       @form.onSubmit(sinon.spy())
 
-      @form.handleSubmit()
+      await @form.handleSubmit()
 
       assert.equal(@form.canSubmit(), 'The form hasn\'t changed.')
 
@@ -123,15 +124,15 @@ describe.only 'Functional. Submit.', ->
       @form.onSubmit(sinon.spy())
 
       @field.handleChange('newValue')
-      @form.handleSubmit()
+      await @form.handleSubmit()
 
       assert.equal(@form.canSubmit(), 'The form hasn\'t changed.')
 
-    it "don't do another submit if data hasn't changed. config.allowSubmitUnchangedForm: true", ->
+    it "allow submit unchanged form if config.allowSubmitUnchangedForm: true", ->
       @form.onSubmit(sinon.spy())
       @form.config.allowSubmitUnchangedForm = true
 
       @field.handleChange('newValue')
-      @form.handleSubmit()
+      await @form.handleSubmit()
 
       assert.isUndefined(@form.canSubmit())

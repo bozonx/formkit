@@ -45,7 +45,7 @@ describe 'Functional. saving.', ->
     sinon.assert.notCalled(saveEndHandler)
     assert.isTrue(@form.saving)
 
-    @form._debouncedSave.getPromise()
+    @form.debouncedSave.getPromise()
       .then =>
         sinon.assert.calledOnce(saveStartHandler)
         sinon.assert.calledOnce(saveEndHandler)
@@ -61,6 +61,6 @@ describe 'Functional. saving.', ->
     @field.handleChange('newValue')
     @field.handleEndEditing()
 
-    @form._debouncedSave.getPromise()
+    @form.debouncedSave.getPromise()
       .then =>
         sinon.assert.calledOnce(@saveHandler)
