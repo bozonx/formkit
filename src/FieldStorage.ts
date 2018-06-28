@@ -42,7 +42,7 @@ export default class FieldStorage {
     return this.storage.getFieldState(pathToField, stateName);
   }
 
-  getWholeState(pathToField: string): FieldState {
+  getWholeState(pathToField: string): FieldState | undefined {
     return this.storage.getWholeFieldState(pathToField);
   }
 
@@ -50,7 +50,7 @@ export default class FieldStorage {
     this.storage.setFieldState(pathToField, partlyState);
   }
 
-  emitStorageEvent(pathToField: string, newState: FieldState, prevState: FieldState): void {
+  emitStorageEvent(pathToField: string, newState: FieldState, prevState?: FieldState): void {
     if (_.isEqual(prevState, newState)) return;
 
     const fieldEventdata: FieldStorageEventData = {

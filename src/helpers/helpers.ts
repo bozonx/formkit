@@ -79,7 +79,7 @@ export function eachFieldSchemaRecursively(
   })
 }
 
-export function isFieldSchema(comingSchema) {
+export function isFieldSchema(comingSchema: object) {
 
   // TODO: упростить, может проверять интерфейс FieldSchema
 
@@ -92,7 +92,7 @@ export function isFieldSchema(comingSchema) {
     'debounceTime',
   ];
 
-  _.find(comingSchema, (value, name) => {
+  _.find(comingSchema, (value: any, name: string): any => {
     if (_.includes(filedParams, name)) {
       isSchema = true;
 

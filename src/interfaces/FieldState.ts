@@ -9,6 +9,8 @@ export default interface FieldState {
   touched?: boolean;
   savedValue?: any;
   saving?: boolean;
+  value?: any;
+  prevValue?: any;
 
   // TODO: зачем не обязательные ???
 

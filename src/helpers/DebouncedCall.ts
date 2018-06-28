@@ -177,7 +177,7 @@ export default class DebouncedCall {
       // if there isn't any queue - just finish and go to beginning
       this.currentProcess = null;
       // TODO: наверное надо reject вызывать, тогда onEnd не нужно
-      this.mainResolve(err);
+      this.mainResolve && this.mainResolve();
       if (this.onEndCb) this.onEndCb(err);
       this.mainPromise = null;
       this.mainResolve = null;

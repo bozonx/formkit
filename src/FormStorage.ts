@@ -92,6 +92,7 @@ export default class FormStorage {
   getWholeState(): FormState {
 
     // TODO: review
+    // TODO: где prevValues ?
 
     return {
       ...this.storage.getWholeFormState(),
