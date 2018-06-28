@@ -17,6 +17,7 @@ import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import ChangeEventData from './interfaces/eventData/ChangeEventData';
 import ActionEventData from './interfaces/eventData/ActionEventData';
+import FieldState from './interfaces/FieldState';
 
 
 type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
@@ -27,8 +28,8 @@ export interface ErrorMessage {
 }
 
 interface Hnadlers {
-  onSubmit?: (values: Values, editedValues: Values) => void;
-  onSave?: () => void;
+  onSubmit?: (values: Values, editedValues: Values) => Promise<void> | void;
+  onSave?: (values: Values) => Promise<void> | void;
 }
 
 
@@ -166,11 +167,11 @@ export default class Form {
     this.formStorage.off(eventName, cb);
   }
 
-  onSubmit(handler: () => void): void {
+  onSubmit(handler: (values: Values, editedValues: Values) => Promise<void> | void): void {
     this.handlers.onSubmit = handler;
   }
 
-  onSave(handler: () => void): void {
+  onSave(handler: (values: Values) => Promise<void> | void): void {
     this.handlers.onSave = handler;
   }
 
@@ -259,7 +260,7 @@ export default class Form {
    */
   destroy(): Promise<void> {
     // TODO: как удалить чтобы сборщик мусора сработал?
-    this.handlers = {};
+    //this.handlers = {};
 
     this.flushSaving();
 
@@ -273,8 +274,8 @@ export default class Form {
 
     // wait for save and submit process have finished
     return Promise.all([
-      this.debouncedSave.getPromise() || Promise.resolve(),
-      this.submitPromise || Promise.resolve(),
+      resolvePromise(this.debouncedSave.getPromise()),
+      resolvePromise(this.submitPromise),
     ])
       .then(doDestroy)
       .catch(doDestroy);
@@ -373,14 +374,15 @@ export default class Form {
     // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
     eachFieldRecursively(this.fields, (field: Field, path: string) => {
-
-      // TODO: почему null ???
-
-      const invalidMsg = _.get(errors, path) || null;
+      const invalidMsg = _.get(errors, path);
 
       if (isFormValid) isFormValid = !invalidMsg;
 
-      field.$setStateSilent({ invalidMsg });
+      const fieldPartlyState: FieldState = {
+        invalidMsg
+      };
+
+      field.$setStateSilent(fieldPartlyState);
     });
 
     this.formStorage.setStateSilent({ valid: isFormValid });
@@ -432,42 +434,32 @@ export default class Form {
   }
 
   private doSave = (): Promise<void> => {
-
-    // TODO: review
-
     this.setState({ saving: true });
     // emit save start
     this.riseActionEvent('saveStart');
 
     // run save callback
-    const cbResult = this.handlers.onSave(this.values);
+    const cbResult: Promise<void> | void = this.handlers.onSave && this.handlers.onSave(this.values);
 
-    if (isPromise(cbResult)) {
-      return cbResult;
-    }
-
-    // else if save callback hasn't returned a promise
-
-    return Promise.resolve();
+    return resolvePromise(cbResult);
   };
 
   private async runSubmitHandler(values: Values, editedValues: Values): Promise<void> {
-
-    // TODO: review
-
     // get result of submit handler
-    const returnedValue = this.handlers.onSubmit && this.handlers.onSubmit(values, editedValues);
-    const returnedPromise = resolvePromise(returnedValue);
+    const returnedPromiseOrVoid = this.handlers.onSubmit && this.handlers.onSubmit(values, editedValues);
 
     try {
       // wait for saving process
-      await returnedPromise;
-      this.afterSubmitSuccess(values);
+      await resolvePromise(returnedPromiseOrVoid);
     }
     catch (error) {
       this.setState({ submitting: false });
       this.riseActionEvent('submitEnd', error);
+
+      return;
     }
+
+    this.afterSubmitSuccess(values);
   }
 
   private afterSubmitSuccess(values: Values): void {
