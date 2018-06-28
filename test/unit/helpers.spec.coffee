@@ -90,10 +90,10 @@ describe 'Unit. helpers.', ->
     sinon.assert.calledTwice(cb)
 
   it "calculateDirty", ->
-    assert.isTrue( helpers.calculateDirty('newValue', 'oldValue') )
+    assert.isTrue( helpers.calculateDirty('newValue', 'prevValue') )
     assert.isTrue( helpers.calculateDirty('newValue', undefined) )
 
-    assert.isFalse( helpers.calculateDirty(undefined, 'oldValue') )
+    assert.isFalse( helpers.calculateDirty(undefined, 'prevValue') )
     assert.isFalse( helpers.calculateDirty('value', 'value') )
     assert.isFalse( helpers.calculateDirty(undefined, undefined) )
 

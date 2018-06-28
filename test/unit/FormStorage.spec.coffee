@@ -23,7 +23,6 @@ describe 'Unit. FormStorage.', ->
 
     sinon.assert.calledOnce(changeHandler)
     sinon.assert.calledWith(changeHandler, {
-      action: 'update',
       event: 'storage',
       prevState: 'prevState',
       state: 'newState',

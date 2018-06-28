@@ -11,9 +11,9 @@ describe 'Functional. onBlur.', ->
   it "run handle blur if saving is in progress", ->
     @form.fields.name.handleChange('newValue')
 
-    assert.isTrue(@form._debouncedSave.isWaiting())
+    assert.isTrue(@form.debouncedSave.isWaiting())
 
     @form.fields.name.handleBlur()
 
-    assert.isFalse(@form._debouncedSave.isWaiting())
+    assert.isFalse(@form.debouncedSave.isWaiting())
     sinon.assert.calledOnce(@onSaveHandler)

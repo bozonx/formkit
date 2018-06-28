@@ -14,7 +14,7 @@ export default interface FieldStorageEventData {
   state: FieldState;
   // previous state
   prevState?: FieldState;
-  // oldValue: any;
+  // prevValue: any;
   // value: any;
   error?: Error;
 }

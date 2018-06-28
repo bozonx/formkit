@@ -1,7 +1,7 @@
 formkit = require('../../src/index')
 
 
-describe 'Functional. Submit.', ->
+describe.only 'Functional. Submit.', ->
   beforeEach () ->
     @form = formkit.newForm()
     @form.init(['name'])
@@ -85,11 +85,11 @@ describe 'Functional. Submit.', ->
     assert.deepEqual(@form.editedValues, {})
     assert.isFalse(@form.dirty)
 
-  it "_afterSubmitSuccess - check rised storage events", ->
+  it "afterSubmitSuccess - check rised storage events", ->
     storageHandler = sinon.spy()
     @form.on('storage', storageHandler)
 
-    @form._afterSubmitSuccess({ name: 'newValue' })
+    @form.afterSubmitSuccess({ name: 'newValue' })
 
     assert.deepEqual(@form.values, { name: 'newValue' })
     sinon.assert.calledOnce(storageHandler)
@@ -129,7 +129,7 @@ describe 'Functional. Submit.', ->
 
     it "don't do another submit if data hasn't changed. config.allowSubmitUnchangedForm: true", ->
       @form.onSubmit(sinon.spy())
-      @form._config.allowSubmitUnchangedForm = true
+      @form.config.allowSubmitUnchangedForm = true
 
       @field.handleChange('newValue')
       @form.handleSubmit()

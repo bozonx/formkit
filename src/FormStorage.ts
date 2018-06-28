@@ -105,9 +105,6 @@ export default class FormStorage {
   }
 
   emitStorageEvent(newState: any, prevState: any, force?: boolean): void {
-
-    // TODO: action - one of - init, update
-
     if (!force && _.isEqual(prevState, newState)) return;
 
     const data: FormStorageEventData = {

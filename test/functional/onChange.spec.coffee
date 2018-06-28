@@ -31,9 +31,8 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledTwice(@formStorageHandler)
 
     result = {
-      event: 'change'
       field: "name"
-      oldValue: undefined
+      prevValue: undefined
       value: "userValue"
     }
 
@@ -44,7 +43,7 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledWith(@formChangeHandler, result)
     sinon.assert.calledOnce(@fieldStorageHandler)
 
-    @form._debouncedSave.getPromise()
+    @form.debouncedSave.getPromise()
       .then =>
         sinon.assert.calledThrice(@formStorageHandler)
 
@@ -73,7 +72,7 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledTwice(@fieldChangeHandler)
     sinon.assert.calledTwice(@formChangeHandler)
 
-    @form._debouncedSave.getPromise()
+    @form.debouncedSave.getPromise()
       .then =>
         sinon.assert.calledOnce(@formOnSaveHandler)
         sinon.assert.calledOnce(@formSaveEndHandler)
@@ -86,9 +85,8 @@ describe 'Functional. onChange and handleChange.', ->
     @form.flushSaving();
 
     result = {
-      event: 'change'
       field: "name"
-      oldValue: undefined
+      prevValue: undefined
       value: "userValue"
     }
 
@@ -98,15 +96,15 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledOnce(@formChangeHandler)
     sinon.assert.calledWith(@formChangeHandler, result)
 
-    @form._debouncedSave.getPromise()
+    @form.debouncedSave.getPromise()
       .then =>
         sinon.assert.calledOnce(@formOnSaveHandler)
         sinon.assert.calledOnce(@formSaveEndHandler)
 
   it "don't do anything if disabled", ->
-    @field.handleChange('oldValue')
+    @field.handleChange('prevValue')
     @field.setDisabled(true)
     @field.handleChange('newValue')
     @form.flushSaving();
 
-    assert.equal(@field.value, 'oldValue')
+    assert.equal(@field.value, 'prevValue')

@@ -69,7 +69,7 @@ describe 'Functional. Validate.', ->
     @form.fields.name.handleChange('newValue')
 
     assert.isTrue(@form.fields.name.valid)
-    assert.isNull(@form.fields.name.invalidMsg)
+    assert.isUndefined(@form.fields.name.invalidMsg)
     assert.isTrue(@form.valid)
     assert.deepEqual(@form.invalidMessages, [])
 
