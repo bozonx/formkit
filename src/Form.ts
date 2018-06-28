@@ -16,6 +16,7 @@ import FieldSchema from './interfaces/FieldSchema';
 import FormStorageEventData from './interfaces/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import ChangeEventData from './interfaces/ChangeEventData';
+import SubmitEndEventData from './interfaces/SubmitEndEventData';
 
 
 type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
@@ -56,7 +57,7 @@ export default class Form {
 
   constructor(config: Config) {
     this.config = config;
-    this.debouncedSave = new DebouncedCall(this.config.debounceTime);
+    this.debouncedSave = new DebouncedCall(this.config.debounceTime || 0);
     this.formStorage = new FormStorage(this.storage);
     this.fieldStorage = new FieldStorage(this.storage, this.formStorage);
   }
@@ -157,11 +158,11 @@ export default class Form {
   /**
    * Add one or more handlers on form's event:
    */
-  on(eventName: FormEventName, cb: (data: FormStorageEventData) => void): void {
+  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData) => void): void {
     this.formStorage.on(eventName, cb);
   }
 
-  off(eventName: FormEventName, cb: (data: FormStorageEventData) => void): void {
+  off(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData) => void): void {
     this.formStorage.off(eventName, cb);
   }
 
@@ -216,7 +217,8 @@ export default class Form {
     const { values, editedValues } = this;
 
     this.setState({ submitting: true });
-    this.$emit('submitStart', { values, editedValues });
+
+    this.$emit('submitStart');
 
     // run submit callback
     await this.runSubmitHandler(values, editedValues);
@@ -469,6 +471,14 @@ export default class Form {
     this.setState({ submitting: false });
     this.moveValuesToSaveLayer(values);
     this.$emit('submitEnd');
+  }
+
+  private riseSubmitEnd(error): void {
+    const eventData: SubmitEndEventData = {
+      error
+    };
+
+    this.$emit('submitEnd', eventData);
   }
 
   private moveValuesToSaveLayer(values: Values, force?: boolean): void {

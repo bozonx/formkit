@@ -12,6 +12,7 @@ export default interface FormStorageEventData {
   // TODO: почему бы событие не назвать formStorage
   target: 'form';
   event: 'storage';
+  // TODO: новый стейт не нужен, его и так можно получить
   state: EventFormState;
   prevState: EventFormState;
   error?: Error;
