@@ -16,7 +16,7 @@ import FieldSchema from './interfaces/FieldSchema';
 import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import ChangeEventData from './interfaces/eventData/ChangeEventData';
-import SubmitEndEventData from './interfaces/eventData/SubmitEndEventData';
+import ActionEndEventData from './interfaces/eventData/ActionEndEventData';
 
 
 type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
@@ -218,7 +218,7 @@ export default class Form {
 
     this.setState({ submitting: true });
 
-    this.$emit('submitStart');
+    this.riseActionEnd('submitStart');
 
     // run submit callback
     await this.runSubmitHandler(values, editedValues);
@@ -415,13 +415,13 @@ export default class Form {
     this.debouncedSave.onEnd((error: Error) => {
       if (error) {
         this.setState({ saving: false });
-        this.$emit('saveEnd', { error });
+        this.riseActionEnd('saveEnd', error);
       }
       else {
         const force = true;
         this.$setStateSilent({ saving: false });
         this.moveValuesToSaveLayer(valuesBeforeSave, force);
-        this.$emit('saveEnd');
+        this.riseActionEnd('saveEnd');
       }
     });
 
@@ -434,7 +434,7 @@ export default class Form {
 
     this.setState({ saving: true });
     // emit save start
-    this.$emit('saveStart');
+    this.riseActionEnd('saveStart');
 
     // run save callback
     const cbResult = this.handlers.onSave(this.values);
@@ -463,22 +463,22 @@ export default class Form {
     }
     catch (error) {
       this.setState({ submitting: false });
-      this.riseSubmitEnd(error);
+      this.riseActionEnd('submitEnd', error);
     }
   }
 
   private afterSubmitSuccess(values: Values): void {
     this.setState({ submitting: false });
     this.moveValuesToSaveLayer(values);
-    this.riseSubmitEnd();
+    this.riseActionEnd('submitEnd');
   }
 
-  private riseSubmitEnd(error?: Error): void {
-    const eventData: SubmitEndEventData = {
+  private riseActionEnd(eventName: FormEventName, error?: Error): void {
+    const eventData: ActionEndEventData = {
       error
     };
 
-    this.$emit('submitEnd', eventData);
+    this.$emit(eventName, eventData);
   }
 
   private moveValuesToSaveLayer(values: Values, force?: boolean): void {
