@@ -9,7 +9,7 @@ import {
   eachFieldRecursively,
   eachRecursively,
   eachFieldSchemaRecursively,
-  isPromise, resolvePromise
+  resolvePromise
 } from './helpers/helpers';
 import Config from './interfaces/Config';
 import FieldSchema from './interfaces/FieldSchema';

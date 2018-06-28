@@ -1,7 +1,7 @@
 formkit = require('../../src/index')
 
 
-describe 'Unit. Field.', ->
+describe.only 'Unit. Field.', ->
   beforeEach () ->
     @form = formkit.newForm()
 

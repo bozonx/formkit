@@ -2,14 +2,14 @@ formkit = require('../../src/index')
 Field = require('../../src/Field').default
 
 
-describe.only 'Unit. Field.', ->
+describe 'Unit. Field.', ->
   beforeEach () ->
     @pathToField = 'testField'
     @form = formkit.newForm()
     @form.init(['testField'])
     @field = @form.fields.testField
 
-  it "_initState without params", ->
+  it "initState without params", ->
     storageChangeHandler = sinon.spy()
     @form.fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
     @form.storage.store.fieldsState[@pathToField] = undefined
@@ -31,7 +31,7 @@ describe.only 'Unit. Field.', ->
     assert.isUndefined(field.value)
     sinon.assert.notCalled(storageChangeHandler)
 
-  it "_initState with initial params", ->
+  it "initState with initial params", ->
     storageChangeHandler = sinon.spy()
     @form.fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
     params = {
@@ -62,7 +62,7 @@ describe.only 'Unit. Field.', ->
   it "setValue", ->
     formStorageChangeHandler = sinon.spy()
     fieldStorageChangeHandler = sinon.spy()
-    @field._form.on('storage', formStorageChangeHandler)
+    @field.form.on('storage', formStorageChangeHandler)
     @field.on('storage', fieldStorageChangeHandler)
     @field.setValue('editedValue')
 
@@ -74,7 +74,7 @@ describe.only 'Unit. Field.', ->
   it "setValue - don't rise if value hasn't changed", ->
     formStorageChangeHandler = sinon.spy()
     fieldStorageChangeHandler = sinon.spy()
-    @field._form.on('storage', formStorageChangeHandler)
+    @field.form.on('storage', formStorageChangeHandler)
     @field.on('storage', fieldStorageChangeHandler)
 
     @field.setValue('editedValue')
@@ -82,9 +82,7 @@ describe.only 'Unit. Field.', ->
 
     sinon.assert.calledOnce(formStorageChangeHandler)
     sinon.assert.calledWith(formStorageChangeHandler, {
-      action: 'update'
       event: 'storage'
-      field: 'testField'
       prevState: {
         defaultValue: undefined
         dirty: false
@@ -109,12 +107,11 @@ describe.only 'Unit. Field.', ->
         saving: false
         touched: false
       }
-      target: 'field'
+      target: 'form'
     })
 
     sinon.assert.calledOnce(fieldStorageChangeHandler)
     sinon.assert.calledWith(fieldStorageChangeHandler, {
-      action: 'update'
       event: 'storage'
       field: 'testField'
       prevState: {
