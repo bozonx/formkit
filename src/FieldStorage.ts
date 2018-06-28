@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import FieldStorageEventData from './interfaces/eventData/FieldStorageEventData';
 import Storage from './Storage';
 import FieldState from './interfaces/FieldState';
-import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormStorage from './FormStorage';
 import ChangeEventData from './interfaces/eventData/ChangeEventData';
 

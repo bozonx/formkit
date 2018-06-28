@@ -323,7 +323,6 @@ export default class Field {
       field: pathToField,
       prevValue,
       value: newValue,
-      event: 'change',
     };
 
     // Rise events field's change handler

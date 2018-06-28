@@ -1,9 +1,7 @@
 export default interface ChangeEventData {
-  // TODO: ??? Why ???
-  event: 'change';
+  // path to field
+  field: string;
   value: any;
   prevValue: any;
   error?: Error;
-  // path to field
-  field: string;
 }

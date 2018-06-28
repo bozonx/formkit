@@ -344,6 +344,9 @@ export default class Form {
    * @return {string|undefined} - valid if undefined or error message.
    */
   validate(): string | void {
+
+    // TODO: refactor
+
     if (!this.validateCb) return;
 
     const errors: {[index: string]: string} = {};
@@ -402,17 +405,17 @@ export default class Form {
   }
 
 
-  private startSaving(isImmediately: boolean): Promise<void> {
-
-    // TODO: review
-
+  private async startSaving(isImmediately: boolean): Promise<void> {
     // don't run saving process if there isn't onSave callback
     if (!this.handlers.onSave) return;
 
     const valuesBeforeSave = this.values;
 
-    this.debouncedSave.exec(this.doSave, isImmediately);
-    this.debouncedSave.onEnd((error: Error) => {
+    const promise: Promise<void> = this.debouncedSave.exec(this.doSave, isImmediately);
+
+    // TODO: onEnd не нужнен так как есть promise
+
+    this.debouncedSave.onEnd((error: Error | null) => {
       if (error) {
         this.setState({ saving: false });
         this.riseActionEvent('saveEnd', error);
@@ -425,7 +428,7 @@ export default class Form {
       }
     });
 
-    return this.debouncedSave.getPromise();
+    await promise;
   }
 
   private doSave = (): Promise<void> => {
