@@ -1,10 +1,10 @@
 import * as _ from 'lodash';
-import FieldStorageEventData from './interfaces/FieldStorageEventData';
+import FieldStorageEventData from './interfaces/eventData/FieldStorageEventData';
 import Storage from './Storage';
 import FieldState from './interfaces/FieldState';
-import FormStorageEventData from './interfaces/FormStorageEventData';
+import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormStorage from './FormStorage';
-import ChangeEventData from './interfaces/ChangeEventData';
+import ChangeEventData from './interfaces/eventData/ChangeEventData';
 
 
 export type FieldEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd';

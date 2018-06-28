@@ -2,10 +2,10 @@ import * as _ from 'lodash';
 import { Map } from 'immutable';
 
 import {ErrorMessage} from './Form';
-import FormStorageEventData from './interfaces/FormStorageEventData';
+import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import Storage from './Storage';
-import ChangeEventData from './interfaces/ChangeEventData';
+import ChangeEventData from './interfaces/eventData/ChangeEventData';
 
 
 // TODO: может быть вложенный

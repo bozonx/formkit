@@ -1,5 +1,5 @@
-import FieldState from './FieldState';
-import {FieldEventName} from '../FieldStorage';
+import FieldState from '../FieldState';
+import {FieldEventName} from '../../FieldStorage';
 
 
 interface EventFieldState extends FieldState {

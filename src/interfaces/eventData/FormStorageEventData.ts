@@ -1,5 +1,5 @@
-import FormState from './FormState';
-import {Values} from '../FormStorage';
+import FormState from '../FormState';
+import {Values} from '../../FormStorage';
 
 
 interface EventFormState extends FormState {

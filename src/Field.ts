@@ -3,8 +3,8 @@ import { calculateDirty, getFieldName, parseValue } from './helpers/helpers';
 import Form from './Form';
 import FieldSchema from './interfaces/FieldSchema';
 import FieldStorage, {FieldEventName} from './FieldStorage';
-import FieldStorageEventData from './interfaces/FieldStorageEventData';
-import ChangeEventData from './interfaces/ChangeEventData';
+import FieldStorageEventData from './interfaces/eventData/FieldStorageEventData';
+import ChangeEventData from './interfaces/eventData/ChangeEventData';
 import FieldState from './interfaces/FieldState';
 
 

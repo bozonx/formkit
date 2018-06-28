@@ -13,10 +13,10 @@ import {
 } from './helpers/helpers';
 import Config from './interfaces/Config';
 import FieldSchema from './interfaces/FieldSchema';
-import FormStorageEventData from './interfaces/FormStorageEventData';
+import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormState from './interfaces/FormState';
-import ChangeEventData from './interfaces/ChangeEventData';
-import SubmitEndEventData from './interfaces/SubmitEndEventData';
+import ChangeEventData from './interfaces/eventData/ChangeEventData';
+import SubmitEndEventData from './interfaces/eventData/SubmitEndEventData';
 
 
 type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
