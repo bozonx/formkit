@@ -240,7 +240,7 @@ export default class Form {
 
     // wait for save and submit process have finished
     return Promise.all([
-      this.saveControl.savePrmise(),
+      this.saveControl.getSavePromise(),
       //resolvePromise(this.submitPromise),
     ])
       .then(doDestroy)

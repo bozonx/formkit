@@ -18,7 +18,7 @@ export default class SaveControl {
     this.debouncedSave = new DebouncedCall(this.form.config.debounceTime || 0);
   }
 
-  savePrmise(): Promise<void> {
+  getSavePromise(): Promise<void> {
     return resolvePromise(resolvePromise(this.debouncedSave.getPromise()));
   }
 

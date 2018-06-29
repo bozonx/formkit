@@ -43,7 +43,7 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledWith(@formChangeHandler, result)
     sinon.assert.calledOnce(@fieldStorageHandler)
 
-    @form.debouncedSave.getPromise()
+    @form.saveControl.getSavePromise()
       .then =>
         sinon.assert.calledThrice(@formStorageHandler)
 
@@ -72,7 +72,7 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledTwice(@fieldChangeHandler)
     sinon.assert.calledTwice(@formChangeHandler)
 
-    @form.debouncedSave.getPromise()
+    @form.saveControl.getSavePromise()
       .then =>
         sinon.assert.calledOnce(@formOnSaveHandler)
         sinon.assert.calledOnce(@formSaveEndHandler)
@@ -96,7 +96,7 @@ describe 'Functional. onChange and handleChange.', ->
     sinon.assert.calledOnce(@formChangeHandler)
     sinon.assert.calledWith(@formChangeHandler, result)
 
-    @form.debouncedSave.getPromise()
+    @form.saveControl.getSavePromise()
       .then =>
         sinon.assert.calledOnce(@formOnSaveHandler)
         sinon.assert.calledOnce(@formSaveEndHandler)

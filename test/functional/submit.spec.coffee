@@ -83,7 +83,7 @@ describe 'Functional. Submit.', ->
     storageHandler = sinon.spy()
     @form.on('storage', storageHandler)
 
-    @form.afterSubmitSuccess({ name: 'newValue' })
+    @form.submitControl.afterSubmitSuccess({ name: 'newValue' })
 
     assert.deepEqual(@form.values, { name: 'newValue' })
     sinon.assert.calledOnce(storageHandler)
