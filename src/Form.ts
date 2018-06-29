@@ -38,7 +38,7 @@ interface Hnadlers {
  * Form
  */
 export default class Form {
-  // TODO: может быть вложенный
+  // it's nested object
   readonly fields: {[index: string]: Field} = {};
   readonly config: Config;
   readonly fieldStorage: FieldStorage;
@@ -46,8 +46,6 @@ export default class Form {
   private readonly debouncedSave: DebouncedCall;
   private readonly storage: Storage = new Storage();
   private readonly formStorage: FormStorage;
-  // TODO: review
-  private submitPromise?: Function;
   // TODO: review
   private handlers: Hnadlers = {
     onSubmit: undefined,
@@ -222,9 +220,6 @@ export default class Form {
 
     // run submit callback
     await this.runSubmitHandler(this.handlers.onSubmit, values, editedValues);
-
-    // TODO: зачем это нужно ???
-    //this.submitPromise = null;
   };
 
   /**
@@ -274,7 +269,7 @@ export default class Form {
     // wait for save and submit process have finished
     return Promise.all([
       resolvePromise(this.debouncedSave.getPromise()),
-      resolvePromise(this.submitPromise),
+      //resolvePromise(this.submitPromise),
     ])
       .then(doDestroy)
       .catch(doDestroy);

@@ -9,8 +9,6 @@ describe 'Functional. destory.', ->
 
   it "form destroy", ->
     @form.debouncedSave.mainPromise = Promise.resolve()
-    # TODO: why ????
-    @form.submitPromise = Promise.resolve()
 
     @form.on('change', ->)
     @form.on('storage', ->)
@@ -39,7 +37,7 @@ describe 'Functional. destory.', ->
 
     @form.destroy()
 
-    await Promise.all([ @form.debouncedSave.mainPromise, @form.submitPromise ])
+    await Promise.all([ @form.debouncedSave.mainPromise ])
 
     # TODO: uncomment
     #assert.deepEqual(@form.storage.store, {})
