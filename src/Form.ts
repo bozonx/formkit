@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+
 import Storage, {Store} from './Storage';
 import FormStorage, { FormEventName, Values } from './FormStorage';
 import FieldStorage from './FieldStorage';
@@ -17,23 +18,15 @@ import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
 import FormState from './interfaces/FormState';
 import ChangeEventData from './interfaces/eventData/ChangeEventData';
 import ActionEventData from './interfaces/eventData/ActionEventData';
-import FieldState from './interfaces/FieldState';
 import SubmitControl from './SubmitControl';
 import SaveControl from './SaveControl';
-import ValidateControl from './ValidateControl';
+import ValidateControl, {Handler as ValidateCb} from './ValidateControl';
 
-
-type ValidateCb = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
 
 export interface ErrorMessage {
   field: string;
   message: string;
 }
-
-// interface Hnadlers {
-//   onSubmit?: (values: Values, editedValues: Values) => Promise<void> | void;
-//   onSave?: (values: Values) => Promise<void> | void;
-// }
 
 
 export default class Form {
@@ -48,13 +41,6 @@ export default class Form {
   private readonly saveControl: SaveControl;
   private readonly submitControl: SubmitControl;
   private readonly validateControl: ValidateControl;
-  // TODO: review
-  // private handlers: Hnadlers = {
-  //   onSubmit: undefined,
-  //   onSave: undefined,
-  // };
-  // TODO: review почему не в handlers ???
-  //private validateCb?: ValidateCb;
 
   constructor(config: Config) {
     this.config = config;

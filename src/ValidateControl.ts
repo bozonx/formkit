@@ -6,15 +6,16 @@ import {eachFieldRecursively} from './helpers/helpers';
 import FieldState from './interfaces/FieldState';
 
 
-type Handler = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
+export type Handler = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
 
 
 export default class ValidateControl {
+  private readonly form: Form;
   private handler?: Handler;
 
 
   constructor(form: Form) {
-
+    this.form = form;
   }
 
   setHandler(handler: Handler) {
@@ -29,14 +30,14 @@ export default class ValidateControl {
 
     // TODO: refactor
 
-    if (!this.Handler) return;
+    if (!this.handler) return;
 
     const errors: {[index: string]: string} = {};
-    const values: Values = this.values;
+    const values: Values = this.form.values;
     let isFormValid: boolean = true;
 
     // add sub structures to "errors" for easy access to error
-    eachFieldRecursively(this.fields, (field: Field, path: string) => {
+    eachFieldRecursively(this.form.fields, (field: Field, path: string) => {
       const split: Array<string> = path.split('.');
       const minPathItems: number = 2;
 
@@ -50,11 +51,11 @@ export default class ValidateControl {
     });
 
     // do validate
-    this.Handler(errors, values);
+    this.handler(errors, values);
 
     // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
-    eachFieldRecursively(this.fields, (field: Field, path: string) => {
+    eachFieldRecursively(this.form.fields, (field: Field, path: string) => {
       const invalidMsg = _.get(errors, path);
 
       if (isFormValid) isFormValid = !invalidMsg;
@@ -66,7 +67,7 @@ export default class ValidateControl {
       field.$setStateSilent(fieldPartlyState);
     });
 
-    this.formStorage.setStateSilent({ valid: isFormValid });
+    this.form.$setStateSilent({ valid: isFormValid });
   }
 
 }

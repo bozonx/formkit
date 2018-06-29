@@ -10,11 +10,12 @@ type Handler = (values: Values, editedValues: Values) => Promise<void> | void;
 
 
 export default class SubmitControl {
+  private readonly form: Form;
   private handler?: Handler;
 
 
   constructor(form: Form) {
-
+    this.form = form;
   }
 
 
@@ -28,35 +29,35 @@ export default class SubmitControl {
    */
   canSubmit(): string | void {
     // disallow submit invalid form
-    if (!this.valid) return `The form is invalid.`;
+    if (!this.form.valid) return `The form is invalid.`;
     // do nothing if form is submitting at the moment
-    if (this.submitting) return `The form is submitting now.`;
+    if (this.form.submitting) return `The form is submitting now.`;
 
-    if (!this.config.allowSubmitUnchangedForm) {
-      if (!this.dirty) return `The form hasn't changed.`;
+    if (!this.form.config.allowSubmitUnchangedForm) {
+      if (!this.form.dirty) return `The form hasn't changed.`;
     }
   }
 
   async startSubmit(): Promise<void> {
-    if (!this.handlers.onSubmit) return;
+    if (!this.handler) return;
 
-    const { values, editedValues } = this;
+    const { values, editedValues } = this.form;
 
     this.setState({ submitting: true });
     this.riseActionEvent('submitStart');
 
     // run submit callback
-    await this.runSubmitHandler(this.handlers.onSubmit, values, editedValues);
+    await this.runSubmitHandler(this.handler, values, editedValues);
   }
 
 
   private async runSubmitHandler(
-    cb: (values: Values, editedValues: Values) => Promise<void> | void,
+    handler: (values: Values, editedValues: Values) => Promise<void> | void,
     values: Values,
     editedValues: Values
   ): Promise<void> {
     // get result of submit handler
-    const returnedPromiseOrVoid = cb(values, editedValues);
+    const returnedPromiseOrVoid = handler(values, editedValues);
 
     try {
       // wait for saving process
@@ -84,12 +85,12 @@ export default class SubmitControl {
       error
     };
 
-    this.$emit(eventName, eventData);
+    this.form.$emit(eventName, eventData);
   }
 
   private moveValuesToSaveLayer(values: Values, force?: boolean): void {
     this.updateStateAndValidate(() => {
-      eachFieldRecursively(this.fields, (field: Field, pathToField: string) => {
+      eachFieldRecursively(this.form.fields, (field: Field, pathToField: string) => {
         const savedValue = _.get(values, pathToField);
 
         field.$setValueAfterSave(savedValue);

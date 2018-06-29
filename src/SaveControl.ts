@@ -7,11 +7,12 @@ type Handler = (values: Values) => Promise<void> | void;
 
 
 export default class SaveControl {
+  private readonly form: Form;
   private handler?: Handler;
 
 
   constructor(form: Form) {
-
+    this.form = form;
   }
 
 
@@ -25,17 +26,15 @@ export default class SaveControl {
    */
   canSave(): string | void {
     // disallow save invalid form
-    if (!this.valid) return `The form is invalid.`;
-    if (!this.touched) return `The form hasn't been modified`;
+    if (!this.form.valid) return `The form is invalid.`;
+    if (!this.form.touched) return `The form hasn't been modified`;
   }
-
-
 
   async startSaving(isImmediately: boolean): Promise<void> {
     // don't run saving process if there isn't onSave callback
-    if (!this.handlers.onSave) return;
+    if (!this.handler) return;
 
-    const valuesBeforeSave = this.values;
+    const valuesBeforeSave = this.form.values;
 
     const promise: Promise<void> = this.debouncedSave.exec(this.doSave, isImmediately);
 
@@ -62,10 +61,9 @@ export default class SaveControl {
     // emit save start
     this.riseActionEvent('saveStart');
 
+    const valuesToSave = this.form.values;
     // run save callback
-    const cbResult: Promise<void> | void = this.handlers.onSave && this.handlers.onSave(this.values);
-
-    return resolvePromise(cbResult);
+    return resolvePromise(this.handler && this.handler(valuesToSave));
   };
 
 }
