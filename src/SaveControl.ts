@@ -1,6 +1,7 @@
 import Form from './Form';
 import {Values} from './FormStorage';
 import {resolvePromise} from './helpers/helpers';
+import DebouncedCall from './helpers/DebouncedCall';
 
 
 type Handler = (values: Values) => Promise<void> | void;
@@ -8,13 +9,32 @@ type Handler = (values: Values) => Promise<void> | void;
 
 export default class SaveControl {
   private readonly form: Form;
+  private readonly debouncedSave: DebouncedCall;
   private handler?: Handler;
 
 
   constructor(form: Form) {
     this.form = form;
+    this.debouncedSave = new DebouncedCall(this.form.config.debounceTime || 0);
   }
 
+  savePrmise(): Promise<void> {
+    return resolvePromise(resolvePromise(this.debouncedSave.getPromise()));
+  }
+
+  /**
+   * Cancel debounce waiting for saving
+   */
+  cancel(): void {
+    this.debouncedSave.cancel();
+  }
+
+  /**
+   * SaveControl immediately
+   */
+  flush(): void {
+    this.debouncedSave.flush();
+  }
 
   setHandler(handler: Handler) {
     this.handler = handler;
@@ -42,14 +62,14 @@ export default class SaveControl {
 
     this.debouncedSave.onEnd((error: Error | null) => {
       if (error) {
-        this.setState({ saving: false });
-        this.riseActionEvent('saveEnd', error);
+        this.form.$setState({ saving: false });
+        this.form.$riseActionEvent('saveEnd', error);
       }
       else {
         const force = true;
-        this.$setStateSilent({ saving: false });
-        this.moveValuesToSaveLayer(valuesBeforeSave, force);
-        this.riseActionEvent('saveEnd');
+        this.form.$setStateSilent({ saving: false });
+        this.form.$moveValuesToSaveLayer(valuesBeforeSave, force);
+        this.form.$riseActionEvent('saveEnd');
       }
     });
 
@@ -57,9 +77,9 @@ export default class SaveControl {
   }
 
   private doSave = (): Promise<void> => {
-    this.setState({ saving: true });
+    this.form.$setState({ saving: true });
     // emit save start
-    this.riseActionEvent('saveStart');
+    this.form.$riseActionEvent('saveStart');
 
     const valuesToSave = this.form.values;
     // run save callback

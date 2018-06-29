@@ -35,7 +35,6 @@ export default class Form {
   readonly config: Config;
   readonly fieldStorage: FieldStorage;
 
-  private readonly debouncedSave: DebouncedCall;
   private readonly storage: Storage = new Storage();
   private readonly formStorage: FormStorage;
   private readonly saveControl: SaveControl;
@@ -44,7 +43,6 @@ export default class Form {
 
   constructor(config: Config) {
     this.config = config;
-    this.debouncedSave = new DebouncedCall(this.config.debounceTime || 0);
     this.formStorage = new FormStorage(this.storage);
     this.fieldStorage = new FieldStorage(this.storage, this.formStorage);
     this.saveControl = new SaveControl(this);
@@ -242,7 +240,7 @@ export default class Form {
 
     // wait for save and submit process have finished
     return Promise.all([
-      resolvePromise(this.debouncedSave.getPromise()),
+      this.saveControl.savePrmise(),
       //resolvePromise(this.submitPromise),
     ])
       .then(doDestroy)
@@ -253,14 +251,14 @@ export default class Form {
    * Cancel debounce waiting for saving
    */
   cancelSaving(): void {
-    this.debouncedSave.cancel();
+    this.saveControl.cancel();
   }
 
   /**
    * SaveControl immediately
    */
   flushSaving(): void {
-    this.debouncedSave.flush();
+    this.saveControl.flush();
   }
 
   /**
@@ -333,6 +331,31 @@ export default class Form {
     this.formStorage.emit(eventName, data);
   }
 
+  $moveValuesToSaveLayer(values: Values, force?: boolean): void {
+    this.updateStateAndValidate(() => {
+      eachFieldRecursively(this.fields, (field: Field, pathToField: string) => {
+        const savedValue = _.get(values, pathToField);
+
+        field.$setValueAfterSave(savedValue);
+      });
+    }, force);
+  }
+
+  $setState(partlyState: {[index: string]: any}): void {
+    this.updateState(() => {
+      this.formStorage.setStateSilent(partlyState);
+    });
+  }
+
+  $riseActionEvent(eventName: FormEventName, error?: Error): void {
+    const eventData: ActionEventData = {
+      error
+    };
+
+    this.$emit(eventName, eventData);
+  }
+
+
   /**
    * Initialize a field.
    * @param {string} pathToField
@@ -351,12 +374,6 @@ export default class Form {
     const newField: Field = new Field(pathToField, fieldParams, this);
 
     _.set(this.fields, pathToField, newField);
-  }
-
-  private setState(partlyState: {[index: string]: any}): void {
-    this.updateState(() => {
-      this.formStorage.setStateSilent(partlyState);
-    });
   }
 
   private updateStateAndValidate(cbWhichChangesState?: () => void, force?: boolean): void {

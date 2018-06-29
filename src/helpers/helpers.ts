@@ -174,7 +174,7 @@ export function isPromise(unknown: any) {
 }
 
 export function resolvePromise(value: any): Promise<any> {
-  if (!value) Promise.resolve();
+  if (!value) return Promise.resolve();
   if (isPromise(value)) return value;
 
   return Promise.resolve();

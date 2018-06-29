@@ -1,8 +1,6 @@
 import Form from './Form';
 import {FormEventName, Values} from './FormStorage';
-import {eachFieldRecursively, resolvePromise} from './helpers/helpers';
-import * as _ from 'lodash';
-import Field from './Field';
+import {resolvePromise} from './helpers/helpers';
 import ActionEventData from './interfaces/eventData/ActionEventData';
 
 
@@ -43,8 +41,8 @@ export default class SubmitControl {
 
     const { values, editedValues } = this.form;
 
-    this.setState({ submitting: true });
-    this.riseActionEvent('submitStart');
+    this.form.$setState({ submitting: true });
+    this.form.$riseActionEvent('submitStart');
 
     // run submit callback
     await this.runSubmitHandler(this.handler, values, editedValues);
@@ -64,8 +62,8 @@ export default class SubmitControl {
       await resolvePromise(returnedPromiseOrVoid);
     }
     catch (error) {
-      this.setState({ submitting: false });
-      this.riseActionEvent('submitEnd', error);
+      this.form.$setState({ submitting: false });
+      this.form.$riseActionEvent('submitEnd', error);
 
       return;
     }
@@ -75,27 +73,9 @@ export default class SubmitControl {
 
 
   private afterSubmitSuccess(values: Values): void {
-    this.setState({ submitting: false });
-    this.moveValuesToSaveLayer(values);
-    this.riseActionEvent('submitEnd');
-  }
-
-  private riseActionEvent(eventName: FormEventName, error?: Error): void {
-    const eventData: ActionEventData = {
-      error
-    };
-
-    this.form.$emit(eventName, eventData);
-  }
-
-  private moveValuesToSaveLayer(values: Values, force?: boolean): void {
-    this.updateStateAndValidate(() => {
-      eachFieldRecursively(this.form.fields, (field: Field, pathToField: string) => {
-        const savedValue = _.get(values, pathToField);
-
-        field.$setValueAfterSave(savedValue);
-      });
-    }, force);
+    this.form.$setState({ submitting: false });
+    this.form.$moveValuesToSaveLayer(values);
+    this.form.$riseActionEvent('submitEnd');
   }
 
 }
