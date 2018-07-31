@@ -296,6 +296,9 @@ export default class Field {
   }
 
   private generateInitialState({ initial, disabled, defaultValue, savedValue }: FieldSchema): FieldSchema {
+
+    // TODO: move to helpers or fieldStorage
+
     const parsedInitial = parseValue(initial);
     const parsedDefaultValue = parseValue(defaultValue);
 
