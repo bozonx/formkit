@@ -181,6 +181,9 @@ export function resolvePromise(value: any): Promise<any> {
 }
 
 export function parseValue(rawValue: any): any {
+
+  // TODO: does it really need ???
+
   if (_.isUndefined(rawValue)) {
     return;
   }
@@ -211,12 +214,12 @@ export function parseValue(rawValue: any): any {
     return rawValue;
   }
 
-  const toNumber = _.toNumber(rawValue);
-
-  if (!_.isNaN(toNumber)) {
-    // it's number
-    return toNumber;
-  }
+  // const toNumber = _.toNumber(rawValue);
+  //
+  // if (!_.isNaN(toNumber)) {
+  //   // it's number
+  //   return toNumber;
+  // }
 
   // string
   return rawValue;

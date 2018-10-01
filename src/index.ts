@@ -7,6 +7,9 @@ import Plugin from './interfaces/Plugin';
 const globalConfig = configDefaults;
 const plugins: Array<Plugin> = [];
 
+export { default as Form } from './Form';
+export { default as Field } from './Field';
+
 
 export function setDefaultConfig(config: Config) {
 
