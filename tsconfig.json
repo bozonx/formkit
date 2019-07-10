@@ -1,19 +1,34 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "es2017",
+    "module": "es6",
+    "moduleResolution": "node",
+
+    // "lib": ["es2018"],
+    // "module": "commonjs",
+    // "target": "es5",
+
     "sourceMap": true,
-    "outDir": "build",
-    "rootDir": "src",
+    //"rootDir": "src",
+
+    "declaration": true,
+    "declarationMap": true,
+    "removeComments": true,
+    "preserveSymlinks": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
 
     "strict": true,
-
-    "noImplicitAny": true,
+    //"noImplicitAny": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true
+    //"noImplicitThis": true,
+    "noEmitOnError": false,
 
+    "baseUrl": "src",
+    "outDir": "./dist"
   },
-  "include": [
-    "src/**/*"
-  ]
+  "exclude": ["dist", "node_modules"]
+//  "include": [
+//    "src/**/*"
+//  ]
 }
