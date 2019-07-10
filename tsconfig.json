@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "es6",
+    "target": "es2018",
+    "module": "commonjs",
+    //"module": "es6",
     //Classic
     "moduleResolution": "node",
 
@@ -29,15 +30,16 @@
     "noEmitOnError": false,
 
     // use only with "outDir"
-    "rootDir": "src",
-    "baseUrl": "src",
-    "outDir": "./dist/ts"
+//    "rootDir": "src",
+//    "baseUrl": "src",
+//    "outDir": "./dist/ts"
     //paths
     //project
     //"outFile": "./dist/ts/build.js"
   },
-  //"files": ["./src/index.ts"],
   "exclude": ["dist", "node_modules"]
+  //"files": ["./src/index.ts"],
+
 //  "include": [
 //    "src/**/*"
 //  ]

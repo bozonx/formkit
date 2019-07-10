@@ -27,7 +27,7 @@
   "dependencies": {
     "eventemitter3": "^4.0.0",
     "immutable": "^4.0.0-rc.12",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.13"
   },
   "devDependencies": {
     "@types/eventemitter3": "^2.0.2",
@@ -36,7 +36,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coffee-coverage": "^3.0.1",
-    "coffeescript": "2.4.1",
+    "coffeescript": "^2.4.1",
     "docdash": "^1.1.1",
     "eslint-config-effency": "^0.2.0",
     "eslint-config-google": "^0.13.0",
