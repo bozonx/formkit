@@ -1,7 +1,7 @@
 .idea
 doc
 examples
-src
+#src
 test
 build
 
@@ -10,7 +10,6 @@ build
 .eslintrc.yml
 .istanbul.yml
 .travis.yml
-esdoc.json
 webpack.common.config.js
 webpack.module.config.js
 webpack.browser.config.js

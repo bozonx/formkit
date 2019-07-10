@@ -1,6 +1,6 @@
 {
   "name": "formkit",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Smart framework agnostic form helper.",
   "repository": "git@github.com:bozonx/formkit.git",
   "license": "MIT",
@@ -23,34 +23,31 @@
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test"
   },
   "dependencies": {
-    "eventemitter3": "^4.0.0",
-    "immutable": "^4.0.0-rc.12",
-    "lodash": "^4.17.13"
-  },
-  "devDependencies": {
     "@types/eventemitter3": "^2.0.2",
     "@types/immutable": "^3.8.7",
     "@types/lodash": "^4.14.136",
     "@types/node": "^12.6.2",
+    "eventemitter3": "^4.0.0",
+    "immutable": "^4.0.0-rc.12",
+    "lodash": "^4.17.13",
+    "ts-node": "^8.3.0",
+    "tslint": "^5.18.0",
+    "typescript": "^3.5.3"
+  },
+  "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coffee-coverage": "^3.0.1",
     "coffeescript": "^2.4.1",
-    "docdash": "^1.1.1",
-    "eslint-config-effency": "^0.2.0",
-    "eslint-config-google": "^0.13.0",
     "istanbul": "^0.4.5",
     "mocha": "^6.1.4",
     "mocha-sinon": "^2.1.0",
     "mock-require": "^3.0.3",
     "sinon": "^7.3.2",
     "sinon-chai": "^3.3.0",
-    "ts-loader": "^6.0.4",
-    "ts-node": "^8.3.0",
-    "tslint": "^5.18.0",
-    "typescript": "^3.5.3",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.5",
-    "webpack-merge": "^4.2.1"
+    "webpack-merge": "^4.2.1",
+    "ts-loader": "^6.0.4"
   }
 }

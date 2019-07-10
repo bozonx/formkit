@@ -859,10 +859,6 @@ diffie-hellman@^5.0.0:
     miller-rabin "^4.0.0"
     randombytes "^2.0.0"
 
-docdash@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/docdash/-/docdash-1.1.1.tgz#89924e57938388fc3d1fa900927acfced7f3b24f"
-
 domain-browser@^1.1.1:
   version "1.2.0"
   resolved "https://registry.npmjs.org/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
@@ -949,14 +945,6 @@ escodegen@1.8.x:
     optionator "^0.8.1"
   optionalDependencies:
     source-map "~0.2.0"
-
-eslint-config-effency@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.npmjs.org/eslint-config-effency/-/eslint-config-effency-0.2.0.tgz#6ac929f5a2c97d58352aab5efb59852db9e97f04"
-
-eslint-config-google@^0.13.0:
-  version "0.13.0"
-  resolved "https://registry.npmjs.org/eslint-config-google/-/eslint-config-google-0.13.0.tgz#e277d16d2cb25c1ffd3fd13fb0035ad7421382fe"
 
 eslint-scope@^4.0.0:
   version "4.0.3"
