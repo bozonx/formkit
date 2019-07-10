@@ -12,7 +12,7 @@
     "sourceMap": true,
 
     "declaration": true,
-    "declarationMap": true,
+    //"declarationMap": true,
     //emitDeclarationOnly
     //esModuleInterop
     //importHelpers
@@ -30,14 +30,14 @@
     "noEmitOnError": false,
 
     // use only with "outDir"
-//    "rootDir": "src",
-//    "baseUrl": "src",
-//    "outDir": "./dist/ts"
+    //"rootDir": "src",
+    "baseUrl": "src",
+    "outDir": "./dist/types"
     //paths
     //project
     //"outFile": "./dist/ts/build.js"
   },
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["dist", "node_modules", "test"]
   //"files": ["./src/index.ts"],
 
 //  "include": [

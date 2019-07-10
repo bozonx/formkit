@@ -3,6 +3,7 @@ doc
 examples
 src
 test
+build
 
 # root files
 .editorconfig
