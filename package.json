@@ -25,9 +25,9 @@
   ],
   "scripts": {
     "test": "mocha",
-    "build": "yarn test && yarn run build-module",
-    "build-module": "rollup -c rollup.config.js",
-    "postinstall": "npm build-module",
+    "postinstall": "npm run _build-module",
+    "build": "yarn test && yarn run _build-module",
+    "_build-module": "rollup -c rollup.config.js",
     "cov": "istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
     "cov-html": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test && sensible-browser ./coverage/lcov-report/index.html",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test"
