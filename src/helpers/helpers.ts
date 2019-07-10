@@ -87,7 +87,7 @@ export function eachFieldSchemaRecursively(
       // don't go deeper
       return false;
     }
-  })
+  });
 }
 
 export function isFieldSchema(comingSchema: object) {
@@ -170,7 +170,7 @@ export function getFieldName(pathToField: string): string {
 // //// not tested
 
 export function isPromise(unknown: any) {
-  return _.isObject(unknown) && unknown.then;
+  return typeof unknown === 'object' && unknown.then;
 }
 
 export function resolvePromise(value: any): Promise<any> {

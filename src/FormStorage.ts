@@ -22,7 +22,8 @@ export default class FormStorage {
     this.storage = storage;
   }
 
-  getState(stateName: FormStateName): boolean {
+  // TODO: use JsonTypes
+  getState(stateName: FormStateName): any {
     return this.storage.getFormState(stateName);
   }
 

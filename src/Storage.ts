@@ -10,7 +10,7 @@ import {FormStateName, Values} from './FormStorage';
 import {FieldStateName} from './FieldStorage';
 
 
-export interface Store {
+export interface ImmutableStore {
   // TODO: наверное надо использвать FormState
   formState: Map<string, any>;
   // TODO: наверное надо использвать FieldState
@@ -18,11 +18,17 @@ export interface Store {
   values: Map<string, any>;
 }
 
+export interface Store {
+  formState: FormState;
+  fieldsState: FieldState;
+  values: {[index: string]: any};
+}
+
 
 export default class Storage {
   readonly events: EventEmitter = new EventEmitter();
-  private store: Store = {
-    formState: Map<string, any>(this._generateNewFormState()),
+  private store: ImmutableStore = {
+    formState: Map<string, any>(this._generateNewFormState() as any),
     fieldsState: {},
     // combined saved and edited values
     values: Map<string, any>(),
@@ -46,8 +52,9 @@ export default class Storage {
     return this.store.formState.toJS();
   }
 
-  getFormState(stateName: FormStateName): boolean {
-    const formState = this.store.formState.toJS();
+  // TODO: use JsonTypes
+  getFormState(stateName: FormStateName): any {
+    const formState: FormState = this.store.formState.toJS();
 
     return formState[stateName];
   }
