@@ -1,9 +1,11 @@
 .idea
+.rpt2_cache
 doc
 examples
 #src
 test
 build
+dist
 
 # root files
 .editorconfig

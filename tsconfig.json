@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2018",
+    //"module": "ESNext",
     "module": "commonjs",
     //"module": "es6",
     //Classic
@@ -12,6 +13,7 @@
     "sourceMap": true,
 
     "declaration": true,
+    "allowSyntheticDefaultImports": true,
     //"declarationMap": true,
     //emitDeclarationOnly
     //esModuleInterop
@@ -29,10 +31,11 @@
     //"noImplicitThis": true,
     "noEmitOnError": false,
 
+    "declarationDir": "dist/types",
     // use only with "outDir"
     //"rootDir": "src",
     "baseUrl": "src",
-    "outDir": "./build"
+    "outDir": "./dist/lib"
     //paths
     //project
     //"outFile": "./dist/ts/build.js"

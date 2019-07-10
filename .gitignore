@@ -1,6 +1,8 @@
 # idea's files
 .idea/
 
+.rpt2_cache
+
 # Logs
 logs
 *.log
@@ -24,3 +26,4 @@ html-report
 docs-html
 
 build
+dist
