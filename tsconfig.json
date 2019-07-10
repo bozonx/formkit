@@ -32,7 +32,7 @@
     // use only with "outDir"
     //"rootDir": "src",
     "baseUrl": "src",
-    "outDir": "./dist/module"
+    "outDir": "./build"
     //paths
     //project
     //"outFile": "./dist/ts/build.js"

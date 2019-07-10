@@ -8,8 +8,8 @@
     "node": ">=9.x"
   },
   "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
-  "main": "dist/module/index.js",
-  "types": "dist/module/index.d.ts",
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
   "scripts": {
     "test": "mocha",
     "build": "yarn test && yarn run build-module && yarn run build-browser && yarn run build-browser-min",
@@ -17,6 +17,7 @@
     "build-browser": "webpack-cli        --mode development --progress --config webpack.browser.config.js",
     "build-browser-min": "webpack-cli -p --mode production  --progress --config webpack.browser-min.config.js",
     "build-ts": "tsc",
+    "postinstall": "tsc",
     "cov": "istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
     "cov-html": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test && sensible-browser ./coverage/lcov-report/index.html",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test"
