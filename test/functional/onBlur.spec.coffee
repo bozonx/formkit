@@ -1,4 +1,4 @@
-formkit = require('../../src/index')
+formkit = require('../../src/formkit')
 
 
 describe 'Functional. onBlur.', ->

@@ -1,4 +1,4 @@
-formkit = require('../../src/index')
+formkit = require('../../src/formkit')
 Field = require('../../src/Field').default
 
 
