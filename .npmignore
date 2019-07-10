@@ -12,7 +12,4 @@ dist
 .eslintrc.yml
 .istanbul.yml
 .travis.yml
-webpack.common.config.js
-webpack.module.config.js
-webpack.browser.config.js
-webpack.browser-min.config.js
+rollup.config.js

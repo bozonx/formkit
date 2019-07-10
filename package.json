@@ -25,13 +25,9 @@
   ],
   "scripts": {
     "test": "mocha",
-    "build": "yarn test && yarn run build-module && yarn run build-browser && yarn run build-browser-min",
-    "build-module": "webpack-cli         --mode development --progress --config webpack.module.config.js",
-    "build-browser": "webpack-cli        --mode development --progress --config webpack.browser.config.js",
-    "build-browser-min": "webpack-cli -p --mode production  --progress --config webpack.browser-min.config.js",
-    "build-ts": "tsc --module commonjs",
-    "postinstall": "tsc",
-    "bundle:dist": "tsc --module commonjs && rollup -c rollup.config.js",
+    "build": "yarn test && yarn run build-module",
+    "build-module": "rollup -c rollup.config.js",
+    "postinstall": "npm build-module",
     "cov": "istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
     "cov-html": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test && sensible-browser ./coverage/lcov-report/index.html",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test"
@@ -64,10 +60,6 @@
     "mocha-sinon": "^2.1.0",
     "mock-require": "^3.0.3",
     "sinon": "^7.3.2",
-    "sinon-chai": "^3.3.0",
-    "ts-loader": "^6.0.4",
-    "webpack": "^4.35.3",
-    "webpack-cli": "^3.3.5",
-    "webpack-merge": "^4.2.1"
+    "sinon-chai": "^3.3.0"
   }
 }
