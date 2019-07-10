@@ -2,17 +2,21 @@
   "compilerOptions": {
     "target": "es2017",
     "module": "es6",
+    //Classic
     "moduleResolution": "node",
 
     // "lib": ["es2018"],
     // "module": "commonjs",
     // "target": "es5",
-
     "sourceMap": true,
-    //"rootDir": "src",
 
     "declaration": true,
     "declarationMap": true,
+    //emitDeclarationOnly
+    //esModuleInterop
+    //importHelpers
+    //noLib
+    //noResolve
     "removeComments": true,
     "preserveSymlinks": true,
     "downlevelIteration": true,
@@ -24,9 +28,15 @@
     //"noImplicitThis": true,
     "noEmitOnError": false,
 
+    // use only with "outDir"
+    "rootDir": "src",
     "baseUrl": "src",
-    "outDir": "./dist"
+    "outDir": "./dist/ts"
+    //paths
+    //project
+    //"outFile": "./dist/ts/build.js"
   },
+  //"files": ["./src/index.ts"],
   "exclude": ["dist", "node_modules"]
 //  "include": [
 //    "src/**/*"
