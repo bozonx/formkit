@@ -1,3 +1,4 @@
+const path = require('path');
 const merge = require('webpack-merge');
 
 const commonConf = require('./webpack.common.config');
@@ -5,7 +6,8 @@ const commonConf = require('./webpack.common.config');
 
 module.exports = merge(commonConf, {
   output: {
-    filename: 'formkit.module.js',
+    path: path.resolve(__dirname, 'dist/module'),
+    filename: 'index.js',
     libraryTarget: 'umd',
   },
 });

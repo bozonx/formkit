@@ -18,7 +18,7 @@ export default class DebouncedProcess {
   private onFinishCb: ((error: Error | null) => void) | null = null;
   // timeout to start
   // TODO: зачем null если можно использовать 0
-  private timeout: number | null = null;
+  private timeout: any | null = null;
 
   constructor(cb: () => Promise<void>) {
     this.callback = cb;

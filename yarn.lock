@@ -57,6 +57,10 @@
   version "4.14.136"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.136.tgz#413e85089046b865d960c9ff1d400e04c31ab60f"
 
+"@types/node@^12.6.2":
+  version "12.6.2"
+  resolved "https://registry.npmjs.org/@types/node/-/node-12.6.2.tgz#a5ccec6abb6060d5f20d256fb03ed743e9774999"
+
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.npmjs.org/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"

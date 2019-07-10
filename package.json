@@ -8,8 +8,8 @@
     "node": ">=9.x"
   },
   "author": "Ivan Kozyrin <ipkozyrin@gmail.com>",
-  "main": "dist/formkit.module.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/module/index.js",
+  "types": "dist/module/index.d.ts",
   "scripts": {
     "test": "mocha",
     "build": "yarn test && yarn run build-module && yarn run build-browser && yarn run build-browser-min",
@@ -30,6 +30,7 @@
     "@types/eventemitter3": "^2.0.2",
     "@types/immutable": "^3.8.7",
     "@types/lodash": "^4.14.136",
+    "@types/node": "^12.6.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "coffee-coverage": "^3.0.1",
