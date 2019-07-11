@@ -1,4 +1,5 @@
-import * as _ from 'lodash';
+const isEqual = require('lodash/isEqual');
+
 import FieldStorageEventData from './interfaces/eventData/FieldStorageEventData';
 import Storage from './Storage';
 import FieldState from './interfaces/FieldState';
@@ -51,7 +52,7 @@ export default class FieldStorage {
   }
 
   emitStorageEvent(pathToField: string, newState: FieldState, prevState?: FieldState): void {
-    if (_.isEqual(prevState, newState)) return;
+    if (isEqual(prevState, newState)) return;
 
     const fieldEventdata: FieldStorageEventData = {
       field: pathToField,

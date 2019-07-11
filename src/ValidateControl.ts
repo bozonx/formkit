@@ -1,6 +1,8 @@
+const get = require('lodash/get');
+const set = require('lodash/set');
+
 import Form from './Form';
 import {Values} from './FormStorage';
-import * as _ from 'lodash';
 import Field from './Field';
 import {eachFieldRecursively} from './helpers/helpers';
 import FieldState from './interfaces/FieldState';
@@ -47,7 +49,7 @@ export default class ValidateControl {
 
       const basePath: string = split.join();
 
-      _.set(errors, basePath, {});
+      set(errors, basePath, {});
     });
 
     // do validate
@@ -56,7 +58,7 @@ export default class ValidateControl {
     // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
     eachFieldRecursively(this.form.fields, (field: Field, path: string) => {
-      const invalidMsg = _.get(errors, path);
+      const invalidMsg = get(errors, path);
 
       if (isFormValid) isFormValid = !invalidMsg;
 

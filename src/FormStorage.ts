@@ -1,5 +1,6 @@
-import * as _ from 'lodash';
 import { Map } from 'immutable';
+const set = require('lodash/set');
+const isEqual = require('lodash/isEqual');
 
 import {ErrorMessage} from './Form';
 import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
@@ -40,9 +41,9 @@ export default class FormStorage {
     this.storage.eachField((field: Map<string, any>, path: string) => {
       const editedValue: any = field.get('editedValue');
 
-      if (_.isUndefined(editedValue)) return;
+      if (typeof editedValue === 'undefined') return;
 
-      _.set(editedValues, path, editedValue);
+      set(editedValues, path, editedValue);
     });
 
     return editedValues;
@@ -52,7 +53,7 @@ export default class FormStorage {
     const savedValues = {};
 
     this.storage.eachField((field: Map<string, any>, path: string) => {
-      _.set(savedValues, path, field.get('savedValue'));
+      set(savedValues, path, field.get('savedValue'));
     });
 
     return savedValues;
@@ -64,10 +65,10 @@ export default class FormStorage {
     this.storage.eachField((field: Map<string, any>, path: string) => {
       const editedValue: any = field.get('editedValue');
 
-      if (_.isUndefined(editedValue) || field.get('savedValue') === editedValue) return;
+      if (typeof editedValue === 'undefined' || field.get('savedValue') === editedValue) return;
 
       // if editedValue has a defined value and it isn't equal to editedValue
-      _.set(unSavedValues, path, field.get('editedValue'));
+      set(unSavedValues, path, field.get('editedValue'));
     });
 
     return unSavedValues;
@@ -106,7 +107,7 @@ export default class FormStorage {
   }
 
   emitStorageEvent(newState: any, prevState: any, force?: boolean): void {
-    if (!force && _.isEqual(prevState, newState)) return;
+    if (!force && isEqual(prevState, newState)) return;
 
     const data: FormStorageEventData = {
       target: 'form',

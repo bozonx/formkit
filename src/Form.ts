@@ -1,4 +1,6 @@
-import * as _ from 'lodash';
+const isPlainObject = require('lodash/isPlainObject');
+const get = require('lodash/get');
+const set = require('lodash/set');
 
 import Storage, {Store} from './Storage';
 import FormStorage, { FormEventName, Values } from './FormStorage';
@@ -192,7 +194,7 @@ export default class Form {
    */
   handleSubmit = (): Promise<void> => {
     return this.submitControl.startSubmit();
-  };
+  }
 
   /**
    * Roll back to initial values for all the fields.
@@ -201,7 +203,7 @@ export default class Form {
     this.updateStateAndValidate((): void => {
       eachFieldRecursively(this.fields, (field: Field) => field.$clearSilent());
     });
-  };
+  }
 
   /**
    * Roll back to previously saved values for all the fields.
@@ -210,7 +212,7 @@ export default class Form {
     this.updateStateAndValidate((): void => {
       eachFieldRecursively(this.fields, (field: Field) => field.$revertSilent());
     });
-  };
+  }
 
   /**
    * Reset values to default values for all the fields.
@@ -219,7 +221,7 @@ export default class Form {
     this.updateStateAndValidate((): void => {
       eachFieldRecursively(this.fields, (field: Field) => field.$resetSilent());
     });
-  };
+  }
 
   /**
    * Clear storage and remove all the event handlers
@@ -276,7 +278,7 @@ export default class Form {
    *                             You can set values all the fields or just to a part of fields.
    */
   setValues(newValues: Values) {
-    if (!_.isPlainObject(newValues)) {
+    if (!isPlainObject(newValues)) {
       throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
     }
 
@@ -294,7 +296,7 @@ export default class Form {
    * @param newValues
    */
   setSavedValues(newValues: Values) {
-    if (!_.isPlainObject(newValues)) {
+    if (!isPlainObject(newValues)) {
       throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
     }
 
@@ -334,7 +336,7 @@ export default class Form {
   $moveValuesToSaveLayer(values: Values, force?: boolean): void {
     this.updateStateAndValidate(() => {
       eachFieldRecursively(this.fields, (field: Field, pathToField: string) => {
-        const savedValue = _.get(values, pathToField);
+        const savedValue = get(values, pathToField);
 
         field.$setValueAfterSave(savedValue);
       });
@@ -364,7 +366,7 @@ export default class Form {
    */
   private initField(pathToField: string, fieldParams: FieldSchema): void {
     // Try to get existent field
-    const existentField = _.get(this.fields, pathToField);
+    const existentField = get(this.fields, pathToField);
 
     if (existentField) {
       throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
@@ -373,7 +375,7 @@ export default class Form {
     // create new one
     const newField: Field = new Field(pathToField, fieldParams, this);
 
-    _.set(this.fields, pathToField, newField);
+    set(this.fields, pathToField, newField);
   }
 
   private updateStateAndValidate(cbWhichChangesState?: () => void, force?: boolean): void {
@@ -397,11 +399,11 @@ export default class Form {
     cb: (field: Field, value: any, path: string) => void
   ): void {
     eachRecursively(values, (value: any, path: string) => {
-      const field = _.get(this.fields, path);
+      const field = get(this.fields, path);
 
       // if it is'n a field - go deeper
       if (!field || !(field instanceof Field)) {
-        if (_.isPlainObject(value)) {
+        if (isPlainObject(value)) {
           // go deeper
           return;
         }

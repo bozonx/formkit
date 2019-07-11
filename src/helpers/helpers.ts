@@ -137,6 +137,7 @@ export function eachRecursively(
   cb: (item: any, path: string) => false | void
 ): void {
   const recursive = (obj: {[index: string]: any}, rootPath: string): void => {
+    // TODO: remake to for of
     each(obj, (item: object, name: string): void => {
       const itemPath: string = trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
       const cbResult: false | void = cb(item, itemPath);

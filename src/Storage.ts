@@ -1,7 +1,10 @@
-import * as _ from 'lodash';
 import * as EventEmitter from 'eventemitter3';
 import {ListenerFn} from 'eventemitter3';
 import { fromJS, Map } from 'immutable';
+const get = require('lodash/get');
+const set = require('lodash/set');
+const each = require('lodash/each');
+const cloneDeep = require('lodash/cloneDeep');
 
 import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers';
 import FormState from './interfaces/FormState';
@@ -42,7 +45,7 @@ export default class Storage {
     };
 
     this.eachField((field: Map<string, any>, path: string) => {
-      _.set(store.fieldsState, path, field.toJS());
+      set(store.fieldsState, path, field.toJS());
     });
 
     return store;
@@ -78,9 +81,10 @@ export default class Storage {
 
     const eventNames: Array<string> = this.events.eventNames() as Array<string>;
 
-    _.each(eventNames, (name: string) => {
+    // TODO: remake to for of
+    each(eventNames, (name: string) => {
       // get handlers by name
-      _.each(this.getListeners(name), (handler: ListenerFn) => {
+      each(this.getListeners(name), (handler: ListenerFn) => {
         this.events.off(name, handler);
       });
     });
@@ -106,7 +110,7 @@ export default class Storage {
   }
 
   getWholeFieldState(pathToField: string): FieldState | undefined {
-    const fieldState: Map<string, any> | undefined = _.get(this.store.fieldsState, pathToField);
+    const fieldState: Map<string, any> | undefined = get(this.store.fieldsState, pathToField);
 
     if (!fieldState) return;
 
@@ -114,17 +118,17 @@ export default class Storage {
   }
 
   getFieldState(pathToField: string, stateName: FieldStateName) {
-    const fieldState = _.get(this.store.fieldsState, pathToField);
+    const fieldState = get(this.store.fieldsState, pathToField);
 
     if (!fieldState) return;
 
-    return _.get(fieldState.toJS(), stateName);
+    return get(fieldState.toJS(), stateName);
   }
 
   getCombinedValue(pathToField: string): any {
     const values = this.store.values.toJS();
 
-    return _.get(values, pathToField);
+    return get(values, pathToField);
   }
 
   /**
@@ -141,7 +145,7 @@ export default class Storage {
       ...partlyState,
     });
 
-    _.set(this.store.fieldsState, pathToField, newState);
+    set(this.store.fieldsState, pathToField, newState);
 
     // TODO: ???? !!!! что это ?????
     // _.find(partlyState, (item: any, name: string) => {
@@ -184,8 +188,8 @@ export default class Storage {
   }
 
   _updateCombinedValue(pathToField: string, savedValue: any, editedValue: any): void {
-    const rawCombinedValue = _.isUndefined(editedValue) ? savedValue : editedValue;
-    const combinedValue = _.cloneDeep(rawCombinedValue);
+    const rawCombinedValue = typeof editedValue === 'undefined' ? savedValue : editedValue;
+    const combinedValue = cloneDeep(rawCombinedValue);
 
     this.store.values = this.store.values.setIn(pathToField.split(FIELD_PATH_SEPARATOR), combinedValue);
   }

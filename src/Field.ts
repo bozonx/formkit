@@ -1,4 +1,7 @@
-import * as _ from 'lodash';
+const isEqual = require('lodash/isEqual');
+const omitBy = require('lodash/omitBy');
+const isUndefined = require('lodash/isUndefined');
+
 import { calculateDirty, getFieldName, parseValue } from './helpers/helpers';
 import Form from './Form';
 import FieldSchema from './interfaces/FieldSchema';
@@ -129,7 +132,7 @@ export default class Field {
     const newValue = parseValue(rawValue);
     // value is immutable
     const prevValue = this.value;
-    const isChanged: boolean = !_.isEqual(prevValue, newValue);
+    const isChanged: boolean = !isEqual(prevValue, newValue);
 
     if (isChanged) {
       // it rises a storage event
@@ -306,14 +309,14 @@ export default class Field {
     const newValue = (typeof parsedInitial === 'undefined') ? parsedDefaultValue : parsedInitial;
 
     // TODO: зачем нужно omitBy ???
-    return _.omitBy({
+    return omitBy({
       disabled,
       defaultValue: parsedDefaultValue,
       initial: parsedInitial,
       // set initial value to edited layer
       editedValue: (typeof newValue === 'undefined') ? undefined : newValue,
       savedValue,
-    }, _.isUndefined);
+    }, isUndefined);
   }
 
   /**
