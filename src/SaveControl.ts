@@ -84,6 +84,6 @@ export default class SaveControl {
     const valuesToSave = this.form.values;
     // run save callback
     return resolvePromise(this.handler && this.handler(valuesToSave));
-  };
+  }
 
 }

@@ -45,12 +45,6 @@
   version "0.0.39"
   resolved "https://registry.npmjs.org/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
 
-"@types/eventemitter3@^2.0.2":
-  version "2.0.2"
-  resolved "https://registry.npmjs.org/@types/eventemitter3/-/eventemitter3-2.0.2.tgz#94b57c2568c4f09479d64812f625317b12a6edd0"
-  dependencies:
-    eventemitter3 "*"
-
 "@types/immutable@^3.8.7":
   version "3.8.7"
   resolved "https://registry.npmjs.org/@types/immutable/-/immutable-3.8.7.tgz#536d33d30f3f3d9a6d4642a219419fd82af633fb"
@@ -460,10 +454,6 @@ estree-walker@^0.6.0, estree-walker@^0.6.1:
 esutils@^2.0.2:
   version "2.0.2"
   resolved "https://registry.npmjs.org/esutils/-/esutils-2.0.2.tgz#0abf4f1caa5bcb1f7a9d8acc6dea4faaa04bac9b"
-
-eventemitter3@*, eventemitter3@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-4.0.0.tgz#d65176163887ee59f386d64c82610b696a4a74eb"
 
 execa@^1.0.0:
   version "1.0.0"

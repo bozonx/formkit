@@ -185,12 +185,12 @@ export default class Field {
   /**
    * Add one or more handlers on fields's event:
    */
-  on(eventName: FieldEventName, cb: (data: FieldStorageEventData | ChangeEventData) => void): void {
-    this.fieldStorage.on(this.pathToField, eventName, cb);
+  on(eventName: FieldEventName, cb: (data: FieldStorageEventData | ChangeEventData) => void): number {
+    return this.fieldStorage.on(this.pathToField, eventName, cb);
   }
 
-  off(eventName: FieldEventName, cb: (data: FieldStorageEventData | ChangeEventData) => void): void {
-    this.fieldStorage.off(this.pathToField, eventName, cb);
+  off(eventName: FieldEventName, handlerIndex: number): void {
+    this.fieldStorage.removeListener(this.pathToField, eventName, handlerIndex);
   }
 
   /**

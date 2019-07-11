@@ -76,16 +76,16 @@ export default class FieldStorage {
     this.formStorage.emitStorageEvent(newState, prevState);
   }
 
-  on(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData| ChangeEventData) => void): void {
-    this.storage.events.on(`${pathToField}.${eventName}`, cb);
+  on(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData| ChangeEventData) => void): number {
+    return this.storage.events.addListener(`${pathToField}.${eventName}`, cb);
   }
 
   emit(pathToField: string, eventName: FieldEventName, data: FieldStorageEventData | ChangeEventData): void {
     this.storage.events.emit(`${pathToField}.${eventName}`, data);
   }
 
-  off(pathToField: string, eventName: FieldEventName, cb: (data: FieldStorageEventData | ChangeEventData) => void): void {
-    this.storage.events.off(`${pathToField}.${eventName}`, cb);
+  removeListener(pathToField: string, eventName: FieldEventName, handlerIndex: number): void {
+    this.storage.events.removeListener(`${pathToField}.${eventName}`, handlerIndex);
   }
 
   /**

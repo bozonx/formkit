@@ -34,12 +34,10 @@
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test"
   },
   "dependencies": {
-    "eventemitter3": "^4.0.0",
     "immutable": "^4.0.0-rc.12",
     "lodash": "^4.17.13"
   },
   "devDependencies": {
-    "@types/eventemitter3": "^2.0.2",
     "@types/immutable": "^3.8.7",
     "@types/lodash": "^4.14.136",
     "@types/node": "^12.6.2",

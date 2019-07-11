@@ -1,9 +1,6 @@
-import * as EventEmitter from 'eventemitter3';
-import {ListenerFn} from 'eventemitter3';
 import { fromJS, Map } from 'immutable';
 const get = require('lodash/get');
 const set = require('lodash/set');
-const each = require('lodash/each');
 const cloneDeep = require('lodash/cloneDeep');
 
 import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers';
@@ -11,7 +8,10 @@ import FormState from './interfaces/FormState';
 import FieldState from './interfaces/FieldState';
 import {FormStateName, Values} from './FormStorage';
 import {FieldStateName} from './FieldStorage';
+import IndexedEventEmitter from './helpers/IndexedEventEmitter';
 
+
+type EventHandler = (data: any) => void;
 
 export interface ImmutableStore {
   // TODO: наверное надо использвать FormState
@@ -29,7 +29,7 @@ export interface Store {
 
 
 export default class Storage {
-  readonly events: EventEmitter = new EventEmitter();
+  readonly events = new IndexedEventEmitter<EventHandler>();
   private store: ImmutableStore = {
     formState: Map<string, any>(this._generateNewFormState() as any),
     fieldsState: {},
@@ -66,8 +66,8 @@ export default class Storage {
     return this.store.values.toJS();
   }
 
-  getListeners(name: string): ListenerFn[] {
-    return this.events.listeners(name);
+  getListeners(name: string): (EventHandler | undefined)[] {
+    return this.events.getHandlers(name);
   }
 
   destroy(): void {
@@ -79,15 +79,17 @@ export default class Storage {
       values: Map(),
     };
 
-    const eventNames: Array<string> = this.events.eventNames() as Array<string>;
+    this.events.destroy();
 
-    // TODO: remake to for of
-    each(eventNames, (name: string) => {
-      // get handlers by name
-      each(this.getListeners(name), (handler: ListenerFn) => {
-        this.events.off(name, handler);
-      });
-    });
+    // const eventNames: Array<string> = this.events.eventNames() as Array<string>;
+    //
+    // // TODO: remake to for of
+    // each(eventNames, (name: string) => {
+    //   // get handlers by name
+    //   each(this.getListeners(name), (handler: ListenerFn) => {
+    //     this.events.off(name, handler);
+    //   });
+    // });
   }
 
   setFormState(partlyState: FormState): void {

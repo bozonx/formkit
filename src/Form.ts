@@ -148,12 +148,12 @@ export default class Form {
   /**
    * Add one or more handlers on form's event:
    */
-  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): void {
-    this.formStorage.on(eventName, cb);
+  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): number {
+    return this.formStorage.on(eventName, cb);
   }
 
-  off(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): void {
-    this.formStorage.off(eventName, cb);
+  removeListener(eventName: FormEventName, handlerIndex: number): void {
+    this.formStorage.removeListener(eventName, handlerIndex);
   }
 
   onSubmit(handler: (values: Values, editedValues: Values) => Promise<void> | void): void {
