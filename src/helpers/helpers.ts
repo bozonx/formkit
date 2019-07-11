@@ -1,4 +1,12 @@
-import * as _ from 'lodash';
+const find = require('lodash/find');
+const trim = require('lodash/trim');
+const isPlainObject = require('lodash/isPlainObject');
+const isEmpty = require('lodash/isEmpty');
+const isNull = require('lodash/isNull');
+const isNil = require('lodash/isNil');
+const last = require('lodash/last');
+const each = require('lodash/each');
+
 import Field from '../Field';
 
 
@@ -16,8 +24,8 @@ export function findFieldRecursively(
   const recursive = (obj: {[index: string]: object}, rootPath: string): Field | void => {
     let foundField;
 
-    _.find(obj, (item: object, name: string): any => {
-      const itemPath: string = _.trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+    find(obj, (item: object, name: string): any => {
+      const itemPath: string = trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
 
       if (item instanceof Field) {
         // it's a field
@@ -31,7 +39,7 @@ export function findFieldRecursively(
 
         return;
       }
-      else if (_.isPlainObject(item)) {
+      else if (isPlainObject(item)) {
         // it's a container
         foundField = recursive(item as {[index: string]: object}, itemPath);
 
@@ -53,21 +61,22 @@ export function eachFieldRecursively(
   cb: (field: Field, path: string) => void
 ): void {
   const recursive = (obj: {[index: string]: object}, rootPath: string): void => {
-    _.each(obj, (item: object, name: string): void => {
-      const itemPath: string = _.trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+    for (let name of Object.keys(obj)) {
+      const item: {[index: string]: any} | Field = obj[name];
+      const itemPath: string = trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
 
       if (item instanceof Field) {
         // it's a field
         cb(item, itemPath);
       }
-      else if (_.isPlainObject(item)) {
+      else if (isPlainObject(item)) {
         // it's a container
         recursive(item as {[index: string]: object}, itemPath);
       }
       else {
         throw new Error(`Wrong fields dict`);
       }
-    });
+    }
   };
 
   recursive(fields, '');
@@ -78,10 +87,10 @@ export function eachFieldSchemaRecursively(
   cb: (item: {[index: string]: any}, path: string) => any
 ): void {
   eachRecursively(rootObject, (item: {[index: string]: any}, path: string): false | void => {
-    if (!_.isPlainObject(item)) return false;
+    if (!isPlainObject(item)) return false;
 
     // means field
-    if (_.isEmpty(item) || isFieldSchema(item)) {
+    if (isEmpty(item) || isFieldSchema(item)) {
       cb(item, path);
 
       // don't go deeper
@@ -103,8 +112,8 @@ export function isFieldSchema(comingSchema: object) {
     'debounceTime',
   ];
 
-  _.find(comingSchema, (value: any, name: string): any => {
-    if (_.includes(filedParams, name)) {
+  find(comingSchema, (value: any, name: string): any => {
+    if (filedParams.includes(name)) {
       isSchema = true;
 
       return true;
@@ -128,8 +137,8 @@ export function eachRecursively(
   cb: (item: any, path: string) => false | void
 ): void {
   const recursive = (obj: {[index: string]: any}, rootPath: string): void => {
-    _.each(obj, (item: object, name: string): void => {
-      const itemPath: string = _.trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+    each(obj, (item: object, name: string): void => {
+      const itemPath: string = trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
       const cbResult: false | void = cb(item, itemPath);
 
       // don't go deeper
@@ -145,10 +154,10 @@ export function eachRecursively(
 
 export function calculateDirty(editedValue: any, savedValue: any): boolean {
   // if edited value don't specified - it means field isn't dirty
-  if (_.isUndefined(editedValue)) return false;
+  if (typeof editedValue === 'undefined') return false;
 
   // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
-  if ((editedValue === '' || _.isNil(editedValue)) && (savedValue === '' || _.isNil(savedValue))) {
+  if ((editedValue === '' || isNil(editedValue)) && (savedValue === '' || isNil(savedValue))) {
     return false;
   }
   else {
@@ -159,7 +168,7 @@ export function calculateDirty(editedValue: any, savedValue: any): boolean {
 
 export function getFieldName(pathToField: string): string {
   const split: Array<string> = pathToField.split('.');
-  const lastItem: string | undefined = _.last(split);
+  const lastItem: string | undefined = last(split);
 
   if (typeof lastItem === 'undefined') return pathToField;
 
@@ -184,10 +193,10 @@ export function parseValue(rawValue: any): any {
 
   // TODO: does it really need ???
 
-  if (_.isUndefined(rawValue)) {
+  if (typeof rawValue === 'undefined') {
     return;
   }
-  if (_.isNull(rawValue)) {
+  if (isNull(rawValue)) {
     return null;
   }
   else if (rawValue === 'true') {
@@ -206,11 +215,11 @@ export function parseValue(rawValue: any): any {
     return '';
   }
   // it is for - 2. strings
-  else if (_.isString(rawValue) && rawValue.match(/^\d+\.$/)) {
+  else if (typeof rawValue === 'string' && rawValue.match(/^\d+\.$/)) {
     // TODO: why not number ????
     return rawValue;
   }
-  else if (_.isBoolean(rawValue) || _.isPlainObject(rawValue) || _.isArray(rawValue)) {
+  else if (typeof rawValue === 'boolean' || isPlainObject(rawValue) || Array.isArray(rawValue)) {
     return rawValue;
   }
 

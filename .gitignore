@@ -1,8 +1,6 @@
 # idea's files
 .idea/
 
-.rpt2_cache
-
 # Logs
 logs
 *.log
@@ -25,5 +23,6 @@ node_modules
 html-report
 docs-html
 
-build
 dist
+
+.rpt2_cache

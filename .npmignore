@@ -2,14 +2,13 @@
 .rpt2_cache
 doc
 examples
-#src
+src
 test
-build
-dist
 
 # root files
 .editorconfig
 .eslintrc.yml
 .istanbul.yml
 .travis.yml
+.nvmrc
 rollup.config.js

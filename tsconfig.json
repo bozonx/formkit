@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
+    "sourceMap": true,
     "target": "es2018",
     //"module": "ESNext",
     "module": "commonjs",
     //"module": "es6",
     //Classic
     "moduleResolution": "node",
+    "lib": ["es2018"],
 
-    // "lib": ["es2018"],
     // "module": "commonjs",
     // "target": "es5",
-    "sourceMap": true,
 
     "declaration": true,
     "allowSyntheticDefaultImports": true,
