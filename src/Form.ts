@@ -326,6 +326,7 @@ export default class Form {
   $handleFieldChange(eventData: ChangeEventData): void {
     // run form's change event
     this.$emit('change', eventData);
+    // TODO: does it need to ignore promise ???
     this.saveControl.startSaving(false);
   }
 
