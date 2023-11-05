@@ -1,4 +1,4 @@
-import {deepEachObj, deepGet, deepSet, isPlainObject} from 'squidlet-lib'
+import {deepEachObj, deepFindObj, deepGet, deepSet, DONT_GO_DEEPER, isPlainObject} from 'squidlet-lib'
 import type {Store} from './Storage.js'
 import {Storage} from './Storage.js'
 import {FormStorage} from './FormStorage.js'
@@ -6,8 +6,6 @@ import {FieldStorage} from './FieldStorage.js'
 import {Field} from './Field.js'
 import {
   eachFieldRecursively,
-  findFieldRecursively,
-  eachRecursively,
   isFieldSchema,
 } from './helpers/helpers.js'
 import type {Config} from './types/Config.js'
@@ -55,9 +53,14 @@ export class Form {
 
   get dirty(): boolean {
     // search for dirty values in fields
-    const field: Field | void = findFieldRecursively(this.fields, (field: Field) => {
-      return field.dirty
-    })
+    const field: Field | undefined = deepFindObj<Field>(
+      this.fields,
+      (obj: Record<any, any>, key: string | number, path: string) => {
+        return obj?.constructor && obj.dirty
+      },
+      undefined,
+      false
+    )
 
     return Boolean(field && field.dirty)
   }
@@ -153,11 +156,8 @@ export class Form {
 
         this.initField(path, obj)
         // don't go deeper
-        return false;
+        return DONT_GO_DEEPER
       })
-      // eachFieldSchemaRecursively<FieldSchema>(initialFields, (fieldSchema: FieldSchema, path: string) => {
-      //   this.initField(path, fieldSchema)
-      // })
     }
 
     // validate whole form
@@ -425,25 +425,24 @@ export class Form {
     values: {[index: string]: any},
     cb: (field: Field, value: any, path: string) => void
   ): void {
-    eachRecursively(values, (value: any, path: string) => {
+    deepEachObj(values, (obj: Record<any, any>, key: string | number, path: string) => {
       const field = deepGet(this.fields, path)
 
-      // if it is'n a field - go deeper
+      // if it isn't a field - go deeper
       if (!field || !(field instanceof Field)) {
-        if (isPlainObject(value)) {
+        if (isPlainObject(obj)) {
           // go deeper
           return
         }
-
         // stop
-        return false
+        return DONT_GO_DEEPER
       }
       // else means it's field - set value and don't go deeper
       // set value to saved layer
-      cb(field, value, path)
+      cb(field, obj, path)
 
       return false
-    });
+    }, undefined, false)
   }
 
 }

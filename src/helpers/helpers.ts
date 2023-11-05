@@ -1,8 +1,6 @@
 import {
-  isEmptyObject,
   isPlainObject,
   isPromise,
-  trimChar,
   lastItem,
   isNil,
   deepEachObj
@@ -12,78 +10,6 @@ import {Field} from '../Field.js'
 
 export const FIELD_PATH_SEPARATOR = '.'
 
-
-// TODO: use findEachObj
-/**
- * Each all the fields and find certain field.
- * If cb returned true - finding will be stopped and found field will returned
- */
-export function findFieldRecursively(
-  fields: {[index: string]: object},
-  cb: (field: Field, path: string) => boolean | Field | void
-): Field | void {
-  const recursive = (obj: {[index: string]: object}, rootPath: string): Field | void => {
-    let foundField
-
-    Object.keys(obj).find((name: string) => {
-      const item = obj[name]
-      const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
-
-      if (item instanceof Field) {
-        // it's a field
-        const returnedValue: any = cb(item, itemPath)
-
-        if (returnedValue) {
-          foundField = item
-
-          return true
-        }
-
-        return
-      }
-      else if (isPlainObject(item)) {
-        // it's a container
-        foundField = recursive(item as {[index: string]: object}, itemPath)
-
-        return
-      }
-      else {
-        throw new Error(`Wrong fields dict`)
-      }
-    })
-
-    return foundField
-  };
-
-  return recursive(fields, '')
-}
-
-// TODO: use deepEachObj
-export function eachFieldRecursively(
-  fields: {[index: string]: object},
-  cb: (field: Field, path: string) => void
-): void {
-  const recursive = (obj: {[index: string]: object}, rootPath: string): void => {
-    for (let name of Object.keys(obj)) {
-      const item: {[index: string]: any} | Field = obj[name];
-      const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
-
-      if (item instanceof Field) {
-        // it's a field
-        cb(item, itemPath);
-      }
-      else if (isPlainObject(item)) {
-        // it's a container
-        recursive(item as {[index: string]: object}, itemPath);
-      }
-      else {
-        throw new Error(`Wrong fields dict`);
-      }
-    }
-  };
-
-  recursive(fields, '');
-}
 
 export function isFieldSchema(comingSchema: Record<string, any>) {
 
@@ -130,6 +56,15 @@ export function getFieldName(pathToField: string): string {
   if (typeof last === 'undefined') return pathToField
 
   return last
+}
+
+export function eachFieldRecursively(
+  fields: {[index: string]: object},
+  cb: (field: Field, path: string) => void
+): void {
+  deepEachObj(fields, (obj: any, key: string | number, path: string) => {
+    if (obj?.constructor) cb(obj, path)
+  }, undefined, false)
 }
 
 
@@ -192,36 +127,107 @@ export function parseValue(rawValue: any): any {
 
 
 
-// TODO: взять из squidlet-lib
-/**
- * It works with common structures like
- *     {
- *       parent: {
- *         prop: 'value'
- *       }
- *     }
- *                        If it returns false it means don't go deeper.
- */
-export function eachRecursively(
-  rootObject: {[index: string]: any},
-  cb: (item: any, path: string) => false | void
-): void {
-  const recursive = (obj: {[index: string]: any}, rootPath: string): void => {
-    for (const name of Object.keys(obj)) {
-      const item = obj[name]
-      const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR)
-      const cbResult: false | void = cb(item, itemPath);
 
-      // don't go deeper
-      if (cbResult === false) return
 
-      // go deeper
-      recursive(item, itemPath)
-    }
-  }
+// /**
+//  * It works with common structures like
+//  *     {
+//  *       parent: {
+//  *         prop: 'value'
+//  *       }
+//  *     }
+//  *                        If it returns false it means don't go deeper.
+//  */
+// export function eachRecursively(
+//   rootObject: {[index: string]: any},
+//   cb: (item: any, path: string) => false | void
+// ): void {
+//   const recursive = (obj: {[index: string]: any}, rootPath: string): void => {
+//     for (const name of Object.keys(obj)) {
+//       const item = obj[name]
+//       const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR)
+//       const cbResult: false | void = cb(item, itemPath);
+//
+//       // don't go deeper
+//       if (cbResult === false) return
+//
+//       // go deeper
+//       recursive(item, itemPath)
+//     }
+//   }
+//
+//   return recursive(rootObject, '')
+// }
 
-  return recursive(rootObject, '')
-}
+// export function eachFieldRecursively(
+//   fields: {[index: string]: object},
+//   cb: (field: Field, path: string) => void
+// ): void {
+//   const recursive = (obj: {[index: string]: object}, rootPath: string): void => {
+//     for (let name of Object.keys(obj)) {
+//       const item: {[index: string]: any} | Field = obj[name];
+//       const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+//
+//       if (item instanceof Field) {
+//         // it's a field
+//         cb(item, itemPath);
+//       }
+//       else if (isPlainObject(item)) {
+//         // it's a container
+//         recursive(item as {[index: string]: object}, itemPath);
+//       }
+//       else {
+//         throw new Error(`Wrong fields dict`);
+//       }
+//     }
+//   };
+//
+//   recursive(fields, '');
+// }
+
+// /**
+//  * Each all the fields and find certain field.
+//  * If cb returned true - finding will be stopped and found field will returned
+//  */
+// export function findFieldRecursively(
+//   fields: {[index: string]: object},
+//   cb: (field: Field, path: string) => boolean | Field | void
+// ): Field | void {
+//   const recursive = (obj: {[index: string]: object}, rootPath: string): Field | void => {
+//     let foundField
+//
+//     Object.keys(obj).find((name: string) => {
+//       const item = obj[name]
+//       const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+//
+//       if (item instanceof Field) {
+//         // it's a field
+//         const returnedValue: any = cb(item, itemPath)
+//
+//         if (returnedValue) {
+//           foundField = item
+//
+//           return true
+//         }
+//
+//         return
+//       }
+//       else if (isPlainObject(item)) {
+//         // it's a container
+//         foundField = recursive(item as {[index: string]: object}, itemPath)
+//
+//         return
+//       }
+//       else {
+//         throw new Error(`Wrong fields dict`)
+//       }
+//     })
+//
+//     return foundField
+//   };
+//
+//   return recursive(fields, '')
+// }
 
 // export function eachFieldSchemaRecursively<Item = any>(
 //   rootObject: {[index: string]: any},

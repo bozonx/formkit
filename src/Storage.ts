@@ -1,6 +1,6 @@
 import { fromJS, Map } from 'immutable'
-import {deepGet, deepSet, IndexedEventEmitter, deepClone} from 'squidlet-lib'
-import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers.js'
+import {deepGet, deepSet, IndexedEventEmitter, deepClone, deepEachObj, DONT_GO_DEEPER} from 'squidlet-lib'
+import {FIELD_PATH_SEPARATOR} from './helpers/helpers.js'
 import type {FieldState} from './types/FieldTypes.js'
 import type {FormState} from './types/FormTypes.js'
 import type {Values} from './types/types.js'
@@ -97,13 +97,13 @@ export class Storage {
   }
 
   eachField(cb: (field: Map<string, any>, path: string) => void): void {
-    eachRecursively(this.store.fieldsState, (field: Map<string, any>, path: string): false | undefined => {
-      if (!field || !Map.isMap(field)) return
+    deepEachObj(this.store.fieldsState, (obj: any, key: string | number, path: string) => {
+      if (!Map.isMap(obj)) return
 
-      cb(field, path)
+      cb(obj as Map<string, any>, path)
 
-      return false
-    })
+      return DONT_GO_DEEPER
+    }, undefined, false)
   }
 
   getWholeFieldState(pathToField: string): Partial<FieldState> | undefined {
