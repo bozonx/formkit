@@ -1,8 +1,8 @@
-import type {Values} from '../../FormStorage.js'
-import type {FormEvent} from '../FormTypes.js';
+import type {FormEvent, FormState} from '../FormTypes.js'
+import type {Values} from '../types.js'
 
 
-interface EventFormState extends FormTypes {
+interface EventFormState extends FormState {
   values: Values
   prevValues: Values
 }

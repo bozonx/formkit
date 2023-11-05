@@ -1,26 +1,24 @@
-export interface FieldState {
-  defaultValue?: any
-  dirty?: boolean
-  disabled?: boolean
-  editedValue?: any
-  focused?: boolean
-  initial?: any
-  invalidMsg?: string
-  touched?: boolean
-  savedValue?: any
-  saving?: boolean
-  value?: any
-  prevValue?: any
-
-  // TODO: зачем не обязательные ???
-
-}
 
 export enum FieldEvent {
   change,
   storage,
   saveStart,
   saveEnd,
+}
+
+export interface FieldState {
+  defaultValue: any
+  dirty: boolean
+  disabled: boolean
+  editedValue: any
+  focused: boolean
+  initial: any
+  invalidMsg: string
+  touched: boolean
+  savedValue: any
+  saving: boolean
+  value: any
+  prevValue: any
 }
 
 export const FIELD_STATE = {
@@ -37,4 +35,3 @@ export const FIELD_STATE = {
   value: 'value',
   prevValue: 'prevValue',
 }
-//export type FieldState = keyof typeof FIELD_STATE

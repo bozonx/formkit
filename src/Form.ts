@@ -1,7 +1,6 @@
 import {deepGet, deepSet, isPlainObject} from 'squidlet-lib'
 import type {Store} from './Storage.js'
 import {Storage} from './Storage.js'
-import type {Values} from './FormStorage.js'
 import {FormStorage} from './FormStorage.js'
 import {FieldStorage} from './FieldStorage.js'
 import {Field} from './Field.js'
@@ -22,6 +21,7 @@ import type {Handler as ValidateCb} from './ValidateControl.js'
 import {ValidateControl} from './ValidateControl.js'
 import type {ErrorMessage} from './types/ErrorMessage.js';
 import {FormEvent} from './types/FormTypes.js';
+import type {Values} from './types/types.js';
 
 
 export class Form {

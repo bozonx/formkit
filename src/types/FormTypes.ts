@@ -1,16 +1,5 @@
 import type {Values} from '../FormStorage.js'
 
-// export interface FormState {
-//   touched?: boolean
-//   submitting?: boolean
-//   saving?: boolean
-//   valid?: boolean
-//   values?: Values
-//   prevValues?: Values
-//
-//   // TODO: зачем не обязательные ???
-//
-// }
 
 export enum FormEvent {
   change,
@@ -21,6 +10,15 @@ export enum FormEvent {
   submitEnd,
 }
 
+export interface FormState {
+  touched: boolean
+  submitting: boolean
+  saving: boolean
+  valid: boolean
+  values: Values
+  prevValues: Values
+}
+
 export const FORM_STATE = {
   touched: 'touched',
   submitting: 'submitting',
@@ -29,4 +27,3 @@ export const FORM_STATE = {
   values: 'values',
   prevValues: 'prevValues',
 }
-export type FormState = keyof typeof FORM_STATE

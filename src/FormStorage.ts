@@ -8,10 +8,6 @@ import type {ActionEventData} from './types/eventData/ActionEventData.js'
 import type {FieldState} from './types/constants.js';
 
 
-// TODO: может быть вложенный
-export type Values = { [index: string]: any };
-
-
 export class FormStorage {
   private readonly storage: Storage;
 
