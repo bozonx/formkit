@@ -1,8 +1,8 @@
-import {isPlainObject, isPromise} from 'squidlet-lib'
+import {isPlainObject, isPromise, trimChar} from 'squidlet-lib'
 import {Field} from '../Field.js'
 
 
-export const FIELD_PATH_SEPARATOR = '.';
+export const FIELD_PATH_SEPARATOR = '.'
 
 
 /**
@@ -17,7 +17,7 @@ export function findFieldRecursively(
     let foundField;
 
     find(obj, (item: object, name: string): any => {
-      const itemPath: string = trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+      const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
 
       if (item instanceof Field) {
         // it's a field
@@ -55,7 +55,7 @@ export function eachFieldRecursively(
   const recursive = (obj: {[index: string]: object}, rootPath: string): void => {
     for (let name of Object.keys(obj)) {
       const item: {[index: string]: any} | Field = obj[name];
-      const itemPath: string = trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+      const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
 
       if (item instanceof Field) {
         // it's a field
@@ -74,9 +74,9 @@ export function eachFieldRecursively(
   recursive(fields, '');
 }
 
-export function eachFieldSchemaRecursively(
+export function eachFieldSchemaRecursively<Item = any>(
   rootObject: {[index: string]: any},
-  cb: (item: {[index: string]: any}, path: string) => any
+  cb: (item: Item, path: string) => any
 ): void {
   eachRecursively(rootObject, (item: {[index: string]: any}, path: string): false | void => {
     if (!isPlainObject(item)) return false;

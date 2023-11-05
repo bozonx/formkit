@@ -13,7 +13,7 @@ export interface FieldState {
   editedValue: any
   focused: boolean
   initial: any
-  invalidMsg: string
+  invalidMsg?: string
   touched: boolean
   savedValue: any
   saving: boolean

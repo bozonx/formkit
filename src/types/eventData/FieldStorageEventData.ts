@@ -11,9 +11,9 @@ export interface FieldStorageEventData {
   event: 'storage'
   // TODO: новый стейт не нужен, его и так можно получить
   // current state
-  state: FieldState
+  state: Partial<FieldState>
   // previous state
-  prevState?: FieldState
+  prevState?: Partial<FieldState>
   // prevValue: any;
   // value: any;
   error?: Error

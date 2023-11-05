@@ -1,89 +1,95 @@
 import { Map } from 'immutable';
 import {deepSet, isEqual} from 'squidlet-lib'
 import type {FormStorageEventData} from './types/eventData/FormStorageEventData.js'
-import type {FormTypes} from './types/FormTypes.js'
 import {Storage} from './Storage.js'
 import type {ChangeEventData} from './types/eventData/ChangeEventData.js'
 import type {ActionEventData} from './types/eventData/ActionEventData.js'
-import type {FieldState} from './types/constants.js';
+import type {Values} from './types/types.js'
+import type {FormState} from './types/FormTypes.js'
+import type {ErrorMessage} from './types/ErrorMessage.js'
+import {FormEvent} from './types/FormTypes.js'
 
 
 export class FormStorage {
-  private readonly storage: Storage;
+  private readonly storage: Storage
+
 
   constructor(storage: Storage) {
-    this.storage = storage;
+    this.storage = storage
   }
 
-  // TODO: use JsonTypes
-  getState(stateName: FieldState): any {
-    return this.storage.getFormState(stateName);
+
+  getState(stateName: keyof FormState): any {
+    return this.storage.getFormState(stateName)
   }
 
   /**
    * Get all the combined values of form's fields.
    */
   getCombinedValues(): Values {
-    return this.storage.getCombinedValues();
+    return this.storage.getCombinedValues()
   }
 
   getEditedValues(): Values {
-    const editedValues = {};
+    const editedValues = {}
 
     this.storage.eachField((field: Map<string, any>, path: string) => {
-      const editedValue: any = field.get('editedValue');
+      const editedValue: any = field.get('editedValue')
 
-      if (typeof editedValue === 'undefined') return;
+      if (typeof editedValue === 'undefined') return
 
-      deepSet(editedValues, path, editedValue);
+      deepSet(editedValues, path, editedValue)
     });
 
-    return editedValues;
+    return editedValues
   }
 
   getSavedValues(): Values {
-    const savedValues = {};
+    const savedValues = {}
 
     this.storage.eachField((field: Map<string, any>, path: string) => {
-      deepSet(savedValues, path, field.get('savedValue'));
+      deepSet(savedValues, path, field.get('savedValue'))
     });
 
-    return savedValues;
+    return savedValues
   }
 
   getUnSavedValues(): Values {
-    const unSavedValues = {};
+    const unSavedValues = {}
 
     this.storage.eachField((field: Map<string, any>, path: string) => {
-      const editedValue: any = field.get('editedValue');
+      const editedValue: any = field.get('editedValue')
 
-      if (typeof editedValue === 'undefined' || field.get('savedValue') === editedValue) return;
+      if (
+        typeof editedValue === 'undefined'
+        || field.get('savedValue') === editedValue
+      ) return
 
       // if editedValue has a defined value and it isn't equal to editedValue
-      deepSet(unSavedValues, path, field.get('editedValue'));
+      deepSet(unSavedValues, path, field.get('editedValue'))
     });
 
-    return unSavedValues;
+    return unSavedValues
   }
 
   getInvalidMessages(): Array<ErrorMessage> {
-    const invalidMessages: Array<ErrorMessage> = [];
+    const invalidMessages: Array<ErrorMessage> = []
 
     this.storage.eachField((field: Map<string, any>, path: string) => {
-      const msg: string = field.get('invalidMsg');
+      const msg: string = field.get('invalidMsg')
 
       if (msg) {
         invalidMessages.push({
           field: path,
           message: field.get('invalidMsg'),
-        });
+        })
       }
-    });
+    })
 
-    return invalidMessages;
+    return invalidMessages
   }
 
-  getWholeState(): FormTypes {
+  getWholeState(): Partial<FormState> {
 
     // TODO: review
     // TODO: где prevValues ?
@@ -91,24 +97,24 @@ export class FormStorage {
     return {
       ...this.storage.getWholeFormState(),
       values: this.getCombinedValues(),
-    };
+    }
   }
 
-  setStateSilent(partlyState: FormTypes): void {
-    this.storage.setFormState(partlyState);
+  setStateSilent(partlyState: FormState): void {
+    this.storage.setFormState(partlyState)
   }
 
   emitStorageEvent(newState: any, prevState: any, force?: boolean): void {
-    if (!force && isEqual(prevState, newState)) return;
+    if (!force && isEqual(prevState, newState)) return
 
     const data: FormStorageEventData = {
       target: 'form',
       event: FormEvent.storage,
       state: newState,
       prevState,
-    };
+    }
 
-    this.emit(FormEvent.storage, data);
+    this.emit(FormEvent.storage, data)
   }
 
   /**

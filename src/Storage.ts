@@ -1,25 +1,25 @@
-import { fromJS, Map } from 'immutable';
-import {deepGet, deepSet, IndexedEventEmitter} from 'squidlet-lib'
+import { fromJS, Map } from 'immutable'
+import {deepGet, deepSet, IndexedEventEmitter, deepClone} from 'squidlet-lib'
 import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers.js'
-import type {FormTypes} from './types/FormTypes.js'
-import type {FieldTypes} from './types/FieldTypes.js'
-import type {Values} from './FormStorage.js'
+import type {FieldState} from './types/FieldTypes.js'
+import type {FormState} from './types/FormTypes.js'
+import type {Values} from './types/types.js'
 
 
-type EventHandler = (data: any) => void;
+type EventHandler = (data: any) => void
 
 export interface ImmutableStore {
   // TODO: наверное надо использвать FormState
-  formState: Map<string, any>;
+  formState: Map<string, any>
   // TODO: наверное надо использвать FieldState
-  fieldsState: {[index: string]: Map<string, any>};
-  values: Map<string, any>;
+  fieldsState: {[index: string]: Map<string, any>}
+  values: Map<string, any>
 }
 
 export interface Store {
-  formState: FormTypes;
-  fieldsState: FieldTypes;
-  values: {[index: string]: any};
+  formState: Partial<FormState>
+  fieldsState: Partial<FieldState>
+  values: {[index: string]: any}
 }
 
 
@@ -30,40 +30,40 @@ export class Storage {
     fieldsState: {},
     // combined saved and edited values
     values: Map<string, any>(),
-  };
+  }
 
   getWholeStorageState(): Store {
     const store: Store = {
       formState: this.store.formState.toJS(),
       fieldsState: {},
       values: this.store.values.toJS(),
-    };
+    }
 
     this.eachField((field: Map<string, any>, path: string) => {
-      deepSet(store.fieldsState, path, field.toJS());
+      deepSet(store.fieldsState, path, field.toJS())
     });
 
-    return store;
+    return store
   }
 
-  getWholeFormState(): FormTypes {
-    return this.store.formState.toJS();
+  getWholeFormState(): Partial<FormState> {
+    return this.store.formState.toJS()
   }
 
   // TODO: use JsonTypes
-  getFormState(stateName: FieldTypes): any {
-    const formState: FormTypes = this.store.formState.toJS();
+  getFormState(stateName: keyof FormState): any {
+    const formState: Partial<FormState> = this.store.formState.toJS()
 
-    return formState[stateName];
+    return formState[stateName]
   }
 
   getCombinedValues(): Values {
-    return this.store.values.toJS();
+    return this.store.values.toJS()
   }
 
-  getListeners(name: string): (EventHandler | undefined)[] {
-    return this.events.getHandlers(name);
-  }
+  // getListeners(name: string): (EventHandler | undefined)[] {
+  //   return this.events.getHandlers(name)
+  // }
 
   destroy(): void {
 
@@ -72,9 +72,9 @@ export class Storage {
       formState: Map(),
       fieldsState: {},
       values: Map(),
-    };
+    }
 
-    this.events.destroy();
+    this.events.destroy()
 
     // const eventNames: Array<string> = this.events.eventNames() as Array<string>;
     //
@@ -87,45 +87,45 @@ export class Storage {
     // });
   }
 
-  setFormState(partlyState: FormTypes): void {
-    const prevState = this.getWholeFormState();
+  setFormState(partlyState: FormState): void {
+    const prevState = this.getWholeFormState()
 
     this.store.formState = fromJS({
       ...prevState,
       ...partlyState,
-    });
+    })
   }
 
   eachField(cb: (field: Map<string, any>, path: string) => void): void {
     eachRecursively(this.store.fieldsState, (field: Map<string, any>, path: string): false | undefined => {
-      if (!field || !Map.isMap(field)) return;
+      if (!field || !Map.isMap(field)) return
 
-      cb(field, path);
+      cb(field, path)
 
-      return false;
-    });
+      return false
+    })
   }
 
-  getWholeFieldState(pathToField: string): FieldTypes | undefined {
+  getWholeFieldState(pathToField: string): Partial<FieldState> | undefined {
     const fieldState: Map<string, any> | undefined = deepGet(this.store.fieldsState, pathToField);
 
-    if (!fieldState) return;
+    if (!fieldState) return
 
-    return fieldState.toJS();
+    return fieldState.toJS()
   }
 
-  getFieldState(pathToField: string, stateName: FieldStateName) {
-    const fieldState = deepGet(this.store.fieldsState, pathToField);
+  getFieldState(pathToField: string, stateName: keyof FieldState) {
+    const fieldState = deepGet(this.store.fieldsState, pathToField)
 
-    if (!fieldState) return;
+    if (!fieldState) return
 
-    return deepGet(fieldState.toJS(), stateName);
+    return deepGet(fieldState.toJS(), stateName)
   }
 
   getCombinedValue(pathToField: string): any {
-    const values = this.store.values.toJS();
+    const values = this.store.values.toJS()
 
-    return deepGet(values, pathToField);
+    return deepGet(values, pathToField)
   }
 
   /**
@@ -134,25 +134,29 @@ export class Storage {
    * @param pathToField
    * @param partlyState
    */
-  setFieldState(pathToField: string, partlyState: FieldTypes): void {
-    const prevState: FieldTypes | undefined = this.getWholeFieldState(pathToField);
+  setFieldState(pathToField: string, partlyState: Partial<FieldState>): void {
+    const prevState: Partial<FieldState> | undefined = this.getWholeFieldState(pathToField)
 
     const newState: Map<string, any> = fromJS({
       ...prevState,
       ...partlyState,
-    });
+    })
 
-    deepSet(this.store.fieldsState, pathToField, newState);
+    deepSet(this.store.fieldsState, pathToField, newState)
 
     // TODO: ???? !!!! что это ?????
     // _.find(partlyState, (item: any, name: string) => {
     //   if (_.includes([ 'savedValue', 'editedValue' ], name)) return true;
     // });
 
-    this._updateCombinedValue(pathToField, newState.get('savedValue'), newState.get('editedValue'));
+    this._updateCombinedValue(
+      pathToField,
+      newState.get('savedValue'),
+      newState.get('editedValue')
+    )
   }
 
-  generateNewFieldState(): FieldTypes {
+  generateNewFieldState(): Partial<FieldState> {
 
     // TODO: почему здесь ???
 
@@ -172,7 +176,7 @@ export class Storage {
     };
   }
 
-  _generateNewFormState(): FormTypes {
+  _generateNewFormState(): Partial<FormState> {
 
     // TODO: почему здесь ???
 
@@ -186,7 +190,7 @@ export class Storage {
 
   _updateCombinedValue(pathToField: string, savedValue: any, editedValue: any): void {
     const rawCombinedValue = typeof editedValue === 'undefined' ? savedValue : editedValue;
-    const combinedValue = cloneDeep(rawCombinedValue);
+    const combinedValue = deepClone(rawCombinedValue)
 
     this.store.values = this.store.values.setIn(pathToField.split(FIELD_PATH_SEPARATOR), combinedValue);
   }

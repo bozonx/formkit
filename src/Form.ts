@@ -21,6 +21,7 @@ import type {Handler as ValidateCb} from './ValidateControl.js'
 import {ValidateControl} from './ValidateControl.js'
 import type {ErrorMessage} from './types/ErrorMessage.js';
 import {FormEvent} from './types/FormTypes.js';
+import type {FormState} from './types/FormTypes.js';
 import type {Values} from './types/types.js';
 
 
@@ -124,11 +125,12 @@ export class Form {
     validateCb && this.validateControl.setHandler(validateCb)
 
     if (Array.isArray(initialFields)) {
-      initialFields.forEach((pathToField) => this.initField(pathToField, {}))
+      initialFields
+        .forEach((pathToField) => this.initField(pathToField, {}))
     }
     else {
       // read schema
-      eachFieldSchemaRecursively(initialFields, (fieldSchema: FieldSchema, path: string) => {
+      eachFieldSchemaRecursively<FieldSchema>(initialFields, (fieldSchema: FieldSchema, path: string) => {
         this.initField(path, fieldSchema)
       })
     }
@@ -313,7 +315,7 @@ export class Form {
     return this.storage.getWholeStorageState()
   }
 
-  $setStateSilent(partlyState: Form): void {
+  $setStateSilent(partlyState: Partial<FormState>): void {
     this.formStorage.setStateSilent(partlyState)
   }
 

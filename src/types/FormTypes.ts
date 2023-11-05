@@ -1,4 +1,4 @@
-import type {Values} from '../FormStorage.js'
+import type {Values} from './types.js';
 
 
 export enum FormEvent {

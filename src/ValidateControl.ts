@@ -1,25 +1,26 @@
 import {deepGet, deepSet} from 'squidlet-lib'
 import {Form} from './Form.js'
-import type {Values} from './FormStorage.js'
 import {eachFieldRecursively} from './helpers/helpers.js'
 import type {FieldState} from './types/FieldTypes.js'
 import type {Field} from './Field.js'
+import type {Values} from './types/types.js';
 
 
 export type Handler = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
 
 
 export class ValidateControl {
-  private readonly form: Form;
-  private handler?: Handler;
+  private readonly form: Form
+  private handler?: Handler
 
 
   constructor(form: Form) {
-    this.form = form;
+    this.form = form
   }
 
+
   setHandler(handler: Handler) {
-    this.handler = handler;
+    this.handler = handler
   }
 
   /**
@@ -30,44 +31,44 @@ export class ValidateControl {
 
     // TODO: refactor
 
-    if (!this.handler) return;
+    if (!this.handler) return
 
-    const errors: {[index: string]: string} = {};
-    const values: Values = this.form.values;
-    let isFormValid: boolean = true;
+    const errors: {[index: string]: string} = {}
+    const values: Values = this.form.values
+    let isFormValid: boolean = true
 
     // add sub structures to "errors" for easy access to error
-    eachFieldRecursively(this.form.fields, (field: FieldState, path: string) => {
-      const split: Array<string> = path.split('.');
-      const minPathItems: number = 2;
+    eachFieldRecursively(this.form.fields, (field: Field, path: string) => {
+      const split: Array<string> = path.split('.')
+      const minPathItems: number = 2
 
-      if (split.length < minPathItems) return;
+      if (split.length < minPathItems) return
 
-      split.pop();
+      split.pop()
 
-      const basePath: string = split.join();
+      const basePath: string = split.join()
 
-      deepSet(errors, basePath, {});
+      deepSet(errors, basePath, {})
     });
 
     // do validate
-    this.handler(errors, values);
+    this.handler(errors, values)
 
     // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
     eachFieldRecursively(this.form.fields, (field: Field, path: string) => {
-      const invalidMsg = deepGet(errors, path);
+      const invalidMsg = deepGet(errors, path)
 
-      if (isFormValid) isFormValid = !invalidMsg;
+      if (isFormValid) isFormValid = !invalidMsg
 
-      const fieldPartlyState: FieldState = {
+      const fieldPartlyState: Partial<FieldState> = {
         invalidMsg
-      };
+      }
 
-      field.$setStateSilent(fieldPartlyState);
-    });
+      field.$setStateSilent(fieldPartlyState)
+    })
 
-    this.form.$setStateSilent({ valid: isFormValid });
+    this.form.$setStateSilent({ valid: isFormValid })
   }
 
 }
