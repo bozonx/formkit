@@ -1,98 +1,79 @@
-const isPlainObject = require('lodash/isPlainObject');
-const get = require('lodash/get');
-const set = require('lodash/set');
-
-import {Storage} from './Storage.js'
+import {deepGet, deepSet, isPlainObject} from 'squidlet-lib'
 import type {Store} from './Storage.js'
+import {Storage} from './Storage.js'
+import type {Values} from './FormStorage.js'
 import {FormStorage} from './FormStorage.js'
-import type {FormEventName, Values } from './FormStorage.js'
 import {FieldStorage} from './FieldStorage.js'
 import {Field} from './Field.js'
-import {DebouncedCall} from './helpers/DebouncedCall.js'
 import {
-  findFieldRecursively,
   eachFieldRecursively,
-  eachRecursively,
   eachFieldSchemaRecursively,
-  resolvePromise
+  eachRecursively,
+  findFieldRecursively,
 } from './helpers/helpers.js'
 import type {Config} from './types/Config.js'
 import type {FieldSchema} from './types/FieldSchema.js'
 import type {FormStorageEventData} from './types/eventData/FormStorageEventData.js'
-import type {FormState} from './types/FormState.js'
 import type {ChangeEventData} from './types/eventData/ChangeEventData.js'
 import type {ActionEventData} from './types/eventData/ActionEventData.js'
 import {SubmitControl} from './SubmitControl.js'
 import {SaveControl} from './SaveControl.js'
-import {ValidateControl} from './ValidateControl.js'
 import type {Handler as ValidateCb} from './ValidateControl.js'
-
-
-export interface ErrorMessage {
-  field: string;
-  message: string;
-}
+import {ValidateControl} from './ValidateControl.js'
+import type {ErrorMessage} from './types/ErrorMessage.js';
+import {FormEvent} from './types/FormTypes.js';
 
 
 export class Form {
   // it's nested object
-  readonly fields: {[index: string]: Field} = {};
-  readonly config: Config;
-  readonly fieldStorage: FieldStorage;
+  readonly fields: Record<string, Field> = {}
+  readonly config: Config
+  readonly fieldStorage: FieldStorage
 
-  private readonly storage: Storage = new Storage();
-  private readonly formStorage: FormStorage;
-  private readonly saveControl: SaveControl;
-  private readonly submitControl: SubmitControl;
-  private readonly validateControl: ValidateControl;
-
-  constructor(config: Config) {
-    this.config = config;
-    this.formStorage = new FormStorage(this.storage);
-    this.fieldStorage = new FieldStorage(this.storage, this.formStorage);
-    this.saveControl = new SaveControl(this);
-    this.submitControl = new SubmitControl(this);
-    this.validateControl = new ValidateControl(this);
-  }
+  private readonly storage: Storage = new Storage()
+  private readonly formStorage: FormStorage
+  private readonly saveControl: SaveControl
+  private readonly submitControl: SubmitControl
+  private readonly validateControl: ValidateControl
 
   get values(): Values {
-    return this.formStorage.getCombinedValues();
+    return this.formStorage.getCombinedValues()
   }
 
   get savedValues(): Values {
-    return this.formStorage.getSavedValues();
+    return this.formStorage.getSavedValues()
   }
 
   get editedValues(): Values {
-    return this.formStorage.getEditedValues();
+    return this.formStorage.getEditedValues()
   }
 
   get unsavedValues(): Values {
-    return this.formStorage.getUnSavedValues();
+    return this.formStorage.getUnSavedValues()
   }
 
   get dirty(): boolean {
     // search for dirty values in fields
     const field: Field | void = findFieldRecursively(this.fields, (field: Field) => {
-      return field.dirty;
-    });
+      return field.dirty
+    })
 
-    return Boolean(field && field.dirty);
+    return Boolean(field && field.dirty)
   }
 
   get touched(): boolean {
-    return this.formStorage.getState('touched');
+    return this.formStorage.getState('touched')
   }
 
   /**
    * Returns true if one or more fields are saving.
    */
   get saving(): boolean {
-    return this.formStorage.getState('saving');
+    return this.formStorage.getState('saving')
   }
 
   get submitting(): boolean {
-    return this.formStorage.getState('submitting');
+    return this.formStorage.getState('submitting')
   }
 
   /**
@@ -100,15 +81,15 @@ export class Form {
    * @return {boolean} - true if allows to submit.
    */
   get submittable(): boolean {
-    return !this.canSubmit();
+    return !this.canSubmit()
   }
 
   get savable(): boolean {
-    return !this.canSave();
+    return !this.canSave()
   }
 
   get valid(): boolean {
-    return this.formStorage.getState('valid');
+    return this.formStorage.getState('valid')
   }
 
   /**
@@ -116,7 +97,17 @@ export class Form {
    * @return {Array} - like [{path: "path.to.field", message: "msg"}, ...]
    */
   get invalidMessages(): Array<ErrorMessage> {
-    return this.formStorage.getInvalidMessages();
+    return this.formStorage.getInvalidMessages()
+  }
+
+
+  constructor(config: Config) {
+    this.config = config
+    this.formStorage = new FormStorage(this.storage)
+    this.fieldStorage = new FieldStorage(this.storage, this.formStorage)
+    this.saveControl = new SaveControl(this)
+    this.submitControl = new SubmitControl(this)
+    this.validateControl = new ValidateControl(this)
   }
 
   /**
@@ -130,48 +121,48 @@ export class Form {
     initialFields: Array<string> | {[index: string]: object},
     validateCb?: ValidateCb
   ): void {
-    validateCb && this.validateControl.setHandler(validateCb);
+    validateCb && this.validateControl.setHandler(validateCb)
 
     if (Array.isArray(initialFields)) {
-      initialFields.forEach((pathToField) => this.initField(pathToField, {}));
+      initialFields.forEach((pathToField) => this.initField(pathToField, {}))
     }
     else {
       // read schema
       eachFieldSchemaRecursively(initialFields, (fieldSchema: FieldSchema, path: string) => {
-        this.initField(path, fieldSchema);
-      });
+        this.initField(path, fieldSchema)
+      })
     }
 
     // validate whole form
-    this.validate();
+    this.validate()
     // emit init event
-    this.formStorage.emitStorageEvent(this.values, undefined);
+    this.formStorage.emitStorageEvent(this.values, undefined)
   }
 
   /**
    * Add one or more handlers on form's event:
    */
-  on(eventName: FormEventName, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): number {
-    return this.formStorage.on(eventName, cb);
+  on(event: FormEvent, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): number {
+    return this.formStorage.on(event, cb);
   }
 
-  removeListener(eventName: FormEventName, handlerIndex: number): void {
-    this.formStorage.removeListener(eventName, handlerIndex);
+  removeListener(event: FormEvent, handlerIndex: number): void {
+    this.formStorage.removeListener(event, handlerIndex)
   }
 
   onSubmit(handler: (values: Values, editedValues: Values) => Promise<void> | void): void {
-    this.submitControl.setHandler(handler);
+    this.submitControl.setHandler(handler)
   }
 
   onSave(handler: (values: Values) => Promise<void> | void): void {
-    this.saveControl.setHandler(handler);
+    this.saveControl.setHandler(handler)
   }
 
   /**
    * Start saving of form immediately.
    */
   save(): Promise<void> {
-    return this.saveControl.startSaving(true);
+    return this.saveControl.startSaving(true)
   }
 
   /**
@@ -179,7 +170,7 @@ export class Form {
    * @return {string|void} - returns undefined if it's OK else returns a reason.
    */
   canSubmit(): string | void {
-    return this.submitControl.canSubmit();
+    return this.submitControl.canSubmit()
   }
 
   /**
@@ -187,7 +178,7 @@ export class Form {
    * @return {string|void} - undefined means it can. Otherwise it returns a reason.
    */
   canSave(): string | void {
-    return this.saveControl.canSave();
+    return this.saveControl.canSave()
   }
 
   /**
@@ -196,7 +187,7 @@ export class Form {
    * @return {Promise|undefined} - wait for submit has finished
    */
   handleSubmit = (): Promise<void> => {
-    return this.submitControl.startSubmit();
+    return this.submitControl.startSubmit()
   }
 
   /**
@@ -204,7 +195,7 @@ export class Form {
    */
   clear = (): void => {
     this.updateStateAndValidate((): void => {
-      eachFieldRecursively(this.fields, (field: Field) => field.$clearSilent());
+      eachFieldRecursively(this.fields, (field: Field) => field.$clearSilent())
     });
   }
 
@@ -213,8 +204,8 @@ export class Form {
    */
   revert = (): void => {
     this.updateStateAndValidate((): void => {
-      eachFieldRecursively(this.fields, (field: Field) => field.$revertSilent());
-    });
+      eachFieldRecursively(this.fields, (field: Field) => field.$revertSilent())
+    })
   }
 
   /**
@@ -222,7 +213,7 @@ export class Form {
    */
   reset = (): void => {
     this.updateStateAndValidate((): void => {
-      eachFieldRecursively(this.fields, (field: Field) => field.$resetSilent());
+      eachFieldRecursively(this.fields, (field: Field) => field.$resetSilent())
     });
   }
 
@@ -233,14 +224,14 @@ export class Form {
     // TODO: как удалить чтобы сборщик мусора сработал?
     //this.handlers = {};
 
-    this.flushSaving();
+    this.flushSaving()
 
     const doDestroy = (): void => {
       eachFieldRecursively(this.fields, (field: Field): void => {
-        field.$destroyHandlers();
+        field.$destroyHandlers()
       });
 
-      this.formStorage.destroy();
+      this.formStorage.destroy()
     };
 
     // wait for save and submit process have finished
@@ -249,30 +240,30 @@ export class Form {
       //resolvePromise(this.submitPromise),
     ])
       .then(doDestroy)
-      .catch(doDestroy);
+      .catch(doDestroy)
   }
 
   /**
    * Cancel debounce waiting for saving
    */
   cancelSaving(): void {
-    this.saveControl.cancel();
+    this.saveControl.cancel()
   }
 
   /**
    * SaveControl immediately
    */
   flushSaving(): void {
-    this.saveControl.flush();
+    this.saveControl.flush()
   }
 
   /**
    * Set callback wich will be called on each validating request.
    */
   setValidateCb(validateCb: ValidateCb): void {
-    this.validateControl.setHandler(validateCb);
+    this.validateControl.setHandler(validateCb)
 
-    this.updateStateAndValidate();
+    this.updateStateAndValidate()
   }
 
   /**
@@ -282,12 +273,12 @@ export class Form {
    */
   setValues(newValues: Values) {
     if (!isPlainObject(newValues)) {
-      throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
+      throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`)
     }
 
     this.updateStateAndValidate(() => {
       this.eachRawField(newValues, (field: Field, value: any): void => {
-        field.$setEditedValueSilent(value);
+        field.$setEditedValueSilent(value)
       });
     });
   }
@@ -300,12 +291,12 @@ export class Form {
    */
   setSavedValues(newValues: Values) {
     if (!isPlainObject(newValues)) {
-      throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`);
+      throw new Error(`form.setValues(). Incorrect types of values ${JSON.stringify(newValues)}`)
     }
 
     this.updateStateAndValidate(() => {
       this.eachRawField(newValues, (field: Field, value: any): void => {
-        field.$setSavedValue(value);
+        field.$setSavedValue(value)
       });
     });
   }
@@ -315,50 +306,51 @@ export class Form {
    * @return {string|undefined} - valid if undefined or error message.
    */
   validate(): string | void {
-    return this.validateControl.validate();
+    return this.validateControl.validate()
   }
 
   $getWholeStorageState(): Store {
-    return this.storage.getWholeStorageState();
+    return this.storage.getWholeStorageState()
   }
 
-  $setStateSilent(partlyState: FormState): void {
-    this.formStorage.setStateSilent(partlyState);
+  $setStateSilent(partlyState: Form): void {
+    this.formStorage.setStateSilent(partlyState)
   }
 
   $handleFieldChange(eventData: ChangeEventData): void {
     // run form's change event
-    this.$emit('change', eventData);
+    this.$emit(FormEvent.change, eventData)
+
     // TODO: does it need to ignore promise ???
-    this.saveControl.startSaving(false);
+    this.saveControl.startSaving(false)
   }
 
-  $emit(eventName: FormEventName, data: FormStorageEventData | ChangeEventData | ActionEventData) {
-    this.formStorage.emit(eventName, data);
+  $emit(event: FormEvent, data: FormStorageEventData | ChangeEventData | ActionEventData) {
+    this.formStorage.emit(event, data)
   }
 
   $moveValuesToSaveLayer(values: Values, force?: boolean): void {
     this.updateStateAndValidate(() => {
       eachFieldRecursively(this.fields, (field: Field, pathToField: string) => {
-        const savedValue = get(values, pathToField);
+        const savedValue = deepGet(values, pathToField)
 
-        field.$setValueAfterSave(savedValue);
+        field.$setValueAfterSave(savedValue)
       });
     }, force);
   }
 
   $setState(partlyState: {[index: string]: any}): void {
     this.updateState(() => {
-      this.formStorage.setStateSilent(partlyState);
+      this.formStorage.setStateSilent(partlyState)
     });
   }
 
-  $riseActionEvent(eventName: FormEventName, error?: Error): void {
+  $riseActionEvent(event: FormEvent, error?: Error): void {
     const eventData: ActionEventData = {
       error
-    };
+    }
 
-    this.$emit(eventName, eventData);
+    this.$emit(event, eventData)
   }
 
 
@@ -370,32 +362,32 @@ export class Form {
    */
   private initField(pathToField: string, fieldParams: FieldSchema): void {
     // Try to get existent field
-    const existentField = get(this.fields, pathToField);
+    const existentField = deepGet(this.fields, pathToField)
 
     if (existentField) {
-      throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`);
+      throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`)
     }
 
     // create new one
-    const newField: Field = new Field(pathToField, fieldParams, this);
+    const newField: Field = new Field(pathToField, fieldParams, this)
 
-    set(this.fields, pathToField, newField);
+    deepSet(this.fields, pathToField, newField)
   }
 
   private updateStateAndValidate(cbWhichChangesState?: () => void, force?: boolean): void {
     this.updateState(() => {
-      if (cbWhichChangesState) cbWhichChangesState();
-      this.validate();
-    }, force);
+      if (cbWhichChangesState) cbWhichChangesState()
+      this.validate()
+    }, force)
   }
 
   private updateState(cbWhichChangesState: () => void, force?: boolean): void {
-    const prevState: FormState = this.formStorage.getWholeState();
+    const prevState: Form = this.formStorage.getWholeState()
 
-    if (cbWhichChangesState) cbWhichChangesState();
+    if (cbWhichChangesState) cbWhichChangesState()
 
-    const newState = this.formStorage.getWholeState();
-    this.formStorage.emitStorageEvent(newState, prevState, force);
+    const newState = this.formStorage.getWholeState()
+    this.formStorage.emitStorageEvent(newState, prevState, force)
   }
 
   private eachRawField(
@@ -403,23 +395,23 @@ export class Form {
     cb: (field: Field, value: any, path: string) => void
   ): void {
     eachRecursively(values, (value: any, path: string) => {
-      const field = get(this.fields, path);
+      const field = deepGet(this.fields, path)
 
       // if it is'n a field - go deeper
       if (!field || !(field instanceof Field)) {
         if (isPlainObject(value)) {
           // go deeper
-          return;
+          return
         }
 
         // stop
-        return false;
+        return false
       }
       // else means it's field - set value and don't go deeper
       // set value to saved layer
-      cb(field, value, path);
+      cb(field, value, path)
 
-      return false;
+      return false
     });
   }
 

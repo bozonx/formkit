@@ -1,6 +1,6 @@
 //import * as _ from 'lodash';
-const defaultsDeep = require('lodash/defaultsDeep')
-const extend = require('lodash/extend')
+// const defaultsDeep = require('lodash/defaultsDeep')
+// const extend = require('lodash/extend')
 
 import {Form} from './Form.js'
 import {configDefaults} from './configDefaults.js'

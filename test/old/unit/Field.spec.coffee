@@ -1,8 +1,8 @@
 formkit = require('../../src/formkit')
-Field = require('../../src/Field').default
+FieldTypes = require('../../src/FieldTypes').default
 
 
-describe 'Unit. Field.', ->
+describe 'Unit. FieldTypes.', ->
   beforeEach () ->
     @pathToField = 'testField'
     @form = formkit.newForm()
@@ -13,7 +13,7 @@ describe 'Unit. Field.', ->
     storageChangeHandler = sinon.spy()
     @form.fieldStorage.on(@pathToField, 'storage', storageChangeHandler)
     @form.storage.store.fieldsState[@pathToField] = undefined
-    field = new Field(@pathToField, {}, @form, @form.fieldStorage)
+    field = new FieldTypes(@pathToField, {}, @form, @form.fieldStorage)
 
     assert.deepEqual(@form.storage.getWholeFieldState(@pathToField), {
       defaultValue: undefined
@@ -41,7 +41,7 @@ describe 'Unit. Field.', ->
       savedValue: 9
     }
     @form.storage.store.fieldsState[@pathToField] = undefined
-    field = new Field(@pathToField, params, @form, @form.fieldStorage)
+    field = new FieldTypes(@pathToField, params, @form, @form.fieldStorage)
 
     assert.deepEqual(@form.storage.getWholeFieldState(@pathToField), {
       defaultValue: 5

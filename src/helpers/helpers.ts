@@ -1,12 +1,4 @@
-const find = require('lodash/find');
-const trim = require('lodash/trim');
-const isPlainObject = require('lodash/isPlainObject');
-const isEmpty = require('lodash/isEmpty');
-const isNull = require('lodash/isNull');
-const isNil = require('lodash/isNil');
-const last = require('lodash/last');
-const each = require('lodash/each');
-
+import {isPlainObject, isPromise} from 'squidlet-lib'
 import {Field} from '../Field.js'
 
 
@@ -123,6 +115,7 @@ export function isFieldSchema(comingSchema: object) {
   return isSchema;
 }
 
+// TODO: взять из squidlet-lib
 /**
  * It works with common structures like
  *     {
@@ -179,16 +172,15 @@ export function getFieldName(pathToField: string): string {
 
 // //// not tested
 
-export function isPromise(unknown: any) {
-  return typeof unknown === 'object' && unknown.then;
-}
-
 export function resolvePromise(value: any): Promise<any> {
   if (!value) return Promise.resolve();
   if (isPromise(value)) return value;
 
   return Promise.resolve();
 }
+
+
+// TODO: get from squidlet ???
 
 export function parseValue(rawValue: any): any {
 

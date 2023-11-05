@@ -1,10 +1,10 @@
 helpers = require('../../src/helpers/helpers')
-Field = require('../../src/Field').default
+FieldTypes = require('../../src/FieldTypes').default
 
 
 describe 'Unit. helpers.', ->
   it "findFieldRecursively", ->
-    field = new Field('my.field', {}, {
+    field = new FieldTypes('my.field', {}, {
       fieldStorage: {
         initState: ->
       }
@@ -24,7 +24,7 @@ describe 'Unit. helpers.', ->
     assert.equal(returnedValue, field)
 
   it "eachFieldRecursively", ->
-    field = new Field('my.field', {}, {
+    field = new FieldTypes('my.field', {}, {
       fieldStorage: {
         initState: ->
       }

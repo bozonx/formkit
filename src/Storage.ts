@@ -1,14 +1,9 @@
 import { fromJS, Map } from 'immutable';
-const get = require('lodash/get');
-const set = require('lodash/set');
-const cloneDeep = require('lodash/cloneDeep');
-
+import {deepGet, deepSet, IndexedEventEmitter} from 'squidlet-lib'
 import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers.js'
-import type {FormState} from './types/FormState.js'
-import type {FieldState} from './types/FieldState.js'
-import type {FormStateName, Values} from './FormStorage.js'
-import type {FieldStateName} from './FieldStorage.js'
-import {IndexedEventEmitter} from './helpers/IndexedEventEmitter.js'
+import type {FormTypes} from './types/FormTypes.js'
+import type {FieldTypes} from './types/FieldTypes.js'
+import type {Values} from './FormStorage.js'
 
 
 type EventHandler = (data: any) => void;
@@ -22,8 +17,8 @@ export interface ImmutableStore {
 }
 
 export interface Store {
-  formState: FormState;
-  fieldsState: FieldState;
+  formState: FormTypes;
+  fieldsState: FieldTypes;
   values: {[index: string]: any};
 }
 
@@ -45,19 +40,19 @@ export class Storage {
     };
 
     this.eachField((field: Map<string, any>, path: string) => {
-      set(store.fieldsState, path, field.toJS());
+      deepSet(store.fieldsState, path, field.toJS());
     });
 
     return store;
   }
 
-  getWholeFormState(): FormState {
+  getWholeFormState(): FormTypes {
     return this.store.formState.toJS();
   }
 
   // TODO: use JsonTypes
-  getFormState(stateName: FormStateName): any {
-    const formState: FormState = this.store.formState.toJS();
+  getFormState(stateName: FieldTypes): any {
+    const formState: FormTypes = this.store.formState.toJS();
 
     return formState[stateName];
   }
@@ -92,7 +87,7 @@ export class Storage {
     // });
   }
 
-  setFormState(partlyState: FormState): void {
+  setFormState(partlyState: FormTypes): void {
     const prevState = this.getWholeFormState();
 
     this.store.formState = fromJS({
@@ -111,8 +106,8 @@ export class Storage {
     });
   }
 
-  getWholeFieldState(pathToField: string): FieldState | undefined {
-    const fieldState: Map<string, any> | undefined = get(this.store.fieldsState, pathToField);
+  getWholeFieldState(pathToField: string): FieldTypes | undefined {
+    const fieldState: Map<string, any> | undefined = deepGet(this.store.fieldsState, pathToField);
 
     if (!fieldState) return;
 
@@ -120,17 +115,17 @@ export class Storage {
   }
 
   getFieldState(pathToField: string, stateName: FieldStateName) {
-    const fieldState = get(this.store.fieldsState, pathToField);
+    const fieldState = deepGet(this.store.fieldsState, pathToField);
 
     if (!fieldState) return;
 
-    return get(fieldState.toJS(), stateName);
+    return deepGet(fieldState.toJS(), stateName);
   }
 
   getCombinedValue(pathToField: string): any {
     const values = this.store.values.toJS();
 
-    return get(values, pathToField);
+    return deepGet(values, pathToField);
   }
 
   /**
@@ -139,15 +134,15 @@ export class Storage {
    * @param pathToField
    * @param partlyState
    */
-  setFieldState(pathToField: string, partlyState: FieldState): void {
-    const prevState: FieldState | undefined = this.getWholeFieldState(pathToField);
+  setFieldState(pathToField: string, partlyState: FieldTypes): void {
+    const prevState: FieldTypes | undefined = this.getWholeFieldState(pathToField);
 
     const newState: Map<string, any> = fromJS({
       ...prevState,
       ...partlyState,
     });
 
-    set(this.store.fieldsState, pathToField, newState);
+    deepSet(this.store.fieldsState, pathToField, newState);
 
     // TODO: ???? !!!! что это ?????
     // _.find(partlyState, (item: any, name: string) => {
@@ -157,7 +152,7 @@ export class Storage {
     this._updateCombinedValue(pathToField, newState.get('savedValue'), newState.get('editedValue'));
   }
 
-  generateNewFieldState(): FieldState {
+  generateNewFieldState(): FieldTypes {
 
     // TODO: почему здесь ???
 
@@ -177,7 +172,7 @@ export class Storage {
     };
   }
 
-  _generateNewFormState(): FormState {
+  _generateNewFormState(): FormTypes {
 
     // TODO: почему здесь ???
 

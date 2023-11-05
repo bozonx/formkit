@@ -1,15 +1,9 @@
-const isEqual = require('lodash/isEqual');
-
+import {isEqual} from 'squidlet-lib'
 import type {FieldStorageEventData} from './types/eventData/FieldStorageEventData.js'
 import {Storage} from './Storage.js'
-import type {FieldState} from './types/FieldState.js'
+import type {FieldTypes} from './types/FieldTypes.js'
 import {FormStorage} from './FormStorage.js'
 import type {ChangeEventData} from './types/eventData/ChangeEventData.js'
-
-
-export type FieldEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd';
-export type FieldStateName = 'defaultValue' | 'dirty' | 'disabled' | 'editedValue' | 'focused'
-  | 'initial' | 'invalidMsg' | 'touched' | 'savedValue' | 'saving';
 
 
 export class FieldStorage {
@@ -21,7 +15,7 @@ export class FieldStorage {
     this.formStorage = formStorage;
   }
 
-  initState(pathToField: string, initialState: FieldState): void {
+  initState(pathToField: string, initialState: FieldTypes): void {
     const newState = {
       ...this.storage.generateNewFieldState(),
       ...initialState,
@@ -43,15 +37,15 @@ export class FieldStorage {
     return this.storage.getFieldState(pathToField, stateName);
   }
 
-  getWholeState(pathToField: string): FieldState | undefined {
+  getWholeState(pathToField: string): FieldTypes | undefined {
     return this.storage.getWholeFieldState(pathToField);
   }
 
-  setStateSilent(pathToField: string, partlyState: FieldState): void {
+  setStateSilent(pathToField: string, partlyState: FieldTypes): void {
     this.storage.setFieldState(pathToField, partlyState);
   }
 
-  emitStorageEvent(pathToField: string, newState: FieldState, prevState?: FieldState): void {
+  emitStorageEvent(pathToField: string, newState: FieldTypes, prevState?: FieldTypes): void {
     if (isEqual(prevState, newState)) return;
 
     const fieldEventdata: FieldStorageEventData = {

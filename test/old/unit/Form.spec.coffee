@@ -1,7 +1,7 @@
 formkit = require('../../src/formkit')
 
 
-describe 'Unit. Form.', ->
+describe 'Unit. FormTypes.', ->
   beforeEach () ->
     @form = formkit.newForm()
 

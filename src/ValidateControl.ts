@@ -1,11 +1,9 @@
-const get = require('lodash/get');
-const set = require('lodash/set');
-
+import {deepGet, deepSet} from 'squidlet-lib'
 import {Form} from './Form.js'
 import type {Values} from './FormStorage.js'
-import {Field} from './Field.js'
 import {eachFieldRecursively} from './helpers/helpers.js'
-import type {FieldState} from './types/FieldState.js'
+import type {FieldState} from './types/FieldTypes.js'
+import type {Field} from './Field.js'
 
 
 export type Handler = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
@@ -39,7 +37,7 @@ export class ValidateControl {
     let isFormValid: boolean = true;
 
     // add sub structures to "errors" for easy access to error
-    eachFieldRecursively(this.form.fields, (field: Field, path: string) => {
+    eachFieldRecursively(this.form.fields, (field: FieldState, path: string) => {
       const split: Array<string> = path.split('.');
       const minPathItems: number = 2;
 
@@ -49,7 +47,7 @@ export class ValidateControl {
 
       const basePath: string = split.join();
 
-      set(errors, basePath, {});
+      deepSet(errors, basePath, {});
     });
 
     // do validate
@@ -58,7 +56,7 @@ export class ValidateControl {
     // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
     eachFieldRecursively(this.form.fields, (field: Field, path: string) => {
-      const invalidMsg = get(errors, path);
+      const invalidMsg = deepGet(errors, path);
 
       if (isFormValid) isFormValid = !invalidMsg;
 

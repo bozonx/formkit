@@ -1,79 +1,78 @@
-const isEqual = require('lodash/isEqual');
-const omitBy = require('lodash/omitBy');
-const isUndefined = require('lodash/isUndefined');
-
+import {omitUndefined, isEqual} from 'squidlet-lib'
 import { calculateDirty, getFieldName, parseValue } from './helpers/helpers.js'
 import {Form} from './Form.js'
 import type {FieldSchema} from './types/FieldSchema.js'
 import {FieldStorage} from './FieldStorage.js'
-import type {FieldEventName} from './FieldStorage.js'
 import type {FieldStorageEventData} from './types/eventData/FieldStorageEventData.js'
 import type {ChangeEventData} from './types/eventData/ChangeEventData.js'
-import type {FieldState} from './types/FieldState.js'
+import type {FieldState} from './types/FieldTypes.js'
+import {FieldEvent} from './types/FieldTypes.js'
 
 
 /**
  * Field. It represent form field.
  */
 export class Field {
-  private readonly form: Form;
-  private readonly fieldStorage: FieldStorage;
-  private readonly pathToField: string;
-  private readonly fieldName: string;
+  private readonly form: Form
+  private readonly fieldStorage: FieldStorage
+  private readonly pathToField: string
+  private readonly fieldName: string
 
-  constructor(pathToField: string, params: FieldSchema, form: Form) {
-    this.form = form;
-    this.fieldStorage = this.form.fieldStorage;
-    this.pathToField = pathToField;
-    this.fieldName = getFieldName(pathToField);
-    // TODO: ????
-    //if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
-
-    this.initState(params);
-  }
 
   get savedValue(): any {
-    return this.fieldStorage.getState(this.pathToField, 'savedValue');
+    return this.fieldStorage.getState(this.pathToField, 'savedValue')
   }
   get editedValue(): any {
-    return this.fieldStorage.getState(this.pathToField, 'editedValue');
+    return this.fieldStorage.getState(this.pathToField, 'editedValue')
   }
 
   /**
    * Combined value
    */
   get value(): any {
-    return this.fieldStorage.getCombinedValue(this.pathToField);
+    return this.fieldStorage.getCombinedValue(this.pathToField)
   }
   get name(): string {
-    return this.fieldName;
+    return this.fieldName
   }
   get fullName(): string {
-    return this.pathToField;
+    return this.pathToField
   }
   get dirty(): boolean {
-    return this.fieldStorage.getState(this.pathToField, 'dirty');
+    return this.fieldStorage.getState(this.pathToField, 'dirty')
   }
   get touched(): boolean {
-    return this.fieldStorage.getState(this.pathToField, 'touched');
+    return this.fieldStorage.getState(this.pathToField, 'touched')
   }
   get valid(): boolean {
-    return !this.fieldStorage.getState(this.pathToField, 'invalidMsg');
+    return !this.fieldStorage.getState(this.pathToField, 'invalidMsg')
   }
   get invalidMsg(): string {
-    return this.fieldStorage.getState(this.pathToField, 'invalidMsg');
+    return this.fieldStorage.getState(this.pathToField, 'invalidMsg')
   }
   get saving(): boolean {
-    return this.fieldStorage.getState(this.pathToField, 'saving');
+    return this.fieldStorage.getState(this.pathToField, 'saving')
   }
   get focused(): boolean {
-    return this.fieldStorage.getState(this.pathToField, 'focused');
+    return this.fieldStorage.getState(this.pathToField, 'focused')
   }
   get disabled(): boolean {
-    return this.fieldStorage.getState(this.pathToField, 'disabled');
+    return this.fieldStorage.getState(this.pathToField, 'disabled')
   }
   get defaultValue(): any {
-    return this.fieldStorage.getState(this.pathToField, 'defaultValue');
+    return this.fieldStorage.getState(this.pathToField, 'defaultValue')
+  }
+
+
+  constructor(pathToField: string, params: FieldSchema, form: Form) {
+    this.form = form
+    this.fieldStorage = this.form.fieldStorage
+    this.pathToField = pathToField
+    this.fieldName = getFieldName(pathToField)
+    // TODO: ????
+    //if (!_.isUndefined(params.debounceTime)) this.setDebounceTime(params.debounceTime);
+
+    this.initState(params)
   }
 
 
@@ -91,9 +90,9 @@ export class Field {
    */
   setValue(rawValue: any): void {
     this.updateStateAndValidate(() => {
-      const newValue: any = parseValue(rawValue);
+      const newValue: any = parseValue(rawValue)
 
-      this.$setEditedValueSilent(newValue);
+      this.$setEditedValueSilent(newValue)
     });
   }
 
@@ -103,14 +102,14 @@ export class Field {
    */
   setSavedValue(rawValue: any): void {
     this.updateStateAndValidate(() => {
-      const newSavedValue: any = parseValue(rawValue);
+      const newSavedValue: any = parseValue(rawValue)
 
-      this.$setSavedValue(newSavedValue);
+      this.$setSavedValue(newSavedValue)
     });
   }
 
   setDisabled(disabled: boolean): void {
-    this.setState({ disabled });
+    this.setState({ disabled })
   }
 
   /**
@@ -186,12 +185,12 @@ export class Field {
   /**
    * Add one or more handlers on fields's event:
    */
-  on(eventName: FieldEventName, cb: (data: FieldStorageEventData | ChangeEventData) => void): number {
-    return this.fieldStorage.on(this.pathToField, eventName, cb);
+  on(event: FieldEvent, cb: (data: FieldStorageEventData | ChangeEventData) => void): number {
+    return this.fieldStorage.on(this.pathToField, event, cb);
   }
 
-  off(eventName: FieldEventName, handlerIndex: number): void {
-    this.fieldStorage.removeListener(this.pathToField, eventName, handlerIndex);
+  off(event: FieldEvent, handlerIndex: number): void {
+    this.fieldStorage.removeListener(this.pathToField, event, handlerIndex);
   }
 
   /**
@@ -271,7 +270,7 @@ export class Field {
     this.$setStateSilent(newState);
   }
 
-  $setStateSilent(newPartlyState: FieldState): void {
+  $setStateSilent(newPartlyState: Field): void {
     this.fieldStorage.setStateSilent(this.pathToField, newPartlyState);
   }
 
@@ -309,15 +308,14 @@ export class Field {
     // set initial value otherwise default value
     const newValue = (typeof parsedInitial === 'undefined') ? parsedDefaultValue : parsedInitial;
 
-    // TODO: зачем нужно omitBy ???
-    return omitBy({
+    return omitUndefined({
       disabled,
       defaultValue: parsedDefaultValue,
       initial: parsedInitial,
       // set initial value to edited layer
       editedValue: (typeof newValue === 'undefined') ? undefined : newValue,
       savedValue,
-    }, isUndefined);
+    })
   }
 
   /**
@@ -333,13 +331,13 @@ export class Field {
     };
 
     // Rise events field's change handler
-    this.fieldStorage.emit(pathToField, 'change', eventData);
+    this.fieldStorage.emit(pathToField, FieldEvent.change, eventData);
     // call forms's change handler - it rises change callback and start saving
 
     this.form.$handleFieldChange(eventData);
   }
 
-  private setState(partlyState: FieldState): void {
+  private setState(partlyState: Partial<FieldState>): void {
     this.updateState(() => {
       this.fieldStorage.setStateSilent(this.pathToField, partlyState);
     });
@@ -353,11 +351,11 @@ export class Field {
   }
 
   private updateState(cbWhichChangesState: () => void): void {
-    const prevState: FieldState | undefined = this.fieldStorage.getWholeState(this.pathToField);
+    const prevState: Field | undefined = this.fieldStorage.getWholeState(this.pathToField);
 
     if (cbWhichChangesState) cbWhichChangesState();
 
-    const newState: FieldState = this.fieldStorage.getWholeState(this.pathToField) as FieldState;
+    const newState: Field = this.fieldStorage.getWholeState(this.pathToField) as Field;
     this.fieldStorage.emitStorageEvent(this.pathToField, newState, prevState);
   }
 

@@ -1,4 +1,4 @@
-import type {FieldState} from '../FieldState.js'
+import type {FieldTypes} from '../FieldTypes.js'
 
 
 export interface FieldStorageEventData {
@@ -11,9 +11,9 @@ export interface FieldStorageEventData {
   event: 'storage'
   // TODO: новый стейт не нужен, его и так можно получить
   // current state
-  state: FieldState
+  state: FieldTypes
   // previous state
-  prevState?: FieldState
+  prevState?: FieldTypes
   // prevValue: any;
   // value: any;
   error?: Error
