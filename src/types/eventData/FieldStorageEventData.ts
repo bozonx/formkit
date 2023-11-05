@@ -1,20 +1,20 @@
-import FieldState from '../FieldState';
+import type {FieldState} from '../FieldState.js'
 
 
-export default interface FieldStorageEventData {
+export interface FieldStorageEventData {
   // path to field
-  field: string;
+  field: string
 
   // TODO: почему бы событие не назвать fieldStorage
-  target: 'field';
+  target: 'field'
   // TODO: ??? Why ???
-  event: 'storage';
+  event: 'storage'
   // TODO: новый стейт не нужен, его и так можно получить
   // current state
-  state: FieldState;
+  state: FieldState
   // previous state
-  prevState?: FieldState;
+  prevState?: FieldState
   // prevValue: any;
   // value: any;
-  error?: Error;
+  error?: Error
 }

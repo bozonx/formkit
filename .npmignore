@@ -4,6 +4,7 @@ doc
 examples
 src
 test
+_old
 
 # root files
 .editorconfig

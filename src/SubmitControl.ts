@@ -1,13 +1,13 @@
-import Form from './Form';
-import {FormEventName, Values} from './FormStorage';
-import {resolvePromise} from './helpers/helpers';
-import ActionEventData from './interfaces/eventData/ActionEventData';
+import {Form} from './Form.js'
+import type {FormEventName, Values} from './FormStorage.js'
+import {resolvePromise} from './helpers/helpers.js'
+import type {ActionEventData} from './types/eventData/ActionEventData.js'
 
 
 type Handler = (values: Values, editedValues: Values) => Promise<void> | void;
 
 
-export default class SubmitControl {
+export class SubmitControl {
   private readonly form: Form;
   private handler?: Handler;
 
@@ -63,7 +63,7 @@ export default class SubmitControl {
     }
     catch (error) {
       this.form.$setState({ submitting: false });
-      this.form.$riseActionEvent('submitEnd', error);
+      this.form.$riseActionEvent('submitEnd', error as Error);
 
       return;
     }

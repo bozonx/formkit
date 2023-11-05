@@ -2,19 +2,20 @@ const isEqual = require('lodash/isEqual');
 const omitBy = require('lodash/omitBy');
 const isUndefined = require('lodash/isUndefined');
 
-import { calculateDirty, getFieldName, parseValue } from './helpers/helpers';
-import Form from './Form';
-import FieldSchema from './interfaces/FieldSchema';
-import FieldStorage, {FieldEventName} from './FieldStorage';
-import FieldStorageEventData from './interfaces/eventData/FieldStorageEventData';
-import ChangeEventData from './interfaces/eventData/ChangeEventData';
-import FieldState from './interfaces/FieldState';
+import { calculateDirty, getFieldName, parseValue } from './helpers/helpers.js'
+import {Form} from './Form.js'
+import type {FieldSchema} from './types/FieldSchema.js'
+import {FieldStorage} from './FieldStorage.js'
+import type {FieldEventName} from './FieldStorage.js'
+import type {FieldStorageEventData} from './types/eventData/FieldStorageEventData.js'
+import type {ChangeEventData} from './types/eventData/ChangeEventData.js'
+import type {FieldState} from './types/FieldState.js'
 
 
 /**
  * Field. It represent form field.
  */
-export default class Field {
+export class Field {
   private readonly form: Form;
   private readonly fieldStorage: FieldStorage;
   private readonly pathToField: string;

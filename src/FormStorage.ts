@@ -2,12 +2,12 @@ import { Map } from 'immutable';
 const set = require('lodash/set');
 const isEqual = require('lodash/isEqual');
 
-import {ErrorMessage} from './Form';
-import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
-import FormState from './interfaces/FormState';
-import Storage from './Storage';
-import ChangeEventData from './interfaces/eventData/ChangeEventData';
-import ActionEventData from './interfaces/eventData/ActionEventData';
+import type {ErrorMessage} from './Form.js'
+import type {FormStorageEventData} from './types/eventData/FormStorageEventData.js'
+import type {FormState} from './types/FormState.js'
+import {Storage} from './Storage.js'
+import type {ChangeEventData} from './types/eventData/ChangeEventData.js'
+import type {ActionEventData} from './types/eventData/ActionEventData.js'
 
 
 // TODO: может быть вложенный
@@ -16,7 +16,7 @@ export type FormEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd' | 'su
 export type FormStateName = 'touched' | 'submitting' | 'saving' | 'valid';
 
 
-export default class FormStorage {
+export class FormStorage {
   private readonly storage: Storage;
 
   constructor(storage: Storage) {

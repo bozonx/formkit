@@ -1,13 +1,13 @@
-import Form from './Form';
-import {Values} from './FormStorage';
-import {resolvePromise} from './helpers/helpers';
-import DebouncedCall from './helpers/DebouncedCall';
+import {Form} from './Form.js'
+import type {Values} from './FormStorage.js'
+import {resolvePromise} from './helpers/helpers.js'
+import {DebouncedCall} from './helpers/DebouncedCall.js'
 
 
 type Handler = (values: Values) => Promise<void> | void;
 
 
-export default class SaveControl {
+export class SaveControl {
   private readonly form: Form;
   private readonly debouncedSave: DebouncedCall;
   private handler?: Handler;

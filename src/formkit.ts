@@ -1,17 +1,17 @@
 //import * as _ from 'lodash';
-const defaultsDeep = require('lodash/defaultsDeep');
-const extend = require('lodash/extend');
+const defaultsDeep = require('lodash/defaultsDeep')
+const extend = require('lodash/extend')
 
-import Form from './Form';
-import configDefaults from './configDefaults';
-import Config from './interfaces/Config';
-import Plugin from './interfaces/Plugin';
+import {Form} from './Form.js'
+import {configDefaults} from './configDefaults.js'
+import type {Config} from './types/Config.js'
+import type {Plugin} from './types/Plugin.js'
 
 const globalConfig = configDefaults;
 const plugins: Plugin[] = [];
 
-export { default as Form } from './Form';
-export { default as Field } from './Field';
+export {Form} from './Form.js'
+export {Field} from './Field.js'
 
 
 export function setDefaultConfig(config: Config) {

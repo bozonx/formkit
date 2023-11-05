@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es2018",
+    //"module": "ESNext",
+    "module": "commonjs",
+    //"module": "es6",
+    //Classic
+    "moduleResolution": "node",
+    "lib": ["es2018"],
+
+    // "module": "commonjs",
+    // "target": "es5",
+
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    //"declarationMap": true,
+    //emitDeclarationOnly
+    //esModuleInterop
+    //importHelpers
+    //noLib
+    //noResolve
+    "removeComments": true,
+    "preserveSymlinks": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+
+    "strict": true,
+    //"noImplicitAny": true,
+    "noImplicitReturns": true,
+    //"noImplicitThis": true,
+    "noEmitOnError": false,
+
+    "declarationDir": "dist/types",
+    // use only with "outDir"
+    //"rootDir": "src",
+    "baseUrl": "src",
+    "outDir": "./dist/lib"
+    //paths
+    //project
+    //"outFile": "./dist/ts/build.js"
+  },
+  "exclude": ["dist", "node_modules", "test"]
+  //"files": ["./src/index.ts"],
+
+//  "include": [
+//    "src/**/*"
+//  ]
+}

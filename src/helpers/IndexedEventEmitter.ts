@@ -1,9 +1,10 @@
 // TODO: use lib's
 
-import IndexedEvents, {AnyHandler} from './IndexedEvents';
+import {IndexedEvents} from './IndexedEvents.js';
+import type {AnyHandler} from './IndexedEvents.js';
 
 
-export default class IndexedEventEmitter<T extends AnyHandler> {
+export class IndexedEventEmitter<T extends AnyHandler> {
   // IndexedEvents instances by event name
   private indexedEvents: {[index: string]: IndexedEvents<T>} = {};
 

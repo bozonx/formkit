@@ -1,17 +1,17 @@
 const get = require('lodash/get');
 const set = require('lodash/set');
 
-import Form from './Form';
-import {Values} from './FormStorage';
-import Field from './Field';
-import {eachFieldRecursively} from './helpers/helpers';
-import FieldState from './interfaces/FieldState';
+import {Form} from './Form.js'
+import type {Values} from './FormStorage.js'
+import {Field} from './Field.js'
+import {eachFieldRecursively} from './helpers/helpers.js'
+import type {FieldState} from './types/FieldState.js'
 
 
 export type Handler = (errors: {[index: string]: string}, values: {[index: string]: any}) => void;
 
 
-export default class ValidateControl {
+export class ValidateControl {
   private readonly form: Form;
   private handler?: Handler;
 

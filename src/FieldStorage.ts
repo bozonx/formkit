@@ -1,10 +1,10 @@
 const isEqual = require('lodash/isEqual');
 
-import FieldStorageEventData from './interfaces/eventData/FieldStorageEventData';
-import Storage from './Storage';
-import FieldState from './interfaces/FieldState';
-import FormStorage from './FormStorage';
-import ChangeEventData from './interfaces/eventData/ChangeEventData';
+import type {FieldStorageEventData} from './types/eventData/FieldStorageEventData.js'
+import {Storage} from './Storage.js'
+import type {FieldState} from './types/FieldState.js'
+import {FormStorage} from './FormStorage.js'
+import type {ChangeEventData} from './types/eventData/ChangeEventData.js'
 
 
 export type FieldEventName = 'change' | 'storage' | 'saveStart' | 'saveEnd';
@@ -12,7 +12,7 @@ export type FieldStateName = 'defaultValue' | 'dirty' | 'disabled' | 'editedValu
   | 'initial' | 'invalidMsg' | 'touched' | 'savedValue' | 'saving';
 
 
-export default class FieldStorage {
+export class FieldStorage {
   private readonly storage: Storage;
   private readonly formStorage: FormStorage;
 

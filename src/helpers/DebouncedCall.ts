@@ -1,4 +1,4 @@
-import DebouncedProcess from './DebouncedProcess';
+import {DebouncedProcess} from './DebouncedProcess.js';
 
 
 type NextCb = [ () => Promise<void>, number | undefined ];
@@ -14,7 +14,7 @@ type NextCb = [ () => Promise<void>, number | undefined ];
  * * also you can force run callback and it runs immediately
  *   and resets currently delayed callback
  */
-export default class DebouncedCall {
+export class DebouncedCall {
   private currentProcess: DebouncedProcess | null = null;
   // current callback which is waiting or in progress
   private nextCb: NextCb | null = null;

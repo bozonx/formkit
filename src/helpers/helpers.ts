@@ -7,7 +7,7 @@ const isNil = require('lodash/isNil');
 const last = require('lodash/last');
 const each = require('lodash/each');
 
-import Field from '../Field';
+import {Field} from '../Field.js'
 
 
 export const FIELD_PATH_SEPARATOR = '.';

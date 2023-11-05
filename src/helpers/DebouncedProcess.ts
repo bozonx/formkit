@@ -9,7 +9,7 @@
  * While callback is waiting you can stop it by calling stop()
  * But if it pending you can't cancel it.
  */
-export default class DebouncedProcess {
+export class DebouncedProcess {
   private readonly callback: () => Promise<void>;
   // has it started at least once
   private hasStarted = false;

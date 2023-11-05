@@ -3,12 +3,12 @@ const get = require('lodash/get');
 const set = require('lodash/set');
 const cloneDeep = require('lodash/cloneDeep');
 
-import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers';
-import FormState from './interfaces/FormState';
-import FieldState from './interfaces/FieldState';
-import {FormStateName, Values} from './FormStorage';
-import {FieldStateName} from './FieldStorage';
-import IndexedEventEmitter from './helpers/IndexedEventEmitter';
+import {FIELD_PATH_SEPARATOR, eachRecursively} from './helpers/helpers.js'
+import type {FormState} from './types/FormState.js'
+import type {FieldState} from './types/FieldState.js'
+import type {FormStateName, Values} from './FormStorage.js'
+import type {FieldStateName} from './FieldStorage.js'
+import {IndexedEventEmitter} from './helpers/IndexedEventEmitter.js'
 
 
 type EventHandler = (data: any) => void;
@@ -28,7 +28,7 @@ export interface Store {
 }
 
 
-export default class Storage {
+export class Storage {
   readonly events = new IndexedEventEmitter<EventHandler>();
   private store: ImmutableStore = {
     formState: Map<string, any>(this._generateNewFormState() as any),

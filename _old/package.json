@@ -5,9 +5,9 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./src/formkit.ts"
+    ".": "./src/index.ts"
   },
-  "types": "./src/formkit.ts",
+  "types": "./src/index.ts",
   "author": {
     "name": "Ivan Kozyrin",
     "url": "https://github.com/bozonx",
@@ -23,7 +23,7 @@
   "scripts": {
     "test": "mocha",
     "build": "yarn test && yarn run _build-module",
-    "_build-module": "rollup -c _old/rollup.config.js",
+    "_build-module": "rollup -c rollup.config.js",
     "cov": "istanbul cover --report none ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test",
     "cov-html": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test && sensible-browser ./coverage/lcov-report/index.html",
     "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --require coffee-coverage/register-istanbul test"

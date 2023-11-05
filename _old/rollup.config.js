@@ -5,7 +5,7 @@ import sourceMaps from 'rollup-plugin-sourcemaps';
 import typescript from 'rollup-plugin-typescript2';
 import json from 'rollup-plugin-json';
 
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 
 export default {
   input: `src/formkit.ts`,

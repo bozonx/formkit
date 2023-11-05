@@ -2,27 +2,30 @@ const isPlainObject = require('lodash/isPlainObject');
 const get = require('lodash/get');
 const set = require('lodash/set');
 
-import Storage, {Store} from './Storage';
-import FormStorage, { FormEventName, Values } from './FormStorage';
-import FieldStorage from './FieldStorage';
-import Field from './Field';
-import DebouncedCall from './helpers/DebouncedCall';
+import {Storage} from './Storage.js'
+import type {Store} from './Storage.js'
+import {FormStorage} from './FormStorage.js'
+import type {FormEventName, Values } from './FormStorage.js'
+import {FieldStorage} from './FieldStorage.js'
+import {Field} from './Field.js'
+import {DebouncedCall} from './helpers/DebouncedCall.js'
 import {
   findFieldRecursively,
   eachFieldRecursively,
   eachRecursively,
   eachFieldSchemaRecursively,
   resolvePromise
-} from './helpers/helpers';
-import Config from './interfaces/Config';
-import FieldSchema from './interfaces/FieldSchema';
-import FormStorageEventData from './interfaces/eventData/FormStorageEventData';
-import FormState from './interfaces/FormState';
-import ChangeEventData from './interfaces/eventData/ChangeEventData';
-import ActionEventData from './interfaces/eventData/ActionEventData';
-import SubmitControl from './SubmitControl';
-import SaveControl from './SaveControl';
-import ValidateControl, {Handler as ValidateCb} from './ValidateControl';
+} from './helpers/helpers.js'
+import type {Config} from './types/Config.js'
+import type {FieldSchema} from './types/FieldSchema.js'
+import type {FormStorageEventData} from './types/eventData/FormStorageEventData.js'
+import type {FormState} from './types/FormState.js'
+import type {ChangeEventData} from './types/eventData/ChangeEventData.js'
+import type {ActionEventData} from './types/eventData/ActionEventData.js'
+import {SubmitControl} from './SubmitControl.js'
+import {SaveControl} from './SaveControl.js'
+import {ValidateControl} from './ValidateControl.js'
+import type {Handler as ValidateCb} from './ValidateControl.js'
 
 
 export interface ErrorMessage {
@@ -31,7 +34,7 @@ export interface ErrorMessage {
 }
 
 
-export default class Form {
+export class Form {
   // it's nested object
   readonly fields: {[index: string]: Field} = {};
   readonly config: Config;

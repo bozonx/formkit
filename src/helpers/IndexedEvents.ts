@@ -1,12 +1,12 @@
 // TODO: use lib's
 
-const LENGTH_AND_START_ARR_DIFFERENCE = 1;
+const LENGTH_AND_START_ARR_DIFFERENCE = 1
 
 
-export type AnyHandler = (...args: any[]) => void;
+export type AnyHandler = (...args: any[]) => void
 
 
-export default class IndexedEvents<T extends AnyHandler> {
+export class IndexedEvents<T extends AnyHandler> {
   private handlers: (T | undefined)[] = [];
 
   /**
