@@ -3,5 +3,6 @@ export interface FieldSchema {
   disabled: boolean
   defaultValue: any
   savedValue: any
+  editedValue?: any
   debounceTime: number
 }

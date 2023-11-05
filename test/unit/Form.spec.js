@@ -2,11 +2,17 @@ import {newForm} from '../../src/formkit.js'
 
 
 describe('unit/From', () => {
-  it('deduplicate', () => {
-    const form = newForm({})
-    console.log(11, form)
+  it('init as array', () => {
+    const form = newForm()
 
-    assert.deepEqual(1, form)
+    form.init([ 'field1', 'parent.field2' ])
+
+    assert.deepEqual(form.values, {
+      field1: undefined,
+      parent: {
+        field2: undefined
+      }
+    })
   })
 
 })

@@ -292,14 +292,14 @@ export class Field {
    * Init field's state.
    */
   private initState(rawFieldSchema: Partial<FieldSchema>): void {
-    const initialState: FieldSchema = this.generateInitialState(rawFieldSchema)
+    const initialState: Partial<FieldSchema> = this.generateInitialState(rawFieldSchema)
     // init state
     this.fieldStorage.initState(this.pathToField, initialState)
   }
 
   private generateInitialState(
     { initial, disabled, defaultValue, savedValue }: Partial<FieldSchema>
-  ): FieldSchema {
+  ): Partial<FieldSchema> {
 
     // TODO: move to helpers or fieldStorage
 
@@ -314,7 +314,7 @@ export class Field {
       disabled: Boolean(disabled),
       defaultValue: parsedDefaultValue,
       // set initial value to edited layer
-      editedValue: (typeof newValue === 'undefined') ? undefined : newValue,
+      editedValue: newValue,
       savedValue,
     }
   }
