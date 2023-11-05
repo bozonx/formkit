@@ -395,8 +395,6 @@ export class Form {
       throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`)
     }
 
-    console.log(2222, pathToField, fieldParams)
-
     // create new one
     const newField: Field = new Field(pathToField, fieldParams, this)
 
