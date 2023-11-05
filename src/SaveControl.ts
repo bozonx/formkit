@@ -53,11 +53,11 @@ export class SaveControl {
   }
 
   async startSaving(isImmediately: boolean): Promise<void> {
+
     // don't run saving process if there isn't onSave callback
     if (!this.handler) return
 
     const valuesBeforeSave = this.form.values
-
     const promise: Promise<void> = this.debouncedSave.exec(this.doSave, isImmediately)
 
     // TODO: onEnd не нужнен так как есть promise
@@ -73,7 +73,7 @@ export class SaveControl {
         this.form.$moveValuesToSaveLayer(valuesBeforeSave, force)
         this.form.$riseActionEvent(FormEvent.saveEnd)
       }
-    });
+    })
 
     await promise
   }

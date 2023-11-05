@@ -146,7 +146,7 @@ export class Field {
           this.$setStateSilent({ touched: true })
           this.form.$setStateSilent({ touched: true })
         }
-      });
+      })
     }
 
     // rise change event and save only if value has changed
