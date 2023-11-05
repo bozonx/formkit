@@ -13,7 +13,7 @@ import {FieldEvent} from './types/FieldTypes.js'
  * Field. It represent form field.
  */
 export class Field {
-  private readonly form: Form
+  readonly form: Form
   private readonly fieldStorage: FieldStorage
   private readonly pathToField: string
   private readonly fieldName: string

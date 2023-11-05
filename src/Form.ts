@@ -1,4 +1,4 @@
-import {deepGet, deepSet, isPlainObject} from 'squidlet-lib'
+import {deepEachObj, deepGet, deepSet, isPlainObject} from 'squidlet-lib'
 import type {Store} from './Storage.js'
 import {Storage} from './Storage.js'
 import {FormStorage} from './FormStorage.js'
@@ -6,9 +6,9 @@ import {FieldStorage} from './FieldStorage.js'
 import {Field} from './Field.js'
 import {
   eachFieldRecursively,
-  eachFieldSchemaRecursively,
-  eachRecursively,
   findFieldRecursively,
+  eachRecursively,
+  isFieldSchema,
 } from './helpers/helpers.js'
 import type {Config} from './types/Config.js'
 import type {FieldSchema} from './types/FieldSchema.js'
@@ -148,9 +148,16 @@ export class Form {
     }
     else {
       // read schema
-      eachFieldSchemaRecursively<FieldSchema>(initialFields, (fieldSchema: FieldSchema, path: string) => {
-        this.initField(path, fieldSchema)
+      deepEachObj(initialFields, (obj: Record<any, any>, key: string | number, path: string) => {
+        if (!isFieldSchema(obj)) return
+
+        this.initField(path, obj)
+        // don't go deeper
+        return false;
       })
+      // eachFieldSchemaRecursively<FieldSchema>(initialFields, (fieldSchema: FieldSchema, path: string) => {
+      //   this.initField(path, fieldSchema)
+      // })
     }
 
     // validate whole form
@@ -387,6 +394,8 @@ export class Form {
     if (existentField) {
       throw new Error(`The field "${pathToField}" is exist! You can't reinitialize it!`)
     }
+
+    console.log(2222, pathToField, fieldParams)
 
     // create new one
     const newField: Field = new Field(pathToField, fieldParams, this)

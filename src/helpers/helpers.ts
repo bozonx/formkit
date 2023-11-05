@@ -4,7 +4,8 @@ import {
   isPromise,
   trimChar,
   lastItem,
-  isNil
+  isNil,
+  deepEachObj
 } from 'squidlet-lib'
 import {Field} from '../Field.js'
 
@@ -12,6 +13,7 @@ import {Field} from '../Field.js'
 export const FIELD_PATH_SEPARATOR = '.'
 
 
+// TODO: use findEachObj
 /**
  * Each all the fields and find certain field.
  * If cb returned true - finding will be stopped and found field will returned
@@ -56,6 +58,7 @@ export function findFieldRecursively(
   return recursive(fields, '')
 }
 
+// TODO: use deepEachObj
 export function eachFieldRecursively(
   fields: {[index: string]: object},
   cb: (field: Field, path: string) => void
@@ -82,23 +85,6 @@ export function eachFieldRecursively(
   recursive(fields, '');
 }
 
-export function eachFieldSchemaRecursively<Item = any>(
-  rootObject: {[index: string]: any},
-  cb: (item: Item, path: string) => any
-): void {
-  eachRecursively(rootObject, (item: Item, path: string): false | void => {
-    if (!isPlainObject(item)) return false;
-
-    // means field
-    if (isEmptyObject(item as any) || isFieldSchema(item as any)) {
-      cb(item, path);
-
-      // don't go deeper
-      return false;
-    }
-  });
-}
-
 export function isFieldSchema(comingSchema: Record<string, any>) {
 
   // TODO: упростить, может проверять интерфейс FieldSchema
@@ -121,37 +107,6 @@ export function isFieldSchema(comingSchema: Record<string, any>) {
   })
 
   return isSchema
-}
-
-// TODO: взять из squidlet-lib
-/**
- * It works with common structures like
- *     {
- *       parent: {
- *         prop: 'value'
- *       }
- *     }
- *                        If it returns false it means don't go deeper.
- */
-export function eachRecursively(
-  rootObject: {[index: string]: any},
-  cb: (item: any, path: string) => false | void
-): void {
-  const recursive = (obj: {[index: string]: any}, rootPath: string): void => {
-    for (const name of Object.keys(obj)) {
-      const item = obj[name]
-      const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR)
-      const cbResult: false | void = cb(item, itemPath);
-
-      // don't go deeper
-      if (cbResult === false) return
-
-      // go deeper
-      recursive(item, itemPath)
-    }
-  }
-
-  return recursive(rootObject, '')
 }
 
 export function calculateDirty(editedValue: any, savedValue: any): boolean {
@@ -235,6 +190,55 @@ export function parseValue(rawValue: any): any {
   return rawValue
 }
 
+
+
+// TODO: взять из squidlet-lib
+/**
+ * It works with common structures like
+ *     {
+ *       parent: {
+ *         prop: 'value'
+ *       }
+ *     }
+ *                        If it returns false it means don't go deeper.
+ */
+export function eachRecursively(
+  rootObject: {[index: string]: any},
+  cb: (item: any, path: string) => false | void
+): void {
+  const recursive = (obj: {[index: string]: any}, rootPath: string): void => {
+    for (const name of Object.keys(obj)) {
+      const item = obj[name]
+      const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR)
+      const cbResult: false | void = cb(item, itemPath);
+
+      // don't go deeper
+      if (cbResult === false) return
+
+      // go deeper
+      recursive(item, itemPath)
+    }
+  }
+
+  return recursive(rootObject, '')
+}
+
+// export function eachFieldSchemaRecursively<Item = any>(
+//   rootObject: {[index: string]: any},
+//   cb: (item: Item, path: string) => any
+// ): void {
+//   eachRecursively(rootObject, (item: Item, path: string): false | void => {
+//     if (!isPlainObject(item)) return false;
+//
+//     // means field
+//     if (isEmptyObject(item as any) || isFieldSchema(item as any)) {
+//       cb(item, path);
+//
+//       // don't go deeper
+//       return false;
+//     }
+//   });
+// }
 
 // /**
 //  * It works with common structures like
