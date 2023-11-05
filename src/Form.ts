@@ -19,10 +19,10 @@ import {SubmitControl} from './SubmitControl.js'
 import {SaveControl} from './SaveControl.js'
 import type {Handler as ValidateCb} from './ValidateControl.js'
 import {ValidateControl} from './ValidateControl.js'
-import type {ErrorMessage} from './types/ErrorMessage.js';
-import {FormEvent} from './types/FormTypes.js';
-import type {FormState} from './types/FormTypes.js';
-import type {Values} from './types/types.js';
+import type {ErrorMessage} from './types/ErrorMessage.js'
+import {FormEvent} from './types/FormTypes.js'
+import type {FormState} from './types/FormTypes.js'
+import type {Values} from './types/types.js'
 
 
 export class Form {
@@ -362,7 +362,7 @@ export class Form {
    * @param {object} fieldParams - { initial, defaultValue, disabled, validate, debounceTime }
    * @private
    */
-  private initField(pathToField: string, fieldParams: FieldSchema): void {
+  private initField(pathToField: string, fieldParams: Partial<FieldSchema>): void {
     // Try to get existent field
     const existentField = deepGet(this.fields, pathToField)
 
@@ -384,7 +384,7 @@ export class Form {
   }
 
   private updateState(cbWhichChangesState: () => void, force?: boolean): void {
-    const prevState: Form = this.formStorage.getWholeState()
+    const prevState: Partial<FormState> = this.formStorage.getWholeState()
 
     if (cbWhichChangesState) cbWhichChangesState()
 

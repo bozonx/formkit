@@ -100,7 +100,7 @@ export class FormStorage {
     }
   }
 
-  setStateSilent(partlyState: FormState): void {
+  setStateSilent(partlyState: Partial<FormState>): void {
     this.storage.setFormState(partlyState)
   }
 

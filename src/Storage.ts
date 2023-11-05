@@ -87,7 +87,7 @@ export class Storage {
     // });
   }
 
-  setFormState(partlyState: FormState): void {
+  setFormState(partlyState: Partial<FormState>): void {
     const prevState = this.getWholeFormState()
 
     this.store.formState = fromJS({

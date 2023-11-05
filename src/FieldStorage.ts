@@ -18,8 +18,8 @@ export class FieldStorage {
   }
 
 
-  initState(pathToField: string, initialState: FieldState): void {
-    const newState = {
+  initState(pathToField: string, initialState: Partial<FieldState>): void {
+    const newState: Partial<FieldState> = {
       ...this.storage.generateNewFieldState(),
       ...initialState,
     }

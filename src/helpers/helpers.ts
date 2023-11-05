@@ -1,4 +1,11 @@
-import {isPlainObject, isPromise, trimChar} from 'squidlet-lib'
+import {
+  isEmptyObject,
+  isPlainObject,
+  isPromise,
+  trimChar,
+  lastItem,
+  isNil
+} from 'squidlet-lib'
 import {Field} from '../Field.js'
 
 
@@ -14,38 +21,39 @@ export function findFieldRecursively(
   cb: (field: Field, path: string) => boolean | Field | void
 ): Field | void {
   const recursive = (obj: {[index: string]: object}, rootPath: string): Field | void => {
-    let foundField;
+    let foundField
 
-    find(obj, (item: object, name: string): any => {
+    Object.keys(obj).find((name: string) => {
+      const item = obj[name]
       const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
 
       if (item instanceof Field) {
         // it's a field
-        const returnedValue: any = cb(item, itemPath);
+        const returnedValue: any = cb(item, itemPath)
 
         if (returnedValue) {
-          foundField = item;
+          foundField = item
 
-          return true;
+          return true
         }
 
-        return;
+        return
       }
       else if (isPlainObject(item)) {
         // it's a container
-        foundField = recursive(item as {[index: string]: object}, itemPath);
+        foundField = recursive(item as {[index: string]: object}, itemPath)
 
-        return;
+        return
       }
       else {
-        throw new Error(`Wrong fields dict`);
+        throw new Error(`Wrong fields dict`)
       }
-    });
+    })
 
-    return foundField;
+    return foundField
   };
 
-  return recursive(fields, '');
+  return recursive(fields, '')
 }
 
 export function eachFieldRecursively(
@@ -78,11 +86,11 @@ export function eachFieldSchemaRecursively<Item = any>(
   rootObject: {[index: string]: any},
   cb: (item: Item, path: string) => any
 ): void {
-  eachRecursively(rootObject, (item: {[index: string]: any}, path: string): false | void => {
+  eachRecursively(rootObject, (item: Item, path: string): false | void => {
     if (!isPlainObject(item)) return false;
 
     // means field
-    if (isEmpty(item) || isFieldSchema(item)) {
+    if (isEmptyObject(item as any) || isFieldSchema(item as any)) {
       cb(item, path);
 
       // don't go deeper
@@ -91,28 +99,28 @@ export function eachFieldSchemaRecursively<Item = any>(
   });
 }
 
-export function isFieldSchema(comingSchema: object) {
+export function isFieldSchema(comingSchema: Record<string, any>) {
 
   // TODO: упростить, может проверять интерфейс FieldSchema
 
-  let isSchema = false;
+  let isSchema = false
   const filedParams = [
     'initial',
     'disabled',
     'defaultValue',
     'savedValue',
     'debounceTime',
-  ];
+  ]
 
-  find(comingSchema, (value: any, name: string): any => {
+  Object.keys(comingSchema).find((name: string): any => {
     if (filedParams.includes(name)) {
-      isSchema = true;
+      isSchema = true
 
-      return true;
+      return true
     }
-  });
+  })
 
-  return isSchema;
+  return isSchema
 }
 
 // TODO: взять из squidlet-lib
@@ -130,53 +138,53 @@ export function eachRecursively(
   cb: (item: any, path: string) => false | void
 ): void {
   const recursive = (obj: {[index: string]: any}, rootPath: string): void => {
-    // TODO: remake to for of
-    each(obj, (item: object, name: string): void => {
-      const itemPath: string = trim(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR);
+    for (const name of Object.keys(obj)) {
+      const item = obj[name]
+      const itemPath: string = trimChar(`${rootPath}.${name}`, FIELD_PATH_SEPARATOR)
       const cbResult: false | void = cb(item, itemPath);
 
       // don't go deeper
-      if (cbResult === false) return;
+      if (cbResult === false) return
 
       // go deeper
-      return recursive(item, itemPath);
-    });
-  };
+      recursive(item, itemPath)
+    }
+  }
 
-  return recursive(rootObject, '');
+  return recursive(rootObject, '')
 }
 
 export function calculateDirty(editedValue: any, savedValue: any): boolean {
   // if edited value don't specified - it means field isn't dirty
-  if (typeof editedValue === 'undefined') return false;
+  if (typeof editedValue === 'undefined') return false
 
   // null, undefined and '' - the same, means dirty = false. 0 compares as a common value.
   if ((editedValue === '' || isNil(editedValue)) && (savedValue === '' || isNil(savedValue))) {
-    return false;
+    return false
   }
   else {
     // just compare current editedValue and saved value
-    return editedValue !== savedValue;
+    return editedValue !== savedValue
   }
 }
 
 export function getFieldName(pathToField: string): string {
-  const split: Array<string> = pathToField.split('.');
-  const lastItem: string | undefined = last(split);
+  const split: Array<string> = pathToField.split('.')
+  const last: string | undefined = lastItem(split)
 
-  if (typeof lastItem === 'undefined') return pathToField;
+  if (typeof last === 'undefined') return pathToField
 
-  return lastItem;
+  return last
 }
 
 
 // //// not tested
 
 export function resolvePromise(value: any): Promise<any> {
-  if (!value) return Promise.resolve();
-  if (isPromise(value)) return value;
+  if (!value) return Promise.resolve()
+  if (isPromise(value)) return value
 
-  return Promise.resolve();
+  return Promise.resolve()
 }
 
 
@@ -187,33 +195,33 @@ export function parseValue(rawValue: any): any {
   // TODO: does it really need ???
 
   if (typeof rawValue === 'undefined') {
-    return;
+    return
   }
-  if (isNull(rawValue)) {
-    return null;
+  if (rawValue === null) {
+    return null
   }
   else if (rawValue === 'true') {
-    return true;
+    return true
   }
   else if (rawValue === 'false') {
-    return false;
+    return false
   }
   else if (rawValue === 'null') {
-    return null;
+    return null
   }
   else if (rawValue === 'NaN') {
-    return NaN;
+    return NaN
   }
   else if (rawValue === '') {
-    return '';
+    return ''
   }
   // it is for - 2. strings
   else if (typeof rawValue === 'string' && rawValue.match(/^\d+\.$/)) {
     // TODO: why not number ????
-    return rawValue;
+    return rawValue
   }
   else if (typeof rawValue === 'boolean' || isPlainObject(rawValue) || Array.isArray(rawValue)) {
-    return rawValue;
+    return rawValue
   }
 
   // const toNumber = _.toNumber(rawValue);
@@ -224,7 +232,7 @@ export function parseValue(rawValue: any): any {
   // }
 
   // string
-  return rawValue;
+  return rawValue
 }
 
 

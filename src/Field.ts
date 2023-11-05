@@ -1,4 +1,4 @@
-import {omitUndefined, isEqual} from 'squidlet-lib'
+import {isEqual} from 'squidlet-lib'
 import { calculateDirty, getFieldName, parseValue } from './helpers/helpers.js'
 import {Form} from './Form.js'
 import type {FieldSchema} from './types/FieldSchema.js'
@@ -64,7 +64,7 @@ export class Field {
   }
 
 
-  constructor(pathToField: string, params: FieldSchema, form: Form) {
+  constructor(pathToField: string, params: Partial<FieldSchema>, form: Form) {
     this.form = form
     this.fieldStorage = this.form.fieldStorage
     this.pathToField = pathToField
@@ -291,13 +291,15 @@ export class Field {
   /**
    * Init field's state.
    */
-  private initState(rawFieldSchema: FieldSchema): void {
+  private initState(rawFieldSchema: Partial<FieldSchema>): void {
     const initialState: FieldSchema = this.generateInitialState(rawFieldSchema)
     // init state
     this.fieldStorage.initState(this.pathToField, initialState)
   }
 
-  private generateInitialState({ initial, disabled, defaultValue, savedValue }: FieldSchema): FieldSchema {
+  private generateInitialState(
+    { initial, disabled, defaultValue, savedValue }: Partial<FieldSchema>
+  ): FieldSchema {
 
     // TODO: move to helpers or fieldStorage
 
@@ -309,7 +311,7 @@ export class Field {
 
     return {
       initial: parsedInitial,
-      disabled,
+      disabled: Boolean(disabled),
       defaultValue: parsedDefaultValue,
       // set initial value to edited layer
       editedValue: (typeof newValue === 'undefined') ? undefined : newValue,
@@ -348,7 +350,8 @@ export class Field {
   }
 
   private updateState(cbWhichChangesState: () => void): void {
-    const prevState: FieldState | undefined = this.fieldStorage.getWholeState(this.pathToField)
+    const prevState: Partial<FieldState> | undefined = this.fieldStorage
+      .getWholeState(this.pathToField)
 
     if (cbWhichChangesState) cbWhichChangesState()
 
