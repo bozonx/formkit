@@ -82,12 +82,30 @@ export class Form {
    * @return {boolean} - true if allows to submit.
    */
   get submittable(): boolean {
-    return !this.canSubmit()
+    //return !this.canSubmit()
+    return !this.submitControl.canSubmit()
   }
 
   get savable(): boolean {
-    return !this.canSave()
+    //return !this.canSave()
+    return !this.saveControl.canSave()
   }
+
+  // /**
+  //  * Check for ability to form submit.
+  //  * @return {string|void} - returns undefined if it's OK else returns a reason.
+  //  */
+  // get canSubmit(): string | void {
+  //   return this.submitControl.canSubmit()
+  // }
+  //
+  // /**
+  //  * Check for field can be saved.
+  //  * @return {string|void} - undefined means it can. Otherwise it returns a reason.
+  //  */
+  // get canSave(): string | void {
+  //   return this.saveControl.canSave()
+  // }
 
   get valid(): boolean {
     return this.formStorage.getState('valid')
@@ -141,9 +159,25 @@ export class Form {
     this.formStorage.emitStorageEvent(this.values, undefined)
   }
 
-  /**
-   * Add one or more handlers on form's event:
-   */
+
+  getField(fieldName: string): Field | undefined {
+    return deepGet(this.fields, fieldName)
+  }
+
+  getOrRegisterField(fieldName: string, schema?: Partial<FieldSchema>): Field {
+    const existentField = deepGet(this.fields, fieldName)
+
+    if (existentField) return existentField
+
+    const field = this.initField(fieldName, schema || {})
+
+    // TODO: нужно ли валидировать?
+    // TODO: нужно ли поднимать событие???
+
+
+    return field
+  }
+
   on(event: FormEvent, cb: (data: FormStorageEventData | ChangeEventData | ActionEventData) => void): number {
     return this.formStorage.on(event, cb);
   }
@@ -165,22 +199,6 @@ export class Form {
    */
   save(): Promise<void> {
     return this.saveControl.startSaving(true)
-  }
-
-  /**
-   * Check for ability to form submit.
-   * @return {string|void} - returns undefined if it's OK else returns a reason.
-   */
-  canSubmit(): string | void {
-    return this.submitControl.canSubmit()
-  }
-
-  /**
-   * Check for field can be saved.
-   * @return {string|void} - undefined means it can. Otherwise it returns a reason.
-   */
-  canSave(): string | void {
-    return this.saveControl.canSave()
   }
 
   /**
@@ -362,7 +380,7 @@ export class Form {
    * @param {object} fieldParams - { initial, defaultValue, disabled, validate, debounceTime }
    * @private
    */
-  private initField(pathToField: string, fieldParams: Partial<FieldSchema>): void {
+  private initField(pathToField: string, fieldParams: Partial<FieldSchema> = {}): Field {
     // Try to get existent field
     const existentField = deepGet(this.fields, pathToField)
 
@@ -374,6 +392,8 @@ export class Form {
     const newField: Field = new Field(pathToField, fieldParams, this)
 
     deepSet(this.fields, pathToField, newField)
+
+    return newField
   }
 
   private updateStateAndValidate(cbWhichChangesState?: () => void, force?: boolean): void {

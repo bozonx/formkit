@@ -8,6 +8,8 @@ const plugins: Plugin[] = []
 
 export {Form} from './Form.js'
 export {Field} from './Field.js'
+export {FormEvent} from './types/FormTypes.js'
+export {FieldEvent} from './types/FieldTypes.js'
 
 
 export function setDefaultConfig(config: Config) {
