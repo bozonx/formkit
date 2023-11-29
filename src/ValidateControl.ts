@@ -54,7 +54,6 @@ export class ValidateControl {
     // do validate
     this.handler(errors, values)
 
-    // TODO: review - make eachFieldRecursively function
     // set valid state to all the fields
     eachFieldRecursively(this.form.fields, (field: Field, path: string) => {
       const invalidMsg = deepGet(errors, path)

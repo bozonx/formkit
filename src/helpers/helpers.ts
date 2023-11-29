@@ -63,7 +63,7 @@ export function eachFieldRecursively(
   cb: (field: Field, path: string) => void
 ): void {
   deepEachObj(fields, (obj: any, key: string | number, path: string) => {
-    if (obj?.constructor) cb(obj, path)
+    if (obj instanceof Field) cb(obj, path)
   }, undefined, false)
 }
 
