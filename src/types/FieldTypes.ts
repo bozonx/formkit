@@ -19,6 +19,15 @@ export interface FieldState {
   saving: boolean
   value: any
   prevValue: any
+  // field label
+  label: string
+  // hint message
+  hint: string
+  //success message
+  success: string
+  placeholder: string
+  // any custom data for field
+  custom: Record<string, any>
 }
 
 export const FIELD_STATE = {

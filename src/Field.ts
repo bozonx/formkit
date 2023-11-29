@@ -62,6 +62,21 @@ export class Field {
   get defaultValue(): any {
     return this.fieldStorage.getState(this.pathToField, 'defaultValue')
   }
+  get label(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'label')
+  }
+  get hint(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'hint')
+  }
+  get success(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'success')
+  }
+  get placeholder(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'placeholder')
+  }
+  get custom(): boolean {
+    return this.fieldStorage.getState(this.pathToField, 'custom')
+  }
 
 
   constructor(pathToField: string, params: Partial<FieldSchema>, form: Form) {
@@ -110,6 +125,31 @@ export class Field {
 
   setDisabled(disabled: boolean): void {
     this.setState({ disabled })
+  }
+
+  setLabel(label: string): void {
+    this.setState({ label })
+  }
+
+  setHint(hint: string): void {
+    this.setState({ hint })
+  }
+
+  setSuccess(success: string): void {
+    this.setState({ success })
+  }
+
+  setPlaceholder(placeholder: string): void {
+    this.setState({ placeholder })
+  }
+
+  setCustom(partial: Record<string, any>): void {
+    this.setState({
+      custom: {
+        ...this.fieldStorage.getState(this.pathToField, 'custom'),
+        ...partial
+      }
+    })
   }
 
   /**
@@ -297,25 +337,24 @@ export class Field {
     this.fieldStorage.initState(this.pathToField, initialState)
   }
 
-  private generateInitialState(
-    { initial, disabled, defaultValue, savedValue }: Partial<FieldSchema>
-  ): Partial<FieldSchema> {
+  private generateInitialState(params: Partial<FieldSchema>): Partial<FieldSchema> {
 
     // TODO: move to helpers or fieldStorage
 
-    const parsedInitial = parseValue(initial);
-    const parsedDefaultValue = parseValue(defaultValue);
+    const parsedInitial = parseValue(params.initial);
+    const parsedDefaultValue = parseValue(params.defaultValue);
 
     // set initial value otherwise default value
     const newValue = (typeof parsedInitial === 'undefined') ? parsedDefaultValue : parsedInitial;
 
     return {
       initial: parsedInitial,
-      disabled: Boolean(disabled),
+      disabled: Boolean(params.disabled),
       defaultValue: parsedDefaultValue,
       // set initial value to edited layer
       editedValue: newValue,
-      savedValue,
+      //savedValue: params.savedValue,
+      ...params,
     }
   }
 
